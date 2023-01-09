@@ -3837,7 +3837,7 @@ class Tasks:
 
     def collect_food(self):
         co = self.adb.find_multiple_img(target="food_max", confidence=0.8)
-        co2 = self.adb.find_multiple_img(target="gold_min", confidence=0.8)
+        co2 = self.adb.find_multiple_img(target="food_min", confidence=0.8)
         co.extend(co2)
         co = list(filter(filter_coordinate, co))
         return choice(co) if co != [] else None
