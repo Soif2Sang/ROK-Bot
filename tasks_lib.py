@@ -1709,7 +1709,8 @@ class Tasks:
             if co is not None:
                 self.check_resolve()
 
-        self.check_download_page(screen)
+            self.check_download_page(screen)
+            self.leave_kd_buff(screen)
 
         cropped_image = screen[616:710, 1168:1270]
 
@@ -2589,9 +2590,9 @@ class Tasks:
             # self.better_sleep((0.525, 0.795))
 
     @get_name
-    def leave_kd_buff(self):
+    def leave_kd_buff(self, Source = None):
 
-        co = self.adb.find_img(target="kingdom_buff")
+        co = self.adb.find_img(target="kingdom_buff", source=Source)
         if co is not None:
             self.click(uniform(70, 270), uniform(100, 542))
             self.better_sleep((1.8, 3))
@@ -4331,6 +4332,7 @@ class Tasks:
         current_task = 1
         for func in lib_tasks:
             self.check_download_page()
+            self.leave_kd_buff()
             self.print(f"----- Task {current_task}/{len(lib_tasks)} -----".center(51))
             self.print(f"Currently executing : {self.get_current_task(func.__name__)}")
             self.set_current_task(func.__name__)
@@ -4507,6 +4509,7 @@ class Tasks:
                     self.run_game()
                     self.check_log_back()
                     self.check_reconnect()
+                    self.leave_kd_buff()
                     self.check_mge()
                     self.check_resolve()
                     # First character
