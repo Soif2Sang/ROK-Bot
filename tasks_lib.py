@@ -241,6 +241,7 @@ class Tasks:
         x1, y1, x2, y2 = uniform(540, 560), uniform(540, 560), uniform(570, 600), uniform(200, 220)
         self.swipe(x1, y1, x2, y2)
 
+    @get_name
     def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
         if x_click > 950:
             self.swipe_left_low()
@@ -473,7 +474,11 @@ class Tasks:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
-                break
+                self.print("Error in line-up selection")
+                self.set_text("Error in line-up selection")
+                while True:
+                    self.script_pause()
+                    sleep(1)
             self.click(uniform(1092, 1114), uniform(225, 248))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
@@ -485,9 +490,6 @@ class Tasks:
         :return: True if node is occupied or someone is coming to the node
         :return: False if node is free to gather
         """
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
-        logging.info("FUNCTION : find_cross")
         self.print("Scanning the node..")
         pil_image = self.adb.get_curr_device_screen_img()
         cv_image = array(pil_image)
@@ -1703,12 +1705,13 @@ class Tasks:
         info_screen = screen[470:700, 0:115]
         cropped_image = screen[420:540, 480:810]
 
-        self.check_reconnect(cropped_image)
         if random() > 0.7:
             co = self.adb.find_img(source=screen, target="verification_button", confidence=0.8)
             if co is not None:
                 self.check_resolve()
+            self.check_reconnect(cropped_image)
 
+        if random() > 0.4:
             self.check_download_page(screen)
             self.leave_kd_buff(screen)
 
@@ -1922,10 +1925,12 @@ class Tasks:
                 self.better_sleep((3, 4.5))
                 count = False
             else:
-                time_to_sleep = uniform(5, 10)
+                time_to_sleep = randint(5, 10)
                 self.print(f"All scout seems occupied, waiting for {time_to_sleep:0.1f} seconds")
                 count = True
-                sleep(time_to_sleep)
+                for _ in range(time_to_sleep):
+                    self.script_pause()
+                    sleep(1)
 
     @get_name
     def clear_all_healing(self):
@@ -2245,7 +2250,9 @@ class Tasks:
                                         datetime.strptime(string, '%H:%M:%S').strftime('%S')) * 2
                                     self.print(
                                         f"Bot will wait around {time_to_wait2 / 60} minutes to complete the task, the bot will now sleep for this time")
-                                    sleep(time_to_wait2)
+                                    for _ in range(time_to_wait2):
+                                        self.script_pause()
+                                        sleep(1)
                                     self.heal_troops()
                                     return True
         else:
@@ -2356,7 +2363,9 @@ class Tasks:
                                 datetime.strptime(string, '%H:%M:%S').strftime('%S')) * 2
                             self.print(
                                 f"Bot will wait around {time_to_wait2 / 60} minutes to complete the task, the bot will now sleep for this time")
-                            sleep(time_to_wait2)
+                            for _ in range(time_to_wait2):
+                                self.script_pause()
+                                sleep(1)
                             # return self.heal_troops()
                             return True
 
@@ -2653,7 +2662,7 @@ class Tasks:
             if self.data[str(self.sel)]['schedules'][self.current_profile].get("restart_game", True):
                 random_time = uniform(4000, 5800)
                 if time() > time_restart + random_time:
-                    self.leave_game()
+                    self.leave_game(force = True)
                     self.print(f"Game is stopped, game starting in about 7sec")
                     self.better_sleep((5, 10))
                     self.run_game()
@@ -3184,7 +3193,7 @@ class Tasks:
         return "Done"
 
     @get_name
-    def leave_game(self) -> None:
+    def leave_game(self, force = False) -> None:
         """
         Send adb signal to leave application
         """
@@ -3193,12 +3202,14 @@ class Tasks:
                             datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.print(f"Leaving the game..")
 
-        # self.adb.get_device().shell("am force-stop com.lilithgame.roc.gp")
-        # self.adb.get_device().shell("am force-stop com.rok.gp.vn")
-        # self.adb.get_device().shell("am force-stop com.lilithgame.rok.gpkr")
-        # self.adb.get_device().shell("am force-stop com.lilithgames.rok.gpkr")
+        if not force:
+            self.adb.home_button()
+        else:
+            self.adb.get_device().shell("am force-stop com.lilithgame.roc.gp")
+            self.adb.get_device().shell("am force-stop com.rok.gp.vn")
+            self.adb.get_device().shell("am force-stop com.lilithgame.rok.gpkr")
+            self.adb.get_device().shell("am force-stop com.lilithgames.rok.gpkr")
 
-        self.adb.home_button()
 
     @get_name
     def kill_game(self) -> None:
@@ -4498,6 +4509,7 @@ class Tasks:
 
         starting_time = time()
         for i in range(loop_task):
+            loop_time = time()
             self.print(" Script is starting ! ".center(51,"-"))
             self.data = self.update_data()
             for profile in self.data[self.sel]['schedules']:
@@ -4538,7 +4550,6 @@ class Tasks:
                     if not self.data[self.sel]['scheduler']:
                         break
 
-            self.print(f"Script ran for {(time() - starting_time) / 60:0.1f} minutes.")
 
             if self.data.get(self.sel).get("loop_task"):
                 ttw1, ttw2 = self.data.get(self.sel).get("time_to_wait_loop1", 60), self.data.get(self.sel).get(
@@ -4551,7 +4562,16 @@ class Tasks:
                 self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     self.leave_game()
-                sleep(time_before_redo_tasks)
+
+                for _ in range(time_before_redo_tasks):
+                    self.script_pause()
+                    sleep(1)
+
+                self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
+                loop_time = 0
+            else:
+                self.print(f"Unique run took {(time() - loop_time) / 60:0.1f} minutes to complete.")
+                loop_time = 0
 
         # else:
         #     starting_time = time()
