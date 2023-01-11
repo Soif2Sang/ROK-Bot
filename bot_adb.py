@@ -119,6 +119,12 @@ class Adb:
             logging.info(f"[{self.name}] FUNCTION EXCEPTION : get_curr_device_screen_img")
             return self.get_curr_device_screen_img()
 
+    def get_cv2_img(self):
+        screen = self.get_curr_device_screen_img()
+        screen = array(screen)
+        screen = cvtColor(screen, COLOR_BGR2RGB)
+        return screen
+
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
         image.save('resources\\' + file_name + '.png')
