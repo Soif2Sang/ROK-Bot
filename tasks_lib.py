@@ -1682,7 +1682,7 @@ class Tasks:
     @get_name
     def click_on_fort(self) -> bool:
         i = 0
-        while self.adb.find_img(target="fort_rally_button1") is None:
+        while co:=self.adb.find_img(target="fort_rally_button1") is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -1690,7 +1690,7 @@ class Tasks:
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        co = self.adb.find_img(target="fort_rally_button1")
+        # co = self.adb.find_img(target="fort_rally_button1")
         if co is not None:
             x, y = co[0], co[1]
             x, y = x + uniform(0, 144), y + uniform(0, 30)
@@ -1707,12 +1707,8 @@ class Tasks:
         :return: None
         """
         self.data = self.update_data()
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.restart_if_game_crashed()
-        screen = self.adb.get_curr_device_screen_img()
-        screen = array(screen)
-        screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
+        screen = self.adb.get_cv2_img()
 
         info_screen = screen[470:700, 0:115]
         cropped_image = screen[420:540, 480:810]
@@ -1734,20 +1730,17 @@ class Tasks:
             self.better_sleep((1, 2))
             return self.zoom_out_city()
 
-        if self.adb.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
-            self.zoom_out_city()
-            self.better_sleep((2, 3))
-            screen = self.adb.get_curr_device_screen_img()
-
         if self.adb.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
-            screen = self.adb.get_curr_device_screen_img()
+            screen = self.adb.get_cv2_img()
 
-        screen = array(screen)
-        screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
+        if self.adb.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
+            self.zoom_out_city()
+            self.better_sleep((2, 3))
+            screen = self.adb.get_cv2_img()
 
         for second_string in ["left", "mid", "right"]:
             for first_string in ["up", "mid", "down"]:
@@ -1773,11 +1766,9 @@ class Tasks:
                         if self.check_log_back():
                             self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
                             return self.gather_gem()
-                        pil_image = self.adb.get_curr_device_screen_img()
-                        cv_image = np.array(pil_image)
-                        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-                        cv_image = cv_image[0:100, 0:800]
-                        if self.adb.find_img(target="block_icon", source=cv_image, confidence=0.90) is not None:
+                        screen = self.adb.get_cv2_img()
+                        cv_image = screen[0:100, 0:800]
+                        if self.adb.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
                             self.print("Bot detected the block icon, now cancelling the function..")
                             return False
 
@@ -1843,8 +1834,7 @@ class Tasks:
                             scan_frequency_timer += 1
                             if scan_frequency_timer >= 20:
                                 self.run_game()
-                                timer_image = array(self.adb.get_curr_device_screen_img())
-                                timer_image = cv2.cvtColor(timer_image, cv2.COLOR_BGR2RGB)
+                                timer_image = self.adb.get_cv2_img()
                                 cross_image = timer_image[240:490, 490:790]
                                 back_image = timer_image[150:477, 1160:]
                                 if self.find_cross_source(cross_image):
@@ -2029,9 +2019,7 @@ class Tasks:
             # x,y = self.adb.find_img("heal_icon")
             # self.click(x,y)
             self.better_sleep((1.5, 2.4))
-            pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = array(pil_image)
-            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+            cv_image = self.adb.get_cv2_img()
             cropped_image = cv_image[541:568, 265:434]
             # cv2.imwrite("timer.png", cropped_image)
             string = pytesseract.image_to_string(cropped_image,
@@ -2085,9 +2073,7 @@ class Tasks:
         if co is not None:
             self.click(co[0] + uniform(0, 50), co[1] + uniform(0, 60))
             self.better_sleep((1, 1.5))
-            pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = array(pil_image)
-            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            cv_image = self.adb.get_cv2_img()
             nb = 0
             for i in range(1, 6):
                 co = self.adb.find_img(target=f"forge_{i}", source=cv_image, confidence=0.9)
@@ -4581,7 +4567,6 @@ class Tasks:
                 for _ in range(time_before_redo_tasks):
                     self.script_pause()
                     sleep(1)
-                loop_time = 0
 
         self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.")
         return
