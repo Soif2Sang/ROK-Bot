@@ -1482,7 +1482,13 @@ class Tasks:
         """
         logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
                             datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
-        print(f"[ {current_time()} ] [ {self.name} ] Resolve count = {compteur}, hopefully not higher than 1 lol")
+        print(f"[ {current_time()} ] [ {self.name} ] Resolve count = {compteur}")
+        if compteur>5:
+            self.print("Error in resolving the captcha, human action needed.")
+            self.status("Error")
+            while True:
+                self.script_pause()
+                sleep(1)
         try:
             pil_image = self.adb.get_curr_device_screen_img()
             cv_image = array(pil_image)
@@ -1492,6 +1498,12 @@ class Tasks:
 
             im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
             sleep(0.5)
+            size = os.path.getsize(os.path.abspath(os.getcwd()) + f"captcha{self.sel}.jpg")
+            if size > 99999:
+                self.print(f"Captcha is too big ({size}), refreshing it..")
+                self.adb.click(uniform(508, 532), uniform(580, 596))
+                self.better_sleep((4,7))
+                return self.resolve_captcha(compteur+1)
             result = verification.solve(f"captcha{self.sel}.jpg", self.sel)
             if result == 0:
                 if compteur >= 3:
@@ -4344,7 +4356,7 @@ class Tasks:
         for func in lib_tasks:
             self.check_download_page()
             self.leave_kd_buff()
-            self.print(f"----- Task {current_task}/{len(lib_tasks)} -----".center(51))
+            self.print(f"----- Task {current_task}/{len(lib_tasks)} -----".center(60))
             self.print(f"Currently executing : {self.get_current_task(func.__name__)}")
             self.set_current_task(func.__name__)
             self.run_game()
@@ -4510,14 +4522,14 @@ class Tasks:
         starting_time = time()
         for i in range(loop_task):
             loop_time = time()
-            self.print(" Script is starting ! ".center(51,"-"))
+            self.print(" Script is starting ! ".center(56,"-"))
             self.data = self.update_data()
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
                     self.current_profile = profile
-                    self.print(f" Profile n°{profile} enabled ! ".center(51))
+                    self.print(f" Profile n°{profile} enabled ! ".center(60))
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character"):
-                        self.print(f"------ Character n°1 ------".center(51))
+                        self.print(f"---- Character n°1 ----".center(60))
                     self.run_game()
                     self.check_log_back()
                     self.check_reconnect()
@@ -4536,7 +4548,7 @@ class Tasks:
                         # Characters remaining
                         nb_characters = 2
                         while boolean:
-                            self.print(f"------ Character n°{nb_characters} ------")
+                            self.print(f"---- Character n°{nb_characters} ----".center(60))
                             self.run_game()
                             self.check_resolve()
                             self.check_mge()
@@ -4554,60 +4566,22 @@ class Tasks:
             if self.data.get(self.sel).get("loop_task"):
                 ttw1, ttw2 = self.data.get(self.sel).get("time_to_wait_loop1", 60), self.data.get(self.sel).get(
                     "time_to_wait_loop2", 90)
-
+                self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
                 self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
                 if self.data.get(self.sel).get("leave_game_loop", False):
-                    self.leave_game()
+                    if time_before_redo_tasks< 600:
+                        self.leave_game(force=True)
+                    else:
+                        self.leave_game(force=False)
 
                 for _ in range(time_before_redo_tasks):
                     self.script_pause()
                     sleep(1)
-
-                self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
-                loop_time = 0
-            else:
-                self.print(f"Unique run took {(time() - loop_time) / 60:0.1f} minutes to complete.")
                 loop_time = 0
 
-        # else:
-        #     starting_time = time()
-        #     for profile in self.data[self.sel]['schedules']:
-        #         if self.data[self.sel]['schedules'][profile]['enabled']:
-        #             self.current_profile = profile
-        #             self.print(f"Profile n°{profile} enabled !")
-        #             self.run_game()
-        #             self.check_log_back()
-        #             self.check_reconnect()
-        #             self.check_mge()
-        #             self.check_resolve()
-        #             # First character
-        #             self.execute_tasks(self.get_available_task(profile))
-        #             if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character", False):
-        #
-        #                 co_first = self.get_first_character()
-        #                 boolean = True
-        #                 self.wait_until_connected()
-        #
-        #                 self.run_game()
-        #                 # Characters remaining
-        #                 nb_characters = 1
-        #                 while boolean:
-        #                     self.print(f"------Character n°{nb_characters}------")
-        #                     self.run_game()
-        #                     self.check_resolve()
-        #                     self.check_mge()
-        #
-        #                     self.execute_tasks(self.get_available_task(profile))
-        #                     self.better_sleep((2.2, 4))
-        #
-        #                     nb_characters += 1
-        #                     boolean = self.change_character_param(co_first, nb_characters)
-        #                     self.wait_until_connected()
-        #             if not self.data[self.sel]['scheduler']:
-        #                 break
         self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.")
         return
