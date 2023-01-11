@@ -82,9 +82,9 @@ class LowerFrame():
         if data[self.sel]['schedules']["3"]["enabled"]:
             self.checkbox_p3.select()
 
-        self.checkbox_p1.grid(row=1, column=1, sticky='e')
-        self.checkbox_p2.grid(row=2, column=1, sticky='e')
-        self.checkbox_p3.grid(row=3, column=1, sticky='e')
+        self.checkbox_p1.grid(row=1, column=1, sticky='e', pady=(10, 0), padx=(0,30))
+        self.checkbox_p2.grid(row=2, column=1, sticky='e', padx=(0,30))
+        self.checkbox_p3.grid(row=3, column=1, sticky='e', padx=(0,30))
 
         font1 = customtkinter.CTkFont(family='Helvetica bold underline', size=15)
         self.console_label = customtkinter.CTkLabel(self.bottom_frame, text="       Logs :", font=font1).grid(column=0, row=5, sticky="w")
