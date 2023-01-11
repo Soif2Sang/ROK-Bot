@@ -17,6 +17,7 @@ from bot_adb import Adb
 from tasks_lib import Tasks
 
 
+
 class LowerFrame():
     def __init__(self, upper_frame, sel):
         with open('user_settings.json') as config_file:
@@ -62,6 +63,28 @@ class LowerFrame():
         self.settings_button = customtkinter.CTkButton(self.bottom_frame, text="Settings ⚙", command=self.enter_settings, corner_radius=4,
                                                        border_color="grey", border_width=1, fg_color="white")
         self.settings_button.grid(row=4, column=0, columnspan=2, sticky='', pady=(10, 0))
+
+        def change_status(param):
+            with open('user_settings.json') as config_file:
+                data = json.load(config_file)
+            data[self.sel]['schedules'][param]["enabled"] = not data[self.sel]['schedules'][param]["enabled"]
+            with open('user_settings.json', 'w') as config_file:
+                config_file.write(json.dumps(data, indent=2))
+
+
+        self.checkbox_p1 = customtkinter.CTkCheckBox(self.bottom_frame, text="Profile n°1", command=lambda : change_status("1"), hover_color="#266496", fg_color="#3b8ed0")
+        if data[self.sel]['schedules']["1"]["enabled"]:
+            self.checkbox_p1.select()
+        self.checkbox_p2 = customtkinter.CTkCheckBox(self.bottom_frame, text="Profile n°2", command=lambda : change_status("2"), hover_color="#913230", fg_color="#ba4543")
+        if data[self.sel]['schedules']["2"]["enabled"]:
+            self.checkbox_p2.select()
+        self.checkbox_p3 = customtkinter.CTkCheckBox(self.bottom_frame, text="Profile n°3", command=lambda: change_status("3"), hover_color="#baa429",  fg_color="#dec433")
+        if data[self.sel]['schedules']["3"]["enabled"]:
+            self.checkbox_p3.select()
+
+        self.checkbox_p1.grid(row=1, column=1, sticky='e')
+        self.checkbox_p2.grid(row=2, column=1, sticky='e')
+        self.checkbox_p3.grid(row=3, column=1, sticky='e')
 
         font1 = customtkinter.CTkFont(family='Helvetica bold underline', size=15)
         self.console_label = customtkinter.CTkLabel(self.bottom_frame, text="       Logs :", font=font1).grid(column=0, row=5, sticky="w")
