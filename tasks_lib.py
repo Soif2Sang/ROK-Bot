@@ -1351,16 +1351,12 @@ class Tasks:
 
     @get_name
     def claim_daily_vip(self) -> None:
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         img = Image.fromarray(cv_image)
         if img.getpixel((186, 50)) == (0, 0, 227):
-            self.click(uniform(100, 200), uniform(56, 69))
+            self.click(uniform(105, 170), uniform(56, 69))
             self.better_sleep((1.25, 2))
-            pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = array(pil_image)
-            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            cv_image = self.adb.get_cv2_img()
             img = Image.fromarray(cv_image)
             if img.getpixel((1041, 155)) == (0, 0, 227):
                 self.click(uniform(1000, 1044), uniform(163, 192))
@@ -1401,9 +1397,9 @@ class Tasks:
         # self.adb.connect_to_device()
         a = self.adb.is_game_alive()
         if a:
-            print(f"[ {current_time()} ] [ {self.name} ] Looks like game is running ")
+            self.print(f"Looks like game is running ")
         if not a:
-            print(f"[ {current_time()} ] [ {self.name} ] Looks like game is not running ")
+            self.print(f"Looks like game is not running ")
             co = self.adb.find_img(target="rokicon", confidence=0.8)
             print(f"{co =}")
             if co is not None:
@@ -1498,7 +1494,7 @@ class Tasks:
 
             im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
             sleep(0.5)
-            size = os.path.getsize(os.path.abspath(os.getcwd()) + f"captcha{self.sel}.jpg")
+            size = os.path.getsize(rf"{os.getcwd()}\captcha{self.sel}.jpg")
             if size > 99999:
                 self.print(f"Captcha is too big ({size}), refreshing it..")
                 self.adb.click(uniform(508, 532), uniform(580, 596))
@@ -2660,6 +2656,7 @@ class Tasks:
             if self.data[str(self.sel)]['schedules'][self.current_profile].get("restart_game", True):
                 random_time = uniform(4000, 5800)
                 if time() > time_restart + random_time:
+                    self.print("Time to restart the game during gathering gems !")
                     self.leave_game(force = True)
                     self.print(f"Game is stopped, game starting in about 7sec")
                     self.better_sleep((5, 10))
@@ -4508,6 +4505,7 @@ class Tasks:
         starting_time = time()
         for i in range(loop_task):
             loop_time = time()
+            self.set_status("Starting..")
             self.print(" Script is starting ! ".center(56,"-"))
             self.data = self.update_data()
             for profile in self.data[self.sel]['schedules']:
