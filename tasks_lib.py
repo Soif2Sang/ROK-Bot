@@ -819,7 +819,6 @@ class Tasks:
                 break
             if co:=self.adb.find_img(source=cv_image, target=chest, confidence=0.85):
                 entered = True
-                print(co)
                 self.click(co[0] + uniform(0, 35), co[1] + uniform(0, 35))
                 self.better_sleep((1.7, 3))
                 open_chests = self.adb.find_multiple_img("open_chest")
