@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import traceback
 from datetime import datetime, timedelta
 from functools import wraps
 from os.path import exists
@@ -786,18 +787,25 @@ class Tasks:
 
     @get_name
     def claim_legendary_chest(self):
-        if co:=self.adb.find_img(target='legendary_chest') is not None:
-            self.click(co[0] + uniform(0,30), co[1]+ uniform(0,30))
-            self.better_sleep((1.7, 3))
-            if chest:=self.adb.find(target="open_chest") is not None:
-                self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
+        print("test")
+        try:
+            co = self.adb.find_img(target='legendary_chest')
+
+            if  co is not None:
+                print(co)
+                self.click(co[0] + uniform(0,30), co[1]+ uniform(0,30))
                 self.better_sleep((1.7, 3))
-                while confirm := self.adb.find_img(target="confirm_tavern"):
-                    self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                if (chest:=self.adb.find(target="open_chest")) is not None:
+                    self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
                     self.better_sleep((1.7, 3))
-            self.click(uniform(25, 55), uniform(20, 56))
-            self.better_sleep((2.5, 5))
-            self.close_chest_popup()
+                    while confirm := self.adb.find_img(target="confirm_tavern"):
+                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                        self.better_sleep((1.7, 3))
+                self.click(uniform(25, 55), uniform(20, 56))
+                self.better_sleep((2.5, 5))
+                self.close_chest_popup()
+        except Exception as e:
+            print(e)
 
     @get_name
     def claim_daily_chest(self):
@@ -807,10 +815,11 @@ class Tasks:
         chests = ['material_chest', 'golden_chest', 'silver_chest']
         entered = False
         for chest in chests:
-            if entered == True:
+            if entered :
                 break
-            if co:=self.adb.find_img(source=cv_image, target=chest, confidence=0.85) is not None:
+            if co:=self.adb.find_img(source=cv_image, target=chest, confidence=0.85):
                 entered = True
+                print(co)
                 self.click(co[0] + uniform(0, 35), co[1] + uniform(0, 35))
                 self.better_sleep((1.7, 3))
                 open_chests = self.adb.find_multiple_img("open_chest")
@@ -1681,7 +1690,7 @@ class Tasks:
     @get_name
     def click_on_fort(self) -> bool:
         i = 0
-        while co:=self.adb.find_img(target="fort_rally_button1") is None:
+        while (co:=self.adb.find_img(target="fort_rally_button1")) is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -4367,7 +4376,7 @@ class Tasks:
                     func()
                 self.better_sleep((1, 2))
             except Exception as e:
-                print(e)
+                traceback.print_exc()
                 logging.exception(f" [{self.name}] Exception during {func.__name__}")
                 self.leave_game()
                 # logging.info(f"[{self.name}] Game is stopped, game starting in about 7sec")
