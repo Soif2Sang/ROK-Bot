@@ -785,38 +785,41 @@ class Tasks:
                     self.better_sleep((1.3, 2.2))
 
     @get_name
+    def claim_legendary_chest(self):
+        if co:=self.adb.find_img(target='legendary_chest') is not None:
+            self.click(co[0] + uniform(0,30), co[1]+ uniform(0,30))
+            self.better_sleep((1.7, 3))
+            if chest:=self.adb.find(target="open_chest") is not None:
+                self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
+                self.better_sleep((1.7, 3))
+                while confirm := self.adb.find_img(target="confirm_tavern"):
+                    self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                    self.better_sleep((1.7, 3))
+            self.click(uniform(25, 55), uniform(20, 56))
+            self.better_sleep((2.5, 5))
+            self.close_chest_popup()
+
+    @get_name
     def claim_daily_chest(self):
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        chests = ['legendary_chest', 'material_chest', 'golden_chest', 'silver_chest']
+        self.claim_legendary_chest()
+        self.better_sleep((1.7, 3))
+        cv_image = self.adb.get_cv2_img()
+        chests = ['material_chest', 'golden_chest', 'silver_chest']
         entered = False
         for chest in chests:
-            co = self.adb.find_img_src_conf(cv_image, chest, 0.85)
-            if co is not None:
+            if entered == True:
+                break
+            if co:=self.adb.find_img(source=cv_image, target=chest, confidence=0.85) is not None:
                 entered = True
                 self.click(co[0] + uniform(0, 35), co[1] + uniform(0, 35))
                 self.better_sleep((1.7, 3))
                 open_chests = self.adb.find_multiple_img("open_chest")
                 for open in open_chests:
-                    self.click(open[0] + uniform(0, 127), open[1] + uniform(0, 47))
+                    self.click(open[0] + uniform(0, 100), open[1] + uniform(10,40))
                     self.better_sleep((5, 8))
-                    confirm = self.adb.find_img(target="confirm_tavern")
-                    if confirm is not None:
-                        self.click(confirm[0] + uniform(0, 127), confirm[1] + uniform(0, 47))
+                    while confirm:=self.adb.find_img(target="confirm_tavern"):
+                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10,40))
                         self.better_sleep((1.7, 3))
-                        confirm = self.adb.find_img(target="confirm_tavern")
-                        if confirm is not None:
-                            self.click(confirm[0] + uniform(0, 127), confirm[1] + uniform(0, 47))
-                            self.better_sleep((1.7, 3))
-
-                if chest == 'legendary_chest':
-                    self.click(uniform(25, 55), uniform(20, 56))
-                    self.better_sleep((2.5, 5))
-                    self.close_chest_popup()
-                    pil_image = self.adb.get_curr_device_screen_img()
-                    cv_image = array(pil_image)
-                    cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                 self.better_sleep((1.7, 3))
 
         if entered:
@@ -1397,9 +1400,9 @@ class Tasks:
         # self.adb.connect_to_device()
         a = self.adb.is_game_alive()
         if a:
-            self.print(f"Looks like game is running ")
+            print(f"[ {current_time()} ] [ {self.name} ] Looks like game is running ")
         if not a:
-            self.print(f"Looks like game is not running ")
+            print(f"[ {current_time()} ] [ {self.name} ] Looks like game is not running ")
             co = self.adb.find_img(target="rokicon", confidence=0.8)
             print(f"{co =}")
             if co is not None:
