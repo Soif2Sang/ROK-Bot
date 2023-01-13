@@ -13,6 +13,7 @@ import customtkinter
 from tktooltip import ToolTip
 
 from UI_Gem import GemInterface
+from UI_Rss import RssInterface
 from bot_adb import Adb
 from tasks_lib import Tasks
 
@@ -316,134 +317,6 @@ class LowerFrame():
                 button.configure(hover_color="#baa429", fg_color="#dec433")
             button.grid(row=rowParam, column=1, padx=padxp, pady=1)
 
-        def gem_config(root, i):
-
-            with open('user_settings.json') as config_file:
-                data = json.load(config_file)
-            paddings = {'padx': 5, 'pady': 5}
-            page = customtkinter.CTkToplevel(root)
-            page.resizable(False, False)
-            page.title('RoK Bot Gem Settings')
-            page.iconbitmap('Item_Gem.ico')
-            labelk = customtkinter.CTkLabel(page, text="Your kingdom : ")
-            entryk = customtkinter.CTkEntry(page, width=70)
-            entryk.insert(0, data[self.sel]['schedules'][str(i)]['kingdom'])
-            labelk.grid(row=1, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))
-            entryk.grid(row=1, column=1, columnspan=2)
-
-            labelx = customtkinter.CTkLabel(page, text="Area location x : ")
-            entryx = customtkinter.CTkEntry(page, width=70)
-            entryx.insert(0, data[self.sel]['schedules'][str(i)]['city_x'])
-            labelx.grid(row=2, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))
-            entryx.grid(row=2, column=1, columnspan=2)
-
-            labely = customtkinter.CTkLabel(page, text="Area location y: ")
-            entryy = customtkinter.CTkEntry(page, width=70)
-            entryy.insert(0, data[self.sel]['schedules'][str(i)]['city_y'])
-            labely.grid(row=3, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))
-            entryy.grid(row=3, column=1, columnspan=2)
-
-            labelr = customtkinter.CTkLabel(page, text="Searching Radius(km) : ")
-            entryr = customtkinter.CTkEntry(page, width=70)
-            entryr.insert(0, data[self.sel]['schedules'][str(i)]['radius'])
-            labelr.grid(row=4, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))
-            entryr.grid(row=4, column=1, columnspan=2)
-
-            labeld1 = customtkinter.CTkLabel(page, text="Mining duration(mins): ")
-            labeld1.grid(row=5, column=0, columnspan=1, pady=2, sticky='e')
-            labeld2 = tkinter.Label(page, text="~")
-            labeld2.grid(row=5, column=2, columnspan=1, pady=2)
-
-            entryd1 = customtkinter.CTkEntry(page, width=45)
-            entryd1.insert(0, data[self.sel]['schedules'][str(i)]['gather_gem_duration1'])
-            entryd1.grid(row=5, column=1)
-
-            entryd2 = customtkinter.CTkEntry(page, width=45)
-            entryd2.insert(0, data[self.sel]['schedules'][str(i)]['gather_gem_duration2'])
-            entryd2.grid(row=5, column=3)
-
-            labeld3 = customtkinter.CTkLabel(page, text="Look for available\n troops each X (secs): ")
-            labeld3.grid(row=6, column=0, columnspan=1, pady=2, sticky='e')
-            ToolTip(labeld3,
-                    msg="This settings is to configure how frequently the bot will check for an available troop\n*WARNING* Don't lower too much !",
-                    delay=0.3)
-
-            labeld4 = tkinter.Label(page, text="~")
-            labeld4.grid(row=6, column=2, columnspan=1, pady=2)
-
-            entryd3 = customtkinter.CTkEntry(page, width=45)
-            entryd3.insert(0, data[self.sel]['schedules'][str(i)]['gem_check1'])
-            entryd3.grid(row=6, column=1)
-
-            entryd4 = customtkinter.CTkEntry(page, width=45)
-            entryd4.insert(0, data[self.sel]['schedules'][str(i)]['gem_check2'])
-            entryd4.grid(row=6, column=3)
-
-            def box_restart():
-                with open('user_settings.json') as config_file:
-                    data = json.load(config_file)
-                # print(f" {restart_button.get() = }")
-                if restart_button.get():
-                    data[self.sel]['schedules'][str(i)]['restart_game'] = True
-                    restart_button.select()
-                else:
-                    data[self.sel]['schedules'][str(i)]['restart_game'] = False
-                    restart_button.deselect()
-                with open('user_settings.json', 'w') as config_file:
-                    config_file.write(json.dumps(data, indent=2))
-                print(f"{data[self.sel]['schedules'][str(i)]['restart_game'] = }")
-
-            restart_button = customtkinter.CTkSwitch(page, text='Sometimes restart game',
-                                                     command=box_restart)
-            restart_button.grid(row=60, column=0, columnspan=4, pady=(5, 5))
-            if data[self.sel]['schedules'][str(i)]['restart_game']:
-                # print(f" {restart_button.get() = }")
-                restart_button.select()
-                # print(f" {restart_button.get() = }")
-            else:
-                restart_button.deselect()
-
-            def box_experimental():
-                with open('user_settings.json') as config_file:
-                    data = json.load(config_file)
-                # print(f" {restart_button.get() = }")
-                if experimental_button.get():
-                    data[self.sel]['schedules'][str(i)]['gem_experimental'] = True
-                    experimental_button.select()
-                else:
-                    data[self.sel]['schedules'][str(i)]['gem_experimental'] = False
-                    experimental_button.deselect()
-                with open('user_settings.json', 'w') as config_file:
-                    config_file.write(json.dumps(data, indent=2))
-                print(f"{data[self.sel]['schedules'][str(i)]['gem_experimental'] = }")
-
-            experimental_button = customtkinter.CTkSwitch(page, text='Enable experimental mode',
-                                                          command=box_experimental)
-            experimental_button.grid(row=80, column=0, columnspan=4, pady=(5, 5))
-            if data[self.sel]['schedules'][str(i)]['gem_experimental']:
-                # print(f" {restart_button.get() = }")
-                experimental_button.select()
-                # print(f" {restart_button.get() = }")
-            else:
-                experimental_button.deselect()
-
-            def submit():
-                with open('user_settings.json') as config_file:
-                    data = json.load(config_file)
-                data[self.sel]['schedules'][str(i)]['kingdom'] = entryk.get()
-                data[self.sel]['schedules'][str(i)]['city_y'] = int(entryy.get())
-                data[self.sel]['schedules'][str(i)]['city_x'] = int(entryx.get())
-                data[self.sel]['schedules'][str(i)]['radius'] = int(entryr.get())
-                data[self.sel]['schedules'][str(i)]['gather_gem_duration1'] = int(entryd1.get())
-                data[self.sel]['schedules'][str(i)]['gather_gem_duration2'] = int(entryd2.get())
-                data[self.sel]['schedules'][str(i)]['gem_check1'] = int(entryd3.get())
-                data[self.sel]['schedules'][str(i)]['gem_check2'] = int(entryd4.get())
-                with open('user_settings.json', 'w') as config_file: config_file.write(json.dumps(data, indent=2))
-                page.destroy()
-
-            button = customtkinter.CTkButton(page, text="Save changes", command=submit, corner_radius=4,
-                                             fg_color="white", border_color="grey", border_width=1, text_color="black")
-            button.grid(row=81, column=0, columnspan=4, pady=(5, 5))
 
         def rss_config(root, i):
 
@@ -1033,7 +906,7 @@ class LowerFrame():
                 create_button(root, "⚙", lambda: GemInterface(root, str(self.sel), str(i)), nb_switch)
                 nb_switch = create_switch(root, "Gather gems", "gather_gem", nb_switch, i)
 
-                create_button(root, "⚙", lambda: rss_config(root, i), nb_switch)
+                create_button(root, "⚙", lambda: RssInterface(root,str(self.sel), str(i)), nb_switch)
                 nb_switch = create_switch(root, "Gather Rss", "gather_rss", nb_switch, i)
 
                 create_button(root, "⚙", lambda: fog_config(root, i), nb_switch)

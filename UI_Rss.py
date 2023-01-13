@@ -130,16 +130,17 @@ class RssInterface(customtkinter.CTkToplevel):
         option_level6.grid(column=2, row=5, **paddings, sticky='e')
         option_level7.grid(column=2, row=6, **paddings, sticky='e')
 
+        self.switch_custom.grid(row=7, column=0, columnspan=4, pady=(5, 5))
     def switch_keyword(self, keyword):
         with open('user_settings.json') as config_file:
             data = json.load(config_file)
         # print(f" {self.restart_button.get() = }")
-        if self.switch_restart.get():
+        if self.switch_custom.get():
             data[self.instance]['schedules'][self.profile][keyword] = True
-            self.switch_restart.select()
+            self.switch_custom.select()
         else:
             data[self.instance]['schedules'][self.profile][keyword] = False
-            self.switch_restart.deselect()
+            self.switch_custom.deselect()
         with open('user_settings.json', 'w') as config_file:
             config_file.write(json.dumps(data, indent=2))
         print(f"{data[self.instance]['schedules'][self.profile][keyword] = }")
@@ -162,7 +163,8 @@ class RssInterface(customtkinter.CTkToplevel):
         with open('user_settings.json', 'w') as config_file:
             config_file.write(json.dumps(data, indent=2))
 
-# fenetre = customtkinter.CTk()
+
+fenetre = customtkinter.CTk()
 #
-# app = GemInterface(fenetre,"1","1")
-# app.mainloop()
+app = RssInterface(fenetre,"1","1")
+app.mainloop()
