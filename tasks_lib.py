@@ -787,17 +787,15 @@ class Tasks:
 
     @get_name
     def claim_legendary_chest(self):
-        print("test")
         try:
             co = self.adb.find_img(target='legendary_chest')
 
             if  co is not None:
-                print(co)
-                self.click(co[0] + uniform(0,30), co[1]+ uniform(0,30))
+                self.click(co[0] + uniform(10,20), co[1]+ uniform(10,20))
                 self.better_sleep((1.7, 3))
-                if (chest:=self.adb.find(target="open_chest")) is not None:
+                if (chest:=self.adb.find_img(target="open_chest")) is not None:
                     self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
-                    self.better_sleep((1.7, 3))
+                    self.better_sleep((3, 5))
                     while confirm := self.adb.find_img(target="confirm_tavern"):
                         self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
@@ -805,7 +803,7 @@ class Tasks:
                 self.better_sleep((2.5, 5))
                 self.close_chest_popup()
         except Exception as e:
-            print(e)
+            traceback.print_exc()
 
     @get_name
     def claim_daily_chest(self):
@@ -939,8 +937,8 @@ class Tasks:
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(1, 15))
                     self.better_sleep((1.9, 3))
                 if element == "speed":
-                    temp = self.adb.find_img(target='items\\enhanced_gathering_purple', confidence=0.80)
-                    temp2 = self.adb.find_img(target='items\\enhanced_gathering_blue', confidence=0.80)
+                    temp = self.adb.find_img(target='items\\enhanced_gathering_purple')
+                    temp2 = self.adb.find_img(target='items\\enhanced_gathering_blue')
                     if temp is not None or temp2 is not None:
                         if temp is not None:
                             co = temp
@@ -974,8 +972,8 @@ class Tasks:
                     x2, y2 = x1 + uniform(-10, 10), y1 - uniform(300, 350)
                     self.swipe(x1, y1, x2, y2)
                 if element != "speed":
-                    temp = self.adb.find_img(target='items\\enhanced_' + element + '_blue')
-                    temp2 = self.adb.find_img(target='items\\enhanced_' + element + '_green')
+                    temp = self.adb.find_img(target=f'items\\enhanced_{element}_blue')
+                    temp2 = self.adb.find_img(target=f'items\\enhanced_{element}_green')
                     # print(f"{temp=} {temp2=}")
                     # if temp is None and temp2 is None:
                     #     # x1, y1 = uniform(586, 800), uniform(457, 487)
@@ -1388,6 +1386,7 @@ class Tasks:
         self.print("Script is paused until reconnected..")
         condition = True
         while condition:
+            self.run_game()
             co = self.adb.find_img(target="menu_button", confidence=0.8)
             if co is not None:
                 condition = False
@@ -1400,6 +1399,7 @@ class Tasks:
                 condition = False
             self.better_sleep((10, 15))
             self.check_reconnect()
+
 
     @get_name
     def run_game(self, count=0) -> None:
@@ -1554,6 +1554,7 @@ class Tasks:
                 self.better_sleep((1, 1.795))
             return result['captchaId']
         except Exception as e:
+            traceback.print_exc()
             print(f"[ {current_time()} ] [ {self.name} ] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
             logging.info(f"[{self.name}] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
             self.click(uniform(507, 533), uniform(573, 599))
@@ -4283,7 +4284,9 @@ class Tasks:
                                 self.data.get(self.sel).get('schedules').get(self.current_profile).get(
                                     'log_back2') * 60)
                 self.print(f"Waiting for the timer to end.. {value} minutes")
-                sleep(value)
+                for i in range(value):
+                    self.script_pause()
+                    sleep(1)
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(-10, 20))
                 self.print("Reconnection..")
                 sleep(uniform(5, 10))
