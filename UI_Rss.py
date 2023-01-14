@@ -163,8 +163,8 @@ class RssInterface(customtkinter.CTkToplevel):
         with open('user_settings.json', 'w') as config_file:
             config_file.write(json.dumps(data, indent=2))
 
-
-fenetre = customtkinter.CTk()
-#
-app = RssInterface(fenetre,"1","1")
-app.mainloop()
+if __name__ == '__main__':
+    fenetre = customtkinter.CTk()
+    #
+    app = RssInterface(fenetre,"1","1")
+    app.mainloop()
