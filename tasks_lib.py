@@ -87,7 +87,7 @@ def clean_args(*args):
 
 def get_name(func):
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self: object, *args: object, **kwargs: object):
         logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
                             datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
@@ -892,28 +892,8 @@ class Tasks:
         buffs_to_do.extend(self.get_remaining_buffs())
 
         self.print(f"Buffs : {buffs_to_do}")
-        # logging.info(f"[ {self.name} ] Buffs : {buffs}")
-        # buffs_to_do = []
-        # for i in range(0, len(buffs), 2):
-        #     # print("buff", buffs[i], buffs[i + 1])
-        #     if buffs[i] is not None or buffs[i + 1] is not None:
-        #         continue
-        #     if buffs[i] is None and buffs[i + 1] is None:
-        #         if i == 0:
-        #             buffs_to_do.append("speed")
-        #         elif i == 2:
-        #             buffs_to_do.append("food")
-        #         elif i == 4:
-        #             buffs_to_do.append("wood")
-        #         elif i == 6:
-        #             buffs_to_do.append("gold")
-        #         elif i == 8:
-        #             buffs_to_do.append("stone")
-        # self.print(f"Buffs remaining : {buffs_to_do}")
-        # logging.info(f"[ {self.name} ] Buffs remaining : {buffs_to_do}")
         if buffs_to_do:
-            temp3 = self.adb.find_img(target='menu_opened')
-            if temp3 is None:
+            if self.adb.find_img(target='menu_opened') is None:
                 x, y = uniform(1200, 1250), uniform(650, 690)
                 # else:
                 #     # x, y = temp3[0] + uniform(0, 20), temp3[1] + uniform(0, 15)
@@ -937,80 +917,33 @@ class Tasks:
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(1, 15))
                     self.better_sleep((1.9, 3))
                 if element == "speed":
-                    temp = self.adb.find_img(target='items\\enhanced_gathering_purple')
-                    temp2 = self.adb.find_img(target='items\\enhanced_gathering_blue')
-                    if temp is not None or temp2 is not None:
-                        if temp is not None:
-                            co = temp
-                        else:
-                            co = temp2
-                        x, y = co[0] + uniform(0, 60), co[1] + uniform(0, 60)
+                    co = self.adb.find_img(target='items\\enhanced_gathering_purple')
+                    if co is None:
+                        co = self.adb.find_img(target='items\\enhanced_gathering_blue')
+                    if co is not None:
+                        x, y = co[0] + uniform(10, 60), co[1] + uniform(10, 60)
                         self.click(x, y)
                         self.better_sleep((1.195, 2))
                         x, y = uniform(910, 1050), uniform(575, 622)
                         self.click(x, y)
                         self.better_sleep((1.195, 2))
-                    #     continue
-                    # if temp is not None:
-                    #     x, y = temp[0] + uniform(0, 60), temp[1] + uniform(0, 60)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
-                    #     x, y = uniform(910, 1050), uniform(575, 622)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
-                    #     continue
-                    # if temp is None and temp2 is not None:
-                    #     x, y = temp2[0] + uniform(0, 60), temp2[1] + uniform(0, 60)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
-                    #     x, y = uniform(910, 1050), uniform(575, 622)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
                 if not scrolled:
                     scrolled = True
                     x1, y1 = uniform(586, 800), uniform(457, 487)
                     x2, y2 = x1 + uniform(-10, 10), y1 - uniform(300, 350)
                     self.swipe(x1, y1, x2, y2)
                 if element != "speed":
-                    temp = self.adb.find_img(target=f'items\\enhanced_{element}_blue')
-                    temp2 = self.adb.find_img(target=f'items\\enhanced_{element}_green')
-                    # print(f"{temp=} {temp2=}")
-                    # if temp is None and temp2 is None:
-                    #     # x1, y1 = uniform(586, 800), uniform(457, 487)
-                    #     # x2, y2 = x1 + uniform(-10, 10), y1 - uniform(300, 350)
-                    #     # self.swipe(x1, y1, x2, y2)
-                    #     # self.better_sleep((2, 3))
-                    #     temp = self.adb.find_img(target='items\\enhanced_' + element + '_blue')
-                    #     temp2 = self.adb.find_img(target='items\\enhanced_' + element + '_green')
-                    #     if temp is None and temp2 is None:
-                    #         continue
-                    # else:
-                    if temp is not None or temp2 is not None:
-                        if temp is not None:
-                            co = temp
-                        else:
-                            co = temp2
-                        x, y = co[0] + uniform(0, 60), co[1] + uniform(0, 60)
+                    co = self.adb.find_img(target=f'items\\enhanced_{element}_blue')
+                    if co is None:
+                        co = self.adb.find_img(target=f'items\\enhanced_{element}_green')
+                    if co is not None:
+                        x, y = co[0] + uniform(10, 60), co[1] + uniform(10, 60)
                         self.click(x, y)
                         self.better_sleep((1.195, 2))
                         x, y = uniform(910, 1050), uniform(575, 622)
                         self.click(x, y)
                         self.better_sleep((1.195, 2))
-                    # if temp is not None:
-                    #     x, y = temp[0] + uniform(0, 60), temp[1] + uniform(0, 60)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
-                    #     x, y = uniform(910, 1050), uniform(575, 622)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
-                    #     continue
-                    # if temp is None and temp2 is not None:
-                    #     x, y = temp2[0] + uniform(0, 60), temp2[1] + uniform(0, 60)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
-                    #     x, y = uniform(910, 1050), uniform(575, 622)
-                    #     self.click(x, y)
-                    #     self.better_sleep((1.195, 2))
+
 
             co = self.adb.find_img(target="no")
             if co is not None:
@@ -1159,7 +1092,7 @@ class Tasks:
             return False
 
     @get_name
-    def send_new_troop(self, deadstop=0, color='yellow') -> bool:
+    def send_new_troop(self, deadstop: int = 0, color: str ='yellow') -> bool:
         """
         Send a new troop to gather the gem node
         :return: True is successfully
@@ -1293,7 +1226,7 @@ class Tasks:
             self.print("Nearest troop sent to the node..")
             return True
         except Exception as e:
-            print(e)
+            traceback.print_exc()
             self.better_sleep((5, 10))
             if deadstop == 2:
                 self.click(uniform(700, 720), uniform(300, 340))
@@ -1792,27 +1725,13 @@ class Tasks:
                             self.check_if_kill()
 
                         self.better_sleep((1.3, 2))
-                        # print(f'[ {current_time()} ] [ {self.name} ] Trying to send new troop..')
-                        # logging.info(f"[{self.name}] Trying to send new troop..")
-                        # self.set_text(f'[{current_time()}] Trying to send new troop..')
 
                         if self.send_new_troop():
                             self.check_if_kill()
                             break
-                        # else:
-                        #     print(f'[ {current_time()} ] [ {self.name} ] Unable to send a new troop')
-                        #     logging.info(f"[{self.name}] Unable to send a new troop")
-                        #     self.set_text(f'[{current_time()}] Unable to send a new troop')
-
-                        # print(f'[ {current_time()} ] [ {self.name} ] Trying to send the nearest troop..')
-                        # logging.info(f"[{self.name}] Trying to send the nearest troop..")
-                        # self.set_text(f'[{current_time()}] Trying to send the nearest troop..')
                         self.print("Trying to send the nearest troop..")
                         if self.send_nearest_troop_gem():
                             if self.adb.find_img(target="new_troops_button"):
-                                # print(f'[ {current_time()} ] [ {self.name} ] Sending a new troop')
-                                # logging.info(f"[{self.name}] Sending a new troop")
-                                # self.set_text(f'[{current_time()}] Sending a new troop')
                                 self.send_new_troop()
                                 self.check_if_kill()
                             self.check_if_kill()
@@ -4122,59 +4041,6 @@ class Tasks:
             self.click(x, y)
             self.better_sleep((1, 1.35))
 
-    def is_in_builder(self):
-        co = self.adb.find_img(target='builder', confidence=0.8)
-        return co is not None
-
-    def find_image_cv(self, image, confidence=0.8):
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        result = cv2.matchTemplate(cv_image, image, cv2.TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-        if max_val > confidence:
-            print(max_loc)
-            return self.click(max_loc[0] + uniform(0, 5), max_loc[1] + uniform(0, 5))
-        else:
-            return
-
-    def new_build(self):
-        if not self.is_in_builder():
-            return False
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(cv_image)
-        print(img.getpixel((8, 355)))
-        if img.getpixel((8, 355))[2] > 210 and img.getpixel((8, 355))[1] < 10:
-            self.click(uniform(170, 360), uniform(400, 600))
-            sleep(uniform(1, 1.2))
-            co = self.adb.find_img(target='validate_building')
-            if co is not None:
-                self.click(uniform(-5, 5) + co[0], uniform(-10, 5) + co[1])
-                sleep(uniform(1, 1.2))
-                return True
-        if img.getpixel((8, 472))[2] > 210 and img.getpixel((8, 472))[1] < 10:
-            self.click(uniform(170, 360), uniform(400, 600))
-            sleep(uniform(1, 1.2))
-            co = self.adb.find_img(target='validate_building')
-            if co is not None:
-                self.click(uniform(-5, 5) + co[0], uniform(-10, 5) + co[1])
-                sleep(uniform(1, 1.2))
-                return True
-
-    def is_tutorial(self):
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(cv_image)
-        while img.getpixel((630, 610)) == (255, 255, 255) and img.getpixel((800, 610)) == (255, 255, 255):
-            self.click(uniform(630, 800), uniform(500, 610))
-            sleep(uniform(1.2, 1.7))
-
-    def click_hdv(self):
-        self.click(uniform(390, 500), uniform(200, 280))
-        sleep(uniform(1.5, 2))
-
     @get_name
     def check_chest(self):
         for _ in range(2):
@@ -4257,6 +4123,7 @@ class Tasks:
         solver = TwoCaptcha(api_key)
         return solver
 
+    @get_name
     def check_log_back(self, cv_image=None):
         self.data = self.update_data()
         # print(f'{self.data.get(self.sel).get("auto_log_back"] =}')
@@ -4378,10 +4245,10 @@ class Tasks:
                     func()
                 self.better_sleep((1, 2))
             except Exception as e:
-                traceback.print_exc()
-                logging.exception(f" [{self.name}] Exception during {func.__name__}")
+                self.print(f"Exception during {func.__name__}")
+                exception = traceback.format_exc()
+                self.print(f"{exception}")
                 self.leave_game()
-                # logging.info(f"[{self.name}] Game is stopped, game starting in about 7sec")
                 self.better_sleep((5, 10))
                 self.run_game()
             self.better_sleep((0.795, 1.2))
@@ -4511,8 +4378,6 @@ class Tasks:
     def routine_scheduled(self):
         self.adb.connect_to_device()
         self.data = self.update_data()
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
 
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
 
