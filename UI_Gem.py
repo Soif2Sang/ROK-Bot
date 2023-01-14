@@ -41,9 +41,9 @@ class GemInterface(customtkinter.CTkToplevel):
         self.entry_frequency2 = customtkinter.CTkEntry(self, width=70)
 
         self.switch_restart = customtkinter.CTkSwitch(self,text='Sometimes restart game'
-                                                      ,command=lambda: self.switch_keyword('restart_game'))
+                                                      ,command=self.command_restart)
         self.switch_experimental = customtkinter.CTkSwitch(self, text='Enable experimental mode',
-                                                  command=lambda: self.switch_keyword('gem_experimental'))
+                                                  command=self.command_experimental)
 
         self.button_submit = customtkinter.CTkButton(self, text="Save changes", command=self.submit, corner_radius=4,
                                                      fg_color="white", border_color="grey", border_width=1, text_color="black")
@@ -86,19 +86,33 @@ class GemInterface(customtkinter.CTkToplevel):
         self.switch_experimental.grid(row=80, column=0, columnspan=4, pady=(5, 5))
         self.button_submit.grid(row=81, column=0, columnspan=4, pady=(5, 5))
 
-    def switch_keyword(self, keyword):
+    def command_restart(self):
         with open('user_settings.json') as config_file:
             data = json.load(config_file)
         # print(f" {self.restart_button.get() = }")
         if self.switch_restart.get():
-            data[self.instance]['schedules'][self.profile][keyword] = True
+            data[self.instance]['schedules'][self.profile]["restart_game"] = True
             self.switch_restart.select()
         else:
-            data[self.instance]['schedules'][self.profile][keyword] = False
+            data[self.instance]['schedules'][self.profile]["restart_game"] = False
             self.switch_restart.deselect()
         with open('user_settings.json', 'w') as config_file:
             config_file.write(json.dumps(data, indent=2))
-        print(f"{data[self.instance]['schedules'][self.profile][keyword] = }")
+        print(f"{data[self.instance]['schedules'][self.profile]['restart_game'] = }")
+
+    def command_experimental(self):
+        with open('user_settings.json') as config_file:
+            data = json.load(config_file)
+        # print(f" {self.restart_button.get() = }")
+        if self.switch_experimental.get():
+            data[self.instance]['schedules'][self.profile]["gem_experimental"] = True
+            self.switch_experimental.select()
+        else:
+            data[self.instance]['schedules'][self.profile]["gem_experimental"] = False
+            self.switch_experimental.deselect()
+        with open('user_settings.json', 'w') as config_file:
+            config_file.write(json.dumps(data, indent=2))
+        print(f"{data[self.instance]['schedules'][self.profile]['gem_experimental'] = }")
 
     def submit(self):
         with open('user_settings.json') as config_file:

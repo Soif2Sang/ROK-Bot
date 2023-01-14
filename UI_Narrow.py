@@ -1422,20 +1422,13 @@ class LowerFrame():
         # return self.upper_frame.tree_view.after(1000,self.update_timers)
 
     def update_label2(self, sel, string):
-        # print(sel)
-        # print(type(sel))
         key = sel
         if self.upper_frame.frames[key].tasks_process.is_alive():
-            # print(f"{frames[key].tasks_process.is_alive() = }")
             for child in self.upper_frame.tree_view.get_children():
-                # print(f"{self.upper_frame.tree_view.item(child)['values'] = }")
                 if self.upper_frame.tree_view.item(child)['values'][0] == int(key):
-                    # print(f"{self.upper_frame.tree_view.item(child)['values'][0]==int(key) and self.upper_frame.tree_view.item(child)['values'][-1]=='' = }")
                     text = self.upper_frame.tree_view.item(child)['values']
                     text[-1] = string
-                    # print(f"{text = }")
                     self.upper_frame.tree_view.item(child, values=text)
-                    # print(f"{self.upper_frame.tree_view.item(child)['values'] =}")
         else:
             for child in self.upper_frame.tree_view.get_children():
                 if self.upper_frame.tree_view.item(child)['values'][0] == int(key) and \
@@ -1460,6 +1453,7 @@ class LowerFrame():
             #         self.start_tasks_button.configure(state="normal", fg_color="white")
             #         self.end_tasks_button.configure(state="disabled", fg_color="#d1d1d1")
             return threading.Thread(target=self.start_thread).start()
+
 
     def start_thread(self):
         sleep(0.5)
