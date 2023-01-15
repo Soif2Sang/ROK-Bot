@@ -7,7 +7,7 @@ from tkinter import ttk
 
 from UI_Narrow import LowerFrame
 from bot_adb import Adb
-from tasks_lib import *
+from Tasks_lib import *
 import os
 import pyautogui
 import requests
