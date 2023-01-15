@@ -166,5 +166,9 @@ class RssInterface(customtkinter.CTkToplevel):
 if __name__ == '__main__':
     fenetre = customtkinter.CTk()
     #
+
+    button = customtkinter.CTkButton(fenetre, state="disabled")
+    print(button.cget("state"))
     app = RssInterface(fenetre,"1","1")
+
     app.mainloop()
