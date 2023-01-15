@@ -2,8 +2,10 @@ from threading import Thread
 
 import customtkinter
 
+from Task import Task
+from Task_runner import TaskRunner
 from bot_adb import *
-from tasks_lib import *
+from Tasks_lib import *
 #from rkp import *
 #from auto_upgrade import *
 
@@ -18,9 +20,10 @@ class Bot():
     def __init__(self,adb):
         self.adb=adb
         self.device= adb.get_device()
-        self.task= Tasks(Frame(self.adb)) #tasksGEM / tasks
+        self.main_task= Task(Frame(self.adb)) #tasksGEM / tasks
         #self.task = Tasks(self.adb)
-        self.task.set_sel(str(adb.number))
+        self.main_task.set_sel(str(adb.number))
+        self.task = TaskRunner(self.main_task,self.main_task.frame)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -221,19 +224,25 @@ def stop_start_emulators(master):
 
 
 if __name__ == "__main__":
-    # Create client and AdbInput
-    # adb = Adb(3)
-    # bot = Bot(adb)
-    # bot.adb.connect_to_device()
-    # bot.task.print = lambda txt: print(txt)
-    # bot.task.current_profile="1"
-    # master = customtkinter.CTk()
-    # frame = customtkinter.CTkFrame(master)
-    # frame.pr_tasks_button = customtkinter.CTkButton(master)
-    # frame.end_tasks_button = customtkinter.CTkButton(master)
-    # frame.pause = False
-    # frame.stop = False
-    # bot.task.frame = frame
+    adb = Adb(1)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.set_text = lambda txt: print(txt)
+    bot.task.status = lambda txt: print(txt)
+
+    bot.task.current_profile="1"
+    master = customtkinter.CTk()
+    frame = customtkinter.CTkFrame(master)
+    frame.pr_tasks_button = customtkinter.CTkButton(master)
+    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame.adb = bot.adb
+    frame.pause = False
+    frame.stop = False
+    frame.update_label2 = lambda x,_: print(x)
+    bot.task.frame = frame
+
+    print(bot.task.routine_scheduled())
     # bot.task.setup_view()
     # bot.task.better_sleep((0.9, 1.2))
     #
@@ -243,10 +252,10 @@ if __name__ == "__main__":
     #     else:
     #         sleep(1)
     #         bot.task.help_alliance()
-    master = customtkinter.CTk()
-    # stop_start_emulators(master)
-    Thread(target=lambda:upgrade_instance(3,master)).start()
-    Thread(target=lambda: upgrade_instance(4, master)).start()
-    Thread(target=lambda: upgrade_instance(5, master)).start()
-    master.mainloop()
+    # master = customtkinter.CTk()
+    # # stop_start_emulators(master)
+    # Thread(target=lambda:upgrade_instance(3,master)).start()
+    # Thread(target=lambda: upgrade_instance(4, master)).start()
+    # Thread(target=lambda: upgrade_instance(5, master)).start()
+    # master.mainloop()
 
