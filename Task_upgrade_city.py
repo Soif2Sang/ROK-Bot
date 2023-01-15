@@ -7,7 +7,7 @@ from Task_utils import get_class, get_name
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
-class ProduceMaterials(Task):
+class UpgradeCity(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.frame)
         with open('user_settings.json') as config_file:
