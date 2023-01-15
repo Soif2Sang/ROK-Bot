@@ -1,3 +1,7 @@
+from threading import Thread
+
+import customtkinter
+
 from bot_adb import *
 from tasks_lib import *
 #from rkp import *
@@ -147,129 +151,102 @@ class AdbInput:
         self.sendEvent('0000 0002 00000000')
         self.sendEvent('0000 0000 00000000')# SYN_REPORT
 
+def create_instance(number:int, master):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.current_profile="1"
+    frame = customtkinter.CTkFrame(master)
+    frame.pr_tasks_button = customtkinter.CTkButton(master)
+    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame.pause = False
+    frame.stop = False
+    bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    return bot
+    while 0:
+        while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
+            bot.task.dynamique_city_upgrade()
+        else:
+            sleep(1)
+            bot.task.help_alliance()
+    bot.task.dynamique_city_upgrade()
+    bot.task.kill_emulator()
+
+def upgrade_instance(number:int, master):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.current_profile="1"
+    frame = customtkinter.CTkFrame(master)
+    frame.pr_tasks_button = customtkinter.CTkButton(master)
+    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame.pause = False
+    frame.stop = False
+    bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    while 1:
+        while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
+            bot.task.dynamique_city_upgrade()
+        else:
+            sleep(60)
+            bot.task.help_alliance()
+
+
+def stop_start_emulators(master):
+    instances = [
+        create_instance(3, master),
+        # create_instance(4, master),
+        # create_instance(5, master)
+    ]
+    # while True:
+    # for i in instances:
+    threads = []
+    while True:
+        for instance in instances:
+            instance.task.start_emulator()
+            sleep(60)
+            instance.task.run_game()
+            t = Thread(target=lambda: instance.task.dynamique_city_upgrade())
+            t.start()
+            t.join()
+            instance.adb.home_button()
+            sleep(2)
+            instance.task.kill_emulator()
+        sleep(uniform(900, 1200))
+
 
 if __name__ == "__main__":
     # Create client and AdbInput
-    adb = Adb(1)
-    bot = Bot(adb)
-    bot.adb.connect_to_device()
-
-    print(isinstance(array(bot.adb.get_curr_device_screen_img()), ndarray))
-    # bot.task.send_nearest_troop_gem()
-    # print(bot.adb.find_img("rokicon",0.8))
-    # print(bot.task.run_game())
-    # touch = AdbInput(bot, 4)
-    # bot.task.heal_troops()
+    # adb = Adb(3)
+    # bot = Bot(adb)
+    # bot.adb.connect_to_device()
+    # bot.task.print = lambda txt: print(txt)
     # bot.task.current_profile="1"
-    # print(change_resource_type("Second"))
-    # 140 204
-    # Touch
-    # touch.smoothSwipe([(3600, 3000), (3600, 10000)])
-    # def swipe(arg):
-    #     final = []
-    #     for tuples in arg:
-    #         x = tuples[0] * (3600/140)
-    #         y = tuples[1] * (9400/204)
-    #         final.append((x,y))
-    #     touch.smoothSwipe(final)
-    # # bot.task.send_new_troop()
-    # cos = bot.adb.find_multiple_img("choose_right", 0.8)
-    # final = []
-    # for co in cos:
-    #     if co[0]>1060 and co[1]>200:
-    #         final.append(co)
-    # print(final)
-    # threading.Thread(target=swipe, args=([(970, 395), (225, 395)],)).start()
-    # threading.Thread(target=swipe, args=([(225, 300), (970, 300)],)).start()
-    # Thread(target = swipe, arg=[(970, 395), (225, 395)]).start()
-    # swipe([(225, 300), (970, 300)])
-    # touch.smoothSwipe([(140, 140),
-    # (140, 204)])
-    # touch.smoothSwipe([(30000, 3000), (3600, 10000)])
-    # touch.swipe([(200, 200), (200, 300), (300, 300)])
-
-
-# # bot.task.leave_city_simple()
-# pil_image = bot.adb.get_curr_device_screen_img()
-# cv_image = array(pil_image)
-# cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-# cropped_image = cv_image[541:568, 265:434]
-# # cv2.imwrite("timer.png", cropped_image)
-# string = pytesseract.image_to_string(cropped_image,
-#                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890/,')
-# string = string.replace("\n", "")
-# for i in range(4):
-#     string = string.replace(",", "")
-# print(string)
-# bot.device.shell("sendevent /dev/input/event4: 1 330 1")     # Puts down finger
-# bot.device.shell("sendevent /dev/input/event4: 3 57 10")     # Sets pressure
-# bot.device.shell("sendevent /dev/input/event4: 3 53 100")    # Sets X to 100
-# bot.device.shell("sendevent /dev/input/event4: 3 54 230")    # Sets Y to 230
-# bot.device.shell("sendevent /dev/input/event4: 0 0 0")       # "0 0 0" (its called a SYN_REPORT)
-# bot.device.shell("sendevent /dev/input/event4: 1 330 0")     # Lift up finger
-# bot.device.shell("sendevent /dev/input/event4: 0 0 0")
-# print(bot.task.scan_gem())
-# bot.task.from_city_upgrade()
-# bot.adb.find_img_arg_conf("fort2",0.5)
-
-# pil_image = bot.adb.get_curr_device_screen_img()
-# cv_image = array(pil_image)
-# cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-#
-# # cv_image = cv2.imread("maraudeur_screen.png")
-# img_to_find = cv2.imread('resources\\heal_icon.png')
-#
-# result = cv2.matchTemplate(cv_image, img_to_find, cv2.TM_CCOEFF_NORMED)
-# needle_w = img_to_find.shape[1]
-# needle_h = img_to_find.shape[0]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-# min_thresh = 0.85
-# location = where(result >= min_thresh)
-# location = list(zip(*location[::-1]))
-# # print(location)
-#
-# rectangles = []
-# for loc in location:
-#     rect = [int(loc[0]), int(loc[1]), needle_w, needle_h]
-#     rectangles.append(rect)
-# # print(rectangles)
-#
-# localisations = []
-#
-# for i in range(len(rectangles)):
-#     localisations.append((rectangles[i][0], rectangles[i][1]))
-# element_to_delete = []
-# for i in range(len(localisations) - 1):
-#     if ((
-#             (localisations[i][0] + 1 == localisations[i + 1][0]) or
-#             (localisations[i][0] - 1 == localisations[i + 1][0]) or
-#             (localisations[i][0] == localisations[i + 1][0])
-#     ) and
-#             (
-#                     (localisations[i][1] + 1 == localisations[i + 1][1]) or
-#                     (localisations[i][1] - 1 == localisations[i + 1][1]) or
-#                     (localisations[i][1] == localisations[i + 1][1])
-#             )):
-#         element_to_delete.append(localisations[i])
-#
-# print(element_to_delete)
-# for element in element_to_delete:
-#     localisations.remove(element)
-# print(localisations)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # master = customtkinter.CTk()
+    # frame = customtkinter.CTkFrame(master)
+    # frame.pr_tasks_button = customtkinter.CTkButton(master)
+    # frame.end_tasks_button = customtkinter.CTkButton(master)
+    # frame.pause = False
+    # frame.stop = False
+    # bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    #
+    # while True:
+    #     while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
+    #         bot.task.dynamique_city_upgrade()
+    #     else:
+    #         sleep(1)
+    #         bot.task.help_alliance()
+    master = customtkinter.CTk()
+    # stop_start_emulators(master)
+    Thread(target=lambda:upgrade_instance(3,master)).start()
+    Thread(target=lambda: upgrade_instance(4, master)).start()
+    Thread(target=lambda: upgrade_instance(5, master)).start()
+    master.mainloop()
 
