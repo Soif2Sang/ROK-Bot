@@ -29,7 +29,9 @@ def get_time(func):
         if func.__name__ == "check_resolve":
             print(f'[ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
-            logging.info(f"[{self.name}] Verification made in {(end_time - start_time):0.1f}")
+            with open(f"{self.name}_logs.txt", "w+") as logger:
+                # logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+                logger.write(f"[{self.name}] Verification made in {(end_time - start_time):0.1f}")
         return func_output
 
     return wrapper
@@ -52,10 +54,11 @@ def clean_args(*args):
 def get_name(func):
     @wraps(func)
     def wrapper(self: object, *args: object, **kwargs: object):
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
+        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
+        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        logging.info(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+        with open(f"{self.name}_logs.txt", "a+") as logger:
+            logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         func_output = func(self, *args, **kwargs)
         return func_output
@@ -65,10 +68,12 @@ def get_name(func):
 def get_class(func):
     @wraps(func)
     def wrapper(self: object, *args: object, **kwargs: object):
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
+        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
+        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
+        with open(f"{self.name}_logs.txt", "a+") as logger:
+            logger.write(f"[ {self.name} ] FUNCTION : {self.task_name()}")
+        # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
         print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)
         return func_output

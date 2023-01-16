@@ -48,13 +48,13 @@ class Task:
         self.name = self.data.get(self.sel).get('name', "Name not found")
         # print(self.name)
         self.resource_type = self.data[str(self.sel)]['schedules'][self.current_profile]["First"]
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
+        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
+        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
 
     @get_name
     def print(self, text: str) -> None:
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
+        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
+        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         # print(f'[ {current_time()} ] [ {self.name} ] {text}')
         # logging.info(f"[{self.name}] {text}")
         self.set_text(f"[{current_time()}] {text}")
@@ -570,66 +570,6 @@ class Task:
             if self.adb.find_img(target="download_page", source=screen, confidence=0.9):
                 self.adb.click(uniform(1018, 1041), uniform(127, 146))
                 self.better_sleep((1.925, 2.795))
-
-    def set_current_task(self, name):
-        if name == 'ClaimCampaign':
-            return self.set_status("Claiming campaign rewards")
-        if name == 'CollectResource':
-            return self.set_status("Collecting city rss")
-        if name == 'BuyMerchant':
-            return self.set_status("Buying merchant..")
-        if name == 'GatherRss':
-            return self.set_status("Gathering rss")
-        if name == 'UseEnhancedBuff':
-            return self.set_status("Enabling enhanced buffs")
-        if name == 'AllianceDonation':
-            return self.set_status("Donating to alliance")
-        if name == 'HuntBarbarians':
-            return self.set_status("Killing barbarians")
-        if name == 'GatherGem':
-            return self.set_status("Gathering gems")
-        if name == 'ClearFog':
-            return self.set_status("Exploring fog")
-        if name == 'DailyVip':
-            return self.set_status("Daily VIP rewards")
-        if name == 'DailyChest':
-            return self.set_status("Daily Chest rewards")
-        if name == 'BarbarianFort':
-            return self.set_status("Launching fort")
-        if name == 'HealTroop':
-            return self.set_status("Healing troops")
-        if name == 'ProduceMaterials':
-            return self.set_status("Producing materials")
-
-    def get_current_task(self, name):
-        if name == 'ClaimCampaign':
-            return "Claiming campaign rewards"
-        if name == 'CollectResource':
-            return "Collecting city rss"
-        if name == 'BuyMerchant':
-            return "Buying merchant.."
-        if name == 'GatherRss':
-            return "Gathering rss"
-        if name == 'UseEnhancedBuff':
-            return "Enabling enhanced buffs"
-        if name == 'AllianceDonation':
-            return "Donating to alliance"
-        if name == 'HuntBarbarians':
-            return "Killing barbarians"
-        if name == 'GatherGem':
-            return "Gathering gems"
-        if name == 'ClearFog':
-            return "Exploring fog"
-        if name == 'DailyVip':
-            return "Daily VIP rewards"
-        if name == 'DailyChest':
-            return "Daily Chest rewards"
-        if name == 'BarbarianFort':
-            return "Launching fort"
-        if name == 'HealTroop':
-            return "Healing troops"
-        if name == 'ProduceMaterials':
-            return "Producing materials"
 
     @get_name
     def go_city(self):

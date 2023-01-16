@@ -1,11 +1,11 @@
-
 import json
-from random import uniform
+from random import uniform, choice
 from pytesseract import pytesseract
 from Task import Task
 from Task_utils import get_class, get_name
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+
 
 class UpgradeCity(Task):
     def __init__(self, MainTask: Task):
@@ -27,7 +27,7 @@ class UpgradeCity(Task):
 
     @get_name
     def ch_coordinates(self):
-        return uniform(630,650), uniform(160,180)
+        return uniform(630, 650), uniform(160, 180)
 
     @get_name
     def archery_coordinates(self):
@@ -51,27 +51,28 @@ class UpgradeCity(Task):
 
     @get_name
     def academy_coordinates(self):
-        return uniform(720,740), uniform(330,350)
+        return uniform(720, 740), uniform(330, 350)
 
     @get_name
     def alliance_center_coordinates(self):
-        return uniform(790,810), uniform(380,390)
+        return uniform(790, 810), uniform(380, 390)
 
     @get_name
     def scout_coordinates(self):
-        return uniform(360,380), uniform(375,390)
+        return uniform(360, 380), uniform(375, 390)
 
     @get_name
     def hospital_coordinates(self):
-        return uniform(560,575), uniform(390,410)
+        return uniform(560, 575), uniform(390, 410)
 
     @get_name
     def pass_coordinates(self):
-        return uniform(900,920), uniform(510,540)
+        return uniform(900, 920), uniform(510, 540)
+
     @get_name
     def help_build(self):
-        if co:=self.adb.find_img(target='help_build'):
-            self.click(co[0] + uniform(0,10), co[1]+ uniform(20,40))
+        if co := self.adb.find_img(target='help_build', confidence=0.8):
+            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
     @get_name
@@ -87,12 +88,13 @@ class UpgradeCity(Task):
             else:
                 self.click(uniform(916, 1050), uniform(530, 560))
                 self.better_sleep((1.7, 2.2))
-                while co:=self.adb.find_img(target="close_window"):
-                    self.click(co[0] + uniform(10,15), co[1] + uniform(10,15))
+                while co := self.adb.find_img(target="close_window"):
+                    self.click(co[0] + uniform(10, 15), co[1] + uniform(10, 15))
                     self.better_sleep((1.7, 2.2))
             self.better_sleep((1.7, 2.2))
             self.help_build()
             self.better_sleep((1.7, 2.2))
+
     @get_name
     def setup_view(self):
         x = uniform(33, 76)
@@ -115,10 +117,11 @@ class UpgradeCity(Task):
         if co is not None:
             return True
         return False
+
     @get_name
     def help_alliance(self):
-        if co:=self.adb.find_img(target='help_alliance',confidence=0.75):
-            self.click(co[0] + uniform(0,10), co[1]+ uniform(20,40))
+        if co := self.adb.find_img(target='help_alliance', confidence=0.75):
+            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
     @get_name
@@ -128,14 +131,16 @@ class UpgradeCity(Task):
         return True
 
     @get_class
-    def run(self):
-        for x,y in [self.pass_coordinates(),self.barracks_coordinates(),self.archery_coordinates(),self.stable_coordinates(),self.siege_coordinates(),self.tavern_coordinates(),self.ch_coordinates(),self.hospital_coordinates(),self.academy_coordinates(), self.alliance_center_coordinates(),self.scout_coordinates()]:
+    def run1(self):
+        for x, y in [self.pass_coordinates(), self.barracks_coordinates(), self.archery_coordinates(), self.stable_coordinates(),
+                     self.siege_coordinates(), self.tavern_coordinates(), self.ch_coordinates(), self.hospital_coordinates(),
+                     self.academy_coordinates(), self.alliance_center_coordinates(), self.scout_coordinates()]:
+            self.setup_view()
             if not self.free_constructor():
                 break
-            self.setup_view()
             self.better_sleep((0.9, 1.2))
             for i in range(2):
-                self.click(x,y)
+                self.click(x, y)
                 self.better_sleep((0.9, 1.2))
             if self.is_city_hall_upgradable():
                 self.recursive_upgrade()
@@ -145,7 +150,24 @@ class UpgradeCity(Task):
         for i in range(2):
             self.help_build()
             self.better_sleep((0.9, 1.2))
-        self.better_sleep((10,15))
+        self.better_sleep((10, 15))
         self.help_alliance()
         self.better_sleep((0.9, 1.2))
 
+    @get_class
+    def run(self):
+        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone")
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2"))
+        upgrades_final = list(filter(lambda co: co[1]<412, upgrades_brut))
+
+        if upgrades_final:
+            current_build = upgrades_final[0]
+            self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
+            self.better_sleep((0.9, 1.2))
+            self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
+            self.better_sleep((0.9, 1.2))
+            self.recursive_upgrade()
+            self.better_sleep((0.9, 1.2))
+        self.better_sleep((10, 15))
+        self.help_alliance()
+        self.better_sleep((0.9, 1.2))

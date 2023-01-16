@@ -14,6 +14,7 @@ from Task_daily_chest import DailyChest
 from Task_daily_vip import DailyVip
 from Task_enhanced_buff import UseEnhancedBuff
 from Task_gather_gem import GatherGem
+from Task_gather_rss import GatherRss
 from Task_heal_troop import HealTroop
 from Task_hunt_barbarians import HuntBarbarians
 from Task_produce_materials import ProduceMaterials
@@ -22,6 +23,7 @@ import numpy as np
 from pytesseract import pytesseract
 
 from Task import Task
+from Task_upgrade_city import UpgradeCity
 from Task_utils import get_class, get_name, current_time
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -44,6 +46,47 @@ class TaskRunner(Task):
 
     def task_name(self):
         return "runner"
+
+    def set_current_task(self, name):
+        names = {
+            "ClaimCampaign": "Claiming campaign rewards",
+            "CollectResource":"Collecting city rss",
+            "BuyMerchant" : "Buying merchant..",
+            "GatherRss": "Gathering Rss",
+            "GatherGem":"Gathering Gem",
+            "UseEnhancedBuff": "Enabling enhanced buffs",
+            "AllianceDonation": "Donating to alliance",
+            "HuntBarbarians":"Killing barbarians",
+            "ClearFog" : "Exploring fog",
+            "DailyVip":"Daily VIP rewards",
+            "DailyChest":"Daily Chest rewards",
+            "BarbarianFort":"Launching fort",
+            "HealTroop":"Healing troops",
+            "ProduceMaterials":"Producing materials",
+            "AutoUpgrade":"Upgrading the city.."
+        }
+        return self.set_status(names.get(name, name))
+
+    def get_current_task(self, name):
+        names = {
+            "ClaimCampaign": "Claiming campaign rewards",
+            "CollectResource": "Collecting city rss",
+            "BuyMerchant": "Buying merchant..",
+            "GatherRss": "Gathering Rss",
+            "GatherGem": "Gathering Gem",
+            "UseEnhancedBuff": "Enabling enhanced buffs",
+            "AllianceDonation": "Donating to alliance",
+            "HuntBarbarians": "Killing barbarians",
+            "ClearFog": "Exploring fog",
+            "DailyVip": "Daily VIP rewards",
+            "DailyChest": "Daily Chest rewards",
+            "BarbarianFort": "Launching fort",
+            "HealTroop": "Healing troops",
+            "ProduceMaterials": "Producing materials",
+            "AutoUpgrade": "Upgrading the city.."
+        }
+
+        return names.get(name,name)
 
     def execute_tasks(self, lib_tasks):
         co = self.adb.find_img(target="hide_quests")
@@ -106,7 +149,7 @@ class TaskRunner(Task):
         if profile.get('buy_merchant', False):
             lib_tasks.append(BuyMerchant(self))
         if profile.get('gather_rss', False):
-            lib_tasks.append(BuyMerchant(self))
+            lib_tasks.append(GatherRss(self))
         if profile.get('use_enhanced_buff', False):
             lib_tasks.append(UseEnhancedBuff(self))
         if profile.get('check_donation', False):
@@ -127,6 +170,8 @@ class TaskRunner(Task):
             lib_tasks.append(ProduceMaterials(self))
         if profile.get('claim_daily_chest', False):
             lib_tasks.append(DailyChest(self))
+        if profile.get('auto_upgrade', False):
+            lib_tasks.append(UpgradeCity(self))
         shuffle(lib_tasks)
         tasks_name = [task.task_name() for task in lib_tasks]
 
@@ -143,6 +188,7 @@ class TaskRunner(Task):
                     b = lib_tasks.index(element)
                     if a > b:
                         lib_tasks[a], lib_tasks[b] = lib_tasks[b], lib_tasks[a]
+        # print(f"{lib_tasks}")
         return lib_tasks
 
     @get_name
