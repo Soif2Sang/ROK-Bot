@@ -31,12 +31,14 @@ class AcademyResearch(Task):
 
     @get_name
     def academy_coordinates(self):
-        return uniform(740,765), uniform(250,270)
+        return uniform(760,780), uniform(270,280)
 
     @get_name
     def enter_academy(self):
-        self.click(self.academy_coordinates())
-        self.better_sleep((0.9, 1.5))
+        for _ in range(2):
+            x,y=self.academy_coordinates()
+            self.click(x,y)
+            self.better_sleep((0.9, 1.5))
         if self.adb.find_img("building_speedups") is None:
             if co:=self.adb.find_img("academy"):
                 self.click(co[0] + uniform(0,20), co[1] + uniform(0,20))
@@ -51,6 +53,9 @@ class AcademyResearch(Task):
     @get_name
     def help_build(self):
         if co := self.adb.find_img(target='help_build'):
+            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
+            self.better_sleep((0.9, 1.2))
+        if co := self.adb.find_img(target='help_build2'):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
