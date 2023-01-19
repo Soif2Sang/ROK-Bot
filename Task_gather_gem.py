@@ -691,6 +691,10 @@ class GatherGem(Task):
                                     if self.adb.find_img(target="back_normal_view", source=back_image, confidence=0.9) is not None:
                                         self.print("Bot detected a troop is going back to the city, now bypassing the sleep time..")
                                         break
+                                    if self.free_troop():
+                                        self.print("Bot detected a troop is free, now bypassing the sleep time..")
+                                        break
+
                                 scan_frequency_timer = 0
                     self.better_sleep((1, 1.895))
                     self.check_resolve()
@@ -780,6 +784,54 @@ class GatherGem(Task):
         direction()
         self.better_sleep((1, 1.25))
         return scan()
+
+    @get_name
+    def free_troop(self) -> bool:
+        """
+        :return: True if there's a empty queue
+        :return: False if queues are occupied
+        """
+        pil_image = self.adb.get_curr_device_screen_img()
+        cv_image = array(pil_image)
+        cropped_image3 = cv_image[162:179, 1210:1242]
+        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+        # cropped_image1 = cv_image[162:179, 1212:1224]
+        # cropped_image2 = cv_image[162:178, 1228:1241]
+        # cropped_image3 = cv_image[162:179, 1210:1242]
+        # cv_image1 = cv2.cvtColor(cropped_image1, cv2.COLOR_BGR2GRAY)
+        # cv_image2 = cv2.cvtColor(cropped_image2, cv2.COLOR_BGR2GRAY)
+        # cv2.imwrite("test1.png", cropped_image1)
+        # cv2.imwrite("test2.png", cropped_image2)
+        # cv2.imwrite("test3.png", cropped_image3)
+        native_text = pytesseract.image_to_string(cropped_image3,
+                                                  config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
+        # text1 = pytesseract.image_to_string(cropped_image1,
+        #                                     config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
+        # text2 = pytesseract.image_to_string(cropped_image2,
+        #                                     config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
+        # print(text0)
+        # text1 = text1.replace("\n", "")
+        # text2 = text2.replace("\n", "")
+        # print(f"Text 1 : {text1} , Text 2 : {text2}")
+        # self.set_text(f'[{current_time()}] Text 1 : {text1} , Text 2 : {text2}')
+        # print(len(text1), len(text2))
+        # logging.info(f"[{self.name}] Text 1 : {text1} , Text 2 : {text2}")
+        # logging.info(f"[{self.name}] len(text1) : {len(text1)}, len(text2) : {len(text2)}")
+        # if text1 == "" or text2 == "":
+        #     return True
+        print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
+        if "/" in native_text:
+            # list_text = text0.split("/")
+            enhanced_text = native_text.split("/")[0] + native_text.split("/")[1]
+        else:
+            enhanced_text = native_text
+        enhanced_text = enhanced_text.replace("\n", "")
+        print(f"[ {current_time()} ] [ {self.name} ] {enhanced_text =}")
+        if len(enhanced_text) < 2:
+            return True
+        if len(enhanced_text) == 2:
+            return enhanced_text[0] < enhanced_text[1]
+        # return text1 < text2 if len(text1) == 1 and len(text2) == 1 else False
 
     @get_class
     def run(self):
