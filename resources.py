@@ -1,4 +1,6 @@
 from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode,         IMREAD_COLOR, COLOR_BGR2HSV, inRange
+academy= imread('resources\\academy.png')
+academy_tech= imread('resources\\academy_tech.png')
 alliance_flag1= imread('resources\\alliance_flag1.png')
 alliance_flag2= imread('resources\\alliance_flag2.png')
 alliance_gifts_claim_button= imread('resources\\alliance_gifts_claim_button.png')
@@ -20,15 +22,18 @@ build= imread('resources\\build.png')
 builder= imread('resources\\builder.png')
 building_info_button= imread('resources\\building_info_button.png')
 building_info_button_2= imread('resources\\building_info_button_2.png')
+building_speedups= imread('resources\\building_speedups.png')
 building_title_left= imread('resources\\building_title_left.png')
 button_level= imread('resources\\button_level.png')
 buy_arrow= imread('resources\\buy_arrow.png')
 character_login_confirm= imread('resources\\character_login_confirm.png')
+character_start= imread('resources\\character_start.png')
 chest_confirm_button= imread('resources\\chest_confirm_button.png')
 chest_open_button= imread('resources\\chest_open_button.png')
 choose_right= imread('resources\\choose_right.png')
 choose_right1= imread('resources\\choose_right1.png')
 claim_daily= imread('resources\\claim_daily.png')
+claim_quest= imread('resources\\claim_quest.png')
 close_refresh_ok= imread('resources\\close_refresh_ok.png')
 close_window= imread('resources\\close_window.png')
 Commander_icon_type_Archer= imread('resources\\Commander_icon_type_Archer.png')
@@ -42,6 +47,7 @@ defeat_mail= imread('resources\\defeat_mail.png')
 deploy_march_button= imread('resources\\deploy_march_button.png')
 donate_button= imread('resources\\donate_button.png')
 download_icon= imread('resources\\download_icon.png')
+download_page= imread('resources\\download_page.png')
 ebony_icon= imread('resources\\ebony_icon.png')
 explore_button= imread('resources\\explore_button.png')
 explore_button2= imread('resources\\explore_button2.png')
@@ -111,7 +117,11 @@ healing_scroll= imread('resources\\healing_scroll.png')
 heal_button= imread('resources\\heal_button.png')
 heal_icon= imread('resources\\heal_icon.png')
 help= imread('resources\\help.png')
+help_alliance= imread('resources\\help_alliance.png')
+help_build= imread('resources\\help_build.png')
+help_build2= imread('resources\\help_build2.png')
 hide_quests= imread('resources\\hide_quests.png')
+hire_constructor= imread('resources\\hire_constructor.png')
 hold_icon= imread('resources\\hold_icon.png')
 hold_icon_small= imread('resources\\hold_icon_small.png')
 hold_posistion_checked= imread('resources\\hold_posistion_checked.png')
@@ -119,6 +129,7 @@ hold_position_unchecked= imread('resources\\hold_position_unchecked.png')
 home_button= imread('resources\\home_button.png')
 home_button_0= imread('resources\\home_button_0.png')
 hut_hammer= imread('resources\\hut_hammer.png')
+inbox= imread('resources\\inbox.png')
 increasing_button= imread('resources\\increasing_button.png')
 investigate_button= imread('resources\\investigate_button.png')
 kingdom_buff= imread('resources\\kingdom_buff.png')
@@ -158,7 +169,6 @@ preset_2= imread('resources\\preset_2.png')
 preset_3= imread('resources\\preset_3.png')
 preset_4= imread('resources\\preset_4.png')
 preset_5= imread('resources\\preset_5.png')
-quests_claim_button= imread('resources\\quests_claim_button.png')
 rally_radius= imread('resources\\rally_radius.png')
 reconnect= imread('resources\\reconnect.png')
 red_icon= imread('resources\\red_icon.png')
@@ -194,6 +204,7 @@ t4_badge= imread('resources\\t4_badge.png')
 t5_badge= imread('resources\\t5_badge.png')
 tavern_button= imread('resources\\tavern_button.png')
 tech= imread('resources\\tech.png')
+tech_speedup= imread('resources\\tech_speedup.png')
 training_upgrade_button= imread('resources\\training_upgrade_button.png')
 train_button= imread('resources\\train_button.png')
 troops_march_button= imread('resources\\troops_march_button.png')
@@ -203,9 +214,13 @@ troop_walking= imread('resources\\troop_walking.png')
 unselect_save_blue_one= imread('resources\\unselect_save_blue_one.png')
 upgrade= imread('resources\\upgrade.png')
 upgrade_age= imread('resources\\upgrade_age.png')
+upgrade_build= imread('resources\\upgrade_build.png')
 upgrade_button= imread('resources\\upgrade_button.png')
 upgrade_go= imread('resources\\upgrade_go.png')
+upgrade_stone= imread('resources\\upgrade_stone.png')
+upgrade_stone2= imread('resources\\upgrade_stone2.png')
 use_ap= imread('resources\\use_ap.png')
+validate_build= imread('resources\\validate_build.png')
 validate_building= imread('resources\\validate_building.png')
 verification_button= imread('resources\\verification_button.png')
 verification_chest1= imread('resources\\verification_chest1.png')
@@ -223,6 +238,10 @@ yellow_icon= imread('resources\\yellow_icon.png')
 yellow_icon1= imread('resources\\yellow_icon1.png')
 
 def get_file_name(file_name):
+    if file_name == "academy":
+        return academy
+    if file_name == "academy_tech":
+        return academy_tech
     if file_name == "alliance_flag1":
         return alliance_flag1
     if file_name == "alliance_flag2":
@@ -265,6 +284,8 @@ def get_file_name(file_name):
         return building_info_button
     if file_name == "building_info_button_2":
         return building_info_button_2
+    if file_name == "building_speedups":
+        return building_speedups
     if file_name == "building_title_left":
         return building_title_left
     if file_name == "button_level":
@@ -273,6 +294,8 @@ def get_file_name(file_name):
         return buy_arrow
     if file_name == "character_login_confirm":
         return character_login_confirm
+    if file_name == "character_start":
+        return character_start
     if file_name == "chest_confirm_button":
         return chest_confirm_button
     if file_name == "chest_open_button":
@@ -283,6 +306,8 @@ def get_file_name(file_name):
         return choose_right1
     if file_name == "claim_daily":
         return claim_daily
+    if file_name == "claim_quest":
+        return claim_quest
     if file_name == "close_refresh_ok":
         return close_refresh_ok
     if file_name == "close_window":
@@ -309,6 +334,8 @@ def get_file_name(file_name):
         return donate_button
     if file_name == "download_icon":
         return download_icon
+    if file_name == "download_page":
+        return download_page
     if file_name == "ebony_icon":
         return ebony_icon
     if file_name == "explore_button":
@@ -447,8 +474,16 @@ def get_file_name(file_name):
         return heal_icon
     if file_name == "help":
         return help
+    if file_name == "help_alliance":
+        return help_alliance
+    if file_name == "help_build":
+        return help_build
+    if file_name == "help_build2":
+        return help_build2
     if file_name == "hide_quests":
         return hide_quests
+    if file_name == "hire_constructor":
+        return hire_constructor
     if file_name == "hold_icon":
         return hold_icon
     if file_name == "hold_icon_small":
@@ -463,6 +498,8 @@ def get_file_name(file_name):
         return home_button_0
     if file_name == "hut_hammer":
         return hut_hammer
+    if file_name == "inbox":
+        return inbox
     if file_name == "increasing_button":
         return increasing_button
     if file_name == "investigate_button":
@@ -541,8 +578,6 @@ def get_file_name(file_name):
         return preset_4
     if file_name == "preset_5":
         return preset_5
-    if file_name == "quests_claim_button":
-        return quests_claim_button
     if file_name == "rally_radius":
         return rally_radius
     if file_name == "reconnect":
@@ -613,6 +648,8 @@ def get_file_name(file_name):
         return tavern_button
     if file_name == "tech":
         return tech
+    if file_name == "tech_speedup":
+        return tech_speedup
     if file_name == "training_upgrade_button":
         return training_upgrade_button
     if file_name == "train_button":
@@ -631,12 +668,20 @@ def get_file_name(file_name):
         return upgrade
     if file_name == "upgrade_age":
         return upgrade_age
+    if file_name == "upgrade_build":
+        return upgrade_build
     if file_name == "upgrade_button":
         return upgrade_button
     if file_name == "upgrade_go":
         return upgrade_go
+    if file_name == "upgrade_stone":
+        return upgrade_stone
+    if file_name == "upgrade_stone2":
+        return upgrade_stone2
     if file_name == "use_ap":
         return use_ap
+    if file_name == "validate_build":
+        return validate_build
     if file_name == "validate_building":
         return validate_building
     if file_name == "verification_button":
