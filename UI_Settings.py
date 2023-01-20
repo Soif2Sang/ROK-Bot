@@ -478,6 +478,8 @@ class Settings:
                 nb_switch = create_switch(root, "Claim VIP Chests", "claim_daily_vip", nb_switch, i)
     
                 nb_switch = create_switch(root, "Claim Daily Chests", "claim_daily_chest", nb_switch, i)
+
+                nb_switch = create_switch(root, "Claim Daily Quests", "claim_daily_quests", nb_switch, i)
     
                 nb_switch = create_switch(root, "Claim Campaign Rewards", "claim_campaign", nb_switch, i)
     

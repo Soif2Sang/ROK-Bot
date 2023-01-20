@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, date
 from tkinter import *
 import UI_Main
@@ -112,31 +113,30 @@ def main():
             diff = future - today
             return UI_Main.Main(diff.days)
         except Exception as e:
-            print(e)
-            # print("Problem occured while trying to connect")
-            exit(1)
+            # print(e)
+            print("Problem occured while trying to connect")
+            sys.exit(1)
 
     root = Tk()
     root.resizable(False, False)
     root.title('GEM 1.0')
     root.iconbitmap('./Item_Gem.ico')
-
     usernameL = customtkinter.CTkLabel(root, text="Username : ")
     usernameE = customtkinter.CTkEntry(root)
-    usernameL.grid(row=0, column=0)
-    usernameE.grid(row=0, column=1, pady=(5, 0))
+    usernameL.grid(row=0, column=0, sticky='ew',padx=(40, 0),pady=(20,0))
+    usernameE.grid(row=0, column=1,padx=(0, 40),pady=(20,0), sticky='ew')
 
     passwordL = customtkinter.CTkLabel(root, text="Password : ")
     passwordE = customtkinter.CTkEntry(root)
-    passwordL.grid(row=1, column=0)
-    passwordE.grid(row=1, column=1)
+    passwordL.grid(row=1, column=0, sticky='ew',padx=(40, 5))
+    passwordE.grid(row=1, column=1, sticky='ew',padx=(0, 40))
 
     def test():
         request_acess(usernameE.get(), passwordE.get())
 
     login_button = customtkinter.CTkButton(root, text="Login", command=test, corner_radius=4, fg_color="white",
                                            border_color="grey", border_width=1, text_color="black")
-    login_button.grid(row=3, column=0, sticky='nswe', padx=5, pady=5, columnspan=2)
+    login_button.grid(row=3, column=0, sticky='nswe', padx=60, columnspan=2,pady=(5,20))
 
     #
     # register_button = Button(root, text="Register", command=login)
@@ -258,7 +258,7 @@ def request_acess(username, password):
             return main()
     except Exception:
         print("Problem occured while trying to connect")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
@@ -290,6 +290,9 @@ if __name__ == "__main__":
         data = json.load(config_file)
     if not find_window("RoK Bot -"):
         if "user" in data:
-            request_acess(data['user']["username"], data['user']["password"])
+            if data["user"]["username"]!="":
+                request_acess(data['user']["username"], data['user']["password"])
+            else:
+                main()
         else:
             main()
