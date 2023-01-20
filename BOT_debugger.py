@@ -3,7 +3,10 @@ from threading import Thread
 import customtkinter
 
 from Task import Task
+from Task_academy_research import AcademyResearch
+from Task_claim_daily_quests import DailyQuests
 from Task_runner import TaskRunner
+from Task_upgrade_city import UpgradeCity
 from bot_adb import *
 from Tasks_lib import *
 #from rkp import *
@@ -24,6 +27,9 @@ class Bot():
         #self.task = Tasks(self.adb)
         self.main_task.set_sel(str(adb.number))
         self.task = TaskRunner(self.main_task,self.main_task.frame)
+        self.upgrade = UpgradeCity(self.main_task)
+        self.research = AcademyResearch(self.main_task)
+        self.quests = DailyQuests(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -171,10 +177,10 @@ def create_instance(number:int, master):
     return bot
     while 0:
         while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
-            bot.task.dynamique_city_upgrade()
+            bot.upgrade.run()
         else:
-            sleep(1)
-            bot.task.help_alliance()
+            sleep(30)
+            bot.upgrade.help_alliance()
     bot.task.dynamique_city_upgrade()
     bot.task.kill_emulator()
 
@@ -183,22 +189,113 @@ def upgrade_instance(number:int, master):
     bot = Bot(adb)
     bot.adb.connect_to_device()
     bot.task.print = lambda txt: print(txt)
+    bot.task.set_text = lambda txt: print(txt)
+    bot.task.status = lambda txt: print(txt)
+    bot.task.script_pause = lambda: print("")
+    bot.upgrade.script_pause = lambda: print("")
+    bot.upgrade.print = lambda txt: print(txt)
+    bot.upgrade.set_text = lambda txt: print(txt)
+    bot.upgrade.status = lambda txt: print(txt)
+    bot.upgrade.script_pause = lambda: print("")
+    bot.quests = DailyQuests(bot.main_task)
+    bot.quests.script_pause = lambda: print("")
+    bot.quests.print = lambda txt: print(txt)
+    bot.quests.set_text = lambda txt: print(txt)
+    bot.quests.status = lambda txt: print(txt)
+    bot.quests.script_pause = lambda: print("")
+
+
+
     bot.task.current_profile="1"
+    # master = customtkinter.CTk()
     frame = customtkinter.CTkFrame(master)
     frame.pr_tasks_button = customtkinter.CTkButton(master)
     frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
+    frame.update_label2 = lambda x,_: print(x)
     bot.task.frame = frame
     # bot.task.setup_view()
     # bot.task.better_sleep((0.9, 1.2))
     while 1:
-        while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
-            bot.task.dynamique_city_upgrade()
+        while bot.upgrade.free_worker():
+            bot.upgrade.run()
         else:
             sleep(60)
-            bot.task.help_alliance()
+            bot.upgrade.help_alliance()
+            bot.upgrade.help_build()
+            bot.quests.run()
 
+
+def quest_instance(number:int, master):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.set_text = lambda txt: print(txt)
+    bot.task.status = lambda txt: print(txt)
+    bot.task.script_pause = lambda: print("")
+    bot.upgrade.script_pause = lambda: print("")
+    bot.upgrade.print = lambda txt: print(txt)
+    bot.upgrade.set_text = lambda txt: print(txt)
+    bot.upgrade.status = lambda txt: print(txt)
+    bot.upgrade.script_pause = lambda: print("")
+    bot.quests = DailyQuests(bot.main_task)
+    bot.quests.script_pause = lambda: print("")
+    bot.quests.print = lambda txt: print(txt)
+    bot.quests.set_text = lambda txt: print(txt)
+    bot.quests.status = lambda txt: print(txt)
+    bot.quests.script_pause = lambda: print("")
+
+
+
+    bot.task.current_profile="1"
+    # master = customtkinter.CTk()
+    frame = customtkinter.CTkFrame(master)
+    frame.pr_tasks_button = customtkinter.CTkButton(master)
+    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame.adb = bot.adb
+    frame.pause = False
+    frame.stop = False
+    frame.update_label2 = lambda x,_: print(x)
+    bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    print(bot.quests.run())
+
+
+def research_instance(number:int, master):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.set_text = lambda txt: print(txt)
+    bot.task.status = lambda txt: print(txt)
+    bot.task.script_pause = lambda: 5
+    bot.upgrade.script_pause = lambda: 5
+    bot.upgrade.print = lambda txt: print(txt)
+    bot.upgrade.set_text = lambda txt: print(txt)
+    bot.upgrade.status = lambda txt: print(txt)
+    bot.upgrade.script_pause = lambda: 5
+    bot.research.script_pause = lambda: 5
+    bot.research.print = lambda txt: print(txt)
+    bot.research.set_text = lambda txt: print(txt)
+    bot.research.status = lambda txt: print(txt)
+    bot.research.script_pause = 5
+    bot.task.current_profile="1"
+    # master = customtkinter.CTk()
+    frame = customtkinter.CTkFrame(master)
+    frame.pr_tasks_button = customtkinter.CTkButton(master)
+    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame.adb = bot.adb
+    frame.pause = False
+    frame.stop = False
+    frame.update_label2 = lambda x,_: print(x)
+    bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    bot.research.run()
 
 def stop_start_emulators(master):
     instances = [
@@ -224,38 +321,11 @@ def stop_start_emulators(master):
 
 
 if __name__ == "__main__":
-    adb = Adb(1)
-    bot = Bot(adb)
-    bot.adb.connect_to_device()
-    bot.task.print = lambda txt: print(txt)
-    bot.task.set_text = lambda txt: print(txt)
-    bot.task.status = lambda txt: print(txt)
-
-    bot.task.current_profile="1"
     master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
-    frame.adb = bot.adb
-    frame.pause = False
-    frame.stop = False
-    frame.update_label2 = lambda x,_: print(x)
-    bot.task.frame = frame
-
-    print(bot.task.routine_scheduled())
-    # bot.task.setup_view()
-    # bot.task.better_sleep((0.9, 1.2))
-    #
-    # while True:
-    #     while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
-    #         bot.task.dynamique_city_upgrade()
-    #     else:
-    #         sleep(1)
-    #         bot.task.help_alliance()
-    # master = customtkinter.CTk()
-    # # stop_start_emulators(master)
-    # Thread(target=lambda:upgrade_instance(3,master)).start()
-    # Thread(target=lambda: upgrade_instance(4, master)).start()
-    # Thread(target=lambda: upgrade_instance(5, master)).start()
-    # master.mainloop()
+    Thread(target=lambda: upgrade_instance(3,master)).start()
+    Thread(target=lambda: upgrade_instance(4, master)).start()
+    Thread(target=lambda: upgrade_instance(5, master)).start()
+    Thread(target=lambda: upgrade_instance(6, master)).start()
+    Thread(target=lambda: upgrade_instance(7, master)).start()
+    master.mainloop()
 
