@@ -105,10 +105,9 @@ class Adb:
         return self.get_device().screencap()
 
     def get_curr_device_screen_img(self):
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
-
         try:
+            logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
+                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
             device = self.get_device()
             if device is None:
                 self.connect_to_device()
@@ -117,6 +116,7 @@ class Adb:
             return Image.open(output)
         except:
             logging.info(f"[{self.name}] FUNCTION EXCEPTION : get_curr_device_screen_img")
+            sleep(1)
             return self.get_curr_device_screen_img()
 
     def get_cv2_img(self):
@@ -246,6 +246,7 @@ class Adb:
 
         min_val, max_val, min_loc, max_loc = minMaxLoc(result)
         min_thresh = confidence
+        # print(min_thresh>confidence)
         location = where(result >= min_thresh)
         location = list(zip(*location[::-1]))
         # print(location)
