@@ -249,6 +249,7 @@ class Main:
                     'use_enhanced_buff': False,
                     'gather_rss': False,
                     'buy_merchant': False,
+                    'claim_daily_quests' : False,
                     'collect_ressource': False,
                     'defeat_barbarians': False,
                     'barbarians_level': 25,
@@ -294,21 +295,14 @@ class Main:
         default_dic['schedules'][1]['enabled']= True
         if str(sel[0]) not in data:
             data[str(sel[0])] = default_dic
-            # with open('..\\user_settings.json', 'w') as outfile:
-            #     json.dump(data, outfile)
         else:
             for key in default_dic:
-                # print(key)
                 if key not in data[str(sel[0])]:
-                    # print(f"{key} is not in data")
                     data[str(sel[0])][key] = default_dic[key]
 
             for key in default_dic['schedules'][1]:
                 for i in range(1, 4):
                     if key not in data[str(sel[0])]['schedules'][str(i)]:
-                        # print(key)
-                        # print(data[str(sel[0])]['schedules'][str(i)])
-                        # print(default_dic['schedules'][str(1)])
                         data[str(sel[0])]['schedules'][str(i)][key] = default_dic['schedules'][1][key]
 
         data[str(sel[0])]['name'] = dico_instance[str(sel[0])]['name']
