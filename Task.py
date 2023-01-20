@@ -426,7 +426,8 @@ class Task:
         while condition:
             if self.adb.find_img(target="menu_button", confidence=0.8) or \
                     self.adb.find_img(target="map_icon", confidence=0.8) or \
-                    self.adb.find_img(target="hammer", confidence=0.8):
+                    self.adb.find_img(target="hammer", confidence=0.8) or \
+                    self.adb.find_img(target="inbox", confidence=0.8):
                 condition = False
             co = self.adb.find_img(target="mightiest_gov", confidence=0.8)
             if co is not None:
@@ -451,6 +452,7 @@ class Task:
         :exemple: leave python would kill the process
         """
         if not pid_exists(self.ppid):
+            self.print("pPid not found, killing the thread")
             sys.exit(0)
 
     @get_name
