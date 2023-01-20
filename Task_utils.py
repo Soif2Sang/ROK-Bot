@@ -29,9 +29,9 @@ def get_time(func):
         if func.__name__ == "check_resolve":
             print(f'[ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
-            with open(f"{self.name}_logs.txt", "w+") as logger:
+            with open(f"{self.name}_logs.txt", "a+") as logger:
                 # logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
-                logger.write(f"[{self.name}] Verification made in {(end_time - start_time):0.1f}")
+                logger.write(f"[ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
         return func_output
 
     return wrapper
@@ -58,7 +58,7 @@ def get_name(func):
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
         with open(f"{self.name}_logs.txt", "a+") as logger:
-            logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+            logger.write(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
         print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         func_output = func(self, *args, **kwargs)
         return func_output
@@ -72,7 +72,7 @@ def get_class(func):
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
         with open(f"{self.name}_logs.txt", "a+") as logger:
-            logger.write(f"[ {self.name} ] FUNCTION : {self.task_name()}")
+            logger.write(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
         # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
         print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)

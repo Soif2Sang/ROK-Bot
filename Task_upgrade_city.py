@@ -88,6 +88,11 @@ class UpgradeCity(Task):
             else:
                 self.click(uniform(916, 1050), uniform(530, 560))
                 self.better_sleep((1.7, 2.2))
+                if (co:=self.adb.find_img(target="hire_constructor")) is not None:
+                    self.click(co[0] + uniform(0,110), co[1] + uniform(0,40))
+                    self.better_sleep((1.7, 2.2))
+                    self.click(uniform(916, 1050), uniform(530, 560))
+                    self.better_sleep((1.7, 2.2))
                 while co := self.adb.find_img(target="close_window"):
                     self.click(co[0] + uniform(10, 15), co[1] + uniform(10, 15))
                     self.better_sleep((1.7, 2.2))
@@ -154,13 +159,22 @@ class UpgradeCity(Task):
         self.help_alliance()
         self.better_sleep((0.9, 1.2))
 
+    @get_name
+    def free_worker(self):
+        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone', confidence=50) = }")
+        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone2', confidence=50) = }")
+        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone3', confidence=50) = }")
+        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone",confidence=0.92)
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2",confidence=0.92))
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.92))
+        upgrades_final = list(filter(lambda co: co[1]<500, upgrades_brut))
+        # print(upgrades_final)
+        return upgrades_final
+
+
     @get_class
     def run(self):
-        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone")
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2"))
-        upgrades_final = list(filter(lambda co: co[1]<412, upgrades_brut))
-
-        if upgrades_final:
+        if (upgrades_final:=self.free_worker()):
             current_build = upgrades_final[0]
             self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
             self.better_sleep((0.9, 1.2))
