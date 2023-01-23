@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 import traceback
+from datetime import date
 from random import uniform, randint
 from time import sleep
 
@@ -37,6 +38,7 @@ class Task:
     def set_status(self, text):
         self.frame.update_label2(self.sel, text)
 
+    @get_name
     def update_data(self):
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
@@ -48,15 +50,10 @@ class Task:
         self.name = self.data.get(self.sel).get('name', "Name not found")
         # print(self.name)
         self.resource_type = self.data[str(self.sel)]['schedules'][self.current_profile]["First"]
-        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
 
     @get_name
     def print(self, text: str) -> None:
-        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         # print(f'[ {current_time()} ] [ {self.name} ] {text}')
-        # logging.info(f"[{self.name}] {text}")
         self.set_text(f"[{current_time()}] {text}")
 
     @get_name
@@ -152,12 +149,8 @@ class Task:
 
     @get_name
     def run_game(self, count=0) -> None:
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a", )
         # self.adb.connect_to_device()
         a = self.adb.is_game_alive()
-        if a:
-            self.print(f"Looks like game is running ")
         if not a:
             self.print(f"Looks like game is not running ")
             co = self.adb.find_img(target="rokicon", confidence=0.8)
@@ -175,9 +168,8 @@ class Task:
                     if self.language is None or self.language == "eng":
                         for _ in range(2):
                             string = self.adb.get_device().shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
-                            # print(f"{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }")
-                            logging.info(
-                                f"[{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }")
+                            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+                                logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 break
                             if 'Activity not started' not in str(string):
@@ -190,9 +182,9 @@ class Task:
                     if self.language is None or self.language == "vn":
                         for i in range(2):
                             string = self.adb.get_device().shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
-                            # print(f"{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }")
-                            logging.info(
-                                f"[{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }")
+                            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+                                logger.write(
+                                    f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
@@ -207,9 +199,9 @@ class Task:
                         for i in range(2):
                             string = self.adb.get_device().shell(
                                 "am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity")
-                            # print(f"{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }")
-                            logging.info(
-                                f"[{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }")
+                            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+                                logger.write(
+                                    f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
@@ -230,7 +222,6 @@ class Task:
         #
         # print(f"[{self.name} ] Game is active.")
         # self.set_text(f'[{current_time()}]  Game is active.')
-        # logging.info(f"[{self.name}] Game is active.")
 
     @get_name
     def better_sleep(self, limits: tuple[float, float]):
@@ -248,9 +239,7 @@ class Task:
         """
         Resolve verification
         """
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
-        print(f"[ {current_time()} ] [ {self.name} ] Resolve count = {compteur}")
+        self.print(f"Resolve count = {compteur}")
         if compteur > 5:
             self.print("Error in resolving the captcha, human action needed.")
             self.status("Error")
@@ -317,7 +306,9 @@ class Task:
         except Exception as e:
             traceback.print_exc()
             print(f"[ {current_time()} ] [ {self.name} ] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
-            logging.info(f"[{self.name}] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
+            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+                logger.write(
+                    f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
             self.click(uniform(507, 533), uniform(573, 599))
             self.print("Refreshing the captcha.")
             self.better_sleep((4, 7))
@@ -327,8 +318,7 @@ class Task:
         said = False
         while self.frame.pause and not self.frame.pr_tasks_button.cget("fg_color") == "white":
             if not said:
-                print(f"[ {current_time()} ] [ {self.name} ] Script is paused.")
-                logging.info(f"[{self.name}] Script is paused.")
+                print(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] Script is paused.")
                 self.set_text(f"[{current_time()}] Script is paused.")
                 said = True
                 # self.set_text("Script paused.")
@@ -435,6 +425,7 @@ class Task:
                 condition = False
             self.better_sleep((10, 15))
             self.check_reconnect()
+            self.check_log_back()
 
     @get_name
     def leave_kd_buff(self, Source=None):
@@ -507,10 +498,12 @@ class Task:
                 self.print("Verification detected")
             captchaId = self.resolve_captcha()
             self.better_sleep((3, 4))
-            resolved = self.report_feedback(captchaId, resolved, solver)
+            if self.adb.find_img(target="close_refresh_ok", confidence=0.75) is None:
+                resolved = True
             if i == 5:
                 self.print("Error, unable to resolve the captcha for 5 times in a row !")
                 return False
+            self.report_feedback(captchaId, resolved, solver)
             i = i + 1
         return resolved
 
@@ -542,18 +535,11 @@ class Task:
         """
         Send adb signal to leave application
         """
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO,
-                            format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.print(f"Leaving the game..")
-
-        if not force:
-            self.adb.home_button()
-        else:
-            self.adb.get_device().shell("am force-stop com.lilithgame.roc.gp")
-            self.adb.get_device().shell("am force-stop com.rok.gp.vn")
-            self.adb.get_device().shell("am force-stop com.lilithgame.rok.gpkr")
-            self.adb.get_device().shell("am force-stop com.lilithgames.rok.gpkr")
+        self.adb.get_device().shell("input keyevent KEYCODE_APP_SWITCH")
+        sleep(2)
+        self.click(920,62)
+        sleep(2)
 
     @get_name
     def kill_game(self) -> None:
@@ -637,9 +623,6 @@ class Task:
 
     # @get_name
     # def get_first_character(self) -> tuple[float, float]:
-    #     logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO,
-    #                         format="%(asctime)s %(message)s",
-    #                         datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
     #     self.print("Switching Character")
     #     self.set_status(f"Switching Character")
     #     x, y = uniform(15, 80), uniform(10, 60)
