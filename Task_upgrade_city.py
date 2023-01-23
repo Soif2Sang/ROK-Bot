@@ -88,7 +88,7 @@ class UpgradeCity(Task):
             else:
                 self.click(uniform(916, 1050), uniform(530, 560))
                 self.better_sleep((1.7, 2.2))
-                if (co:=self.adb.find_img(target="hire_constructor")) is not None:
+                if (co:=self.adb.find_img(target="hire_constructor")) is not None or (co:=self.adb.find_img(target="hire_constructor2")):
                     self.click(co[0] + uniform(0,110), co[1] + uniform(0,40))
                     self.better_sleep((1.7, 2.2))
                     self.click(uniform(916, 1050), uniform(530, 560))

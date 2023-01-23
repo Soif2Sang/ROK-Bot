@@ -1,5 +1,7 @@
 
 import json
+import multiprocessing
+import subprocess
 import traceback
 from datetime import datetime, timedelta
 from random import uniform, randint, shuffle
@@ -24,7 +26,8 @@ from pytesseract import pytesseract
 
 from Task import Task
 from Task_upgrade_city import UpgradeCity
-from Task_utils import get_class, get_name, current_time
+from Task_utils import get_class, get_name, current_time, get_window_pid
+from bot_adb import Adb
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -134,7 +137,7 @@ class TaskRunner(Task):
                 self.check_resolve()
                 self.better_sleep((0.795, 1.2))
 
-    def get_available_task(self, profile=None):
+    def get_available_task(self, profile:str =None):
         self.data = self.update_data()
         if profile is None:
             profile = self.data.get(self.sel)
@@ -426,3 +429,112 @@ class TaskRunner(Task):
 
         self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.")
         return
+
+    @get_name
+    def start_emulator(self, emulator:str):
+        with open('path.json') as config_file: path = json.load(config_file)
+        cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
+        self.print(f'Executing {cmd}')
+        process = multiprocessing.Process(target=subprocess.Popen, args=(cmd,))
+        process.start()
+
+        print(f'Bot will wait 1 min from now.')
+        sleep(60)
+
+
+    @get_name
+    def upgrade_all_accounts(self):
+        print("starting")
+        self.set_status = lambda text: print(text)
+        self.set_text = lambda text: print(text)
+        self.set_sel("0")
+        self.adb.connect_to_device()
+        self.data = self.update_data()
+
+        i=0
+        loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
+        for i in range(loop_task):
+            loop_time = time()
+            for emulator in sorted(self.data):
+                if emulator!="user":
+                    self.set_sel(emulator)
+                    self.start_emulator(emulator)
+                    self.print("Changing adb..")
+                    self.adb = Adb(int(emulator))
+                    self.print("Connecting to the emulator..")
+                    self.adb.connect_to_device()
+
+                    self.run_game()
+                    self.check_log_back()
+                    self.check_reconnect()
+                    self.leave_kd_buff()
+                    self.check_mge()
+                    self.check_resolve()
+                    # First character
+                    self.current_profile = "1"
+                    self.execute_tasks(self.get_available_task(self.current_profile))
+                    self.better_sleep((2.2, 4))
+                    city_upgrade = UpgradeCity(self)
+                    city_upgrade.setup_view()
+
+                    sleep(5)
+
+                    city_upgrade.run()
+
+
+                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
+                                                                                              False):
+
+
+                        co_first = self.get_first_character()
+                        boolean = True
+                        self.wait_until_connected()
+
+                        self.run_game()
+                        # Characters remaining
+                        nb_characters = 2
+                        while boolean:
+                            self.print(f"---- Character n°{nb_characters} ----".center(60))
+                            self.run_game()
+                            self.check_resolve()
+                            self.check_mge()
+
+                            self.execute_tasks(self.get_available_task(self.current_profile))
+                            self.better_sleep((2.2, 4))
+
+                            city_upgrade = UpgradeCity(self)
+                            city_upgrade.setup_view()
+
+                            sleep(5)
+
+                            city_upgrade.run()
+                            nb_characters += 1
+                            boolean = self.change_character_param(co_first, nb_characters)
+                            self.wait_until_connected()
+
+                    self.pid = get_window_pid(self.adb.name)
+                    cmd = f"taskkill /PID {self.pid} /F"
+                    print(f'[ {current_time()} ] [ {self.name} ] Executing {cmd}')
+                    subprocess.Popen(cmd)
+                    self.print("Shutdown the emulator, waiting for 15seconds")
+                    sleep(15)
+
+            if self.data.get("0").get("loop_task"):
+                ttw1, ttw2 = self.data.get("0").get("time_to_wait_loop1", 60), self.data.get("0").get(
+                    "time_to_wait_loop2", 90)
+                self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
+                if ttw1 > ttw2:
+                    ttw1, ttw2 = ttw2, ttw1
+                time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
+                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
+                self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
+                if self.data.get("0").get("leave_game_loop", False):
+                    if time_before_redo_tasks < 600:
+                        self.leave_game(force=True)
+                    else:
+                        self.leave_game(force=False)
+
+                for _ in range(time_before_redo_tasks):
+                    self.script_pause()
+                    sleep(1)
+
