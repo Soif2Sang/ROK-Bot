@@ -361,7 +361,7 @@ class GatherGem(Task):
         """
 
         self.print("Trying to send new troop..")
-        print(f"[ {current_time()} ] [ {self.name} ] Send new troop count : {deadstop}")
+        self.print(f"Send new troop count : {deadstop}")
         if deadstop == 5:
             self.click(uniform(700, 800), uniform(300, 500))
             self.better_sleep((1.325, 1.795))
