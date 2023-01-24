@@ -14,7 +14,7 @@ class UpgradeCity(Task):
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -161,14 +161,10 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone', confidence=50) = }")
-        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone2', confidence=50) = }")
-        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone3', confidence=50) = }")
         upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone",confidence=0.92)
         upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2",confidence=0.92))
         upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.92))
-        upgrades_final = list(filter(lambda co: co[1]<500, upgrades_brut))
-        # print(upgrades_final)
+        upgrades_final = list(filter(lambda co: co[1]<480, upgrades_brut))
         return upgrades_final
 
 

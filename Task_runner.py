@@ -34,12 +34,11 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class TaskRunner(Task):
     def __init__(self, MainTask:Task, frame):
         super().__init__(frame)
-        print("TaskRunner hehe")
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -358,6 +357,7 @@ class TaskRunner(Task):
 
     @get_name
     def routine_scheduled(self):
+        # self.start_emulator()
         print("starting")
         self.adb.connect_to_device()
         self.data = self.update_data()

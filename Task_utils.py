@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from functools import wraps
 from time import perf_counter
-
+from datetime import date
 import win32gui
 import win32process
 from PIL import Image
@@ -27,11 +27,11 @@ def get_time(func):
         end_time = perf_counter()
 
         if func.__name__ == "check_resolve":
-            print(f'[ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
+            print(f'[ {date.today()} ] [ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
-            with open(f"{self.name}_logs.txt", "a+") as logger:
+            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
                 # logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
-                logger.write(f"[ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
+                logger.write(f"[ {date.today()} ] [ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
         return func_output
 
     return wrapper
@@ -57,9 +57,9 @@ def get_name(func):
         # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        with open(f"{self.name}_logs.txt", "a+") as logger:
-            logger.write(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
-        print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+        with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+            logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
+        print(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         func_output = func(self, *args, **kwargs)
         return func_output
 
@@ -71,10 +71,10 @@ def get_class(func):
         # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        with open(f"{self.name}_logs.txt", "a+") as logger:
-            logger.write(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
+        with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+            logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
         # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
-        print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
+        print(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)
         return func_output
 

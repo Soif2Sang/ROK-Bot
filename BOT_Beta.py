@@ -113,7 +113,7 @@ def main():
             diff = future - today
             return UI_Main.Main(diff.days)
         except Exception as e:
-            # print(e)
+            print(e)
             print("Problem occured while trying to connect")
             sys.exit(1)
 
