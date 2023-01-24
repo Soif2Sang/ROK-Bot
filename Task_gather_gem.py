@@ -29,7 +29,7 @@ class GatherGem(Task):
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -675,12 +675,12 @@ class GatherGem(Task):
 
                         for i in range(scan_frequency):
                             self.script_pause()
-                            if self.check_log_back():
-                                self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
-                                return self.run()
                             sleep(1)
                             scan_frequency_timer += 1
                             if scan_frequency_timer >= 20:
+                                if self.check_log_back():
+                                    self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
+                                    return self.run()
                                 self.run_game()
                                 timer_image = self.adb.get_cv2_img()
                                 cross_image = timer_image[240:490, 490:790]

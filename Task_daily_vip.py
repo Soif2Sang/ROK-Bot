@@ -19,7 +19,7 @@ class DailyVip(Task):
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
