@@ -120,7 +120,7 @@ class Main:
         # Set the selection background color to green.
         s.map("Custom.Treeview", background=[("selected", "#a7a7a7")])
         s.configure('Treeview', rowheight=30)
-        self.tree_view = ttk.Treeview(self.root, columns=[1, 2, 3], height=5, show="headings",style="Custom.Treeview")
+        self.tree_view = ttk.Treeview(self.root, columns=[1, 2, 3], height=8, show="headings",style="Custom.Treeview")
         self.tree_view.column(1, width=30, anchor=CENTER)
         self.tree_view.column(2, width=120, anchor=CENTER)
         self.tree_view.column(3, width=160, anchor=W)
@@ -157,23 +157,23 @@ class Main:
         # width = self.root.winfo_width()
         # height = self.root.winfo_height()
         # window.geometry(f"{width}x{height}")
-        def quit_window(icon, item):
-            icon.stop()
-            self.root.destroy()
-
-        # Define a function to show the window again
-        def show_window(icon, item):
-            icon.stop()
-            self.root.after(0, self.root.deiconify())
-
-        def hide_window():
-            self.root.withdraw()
-            image = Image.open("Item_Gem.ico")
-            menu = (item(text='Open', action=show_window, default=True, visible=False),
-                    item(text='Open', action=show_window),
-                    item(text='Quit',  action=quit_window))
-            icon = pystray.Icon("name", image, "Rise of Kingdom Bot", menu)
-            icon.run()
+        # def quit_window(icon, item):
+        #     icon.stop()
+        #     self.root.destroy()
+        #
+        # # Define a function to show the window again
+        # def show_window(icon, item):
+        #     icon.stop()
+        #     self.root.after(0, self.root.deiconify())
+        #
+        # def hide_window():
+        #     self.root.withdraw()
+        #     image = Image.open("Item_Gem.ico")
+        #     menu = (item(text='Open', action=show_window, default=True, visible=False),
+        #             item(text='Open', action=show_window),
+        #             item(text='Quit',  action=quit_window))
+        #     icon = pystray.Icon("name", image, "Rise of Kingdom Bot", menu)
+        #     icon.run()
 
         # def quit():
         #     sys.exit(1)
@@ -438,6 +438,23 @@ class Main:
         # print(instances_available)
         return instances_available
 
+    def get_list_instances(self):
+        names = self.get_names(self.get_dic_instances())
+        # print(f"{names = }")
+        # print(names)
+        instances_available = []
+        # for win in pyautogui.getAllWindows():
+        #     for name in names:
+        #         if win.title == name[1]:
+        #             instances_available.append(name)
+        for name in names:
+            instances_available.append(name)
+
+        # print(instances_available)
+        instances_available.sort(key=lambda x: x[0])
+        # print(instances_available)
+        return instances_available
+
     def find_window(self):
         hwnd = win32gui.FindWindow(None, self)
         return hwnd != 0
@@ -459,8 +476,11 @@ class Main:
             treeview.delete(item)
 
     def update_vms(self):
+        # print(self.get_all_vms_running())
+        # print("---")
+        # print(self.get_list_instances())
         instances = self.get_all_vms_running()
-        # clear_all(self.tree_view)
+        self.clear_all(self.tree_view)
         if instances == []:
             for item in self.tree_view.get_children():
                 self.tree_view.delete(item)
@@ -479,26 +499,12 @@ class Main:
                         to_add = False
                 if to_add:
                     self.tree_view.insert('', END, values=(instance[0], instance[1], ""))
-        # print(a)
-        # for i in range(len(instances)):
-        #     if len(self.tree_view.get_children()) == 0:
-        #         self.tree_view.insert('', END, values=(instances[i][0], instances[i][1], ""))
-        #     if not self.search((instances[i][0], instances[i][1])):
-        #         self.tree_view.insert('', END, values=(instances[i][0], instances[i][1], ""))
-
+        # for instance in instances:
+        #     self.tree_view.insert('', END, values=(instance[0], instance[1], ""))
         if len(self.tree_view.get_children()) > 3:
             self.tree_view.configure(height=len(self.tree_view.get_children()))
         else:
             self.tree_view.configure(height=3)
-            # for instance in instances:
-            #     for item in self.tree_view.get_children():
-            #         # print(instance)
-            #         # print([self.tree_view.item(item)['values'][0],self.tree_view.item(item)['values'][1]])
-            #         if (self.tree_view.item(item)['values'][0],self.tree_view.item(item)['values'][1]) not in instances:
-            #             print(f"{self.frames =}")
-            #             self.frames[str(self.tree_view.item(item)['values'][0])].bottom_frame.destroy()
-            #             del self.frames[str(self.tree_view.item(item)['values'][0])]
-            #             self.tree_view.delete(item)
 
 def index_of_first(lst, sel):
     for i, v in enumerate(lst):

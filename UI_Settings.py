@@ -610,7 +610,7 @@ class Settings:
             labeld2 = customtkinter.CTkLabel(page, text="~")
             labeld2.grid(row=1, column=2, columnspan=1, pady=2)
     
-            labeld1 = customtkinter.CTkLabel(page, text="Time to wait before\nthe bot re-do the tasks(mins): ")
+            labeld1 = customtkinter.CTkLabel(page, text="Pause between two runs\nbefore the bot re-do the tasks(mins): ")
             labeld1.grid(row=1, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))
             labeld2 = Label(page, text="~")
             labeld2.grid(row=1, column=2, columnspan=1, pady=2)
@@ -748,3 +748,4 @@ class Settings:
     
         # dict[1].tkraise()
         self.root.mainloop()
+

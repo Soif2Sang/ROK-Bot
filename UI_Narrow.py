@@ -12,7 +12,6 @@ import customtkinter
 from Task import Task
 from UI_Settings import Settings
 from bot_adb import Adb
-from Tasks_lib import Tasks
 from Task_runner import TaskRunner
 
 
@@ -26,8 +25,8 @@ class LowerFrame():
         self.upper_frame = upper_frame
         self.root = upper_frame.root
         self.sel = sel[0]
-        self.adb = Adb(sel[0])
-        self.device = self.adb.connect_to_device()
+        # self.adb = Adb(sel[0])
+        # self.device = self.adb.connect_to_device()
 
         self.bottom_frame = customtkinter.CTkFrame(self.root)
         self.bottom_frame.grid(row=3, column=0, columnspan=2, sticky='')
@@ -54,13 +53,13 @@ class LowerFrame():
         # self.main_task = Task(self)
         # self.main_task.set_sel(sel[0])
         # self.tasks = TaskRunner(self.main_tasks, self)
-        self.tasks = Tasks(self)
-        self.tasks.set_sel(sel[0])
-        self.tasks_process = threading.Thread(target=self.tasks.routine_scheduled)
+        # self.tasks = Task(self)
+        # self.tasks.set_sel(sel[0])
 
         self.main_task = Task(self)
-        self.main_task.set_sel(sel[0])
+        # self.main_task.set_sel(sel[0])
         self.runner = TaskRunner(self.main_task,self)
+        self.tasks_process = threading.Thread(target=self.runner.upgrade_all_accounts)
 
 
 
@@ -114,15 +113,15 @@ class LowerFrame():
 
     def start_tasks(self):
         # try:
-        #     self.runner.routine_scheduled()
+        #     self.runner.upgrade_all_accounts()
         # except:
         #     traceback.print_exc()
         # pass
-        self.tasks.text_update_event = self.update_label2
+        # self.tasks.text_update_event = self.update_label2
         # print("Tryiing to start tasks")
         if not self.tasks_process.is_alive():
             # print("Task is not running")
-            self.tasks_process = threading.Thread(target=self.runner.routine_scheduled)
+            self.tasks_process = threading.Thread(target=self.runner.upgrade_all_accounts)
             self.tasks_process.daemon = False
             self.tasks_process.start()
             # print("Starting")
