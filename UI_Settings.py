@@ -490,7 +490,7 @@ class Settings:
                 nb_switch = create_switch(root, "Healing", "heal_troop", nb_switch, i)
                 create_button(root, "⚙", lambda: material_config(root, i), nb_switch)
                 nb_switch = create_switch(root, "Material Production", "material_production", nb_switch, i)
-    
+                nb_switch = create_switch(root, "Alliance Help", "alliance_help", nb_switch, i)
                 label_task = customtkinter.CTkLabel(root, text="━━━━━━━━━━━━━━━━━━━━")
                 label_task.grid(row=nb_switch, columnspan=2)
                 nb_switch = nb_switch + 1
@@ -581,7 +581,6 @@ class Settings:
                 switch.select()
             else:
                 switch.deselect()
-    
             return switch
     
         def create_button1(rootParam, textParam, commandParam, rowParam, padxp=(13, 0)):
@@ -603,27 +602,40 @@ class Settings:
             page.resizable(False, False)
             page.title('RoK Bot Re-do Settings')
             page.iconbitmap('Item_Gem.ico')
-            labeld1 = customtkinter.CTkLabel(page, text="*DO NOT USE CLOSE VARIABLES*", text_color="red",
+            labeld1 = customtkinter.CTkLabel(page, text="*The bigger the gap is, the safer it gets*", text_color="red",
                                              font=customtkinter.CTkFont(family='Helvetica bold', size=15))
             labeld1.grid(row=0, column=0, columnspan=4, pady=2, sticky='ew')
     
             labeld2 = customtkinter.CTkLabel(page, text="~")
             labeld2.grid(row=1, column=2, columnspan=1, pady=2)
     
-            labeld1 = customtkinter.CTkLabel(page, text="Pause between two runs\nbefore the bot re-do the tasks(mins): ")
+            labeld1 = customtkinter.CTkLabel(page, text="Pause between two runs\nbefore the bot re-do the tasks : ")
             labeld1.grid(row=1, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))
             labeld2 = Label(page, text="~")
             labeld2.grid(row=1, column=2, columnspan=1, pady=2)
     
             entryd1 = customtkinter.CTkEntry(page, width=45)
             entryd1.insert(0, data[self.sel]['time_to_wait_loop1'])
-            entryd1.grid(row=1, column=1, pady=(5, 0))
+            entryd1.grid(row=1, column=1, pady=(10, 0))
     
             entryd2 = customtkinter.CTkEntry(page, width=45)
             entryd2.insert(0, data[self.sel]['time_to_wait_loop2'])
             entryd2.grid(row=1, column=3, pady=(5, 0), padx=(0, 5))
-    
-            create_switch1(page, "Leave game at end", "leave_game_loop", 2)
+
+            minutes = customtkinter.CTkLabel(page, text="minutes")
+            minutes.grid(row=1, column=4, columnspan=1, pady=2, sticky='e', padx=(5, 5))
+
+            switch = customtkinter.CTkSwitch(page, text="Once the bot did all the tasks, \n"
+                                                        "Close the game.\n"
+                                                        "The bot will log back once the timer ends")
+            switch.configure(command=lambda: generate_box2(switch, "leave_game_loop", ))
+            switch.configure(progress_color="#3b8ed0", button_color="#266496", button_hover_color="#266496")
+
+            switch.grid(row=3, column=0, sticky='w', padx=(10, 0), pady=1, columnspan=4)
+            if data[self.sel]["leave_game_loop"] == True:
+                switch.select()
+            else:
+                switch.deselect()
     
             def submit():
                 with open('user_settings.json') as config_file: data = json.load(config_file)

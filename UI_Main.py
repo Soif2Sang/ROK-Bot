@@ -105,16 +105,12 @@ def request_acess(username, password):
 
 class Main:
     def __init__(self, days):
-        # root = Frame(master=window)
+        self.days = days + 1
         self.root = customtkinter.CTk()
-        # self.root = Tk()
-        # print(f"{self.root.cget('bg') =}")
         self.root.resizable(False, False)
-        self.root.title(f'RoK Bot - {days} Days left')
+        self.root.title(f'RoK Bot - {self.days} Days left')
         self.root.iconbitmap('Item_Gem.ico')
         self.frames = {}
-        # self.root.geometry(f"{150}x{250}")
-        # self.root['bg']='red'
         s = ttk.Style()
 
         # Set the selection background color to green.
@@ -290,7 +286,8 @@ class Main:
                     "material_choice_2": "leather",
                     "material_choice_3": "leather",
                     "material_choice_4": "leather",
-                    "material_choice_5": "leather"
+                    "material_choice_5": "leather",
+                    "alliance_help": False
             }
         default_dic['schedules'][1]['enabled']= True
         if str(sel[0]) not in data:
@@ -323,7 +320,11 @@ class Main:
                 data = json.load(config_file)
             if "user" in data:
                 if not request_acess(data['user']["username"], data['user']["password"]):
-                    self.root.destroy()
+                    sys.exit()
+                else:
+                    self.root.title(f'RoK Bot - {self.days - 1} Days left')
+            else:
+                sys.exit()
             return self.root.after(1000 * 3600 * 24, self.is_account_expired)
         except Exception:
             print("Problem in is_account_expired")
