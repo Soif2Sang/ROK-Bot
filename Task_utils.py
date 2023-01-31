@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 from functools import wraps
@@ -58,8 +59,8 @@ def get_name(func):
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
         with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
-        print(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+            logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
+        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         func_output = func(self, *args, **kwargs)
         return func_output
 
@@ -72,9 +73,9 @@ def get_class(func):
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
         with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
+            logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
         # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
-        print(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
+        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)
         return func_output
 
@@ -93,6 +94,16 @@ def filter_coordinate(couple: tuple[int, int]):
         return False
     return True
 
+def get_data():
+    with open('user_settings.json') as config_file:
+        data = json.load(config_file)
+    return data
+
+
+def get_path():
+    with open('path.json') as config_file:
+        path = json.load(config_file)
+    return path
 
 def change_resource_type(place: str) -> str:
     if place == "First":

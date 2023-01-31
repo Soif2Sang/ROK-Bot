@@ -148,9 +148,7 @@ class GatherGem(Task):
         self.little_zoom_from_x_y(x_click, y_click)
         return self.better_sleep((0.7, 1.4))
 
-    @get_name
     def validate_co(self, co: tuple[int, int]) -> None | tuple[int, int]:
-        # sourcery skip: merge-nested-ifs
         if co is not None:
             if (co[0] < 550 and co[1] < 100) or \
                     ((1180 < co[0] < 1235) and (520 < co[1] < 620)) or \
@@ -359,70 +357,73 @@ class GatherGem(Task):
         :return: True is successfully
         :return: False is not successfully
         """
+        try:
+            self.print("Trying to send new troop..")
+            self.print(f"Send new troop count : {deadstop}")
+            if deadstop == 5:
+                self.click(uniform(700, 800), uniform(300, 500))
+                self.better_sleep((1.325, 1.795))
+                return False
+            self.check_if_kill()
+            co = self.adb.find_img(target="new_troops_button")
+            if co is not None:
+                # print("Home button found")
+                x, y = co[0], co[1]
+                x, y = x + uniform(0, 20), y + uniform(0, 20)
+                self.click(x, y)
+                self.better_sleep((1.825, 2.495))
+                x_click, y_click = uniform(1090, 1111), uniform(329, 348)
+                self.better_sleep((1.225, 1.795))
+                self.select_lineup_color(color=color)
+                for i in range(7):  # change if you have 6-7 troops
+                    self.check_if_kill()
+                    x_click, y_click = uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54)
+                    self.click(x_click, y_click)
+                    self.better_sleep((1, 2))
+                    if color != 'red':
+                        cos = self.adb.find_multiple_img("choose_right", 0.8)
+                        # for co in cos:
+                        #     if co[0] > 1060 and co[1] > 200:
+                        #         final.append(co)
+                        final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
+                        if final != []:
+                            x, y = self.adb.find_img(target="troops_march_button")
+                            x, y = x + uniform(0, 20), y + uniform(0, 20)
+                            self.check_if_kill()
+                            self.click(x, y)
+                            self.better_sleep((0.5, 0.7))
+                            self.print("New Troop sent !")
+                            return True
 
-        self.print("Trying to send new troop..")
-        self.print(f"Send new troop count : {deadstop}")
-        if deadstop == 5:
-            self.click(uniform(700, 800), uniform(300, 500))
-            self.better_sleep((1.325, 1.795))
-            return False
-        self.check_if_kill()
-        co = self.adb.find_img(target="new_troops_button")
-        if co is not None:
-            # print("Home button found")
-            x, y = co[0], co[1]
-            x, y = x + uniform(0, 20), y + uniform(0, 20)
-            self.click(x, y)
-            self.better_sleep((1.825, 2.495))
-            x_click, y_click = uniform(1090, 1111), uniform(329, 348)
-            self.better_sleep((1.225, 1.795))
-            self.select_lineup_color(color=color)
-            for i in range(7):  # change if you have 6-7 troops
+                    # if self.adb.find_img(target="choose_right", confidence=0.8):
+                    #     x, y = self.adb.find_img(target="troops_march_button")
+                    #     x, y = x + uniform(0, 20), y + uniform(0, 20)
+                    #     self.check_if_kill()
+                    #     self.click(x, y)
+                    #     self.better_sleep((0.5, 0.7))
+                    #     return True
                 self.check_if_kill()
-                x_click, y_click = uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54)
-                self.click(x_click, y_click)
-                self.better_sleep((1, 2))
-                if color != 'red':
-                    cos = self.adb.find_multiple_img("choose_right", 0.8)
-                    # for co in cos:
-                    #     if co[0] > 1060 and co[1] > 200:
-                    #         final.append(co)
-                    final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
-                    if final != []:
-                        x, y = self.adb.find_img(target="troops_march_button")
-                        x, y = x + uniform(0, 20), y + uniform(0, 20)
-                        self.check_if_kill()
-                        self.click(x, y)
-                        self.better_sleep((0.5, 0.7))
-                        self.print("New Troop sent !")
-                        return True
-
-                # if self.adb.find_img(target="choose_right", confidence=0.8):
-                #     x, y = self.adb.find_img(target="troops_march_button")
-                #     x, y = x + uniform(0, 20), y + uniform(0, 20)
-                #     self.check_if_kill()
-                #     self.click(x, y)
-                #     self.better_sleep((0.5, 0.7))
-                #     return True
-            self.check_if_kill()
-            co = self.adb.find_img(target="troops_march_button")
-            if co is None:
+                co = self.adb.find_img(target="troops_march_button")
+                if co is None:
+                    return self.send_new_troop(deadstop=deadstop + 1)
+                x, y = co[0], co[1]
+                x, y = x + uniform(0, 20), y + uniform(0, 20)
+                self.click(x, y)
+                self.check_if_kill()
+                self.better_sleep((0.5, 0.7))
+                self.print("New Troop sent !")
+                return True
+            co = self.adb.find_img(target="march_bar")
+            if co is not None and self.free_troop_gem():
+                x, y = uniform(1177, 1250), uniform(80, 116)
+                self.check_if_kill()
+                self.better_sleep((0.5, 0.7))
                 return self.send_new_troop(deadstop=deadstop + 1)
-            x, y = co[0], co[1]
-            x, y = x + uniform(0, 20), y + uniform(0, 20)
-            self.click(x, y)
-            self.check_if_kill()
-            self.better_sleep((0.5, 0.7))
-            self.print("New Troop sent !")
-            return True
-        co = self.adb.find_img(target="march_bar")
-        if co is not None and self.free_troop_gem():
-            x, y = uniform(1177, 1250), uniform(80, 116)
-            self.check_if_kill()
-            self.better_sleep((0.5, 0.7))
-            return self.send_new_troop(deadstop=deadstop + 1)
-        self.print("Unable to send a new troop")
-        return False
+            self.print("Unable to send a new troop")
+            return False
+        except Exception as e:
+            traceback.print_exc()
+            self.print("Error sending a new march to the gem node !")
 
     @get_name
     def send_nearest_troop_gem(self, deadstop=0) -> bool:

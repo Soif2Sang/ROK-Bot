@@ -39,7 +39,7 @@ class BuyMerchant(Task):
         self.print(f'Merchant icon : {x=} {y=}')
         self.click(x, y)
         for y in range(2):
-            for _ in range(4):
+            for i in range(4):
                 self.better_sleep((1.8, 2.2))
                 food = self.adb.find_multiple_img("merchant_buy_with_food", 0.8)
                 wood = self.adb.find_multiple_img("merchant_buy_with_wood", 0.8)
@@ -52,7 +52,8 @@ class BuyMerchant(Task):
                     self.better_sleep((0.45, 0.7))
                 x1, y1 = uniform(586, 870), uniform(457, 487)
                 x2, y2 = x1 + uniform(-10, 10), y1 - uniform(120, 150)
-                self.swipe(x1, y1, x2, y2)
+                if i!=3:
+                    self.swipe(x1, y1, x2, y2)
             if y != 0:
                 break
             co = self.adb.find_img(target="free")
