@@ -7,14 +7,14 @@ import traceback
 from datetime import date
 from random import uniform, randint
 from time import sleep
-
+from psutil import pid_exists
 import cv2
 from PIL import Image
 from numpy import array
 
 import verification
 
-from Task_utils import get_window_pid, get_name, current_time, get_time
+from Task_utils import get_window_pid, get_name, current_time, get_time, get_data
 from bot_adb import Adb
 from twocaptcha import TwoCaptcha
 
@@ -22,13 +22,11 @@ from twocaptcha import TwoCaptcha
 
 class Task:
     def __init__(self, frame):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = '1'
         self.frame = frame
         self.sel = frame.sel
         self.adb = Adb(self.sel)
-        # self.adb.connect_to_device()
         self.ppid = os.getppid()
         self.pid = get_window_pid(self.adb.name)
         self.language = None
@@ -43,8 +41,7 @@ class Task:
 
     @get_name
     def update_data(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         return self.data
 
     def set_sel(self, sel) -> None:
@@ -152,12 +149,10 @@ class Task:
 
     @get_name
     def run_game(self, count=0) -> None:
-        # self.adb.connect_to_device()
         a = self.adb.is_game_alive()
         if not a:
             self.print(f"Looks like game is not running ")
             co = self.adb.find_img(target="rokicon", confidence=0.8)
-            print(f"{co =}")
             if co is not None:
                 self.click(co[0] + 10, co[1] + 10)
                 sleep(3)
@@ -172,7 +167,7 @@ class Task:
                         for _ in range(2):
                             string = self.adb.get_device().shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
                             with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-                                logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                                logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 break
                             if 'Activity not started' not in str(string):
@@ -327,6 +322,7 @@ class Task:
                 # self.set_text("Script paused.")
             sleep(1)
 
+
         if self.frame.stop:
             print(self.frame.stop)
             print(self.frame.end_tasks_button.cget("state"))
@@ -389,10 +385,12 @@ class Task:
         Check and reconnect
         """
         self.data = self.update_data()
+
         if cv_image is None:
             co = self.adb.find_img(target="reconnect")
         else:
             co = self.adb.find_img(source=cv_image, target="reconnect", confidence=0.85)
+
         if co is not None:
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_reconnect', False):
                 print(co)
@@ -404,6 +402,7 @@ class Task:
                     a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                     print(a)
                     self.click(a[0], a[1])
+                sleep(10)
                 self.wait_until_connected()
                 return True
             else:
@@ -411,7 +410,6 @@ class Task:
                 while True:
                     self.script_pause()
                     sleep(1)
-
     @get_name
     def wait_until_connected(self) -> None:
         self.print("Script is paused until game is fully loaded..")
@@ -439,16 +437,15 @@ class Task:
             self.click(uniform(70, 270), uniform(100, 542))
             self.better_sleep((1.8, 3))
 
-    @get_name
+    # @get_name
     def check_if_kill(self):
-        return
         """
         Kill the process if his ppid is dead
         :exemple: leave python would kill the process
         """
         if not pid_exists(self.ppid):
             self.print("pPid not found, killing the thread")
-            sys.exit(0)
+            sys.exit(1)
     #
     # @get_name
     # def start_emulator(self) -> None:
@@ -476,6 +473,7 @@ class Task:
             cv_image = array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[30:170, 770:1225]
+            chest = None
             for i in range(1, 4):
                 chest = self.adb.find_img(target=f"verification_chest{i}", source=cropped_image, confidence=0.6)
                 if chest is None:
@@ -503,7 +501,7 @@ class Task:
         """
         self.data = self.update_data()
         self.print(f"Scanning the screen for verification..")
-        solver = self.getSolver()
+
 
         if chest:
             self.check_chest()
@@ -515,10 +513,11 @@ class Task:
 
         i = 0
         resolved = False
-
+        solver = None
         while self.adb.find_img(target="close_refresh_ok", confidence=0.75) is not None:
             if i == 0:
                 self.print("Verification detected")
+                solver = self.getSolver()
             captchaId = self.resolve_captcha()
             self.better_sleep((3, 4))
             if self.adb.find_img(target="close_refresh_ok", confidence=0.75) is None:
