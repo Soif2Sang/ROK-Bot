@@ -116,12 +116,15 @@ hammer= imread('resources\\hammer.png')
 healing_scroll= imread('resources\\healing_scroll.png')
 heal_button= imread('resources\\heal_button.png')
 heal_icon= imread('resources\\heal_icon.png')
-help= imread('resources\\help.png')
+help1= imread('resources\\help1.png')
+help2= imread('resources\\help2.png')
+help3= imread('resources\\help3.png')
 help_alliance= imread('resources\\help_alliance.png')
 help_build= imread('resources\\help_build.png')
 help_build2= imread('resources\\help_build2.png')
 hide_quests= imread('resources\\hide_quests.png')
 hire_constructor= imread('resources\\hire_constructor.png')
+hire_constructor2= imread('resources\\hire_constructor2.png')
 hold_icon= imread('resources\\hold_icon.png')
 hold_icon_small= imread('resources\\hold_icon_small.png')
 hold_posistion_checked= imread('resources\\hold_posistion_checked.png')
@@ -219,6 +222,7 @@ upgrade_button= imread('resources\\upgrade_button.png')
 upgrade_go= imread('resources\\upgrade_go.png')
 upgrade_stone= imread('resources\\upgrade_stone.png')
 upgrade_stone2= imread('resources\\upgrade_stone2.png')
+upgrade_stone3= imread('resources\\upgrade_stone3.png')
 use_ap= imread('resources\\use_ap.png')
 validate_build= imread('resources\\validate_build.png')
 validate_building= imread('resources\\validate_building.png')
@@ -472,8 +476,12 @@ def get_file_name(file_name):
         return heal_button
     if file_name == "heal_icon":
         return heal_icon
-    if file_name == "help":
-        return help
+    if file_name == "help1":
+        return help1
+    if file_name == "help2":
+        return help2
+    if file_name == "help3":
+        return help3
     if file_name == "help_alliance":
         return help_alliance
     if file_name == "help_build":
@@ -484,6 +492,8 @@ def get_file_name(file_name):
         return hide_quests
     if file_name == "hire_constructor":
         return hire_constructor
+    if file_name == "hire_constructor2":
+        return hire_constructor2
     if file_name == "hold_icon":
         return hold_icon
     if file_name == "hold_icon_small":
@@ -678,6 +688,8 @@ def get_file_name(file_name):
         return upgrade_stone
     if file_name == "upgrade_stone2":
         return upgrade_stone2
+    if file_name == "upgrade_stone3":
+        return upgrade_stone3
     if file_name == "use_ap":
         return use_ap
     if file_name == "validate_build":
