@@ -7,7 +7,7 @@ from tkinter import ttk
 
 from UI_Narrow import LowerFrame
 from bot_adb import Adb
-from Tasks_lib import *
+from OLD_Tasks_lib import *
 import os
 import pyautogui
 import requests
@@ -382,40 +382,27 @@ class Main:
                 dic[str(i)] = tab[i]
             return dic
         liste_info = []
-        # for element in data_instance:
-        #     if ((('bst.instance.Nougat64' in element or 'bst.instance.Nougat32' in element) and (
-        #             'adb_port' in element)) and 'status' in element) or (
-        #             ('bst.instance.Nougat64' in element or 'bst.instance.Nougat32' in element) and (
-        #             'display_name' in element)):
-        #         liste_info.append(element)
         for element in data_instance:
-            if ((('bst.instance.Nougat64' in element) and (
-                    'adb_port' in element)) and 'status' in element) or (
-                    ('bst.instance.Nougat64' in element) and (
-                    'display_name' in element)):
+            if ((('bst.instance.Nougat64' in element) and ('adb_port' in element))
+                    and 'status' in element) or \
+                    (('bst.instance.Nougat64' in element) and ('display_name' in element)
+                    ):
                 liste_info.append(element)
-        # for element in liste_info: print(element)
         tab_instance = []
         for i in range(0, len(liste_info), 2):
             string = liste_info[i + 1].split('.status.adb_port=')
-            # print(f"{string=} ,  {liste_info[i]=}")
 
-            string[1] = string[1].replace('"', "")
-            string[0] = string[0][13:]
-
-            string2 = liste_info[i].split('.display_name=')
-            string2[1] = string2[1].replace('"', "")
+            instance = string[0].split(".")[-1]
+            port = string[1].replace('"', "")
+            display_name = liste_info[i].split('.display_name=')[1].replace('"', "")
 
             dico_instance = {
-                'instance': str(string[0]),
-                'port': string[1],
-                'name': string2[1]
+                'instance': str(instance),
+                'port': port,
+                'name': display_name
             }
-
             tab_instance.append(dico_instance)
-        dico_instance = sort_by_instance(tab_instance)
-        # print(tab_instance)
-        return dico_instance
+        return sort_by_instance(tab_instance)
 
     def get_names(self, data):
         names = []
@@ -467,7 +454,6 @@ class Main:
         children = self.tree_view.get_children('')
         for child in children:
             values = self.tree_view.item(child, 'values')
-            # print(type(comparevalue[0]), int(values[0]), str(comparevalue[1]) == str(values[1]))
             if comparevalue[0] == int(values[0]) and str(comparevalue[1]) == str(values[1]):
                 return True
         return False
