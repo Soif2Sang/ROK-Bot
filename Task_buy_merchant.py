@@ -63,3 +63,6 @@ class BuyMerchant(Task):
             self.click(x, y)
         x, y = uniform(1077, 1100), uniform(64, 95)
         self.click(x, y)
+        while(co:=self.adb.find_img(target="close_window")):
+            self.click(co[0] + uniform(5,10), co[1] + uniform(5,10))
+            self.better_sleep((1,1.5))

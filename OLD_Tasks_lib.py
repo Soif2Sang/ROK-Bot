@@ -63,7 +63,7 @@ def get_time(func):
         func_output = func(self, *args, **kwargs)
         end_time = perf_counter()
 
-        if func.__name__ == "check_resolve":
+        if func.__name__ == "check_captcha":
             print(f'[ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
             logging.info(f"[{self.name}] Verification made in {(end_time - start_time):0.1f}")
@@ -156,13 +156,9 @@ class Tasks:
         self.name = self.data.get(self.sel).get('name', "Name not found")
         # print(self.name)
         self.resource_type = self.data[str(self.sel)]['schedules'][self.current_profile]["First"]
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
 
     @get_name
     def print(self, text: str) -> None:
-        logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         # print(f'[ {current_time()} ] [ {self.name} ] {text}')
         # logging.info(f"[{self.name}] {text}")
         self.set_text(f"[{current_time()}] {text}")
@@ -441,7 +437,7 @@ class Tasks:
             # except:
             #     self.run_game()
             #     self.better_sleep((40, 60))
-            #     self.check_resolve()
+            #     self.check_captcha()
             #     self.leave_city()
             #     # print("premier leave city")
             #     self.better_sleep((1.5, 2))
@@ -3450,7 +3446,7 @@ class Tasks:
     #     self.enter_setting()
     #     self.enter_characters()
     #     while (co:=self.adb.find_img(target="logged_icon")) is None:
-    #         self.check_resolve()
+    #         self.check_captcha()
     #         self.print("Looking for the selection icon")
     #         y, x = uniform(290, 480), uniform(460, 560)
     #         x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
@@ -3469,7 +3465,7 @@ class Tasks:
         # def next_character(first: tuple[float,float]):
         #     trigger_stop = 0
         #     while (co := self.adb.find_img(target="logged_icon")) is None:
-        #         self.check_resolve()
+        #         self.check_captcha()
         #         self.print("Looking for the selection icon")
         #         y, x = uniform(290, 480), uniform(460, 560)
         #         x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)

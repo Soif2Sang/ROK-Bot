@@ -17,6 +17,7 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
+from Task_alliance_help import AllianceHelp
 from Task_utils import get_name, get_class, current_time
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -36,10 +37,16 @@ class GatherGem(Task):
         self.name = MainTask.name
         self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
+        self.end_time = None
+        self.block = False
 
     def task_name(self):
         return "GatherGem"
 
+    # @get_name
+    # def run_game(self, count=0) -> None:
+    #     if not self.adb.is_game_alive():
+    #         super().run_game()
     @get_name
     def random_macro(self) -> None:
         try:
@@ -50,20 +57,8 @@ class GatherGem(Task):
                 path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
                 if os.path.isfile(path):
                     break
-            # path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.lilithgame.roc.gp.cfg"
-            # if not os.path.isfile(path):
-            #     path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.rok.gp.vn.cfg"
-            #     if not os.path.isfile(path):
-            #         path = path_json['bluestacks'][
-            #                :-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.lilithgame.rok.gpkr.cfg"
-            #         if not os.path.isfile(path):
-            #             path = path_json['bluestacks'][
-            #                    :-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.lilithgames.rok.gp.jp.cfg"
             path2 = path.replace("cfg", "json")
-            # print(f"{path = }")
-            # print(f"{path2 = }")
             shutil.copy(path, path2)
-            # print("test")
             with open(path2, encoding="UTF-8") as config_file:
                 path_json = json.load(config_file)
             for element in path_json['ControlSchemes']:
@@ -202,26 +197,46 @@ class GatherGem(Task):
         img = Image.fromarray(cropped_image)
         for i in range(img.size[0]):
             for y in range(img.size[1]):
-                if (((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] < 5) and (
-                        img.getpixel((i, y))[2] > 175) and (img.getpixel((i, y))[2] < 196) and (
-                             (img.getpixel((i, y))[0] != 2) and (img.getpixel((i, y))[1] != 4) and (
-                             img.getpixel((i, y))[2] != 183))) or
-                        ((img.getpixel((i, y))[0] == 233) and (img.getpixel((i, y))[1] == 233) and (
-                                img.getpixel((i, y))[2] == 233)) or
-                        ((img.getpixel((i, y))[0] == 247) and (img.getpixel((i, y))[1] == 156) and (
-                                img.getpixel((i, y))[2] == 47)) or
-                        ((img.getpixel((i, y))[0] == 207) and (img.getpixel((i, y))[1] == 131) and (
-                                img.getpixel((i, y))[2] == 40)) or
-                        ((img.getpixel((i, y))[0] == 248) and (img.getpixel((i, y))[1] == 157) and (
-                                img.getpixel((i, y))[2] == 48)) or
-                        ((img.getpixel((i, y))[0] == 239) and (img.getpixel((i, y))[1] == 205) and (
-                                img.getpixel((i, y))[2] == 165)) or
-                        ((img.getpixel((i, y))[2] < 179) and (img.getpixel((i, y))[2] > 175) and (
-                                img.getpixel((i, y))[1] > 116) and (img.getpixel((i, y))[1] < 119) and (
-                                 img.getpixel((i, y))[0] < 2)) or
-                        ((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] > 142) and (
-                                img.getpixel((i, y))[1] < 150) and (img.getpixel((i, y))[2] < 200) and (
-                                 img.getpixel((i, y))[2] > 190)) or
+                if (((img.getpixel((i, y))[0] < 5) and
+                     (img.getpixel((i, y))[1] < 5) and
+                     (img.getpixel((i, y))[2] > 175) and
+                     (img.getpixel((i, y))[2] < 196) and
+                      ((img.getpixel((i, y))[0] != 2) and
+                      (img.getpixel((i, y))[1] != 4) and
+                      (img.getpixel((i, y))[2] != 183)))
+                        or
+                        ((img.getpixel((i, y))[0] == 233) and
+                         (img.getpixel((i, y))[1] == 233) and
+                         (img.getpixel((i, y))[2] == 233))
+                        or
+                        ((img.getpixel((i, y))[0] == 247) and
+                         (img.getpixel((i, y))[1] == 156) and
+                         (img.getpixel((i, y))[2] == 47))
+                        or
+                        ((img.getpixel((i, y))[0] == 207) and
+                         (img.getpixel((i, y))[1] == 131) and
+                         (img.getpixel((i, y))[2] == 40))
+                        or
+                        ((img.getpixel((i, y))[0] == 248) and
+                         (img.getpixel((i, y))[1] == 157) and
+                         (img.getpixel((i, y))[2] == 48))
+                        or
+                        ((img.getpixel((i, y))[0] == 239) and
+                         (img.getpixel((i, y))[1] == 205) and
+                         (img.getpixel((i, y))[2] == 165))
+                        or
+                        ((img.getpixel((i, y))[2] < 179) and
+                         (img.getpixel((i, y))[2] > 175) and
+                         (img.getpixel((i, y))[1] > 116) and
+                         (img.getpixel((i, y))[1] < 119) and
+                         (img.getpixel((i, y))[0] < 2))
+                        or
+                        ((img.getpixel((i, y))[0] < 5) and
+                         (img.getpixel((i, y))[1] > 142) and
+                         (img.getpixel((i, y))[1] < 150) and
+                         (img.getpixel((i, y))[2] < 200) and
+                         (img.getpixel((i, y))[2] > 190))
+                        or
                         (img.getpixel((i, y)) == (0, 0, 178)) or
                         (img.getpixel((i, y)) == (2, 204, 2)) or
                         (img.getpixel((i, y)) == (195, 142, 0)) or
@@ -316,30 +331,16 @@ class GatherGem(Task):
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
             self.print("Switching between line-up..")
+
     @get_name
     def restart_if_game_crashed(self):
         """
         Restart the game if the game crashed and start gathering gems
         """
         if not self.adb.is_game_alive():
-            # try:
-            #     self.leave_game()
-            #     self.better_sleep((4, 5))
-            # except:
-            #     self.run_game()
-            #     self.better_sleep((40, 60))
-            #     self.check_resolve()
-            #     self.leave_city()
-            #     # print("premier leave city")
-            #     self.better_sleep((1.5, 2))
-            #     self.zoom_out_city()
-            #     self.better_sleep((1.5, 2))
-            #     self.scan_gem()
-            #     self.better_sleep((0.125, 0.195))
-            #     randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500), self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
             self.run_game()
             self.better_sleep((40, 60))
-            self.check_resolve()
+            self.check_captcha()
             self.leave_city()
             # print("premier leave city")
             self.better_sleep((1.5, 2))
@@ -579,7 +580,7 @@ class GatherGem(Task):
         if random() > 0.7:
             co = self.adb.find_img(source=screen, target="verification_button", confidence=0.8)
             if co is not None:
-                self.check_resolve()
+                self.check_captcha()
             self.check_reconnect(cropped_image)
 
         if random() > 0.4:
@@ -623,17 +624,18 @@ class GatherGem(Task):
                     y_click = co[1]
                     self.better_sleep((2, 2.5))
                     self.check_if_kill()
-                    self.check_resolve()
+                    self.check_captcha()
                     while True:
                         self.leave_kd_buff()
                         if self.check_log_back():
                             self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
-                            return self.run()
+                            return self.run(self.end_time)
                         screen = self.adb.get_cv2_img()
                         cv_image = screen[0:100, 0:800]
                         if self.adb.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
                             self.print("Bot detected the block icon, now cancelling the function..")
-                            return False
+                            self.block = False
+                            return
 
                         if self.find_cross():
                             return self.adjusted_leave_city(x_click, y_click)
@@ -664,7 +666,7 @@ class GatherGem(Task):
                         self.check_if_kill()
                         self.click(uniform(400, 700), uniform(300, 400))
                         self.better_sleep((1.8, 3))
-                        self.check_resolve()
+                        self.check_captcha()
 
                         scan_frequency = randint(
                             self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_check1"),
@@ -673,15 +675,15 @@ class GatherGem(Task):
 
                         self.print(f"Script is paused for {scan_frequency} seconds")
                         scan_frequency_timer = 0
-
+                        random_wait = uniform(20, 30)
                         for i in range(scan_frequency):
                             self.script_pause()
                             sleep(1)
                             scan_frequency_timer += 1
-                            if scan_frequency_timer >= 20:
+                            if scan_frequency_timer >= random_wait:
                                 if self.check_log_back():
                                     self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
-                                    return self.run()
+                                    return self.run(self.end_time)
                                 self.run_game()
                                 timer_image = self.adb.get_cv2_img()
                                 cross_image = timer_image[240:490, 490:790]
@@ -695,10 +697,11 @@ class GatherGem(Task):
                                     if self.free_troop():
                                         self.print("Bot detected a troop is free, now bypassing the sleep time..")
                                         break
-
+                                if self.data[str(self.sel)]['schedules'][self.current_profile].get('alliance_help'):
+                                    AllianceHelp(self).run()
                                 scan_frequency_timer = 0
                     self.better_sleep((1, 1.895))
-                    self.check_resolve()
+                    self.check_captcha()
                     return self.adjusted_leave_city(x_click, y_click)
 
     @get_name
@@ -835,7 +838,7 @@ class GatherGem(Task):
         # return text1 < text2 if len(text1) == 1 and len(text2) == 1 else False
 
     @get_class
-    def run(self):
+    def run(self, end_time = None ):
         """
                    Gather gems
                    """
@@ -843,7 +846,7 @@ class GatherGem(Task):
         # print(f'[ {current_time()} ] [ {self.name} ] Script starting !')
         # logging.info(f"[{self.name}] Script starting !")
         self.run_game()
-        self.check_resolve()
+        self.check_captcha()
         self.leave_city()
         # print("premier leave city")
         self.better_sleep((1.5, 2))
@@ -868,22 +871,25 @@ class GatherGem(Task):
                 self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'], \
                     self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1']
 
-        time_to_beat = starting_time + (
-                randint(
-                    self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'),
-                    self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration2')
-                ) * 60
-        )
-        # print(f'starting_time : {datetime.fromtimestamp(starting_time).strftime("%H:%M:%S")} , time to beat : {datetime.fromtimestamp(time_to_beat).strftime("%H:%M:%S")} , {starting_time>time_to_beat = }')
-        self.print(f"Gathering gems till around : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}")
-        while time_to_beat > time():
+
+        if self.end_time is None:
+            self.end_time = starting_time + (
+                    randint(
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'),
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration2')
+                    ) * 60
+            )
+
+        # print(f'starting_time : {datetime.fromtimestamp(starting_time).strftime("%H:%M:%S")} , time to beat : {datetime.fromtimestamp(end_time).strftime("%H:%M:%S")} , {starting_time>end_time = }')
+        self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
+        while self.end_time > time():
             self.run_game()
             # print(
-            #     f'time to beat : {datetime.fromtimestamp(time_to_beat).strftime("%H:%M:%S")}\nCurrent time : {current_time()}\nTime to beat > current time : {time_to_beat > time()}')
+            #     f'time to beat : {datetime.fromtimestamp(self.end_time).strftime("%H:%M:%S")}\nCurrent time : {current_time()}\nTime to beat > current time : {self.end_time > time()}')
             # logging.info(
-            #     f"[{self.name}]time to beat : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {time_to_beat > time()}")
+            #     f"[{self.name}]time to beat : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {self.end_time > time()}")
             # self.set_text(
-            #     f"[{current_time()}] time to beat : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {time_to_beat > time()}")
+            #     f"[{current_time()}] time to beat : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {self.end_time > time()}")
             if self.data[str(self.sel)]['schedules'][self.current_profile].get("restart_game", True):
                 random_time = uniform(4000, 5800)
                 if time() > time_restart + random_time:
@@ -893,7 +899,7 @@ class GatherGem(Task):
                     self.better_sleep((5, 10))
                     self.run_game()
                     self.print("Function is going to restart")
-                    self.check_resolve()
+                    self.check_captcha()
                     self.leave_city()
                     # print("premier leave city")
                     self.better_sleep((1.5, 2))
@@ -917,133 +923,114 @@ class GatherGem(Task):
             self.scan_gem()
             self.check_reconnect(cv_image)
             self.check_log_back()
-            self.check_resolve(False)
+            self.check_captcha(False)
             self.leave_kd_buff()
 
             # print("test")
             if randomization == 0:
                 for y in range(width - 1):
                     self.check_if_kill()
-                    for i in range(width):
-                        if time_to_beat < time(): return
-                        if self.swipe_scan(self.scan_gem, self.swipe_right) == False:
-                            return
-                        # self.better_sleep((0.125, 0.195))
 
-                    if self.swipe_scan(self.scan_gem, self.swipe_down) == False:
-                        return
-                    # self.better_sleep((0.525, 0.795))
-                    if time_to_beat < time(): return
+                    for i in range(width):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_right)
+
+                    self.swipe_scan(self.scan_gem, self.swipe_down)
+                    self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.check_resolve(False)
                     self.check_if_kill()
 
                     for i in range(width):
-                        if time_to_beat < time(): return
-                        if self.swipe_scan(self.scan_gem, self.swipe_left) == False:
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    self.check_resolve(False)
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_left)
+
+                    self.check_captcha(False)
                     self.leave_kd_buff()
-                    if time_to_beat < time(): return
+                    self.check_if_kill()
 
                     if y != (width - 2):
-                        if self.swipe_scan(self.scan_gem, self.swipe_down) == False:
-                            return
-                    # self.better_sleep((0.125, 0.195))
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_down)
 
             if randomization == 2:
                 for y in range(width - 1):
-                    if time_to_beat < time(): return
                     self.check_if_kill()
+
                     for i in range(width):
-                        if time_to_beat < time(): return
-                        if self.swipe_scan(self.scan_gem, self.swipe_left) == False:
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    if self.swipe_scan(self.scan_gem, self.swipe_up) == False:
-                        return
-                    # self.better_sleep((0.125, 0.195))
-                    if time_to_beat < time(): return
-                    self.check_resolve(False)
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_left)
+
+                    self.swipe_scan(self.scan_gem, self.swipe_up)
+                    self.check_captcha(False)
                     self.leave_kd_buff()
                     self.check_if_kill()
 
                     for i in range(width):
-                        if time_to_beat < time(): return
-                        if self.swipe_scan(self.scan_gem, self.swipe_right) == False:
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    self.check_resolve(False)
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_right)
+
+                    self.check_captcha(False)
                     self.leave_kd_buff()
+
                     if y != (width - 2):
-                        if self.swipe_scan(self.scan_gem, self.swipe_up) == False:
-                            return
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_up)
 
             if randomization == 1:
                 for y in range(height - 1):
-                    if time_to_beat < time(): return
                     self.check_if_kill()
 
                     for i in range(height):
-                        if time_to_beat < time(): return
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_down)
 
-                        if self.swipe_scan(self.scan_gem, self.swipe_down) == False:
-                            return
-
-                    self.check_resolve(False)
+                    self.swipe_scan(self.scan_gem, self.swipe_left)
+                    self.check_captcha(False)
                     self.leave_kd_buff()
                     self.check_if_kill()
-                    if time_to_beat < time(): return
-
-                    if self.swipe_scan(self.scan_gem, self.swipe_left) == False:
-                        return
-                    # self.better_sleep((0.525, 0.795))
+                    if self.end_time < time():return
 
                     for i in range(height):
-                        if time_to_beat < time(): return
-                        if self.swipe_scan(self.scan_gem, self.swipe_up) == False:
-                            return
-                        # self.better_sleep((0.125, 0.195))
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_up)
 
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     self.leave_kd_buff()
                     self.check_if_kill()
                     if y != (height - 2):
-                        if self.swipe_scan(self.scan_gem, self.swipe_left) == False:
-                            return
-                    # self.better_sleep((0.125, 0.195))
+                        self.swipe_scan(self.scan_gem, self.swipe_left)
 
             if randomization == 3:
                 for y in range(height - 1):
-                    if time_to_beat < time(): return
                     self.check_if_kill()
 
                     for i in range(height):
-                        if time_to_beat < time(): return
-                        if self.swipe_scan(self.scan_gem, self.swipe_up) == False:
-                            return
-                        # self.better_sleep((0.125, 0.195))
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_up)
 
-                    if self.swipe_scan(self.scan_gem, self.swipe_right) == False:
-                        return
-                    # self.better_sleep((0.125, 0.195))
-                    if time_to_beat < time(): return
+                    self.swipe_scan(self.scan_gem, self.swipe_right)
+                    if self.end_time < time(): return
                     self.check_if_kill()
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     self.leave_kd_buff()
 
                     for i in range(height):
-                        if time_to_beat < time(): return
-                        if self.swipe_scan(self.scan_gem, self.swipe_down) == False:
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    self.check_resolve(False)
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_down)
+                    self.check_captcha(False)
                     self.leave_kd_buff()
                     if y != (height - 2):
-                        if self.swipe_scan(self.scan_gem, self.swipe_right) == False:
-                            return
-                    # self.better_sleep((0.125, 0.195))
+                        self.swipe_scan(self.scan_gem, self.swipe_right)
 
             self.better_sleep((1.525, 2.795))
             # self.leave_city()

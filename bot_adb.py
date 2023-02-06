@@ -50,7 +50,6 @@ class Adb:
         cmd = f"{adb_path} connect {host}:{self.port}"
 
         subprocess.Popen(cmd)
-        return self.get_device()
 
     def get_client_devices(self):
         return self.client.devices()
@@ -105,11 +104,12 @@ class Adb:
         try:
             device = self.get_device()
             if device is None:
+                print("get_curr_device_screen_img device is null")
                 self.connect_to_device()
             output = io.BytesIO(device.screencap())
             # output.seek(0)
             image = Image.open(output)
-            # self.print("INFO : Image opened")
+            self.print("INFO : Image opened")
             return image
         except Exception as e:
             self.print(f"EXCEPTION : get_screen_device")
