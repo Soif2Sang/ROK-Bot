@@ -42,8 +42,13 @@ class GemInterface(customtkinter.CTkToplevel):
 
         self.switch_restart = customtkinter.CTkSwitch(self,text='Sometimes restart game'
                                                       ,command=self.command_restart)
+
+        # self.switch_alliance_help = customtkinter.CTkSwitch(self, text='Enable experimental mode',
+        #                                           command=self.command_experimental)
+
         self.switch_experimental = customtkinter.CTkSwitch(self, text='Enable experimental mode',
                                                   command=self.command_experimental)
+
 
         self.button_submit = customtkinter.CTkButton(self, text="Save changes", command=self.submit, corner_radius=4,
                                                      fg_color="white", border_color="grey", border_width=1, text_color="black")

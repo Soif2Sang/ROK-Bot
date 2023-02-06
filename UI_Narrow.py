@@ -59,7 +59,7 @@ class LowerFrame():
         self.main_task = Task(self)
         # self.main_task.set_sel(sel[0])
         self.runner = TaskRunner(self.main_task,self)
-        self.tasks_process = threading.Thread(target=self.runner.routine_scheduled)
+        self.tasks_process = threading.Thread(target=self.runner.run2)
 
 
 
@@ -113,7 +113,7 @@ class LowerFrame():
 
     def start_tasks(self):
         # try:
-        #     self.runner.routine_scheduled()
+        #     self.runner.run2()
         # except:
         #     traceback.print_exc()
         # pass
@@ -121,7 +121,7 @@ class LowerFrame():
         # print("Tryiing to start tasks")
         if not self.tasks_process.is_alive():
             # print("Task is not running")
-            self.tasks_process = threading.Thread(target=self.runner.routine_scheduled)
+            self.tasks_process = threading.Thread(target=self.runner.run2)
             self.tasks_process.daemon = False
             self.tasks_process.start()
             # print("Starting")
