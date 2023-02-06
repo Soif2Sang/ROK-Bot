@@ -27,7 +27,7 @@ def get_time(func):
         func_output = func(self, *args, **kwargs)
         end_time = perf_counter()
 
-        if func.__name__ == "check_resolve":
+        if func.__name__ == "check_captcha":
             print(f'[ {date.today()} ] [ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
             with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:

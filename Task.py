@@ -54,7 +54,10 @@ class Task:
     @get_name
     def print(self, text: str) -> None:
         # print(f'[ {current_time()} ] [ {self.name} ] {text}')
-        self.set_text(f"[{current_time()}] {text}")
+        if text != "":
+            self.set_text(f"[{current_time()}] {text}")
+        else:
+            self.set_text("")
 
     @get_name
     def click(self, x, y):
@@ -428,6 +431,7 @@ class Task:
             self.better_sleep((10, 15))
             self.check_reconnect()
             self.check_log_back()
+            self.check_captcha()
 
     @get_name
     def leave_kd_buff(self, Source=None):
@@ -495,7 +499,7 @@ class Task:
         return False
 
     @get_time
-    def check_resolve(self, chest=True) -> bool:
+    def check_captcha(self, chest=True) -> bool:
         """
         Check and resolve verification
         """

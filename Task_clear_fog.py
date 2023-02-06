@@ -94,7 +94,7 @@ class ClearFog(Task):
                     self.click(uniform(co[0], co[0] + 90), uniform(co[1], co[1] + 30))
                     self.better_sleep((3, 4.5))
                 self.print("Scout sent!")
-                self.check_resolve()
+                self.check_captcha()
                 self.go_city()
                 self.better_sleep((3, 4.5))
                 count = False

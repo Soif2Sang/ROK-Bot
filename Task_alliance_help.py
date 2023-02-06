@@ -2,7 +2,8 @@ import json
 from random import uniform
 
 from Task import Task
-from Task_utils import get_class, get_name
+from Task_utils import get_class, get_name, filter_coordinate
+
 
 class AllianceHelp(Task):
     def __init__(self, MainTask: Task):
@@ -26,5 +27,8 @@ class AllianceHelp(Task):
     def run(self):
         for i in range(1,4):
             if(co:=self.adb.find_img(f"help{i}")):
-                self.click(co[0] + uniform(5, 20), co[1] + uniform(5, 20))
-                self.better_sleep((1,2))
+                if co is not None:
+                    cond = filter_coordinate(co)
+                    if cond:
+                        self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
+                        self.better_sleep((1,2))

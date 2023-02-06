@@ -293,7 +293,7 @@ class HuntBarbarians(Task):
             self.check_log_back()
             self.check_reconnect()
             self.check_if_kill()
-            self.check_resolve()
+            self.check_captcha()
             self.better_sleep((3, 5))
             print(f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian..")
 
@@ -398,7 +398,7 @@ class HuntBarbarians(Task):
                 self.print('Pop-up found, recalling troops')
                 break
 
-            self.check_resolve()
+            self.check_captcha()
             self.wait_until_kill()
         self.check_ap_box()
         self.recall(nb_troop=nb_hunter)

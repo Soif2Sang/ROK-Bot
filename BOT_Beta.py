@@ -187,7 +187,6 @@ def acces(date='9999-12-30'):
             response = http.request("GET", "http://worldtimeapi.org/api/timezone/Europe/Paris",
                                     headers={'Content-Type': 'application/json'}, retries=Retry(10))
             tab = json.loads(response.data.decode('utf-8'))['datetime'].split("T")
-            # # print(tab)
             tmp = tab[1].split(".")
             tab[1] = tmp[0]
             # print(tmp, tab[0])
