@@ -312,6 +312,7 @@ class TaskRunner(Task):
         while self.adb.find_img(target="logged_icon") is None:
             if deadstop == 5:
                 if not trigger_stop:
+                    self.run_game()
                     self.print(f"Error in character switch. Restarting the character switch..")
                     return self.change_character_param(co_first, nb_chars, trigger_stop = True)
                 while trigger_stop:
