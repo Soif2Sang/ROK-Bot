@@ -24,7 +24,7 @@ class LowerFrame():
         self.data = data
         self.upper_frame = upper_frame
         self.root = upper_frame.root
-        self.sel = sel[0]
+        self.sel = sel
         # self.adb = Adb(sel[0])
         # self.device = self.adb.connect_to_device()
 
@@ -57,9 +57,8 @@ class LowerFrame():
         # self.tasks.set_sel(sel[0])
 
         self.main_task = Task(self)
-        # self.main_task.set_sel(sel[0])
         self.runner = TaskRunner(self.main_task,self)
-        self.tasks_process = threading.Thread(target=self.runner.run2)
+        self.tasks_process = threading.Thread(target=self.runner.run)
 
 
 
@@ -113,7 +112,7 @@ class LowerFrame():
 
     def start_tasks(self):
         # try:
-        #     self.runner.run2()
+        #     self.runner.run()
         # except:
         #     traceback.print_exc()
         # pass
@@ -121,7 +120,7 @@ class LowerFrame():
         # print("Tryiing to start tasks")
         if not self.tasks_process.is_alive():
             # print("Task is not running")
-            self.tasks_process = threading.Thread(target=self.runner.run2)
+            self.tasks_process = threading.Thread(target=self.runner.run)
             self.tasks_process.daemon = False
             self.tasks_process.start()
             # print("Starting")
@@ -134,8 +133,6 @@ class LowerFrame():
             #         self.start_tasks_button.configure(state="normal", fg_color="white")
             #         self.end_tasks_button.configure(state="disabled", fg_color="#d1d1d1")
             return threading.Thread(target=self.start_thread).start()
-
-
         else:
             print("Task is running")
             def _async_raise(tid, exctype):

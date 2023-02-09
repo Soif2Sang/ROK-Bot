@@ -196,19 +196,20 @@ class Main:
             data = json.load(config_file)
         try:
             sel = str(self.tree_view.item(event.widget.selection())['values'][0])
-            # print(sel)
+            print(sel)
             # print(self.tree_view.item(event.widget.selection()))
         except:
             self.instance_name.configure(text="")
             return
         all_instances = self.get_all_vms_running()
         dico_instance = self.get_dic_instances()
-        self.instance_name.configure(text=index_of_first(all_instances, sel[0]))
+        # print(index_of_first(all_instances, sel))
+        self.instance_name.configure(text=index_of_first(all_instances, sel))
         default_dic = {
-            'instance': dico_instance[str(sel[0])]['instance'],
-            'name': dico_instance[str(sel[0])]['name'],
+            'instance': dico_instance[str(sel)]['instance'],
+            'name': dico_instance[str(sel)]['name'],
             'host': '127.0.0.1',
-            'port': int(dico_instance[str(sel[0])]['port']),
+            'port': int(dico_instance[str(sel)]['port']),
             'API_KEY': "",
             'loop_task': False,
             'time_to_wait_loop1': 60,
@@ -290,27 +291,27 @@ class Main:
                     "alliance_help": False
             }
         default_dic['schedules'][1]['enabled']= True
-        if str(sel[0]) not in data:
-            data[str(sel[0])] = default_dic
+        if str(sel) not in data:
+            data[str(sel)] = default_dic
         else:
             for key in default_dic:
-                if key not in data[str(sel[0])]:
-                    data[str(sel[0])][key] = default_dic[key]
+                if key not in data[str(sel)]:
+                    data[str(sel)][key] = default_dic[key]
 
             for key in default_dic['schedules'][1]:
                 for i in range(1, 4):
-                    if key not in data[str(sel[0])]['schedules'][str(i)]:
-                        data[str(sel[0])]['schedules'][str(i)][key] = default_dic['schedules'][1][key]
+                    if key not in data[str(sel)]['schedules'][str(i)]:
+                        data[str(sel)]['schedules'][str(i)][key] = default_dic['schedules'][1][key]
 
-        data[str(sel[0])]['name'] = dico_instance[str(sel[0])]['name']
-        data[str(sel[0])]['port'] = int(dico_instance[str(sel[0])]['port'])
-        data[str(sel[0])]['instance'] = dico_instance[str(sel[0])]['instance']
+        data[str(sel)]['name'] = dico_instance[str(sel)]['name']
+        data[str(sel)]['port'] = int(dico_instance[str(sel)]['port'])
+        data[str(sel)]['instance'] = dico_instance[str(sel)]['instance']
         with open('user_settings.json', 'w') as outfile:
             json.dump(data, outfile, indent=2)
-        if sel[0] in self.frames:
-            self.frames[sel[0]].bottom_frame.tkraise()
+        if sel in self.frames:
+            self.frames[sel].bottom_frame.tkraise()
         else:
-            self.frames[sel[0]] = LowerFrame(self, sel)
+            self.frames[sel] = LowerFrame(self, sel)
         self.root.update()
 
     def is_account_expired(self):
@@ -459,15 +460,17 @@ class Main:
         return False
 
     def clear_all(self, treeview):
+        dic = {}
         for item in treeview.get_children():
+            dic[self.tree_view.item(item)['values'][1]] = self.tree_view.item(item)['values'][2]
             treeview.delete(item)
-
+        return dic
     def update_vms(self):
         # print(self.get_all_vms_running())
         # print("---")
         # print(self.get_list_instances())
         instances = self.get_all_vms_running()
-        self.clear_all(self.tree_view)
+        status = self.clear_all(self.tree_view)
         if instances == []:
             for item in self.tree_view.get_children():
                 self.tree_view.delete(item)
@@ -485,7 +488,7 @@ class Main:
                     if self.tree_view.item(item)['values'][0] == instance[0]:
                         to_add = False
                 if to_add:
-                    self.tree_view.insert('', END, values=(instance[0], instance[1], ""))
+                    self.tree_view.insert('', END, values=(instance[0], instance[1], status.get(instance[1],"")))
         # for instance in instances:
         #     self.tree_view.insert('', END, values=(instance[0], instance[1], ""))
         if len(self.tree_view.get_children()) > 3:
@@ -494,6 +497,7 @@ class Main:
             self.tree_view.configure(height=3)
 
 def index_of_first(lst, sel):
+    # print(lst,sel)
     for i, v in enumerate(lst):
         if str(v[0]) == sel:
             return lst[i][1]
