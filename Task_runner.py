@@ -393,7 +393,7 @@ class TaskRunner(Task):
         self.set_sel("0")
         self.adb.connect_to_device()
         self.data = self.update_data()
-
+        self.set_timer(10)
         i=0
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
         for i in range(loop_task):
@@ -495,14 +495,14 @@ class TaskRunner(Task):
         print("starting")
         self.adb.connect_to_device()
         self.data = self.update_data()
-
+        self.set_timer(10)
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
 
         starting_time = time()
         for i in range(loop_task):
             loop_time = time()
             self.set_status("Starting..")
-            self.print(" Script is starting ! ".center(20, "-"), "blue")
+            self.print(" Script is starting ! ".center(20, "-"), "green")
             self.print("")
             self.data = self.update_data()
 

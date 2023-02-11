@@ -48,7 +48,7 @@ class Task:
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             sleep(1)
             seconds -= 1
-            condition = ":" in self.tile.text_status.value
+            condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
             self.tile.text_status.update()
 
     @get_name
@@ -333,16 +333,17 @@ class Task:
 
         if self.tile.stopped:
             self.tile.stopped = False
-            print("You stopped the bot")
+            self.print("You stopped the bot","Red")
             sys.exit(1)
 
         while not self.tile.started:
             if not said:
-                print(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] Script is paused.")
+                self.print(f"You is paused.","Yellow")
                 self.set_text(f"[{current_time()}] Script is paused.")
                 said = True
                 # self.set_text("Script paused.")
-            sleep(1)
+        if said:
+            self.print(f"You resumed the script.","Green")
 
     @get_name
     def check_log_back(self, cv_image=None):
