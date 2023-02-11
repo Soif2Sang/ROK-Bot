@@ -1,5 +1,5 @@
 from threading import Thread
-
+import flet as ft
 import customtkinter
 
 from Task import Task
@@ -19,9 +19,16 @@ with open('user_settings.json') as config_file: data = json.load(config_file)
 
 class Frame():
     def __init__(self,sel):
-        self.pause = False
-        self.stop = False
-        self.sel = sel
+        self.started = True
+        self.stopped = False
+        self.number = sel
+
+    def add_text(self,phrase, color="black"):
+        print(phrase)
+
+    def add_status(self, phrase, color="black"):
+        return
+
 
 class Bot():
     def __init__(self,adb):
@@ -31,7 +38,7 @@ class Bot():
         self.main_task.adb = adb
         #self.task = Tasks(self.adb)
         self.main_task.set_sel(str(adb.number))
-        self.task = TaskRunner(self.main_task,self.main_task.frame)
+        self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)
@@ -191,7 +198,26 @@ def create_instance(number:int, master):
     bot.task.dynamique_city_upgrade()
     bot.task.kill_emulator()
 
-def upgrade_instance(number:int, master):
+
+class FakeText():
+    def __init__(self):
+        self.value = ""
+
+    def update(self):
+        return
+
+class lightTile():
+    def ___init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        with open('user_settings.json') as config_file:
+            data = json.load(config_file)
+
+        self.started = True
+        self.stopped = False
+        self.text_status = FakeText()
+
+def upgrade_instance(number:int):
     adb = Adb(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
@@ -201,36 +227,20 @@ def upgrade_instance(number:int, master):
     bot.main_task.status = lambda txt: print(txt)
     bot.main_task.script_pause = lambda: print("")
 
-    # bot.task.print = lambda txt: print(txt)
-    # bot.task.set_text = lambda txt: print(txt)
-    # bot.task.status = lambda txt: print(txt)
-    # bot.task.script_pause = lambda: print("")
-    #
-    # bot.upgrade.script_pause = lambda: print("")
-    # bot.upgrade.print = lambda txt: print(txt)
-    # bot.upgrade.set_text = lambda txt: print(txt)
-    # bot.upgrade.status = lambda txt: print(txt)
-    # bot.upgrade.script_pause = lambda: print("")
-    #
-    # bot.quests.script_pause = lambda: print("")
-    # bot.quests.print = lambda txt: print(txt)
-    # bot.quests.set_text = lambda txt: print(txt)
-    # bot.quests.status = lambda txt: print(txt)
-    # bot.quests.script_pause = lambda: print("")
 
 
 
     bot.task.current_profile="1"
-    # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master, fg_color="white")
-    frame.end_tasks_button = customtkinter.CTkButton(master)
-    frame.adb = bot.adb
-    frame.pause = False
-    frame.stop = False
-    frame.update_label2 = lambda x,_: print(x)
-    bot.task.frame = frame
-    bot.task.frame.pause = False
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
     bot.upgrade.setup_view()
     bot.task.better_sleep((0.9, 1.2))
     claim_allaince = randint(4000,6000)
@@ -344,6 +354,13 @@ def stop_start_emulators(master):
             instance.task.kill_emulator()
         sleep(uniform(900, 1200))
 
+def main(page:ft.Page):
+    Thread(target=lambda: upgrade_instance(page,8)).start()
+    Thread(target=lambda: upgrade_instance(page,9)).start()
+    Thread(target=lambda: upgrade_instance(page,10)).start()
+    Thread(target=lambda: upgrade_instance(page,11)).start()
+    # Thread(target=lambda: upgrade_instance(page,12)).start()
+    # Thread(target=lambda: upgrade_instance(page,13)).start()
 
 if __name__ == "__main__":
     # master = customtkinter.CTk()
@@ -356,7 +373,7 @@ if __name__ == "__main__":
     # bot.main_task.status = lambda txt: print(txt)
     # bot.main_task.script_pause = lambda: print("")
     # bot.task.current_profile="1"
-    master = customtkinter.CTk()
+    # master = customtkinter.CTk()
     # frame = customtkinter.CTkFrame(master)
     # frame.pr_tasks_button = customtkinter.CTkButton(master, fg_color="white")
     # frame.end_tasks_button = customtkinter.CTkButton(master)
@@ -373,10 +390,13 @@ if __name__ == "__main__":
 
 
 
-    Thread(target=lambda: upgrade_instance(3,master)).start()
-    Thread(target=lambda: upgrade_instance(4, master)).start()
-    Thread(target=lambda: upgrade_instance(5, master)).start()
+    # Thread(target=lambda: upgrade_instance(3,master)).start()
+    Thread(target=lambda: upgrade_instance(8)).start()
+    Thread(target=lambda: upgrade_instance(9)).start()
+    Thread(target=lambda: upgrade_instance(10)).start()
+    Thread(target=lambda: upgrade_instance(11)).start()
+    Thread(target=lambda: upgrade_instance(12)).start()
+    Thread(target=lambda: upgrade_instance(13)).start()
     # Thread(target=lambda: upgrade_instance(6, master)).start()
     # Thread(target=lambda: upgrade_instance(7, master)).start()
-    master.mainloop()
 

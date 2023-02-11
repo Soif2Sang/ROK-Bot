@@ -9,11 +9,11 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class UpgradeCity(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
+        self.frame = MainTask.tile
         self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid

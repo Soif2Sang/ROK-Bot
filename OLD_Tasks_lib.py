@@ -152,7 +152,7 @@ class Tasks:
 
     def set_sel(self, sel) -> None:
         self.data = self.update_data()
-        self.sel = sel[0]
+        self.sel = sel
         self.name = self.data.get(self.sel).get('name', "Name not found")
         # print(self.name)
         self.resource_type = self.data[str(self.sel)]['schedules'][self.current_profile]["First"]
