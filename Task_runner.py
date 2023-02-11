@@ -1,4 +1,4 @@
-
+import asyncio
 import json
 import multiprocessing
 import subprocess
@@ -34,12 +34,12 @@ from bot_adb import Adb
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class TaskRunner(Task):
-    def __init__(self, MainTask:Task, frame):
-        super().__init__(frame)
+    def __init__(self, MainTask: Task, tile):
+        super().__init__(tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
+        self.frame = MainTask.tile
         self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
@@ -108,8 +108,8 @@ class TaskRunner(Task):
             self.check_download_page()
             self.leave_kd_buff()
             self.print("")
-            self.print(f"----- Task {current_task}/{len(lib_tasks)} -----".center(60))
-            self.print(f"Currently executing : {self.get_current_task(func.task_name())}")
+            self.print(f"Task {current_task}/{len(lib_tasks)}","blue")
+            self.print(f"Currently executing : {self.get_current_task(func.task_name())}","blue")
             self.print("")
             self.set_current_task(func.task_name())
             self.run_game()
@@ -133,9 +133,9 @@ class TaskRunner(Task):
                     func.run()
                 self.better_sleep((1, 2))
             except Exception as e:
-                self.print(f"Exception during {func.task_name()}")
+                self.print(f"Exception during {func.task_name()}","red")
                 exception = traceback.format_exc()
-                self.print(f"{exception}")
+                self.print(f"{exception}","red")
                 self.leave_game()
                 self.better_sleep((5, 10))
                 self.run_game()
@@ -477,7 +477,8 @@ class TaskRunner(Task):
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
                 self.print("")
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
-                self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
+                # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
+                self.set_timer(time_before_redo_tasks)
                 if self.data.get("0").get("leave_game_loop", False):
                     if time_before_redo_tasks < 600:
                         self.leave_game(force=True)
@@ -501,7 +502,7 @@ class TaskRunner(Task):
         for i in range(loop_task):
             loop_time = time()
             self.set_status("Starting..")
-            self.print(" Script is starting ! ".center(56, "-"))
+            self.print(" Script is starting ! ".center(20, "-"), "blue")
             self.print("")
             self.data = self.update_data()
 
@@ -509,10 +510,10 @@ class TaskRunner(Task):
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
                     self.current_profile = profile
-                    self.print(f" Profile n°{profile} enabled ! ".center(60))
+                    self.print(f" Profile n°{profile} enabled ! ","blue")
                     self.print("")
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character"):
-                        self.print(f"---- Character n°1 ----".center(60))
+                        self.print(f"Character n°1", "blue")
                         self.print("")
                     self.run_game()
                     self.check_log_back()
@@ -535,7 +536,7 @@ class TaskRunner(Task):
                         # Characters remaining
                         nb_characters = 2
                         while boolean:
-                            self.print(f"---- Character n°{nb_characters} ----".center(60))
+                            self.print(f"Character n°{nb_characters}","blue")
                             self.print("")
                             self.run_game()
 
@@ -558,13 +559,16 @@ class TaskRunner(Task):
                 ttw1, ttw2 = self.data.get(self.sel).get("time_to_wait_loop1", 60), self.data.get(self.sel).get(
                     "time_to_wait_loop2", 90)
                 self.print("")
-                self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
+                heures, minutes = divmod((int(time()) - loop_time), 60)
+                minutes,secondes = divmod(int(minutes), 60)
+                self.print(f"Run nb°{i} took {int(heures):02d}:{int(minutes):02d}:{int(secondes):02d} to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
                 self.print("")
-                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
-                self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
+                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes","#f5b400")
+                # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
+                self.set_timer(time_before_redo_tasks)
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     if time_before_redo_tasks < 600:
                         self.leave_game(force=True)
@@ -575,6 +579,6 @@ class TaskRunner(Task):
                     self.script_pause()
                     sleep(1)
         self.print("")
-        self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.")
+        self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.","green")
         return
 

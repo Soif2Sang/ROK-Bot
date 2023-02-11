@@ -24,6 +24,7 @@ class LowerFrame():
         self.data = data
         self.upper_frame = upper_frame
         self.root = upper_frame.root
+        self.number = sel
         self.sel = sel
         # self.adb = Adb(sel[0])
         # self.device = self.adb.connect_to_device()
@@ -57,7 +58,7 @@ class LowerFrame():
         # self.tasks.set_sel(sel[0])
 
         self.main_task = Task(self)
-        self.runner = TaskRunner(self.main_task,self)
+        self.runner = TaskRunner(self.main_task, self)
         self.tasks_process = threading.Thread(target=self.runner.run)
 
 

@@ -24,11 +24,11 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class BarbFort(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
+        self.frame = MainTask.tile
         self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
@@ -86,13 +86,13 @@ class BarbFort(Task):
 
         except Exception as e:
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ","red")
             print(
                 f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
             self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial")
+                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial","red")
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ","red")
 
     @get_name
     def zoom_out_city(self) -> None:

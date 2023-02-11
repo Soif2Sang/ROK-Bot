@@ -33,7 +33,7 @@ class Bot():
         self.main_task.adb = adb
         #self.task = Tasks(self.adb)
         self.main_task.set_sel(str(adb.number))
-        self.task = TaskRunner(self.main_task,self.main_task.frame)
+        self.task = TaskRunner(self.main_task, self.main_task.frame)
         self.upgrade = UpgradeCity(self.main_task)
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)

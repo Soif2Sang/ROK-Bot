@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import os
@@ -21,11 +22,11 @@ from twocaptcha import TwoCaptcha
 
 
 class Task:
-    def __init__(self, frame):
+    def __init__(self, tile):
         self.data = get_data()
         self.current_profile = '1'
-        self.frame = frame
-        self.sel = frame.sel
+        self.tile = tile
+        self.sel = tile.number
         self.adb = Adb(self.sel)
         self.ppid = os.getppid()
         self.pid = get_window_pid(self.adb.name)
@@ -33,11 +34,22 @@ class Task:
         self.name = self.adb.name
         self.resource_type = None
 
-    def set_text(self, text):
-        self.frame.write(text)
+    def set_text(self, text, color="black"):
+        return self.tile.add_text(text,color)
 
     def set_status(self, text):
-        self.frame.update_label2(self.sel, text)
+        return self.tile.set_text(text)
+
+    def set_timer(self, seconds:int):
+        condition = True
+        while seconds and condition:
+            hours, mins = divmod(seconds, 3600)
+            mins, secs = divmod(mins, 60)
+            self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
+            sleep(1)
+            seconds -= 1
+            condition = ":" in self.tile.text_status.value
+            self.tile.text_status.update()
 
     @get_name
     def update_data(self):
@@ -52,10 +64,10 @@ class Task:
         self.resource_type = self.data[str(self.sel)]['schedules'][self.current_profile]["First"]
 
     @get_name
-    def print(self, text: str) -> None:
+    def print(self, text: str, color="black") -> None:
         # print(f'[ {current_time()} ] [ {self.name} ] {text}')
         if text != "":
-            self.set_text(f"[{current_time()}] {text}")
+            self.set_text(f"[{current_time()}] {text}",color)
         else:
             self.set_text("")
 
@@ -263,6 +275,7 @@ class Task:
                 self.better_sleep((4, 7))
                 return self.resolve_captcha(compteur + 1)
             result = verification.solve(f"captcha{self.sel}.jpg", self.sel)
+            print(result)
             if result == 0:
                 if compteur >= 3:
                     self.click(uniform(100, 300), uniform(100, 400))
@@ -311,13 +324,19 @@ class Task:
                 logger.write(
                     f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
             self.click(uniform(507, 533), uniform(573, 599))
-            self.print("Refreshing the captcha.")
+            self.print("Refreshing the captcha.","red")
             self.better_sleep((4, 7))
             return self.resolve_captcha(compteur=compteur + 1)
 
     def script_pause(self):
         said = False
-        while self.frame.pause and not self.frame.pr_tasks_button.cget("fg_color") == "white":
+
+        if self.tile.stopped:
+            self.tile.stopped = False
+            print("You stopped the bot")
+            sys.exit(1)
+
+        while not self.tile.started:
             if not said:
                 print(f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] Script is paused.")
                 self.set_text(f"[{current_time()}] Script is paused.")
@@ -325,12 +344,6 @@ class Task:
                 # self.set_text("Script paused.")
             sleep(1)
 
-
-        if self.frame.stop:
-            print(self.frame.stop)
-            print(self.frame.end_tasks_button.cget("state"))
-            self.frame.stop = False
-            sys.exit(1)
     @get_name
     def check_log_back(self, cv_image=None):
         self.data = self.update_data()
@@ -602,4 +615,4 @@ class Task:
         return self.adb.find_img(target='gem_search_button') is None
 
     def status(self, text):
-        self.frame.update_label2(self.sel, text)
+        self.tile.update_label2(self.sel, text)
