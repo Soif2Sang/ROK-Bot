@@ -35,9 +35,9 @@ class AllianceDonation(Task):
         screen = self.adb.get_curr_device_screen_img()
         source = array(screen)
         source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
-        co = self.adb.find_img(source=source, target="alliance_flag1", confidence=0.8)
+        co = self.adb.find_img(source=source, target="alliance_flag1", confidence=0.9)
         if co is None:
-            co = self.adb.find_img(source=source, target="alliance_flag2", confidence=0.8)
+            co = self.adb.find_img(source=source, target="alliance_flag2", confidence=0.9)
         if co is None:
             return
         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 10))
