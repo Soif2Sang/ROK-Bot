@@ -412,6 +412,7 @@ class Task:
             co = self.adb.find_img(source=cv_image, target="reconnect", confidence=0.85)
 
         if co is not None:
+
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_reconnect', False):
                 print(co)
                 if cv_image is not None:
