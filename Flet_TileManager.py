@@ -244,6 +244,5 @@ class TileManager(ft.ListView):
             if str(instance[0]) in self.tiles:
                 self.controls.append(self.tiles[str(instance[0])])
             else:
-                print(str(instance[0]))
                 self.add_tile(str(instance[0]))
         self.update()
