@@ -107,7 +107,7 @@ class LoginButton(ft.FilledButton):
                 main(self.page)
                 return False
             else:
-                sleep(10)
+                sleep(3600 * 24)
                 return self.login_schedule(username, password)
         except Exception as e:
             # print(e)
