@@ -12,7 +12,7 @@ import win32gui
 from pyautogui import getAllWindows
 from urllib3 import Retry, PoolManager
 
-customtkinter.set_appearance_mode("light")
+customtkinter.set_appearance_mode("dark")
 if not os.path.exists("user_settings.json"):
     with open('user_settings.json', 'w') as f:
         json.dump({}, f, indent=2)
