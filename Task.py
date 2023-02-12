@@ -371,8 +371,8 @@ class Task:
 
                 value = randint(self.data.get(self.sel).get('schedules').get(self.current_profile).get('log_back1'),
                                 self.data.get(self.sel).get('schedules').get(self.current_profile).get(
-                                    'log_back2') * 60)
-                self.print(f"Waiting for the timer to end.. {value} minutes")
+                                    'log_back2')) * 59 + randint(0,60)
+                self.print(f"Waiting for the timer to end.. {value // 60} minutes")
                 for i in range(value):
                     self.script_pause()
                     sleep(1)
