@@ -123,13 +123,127 @@ class TileManager(ft.ListView):
         return self.get_current_instances(self.get_dic_instances())
 
     def refresh(self):
+        with open("user_settings.json","r") as f:
+            data = json.load(f)
+
+
+        instances = self.get_dic_instances()
+
+
+        for key in instances:
+
+            if str(key) not in data:
+                default_dic = {
+                    'instance': instances[str(key)]['instance'],
+                    'name': instances[str(key)]['name'],
+                    'host': '127.0.0.1',
+                    'port': int(instances[str(key)]['port']),
+                    'API_KEY': "",
+                    'loop_task': False,
+                    'time_to_wait_loop1': 60,
+                    'time_to_wait_loop2': 110,
+                    'leave_game_loop': True,
+                    'scheduler': False,
+                    'schedules': {}
+                }
+                for i in range(1, 4):
+                    default_dic['schedules'][i] = {
+                        'enabled': False,
+                        'kingdom': 0,
+                        'city_x': 0,
+                        'city_y': 0,
+                        'radius': 30,
+                        "First": "stone",
+                        "Second": "food",
+                        "Third": "gold",
+                        "Fourth": "wood",
+                        "Fifth": "food",
+                        "Sixth": "food",
+                        "Seventh": "food",
+                        "First_level": 6,
+                        "Second_level": 6,
+                        "Third_level": 6,
+                        "Fourth_level": 6,
+                        "Fifth_level": 6,
+                        "Sixth_level": 6,
+                        "Seventh_level": 6,
+                        "rss_custom_preset": False,
+                        'auto_reconnect': True,
+                        'auto_captcha': True,
+                        'check_donation': False,
+                        'use_enhanced_buff': False,
+                        'gather_rss': False,
+                        'buy_merchant': False,
+                        'claim_daily_quests': False,
+                        'collect_ressource': False,
+                        'defeat_barbarians': False,
+                        'barbarians_level': 25,
+                        'gather_gem': False,
+                        'gem_check1': 60,
+                        'gem_check2': 120,
+                        'gem_experimental': False,
+                        'gather_gem_duration1': 60,
+                        'gather_gem_duration2': 90,
+                        'restart_game': False,
+                        'switch_character': False,
+                        'leave_game_switch_character': False,
+                        "scout_fog": False,
+                        "scout_duration1": 60,
+                        "scout_duration2": 90,
+                        "scout_building_x": 730,
+                        "scout_building_y": 410,
+                        "slow_mode": False,
+                        "sleep_multiplicator": 1,
+                        "auto_log_back": True,
+                        "log_back1": 5,
+                        "log_back2": 10,
+                        "claim_daily_vip": False,
+                        "claim_daily_chest": False,
+                        "claim_campaign": False,
+                        "start_fort": False,
+                        "rally_type": 'cav',
+                        "rally_time": 10,
+                        "rally_radius": 20,
+                        "rally_count": 2,
+                        "mauraudeurs_forts": False,
+                        "heal_troop": False,
+                        "healing_building_x": 980,
+                        "healing_building_y": 267,
+                        "healing_count": 1500,
+                        "material_production": False,
+                        "material_choice_1": "leather",
+                        "material_choice_2": "leather",
+                        "material_choice_3": "leather",
+                        "material_choice_4": "leather",
+                        "material_choice_5": "leather",
+                        "alliance_help": False
+                    }
+                default_dic['schedules'][1]['enabled'] = True
+                if str(key) not in data:
+                    data[str(key)] = default_dic
+                else:
+                    for key2 in default_dic:
+                        if key2 not in data[str(key)]:
+                            data[str(key)][key2] = default_dic[key2]
+
+                    for key2 in default_dic['schedules'][1]:
+                        for i in range(1, 4):
+                            if key2 not in data[str(key)]['schedules'][str(i)]:
+                                data[str(key)]['schedules'][str(i)][key2] = default_dic['schedules'][1][key2]
+            else:
+                data[str(key)]['instance'] = instances[str(key)]['instance']
+                data[str(key)]['name'] = instances[str(key)]['name']
+                data[str(key)]['port'] = int(instances[str(key)]['port'])
+
+        with open('user_settings.json', 'w') as config_file:
+            config_file.write(json.dumps(data, indent=2))
         instances = self.get_all_vms_running()
         for i in range(len(self.controls) - 1):
             self.controls.pop()
-        print(f"{self.controls = }")
         for instance in instances:
             if str(instance[0]) in self.tiles:
                 self.controls.append(self.tiles[str(instance[0])])
             else:
+                print(str(instance[0]))
                 self.add_tile(str(instance[0]))
         self.update()

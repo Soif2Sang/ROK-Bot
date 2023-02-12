@@ -653,7 +653,8 @@ class SettingContainer(ft.Container):
 
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
-            index = self.instance_index
+            index = self.profile_index
+        print(f"{keyword = }, {index = }, {self.instance_index =}")
         if keyword not in ["loop_task", "scheduler"]:
             self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not \
                 self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
