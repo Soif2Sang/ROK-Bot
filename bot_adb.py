@@ -1,5 +1,6 @@
 import os
 import shutil
+from datetime import date
 from os.path import exists
 from time import sleep
 
@@ -13,6 +14,8 @@ import io
 import pytesseract as tess
 from PIL import Image
 
+from Task_utils import current_time, get_name, get_data, get_path
+
 Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
 import json
@@ -24,99 +27,94 @@ if not os.path.exists("user_settings.json"):
         json.dump({}, f, indent=2)
         print("User settings created")
 
-class Adb:
-    with open('user_settings.json') as config_file:
-        data = json.load(config_file)
 
+class Adb:
     def __init__(self, number, host='127.0.0.1', port=5037):
-        with open('user_settings.json') as config_file: data = json.load(config_file)
+        data = get_data()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
         self.number = number
         self.name = data[str(self.number)]['name']
 
+    def __str__(self):
+        print(f"JsonNumber:{self.number} port:{self.port}")
+
+
     def connect_to_device(self, host='127.0.0.1'):
-        with open('user_settings.json') as config_file:
-            data = json.load(config_file)
+        data = get_data()
+        path = get_path()
+
         self.port = int(data[str(self.number)]['port'])
-        with open('path.json') as config_file:
-            path = json.load(config_file)
         adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-        # adb_path = r"C:\Program Files\BlueStacks_nxt\HD-Adb.exe"
         cmd = f"{adb_path} connect {host}:{self.port}"
-        # print(cmd)
+
         subprocess.Popen(cmd)
-        return self.get_device()
 
     def get_client_devices(self):
         return self.client.devices()
 
     def get_device(self, host='127.0.0.1'):
         try:
-            logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO,
-                                format=f"%(asctime)s %(message)s",
-                                datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
-
-            with open('user_settings.json') as config_file:
-                data = json.load(config_file)
+            data = get_data()
             self.port = str(data[str(self.number)]['port'])
-            self.host = host
-            # print(f"{host = } {self.port = }")
-            device = self.client.device('{}:{}'.format(host, self.port))
-            try:
+            device = self.client.device(f'{host}:{self.port}')
+            if device is None:
+                self.print(f"INFO : Device is None, trying to reconnect..")
+
+                path = get_path()
+
+                adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
+                cmd = f"{adb_path} connect {host}:{self.port}"
+                subprocess.Popen(cmd)
+                sleep(2)
+
                 if device is None:
-                    print("Device is None, trying to reconnect..")
-                    with open('path.json') as config_file:
-                        path = json.load(config_file)
-                    adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-                    # adb_path = r"C:\Program Files\BlueStacks_nxt\HD-Adb.exe"
-                    cmd = f"{adb_path} connect {host}:{self.port}"
-                    # print(cmd)
-                    subprocess.Popen(cmd)
-                    sleep(2)
-                    device = self.client.device('{}:{}'.format(host, self.port))
-            except Exception as e:
-                traceback.print_exc()
-                print("Device is None, trying to reconnect..")
-                logging.exception(f"[{self.name}] Error in connect to device")
-                return self.get_device()
-            # print(device)
+                    return self.get_device()
             return device
         except Exception as e:
-            print(e)
-            print(" Error in connect to device")
-            logging.exception(f"[{self.name}] Error in connect to device ")
-            with open('path.json') as config_file:
-                path = json.load(config_file)
+            traceback.print_exc()
+            self.print("EXCEPTION : Error in connect to device")
+
+            path = get_path()
             cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
-            # cmd = "adb\\adb.exe start-server"
             subprocess.Popen(cmd)
-            print(f"[{self.name}] Adb restarting..")
-            logging.info(f"[{self.name}] Adb restarting..")
+
+            self.print(f"Adb restarting..")
             sleep(20)
-            print(f"[{self.name}] Connecting to the device..")
-            logging.info(f"[{self.name}] Connecting to the device..")
-            self.connect_to_device()
+            self.print(f"Connecting to the device..")
+
+            adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
+            cmd = f"{adb_path} connect {host}:{self.port}"
+            subprocess.Popen(cmd)
+
             sleep(5)
             return self.get_device()
+
+    def print(self, text:str):
+        print(text)
+        with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+            logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] {text}\n")
 
     def get_curr_device_screen_img_byte_array(self):
         return self.get_device().screencap()
 
+
     def get_curr_device_screen_img(self):
         try:
-            logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-                            datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
             device = self.get_device()
             if device is None:
+                print("get_curr_device_screen_img device is null")
                 self.connect_to_device()
             output = io.BytesIO(device.screencap())
-            output.seek(0)
-            return Image.open(output)
-        except:
-            logging.info(f"[{self.name}] FUNCTION EXCEPTION : get_curr_device_screen_img")
+            # output.seek(0)
+            image = Image.open(output)
+            self.print("INFO : Image opened")
+            return image
+        except Exception as e:
+            self.print(f"EXCEPTION : get_screen_device")
             sleep(1)
+            self.connect_to_device()
             return self.get_curr_device_screen_img()
 
     def get_cv2_img(self):
@@ -141,40 +139,34 @@ class Adb:
         else:
             return
 
-    def find_img(self, target, source:  ndarray = None, confidence=0.9):
-        if source is None:
-            pil_image = self.get_curr_device_screen_img()
-            source = array(pil_image)
-            if target == "new_troops_button":
-                source = source[0:322, 800:1280]
-            if target == "gem_search_button":
-                source = source[470:600, 0:150]
+    def find_img(self, target:str, source:  ndarray = None, confidence=0.9):
+        try:
+            if source is None:
+                pil_image = self.get_curr_device_screen_img()
+                source = array(pil_image)
+                if target == "new_troops_button":
+                    source = source[0:322, 800:1280]
+                if target == "gem_search_button":
+                    source = source[470:600, 0:150]
 
-            source = cvtColor(source, COLOR_BGR2RGB)
+                source = cvtColor(source, COLOR_BGR2RGB)
 
-        img_to_find = get_file_name(target)
+            img_to_find = get_file_name(target)
 
-        result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = minMaxLoc(result)
+            result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
+            min_val, max_val, min_loc, max_loc = minMaxLoc(result)
 
-        if max_val > confidence:
-            if target == "new_troops_button":
-                return max_loc[0] + 800, max_loc[1]
-            return max_loc[0], max_loc[1]
-        else:
-            return
+            if max_val > confidence:
+                if target == "new_troops_button":
+                    return max_loc[0] + 800, max_loc[1]
+                return max_loc[0], max_loc[1]
+            else:
+                return
+        except Exception as exception_error:
+            self.print("Error occured when using find_image")
+            traceback.print_exc()
+            self.print(exception_error)
 
-    # def find_img_arg_conf(self, file_name, confidence):
-    #     pil_image = self.get_curr_device_screen_img()
-    #     cv_image = array(pil_image)
-    #     cv_image = cvtColor(cv_image, COLOR_BGR2RGB)
-    #     img_to_find = get_file_name(file_name)
-    #     result = matchTemplate(cv_image, img_to_find, TM_CCOEFF_NORMED)
-    #     min_val, max_val, min_loc, max_loc = minMaxLoc(result)
-    #     if max_val > confidence:
-    #         return max_loc[0], max_loc[1]
-    #     else:
-    #         return
 
     def find_img_src_conf(self, src, target, confidence):
         img_to_find = get_file_name(target)
@@ -184,51 +176,6 @@ class Adb:
             return max_loc[0], max_loc[1]
         else:
             return
-
-    # def find_multiple_img(self, file_name, confidence=0.75):
-    #     pil_image = self.get_curr_device_screen_img()
-    #     cv_image = array(pil_image)
-    #     cv_image = cvtColor(cv_image, COLOR_BGR2RGB)
-    #     img_to_find = get_file_name(file_name)
-    #
-    #     result = matchTemplate(cv_image, img_to_find, TM_CCOEFF_NORMED)
-    #     needle_w = img_to_find.shape[1]
-    #     needle_h = img_to_find.shape[0]
-    #     min_val, max_val, min_loc, max_loc = minMaxLoc(result)
-    #     min_thresh = confidence
-    #     location = where(result >= min_thresh)
-    #     location = list(zip(*location[::-1]))
-    #     # print(location)
-    #
-    #     rectangles = []
-    #     for loc in location:
-    #         rect = [int(loc[0]), int(loc[1]), needle_w, needle_h]
-    #         rectangles.append(rect)
-    #     # print(rectangles)
-    #
-    #     localisations = []
-    #
-    #     for i in range(len(rectangles)):
-    #         localisations.append((rectangles[i][0], rectangles[i][1]))
-    #
-    #     element_to_delete = []
-    #     for i in range(len(localisations)):
-    #         if i != len(localisations):
-    #             if ((
-    #                     (localisations[i][0] + 1 == localisations[i + 1][0]) or
-    #                     (localisations[i][0] - 1 == localisations[i + 1][0]) or
-    #                     (localisations[i][0] == localisations[i + 1][0])
-    #             ) and
-    #                     (
-    #                             (localisations[i][1] + 1 == localisations[i + 1][1]) or
-    #                             (localisations[i][1] - 1 == localisations[i + 1][1]) or
-    #                             (localisations[i][1] == localisations[i + 1][1])
-    #                     )
-    #             ):
-    #                 element_to_delete.append(localisations[i])
-    #     for element in element_to_delete:
-    #         localisations.remove(element)
-    #     return localisations
 
     def find_multiple_img(self, target, confidence=0.9):
         pil_image = self.get_curr_device_screen_img()
@@ -285,18 +232,6 @@ class Adb:
         for element in element_to_delete:
             localisations.remove(element)
         return localisations
-
-    # def find_img_arg(self, source, file_name, confidence=0.80):
-    #     cv_image = array(source)
-    #     cv_image = cvtColor(cv_image, COLOR_BGR2RGB)
-    #     img_to_find = get_file_name(file_name)
-    #
-    #     result = matchTemplate(cv_image, img_to_find, TM_CCOEFF_NORMED)
-    #     min_val, max_val, min_loc, max_loc = minMaxLoc(result)
-    #     if max_val > confidence:
-    #         return max_loc[0], max_loc[1]
-    #     else:
-    #         return
 
     def is_game_alive(self):
         string = "dumpsys activity activities | grep mFocusedActivity"
@@ -417,9 +352,3 @@ def img_to_string(pil_image):
 def img_remove_background_and_enhance_word(cv_image, lower, upper):
     hsv = cvtColor(cv_image, COLOR_BGR2HSV)
     return inRange(hsv, lower, upper)
-
-
-"""
-adb=Adb()
-adb.connect_to_device()
-"""

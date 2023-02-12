@@ -24,12 +24,12 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class BarbFort(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -86,13 +86,13 @@ class BarbFort(Task):
 
         except Exception as e:
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ","red")
             print(
                 f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
             self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial")
+                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial","red")
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ","red")
 
     @get_name
     def zoom_out_city(self) -> None:
@@ -431,7 +431,7 @@ class BarbFort(Task):
                         y_click = co[1]
                         self.better_sleep((2, 2.5))
                         self.check_if_kill()
-                        self.check_resolve()
+                        self.check_captcha()
                         self.print("Scanning the fort..")
                         if self.find_cross():
                             self.print("Someone is already rallying it")
@@ -536,7 +536,7 @@ class BarbFort(Task):
                 self.better_sleep((2, 2.5))
                 self.check_if_kill()
 
-                self.check_resolve()
+                self.check_captcha()
                 if self.find_cross():
                     self.print(f'Someone is already rallying it..')
                     return self.adjusted_leave_city(x_click, y_click)
@@ -711,7 +711,7 @@ class BarbFort(Task):
             self.print("Bot detected you are low in action point, bot prefers to not start a rally !")
             return
         self.run_game()
-        self.check_resolve()
+        self.check_captcha()
         self.leave_city()
         # print("premier leave city")
         self.better_sleep((1.5, 2))
@@ -742,7 +742,7 @@ class BarbFort(Task):
             if self.scan_fort(): return
             self.check_reconnect(cv_image)
             self.check_log_back()
-            self.check_resolve(False)
+            self.check_captcha(False)
 
             if randomization == 0:
                 for y in range(width - 1):
@@ -757,7 +757,7 @@ class BarbFort(Task):
                         return
                     # self.better_sleep((0.525, 0.795))
                     if time_to_beat < time(): return
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     self.check_if_kill()
 
                     for _ in range(width):
@@ -765,7 +765,7 @@ class BarbFort(Task):
                         if self.swipe_scan(self.scan_fort, self.swipe_left):
                             return
                         # self.better_sleep((0.125, 0.195))
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     if time_to_beat < time(): return
 
                     if y != (width - 2):
@@ -786,7 +786,7 @@ class BarbFort(Task):
                         return
                     # self.better_sleep((0.125, 0.195))
                     if time_to_beat < time(): return
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     self.check_if_kill()
 
                     for _ in range(width):
@@ -794,7 +794,7 @@ class BarbFort(Task):
                         if self.swipe_scan(self.scan_fort, self.swipe_right):
                             return
                         # self.better_sleep((0.125, 0.195))
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     if y != (width - 2):
                         if self.swipe_scan(self.scan_fort, self.swipe_up):
                             return
@@ -810,7 +810,7 @@ class BarbFort(Task):
                         if self.swipe_scan(self.scan_fort, self.swipe_down):
                             return
 
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     self.check_if_kill()
                     if time_to_beat < time(): return
 
@@ -824,7 +824,7 @@ class BarbFort(Task):
                             return
                         # self.better_sleep((0.125, 0.195))
 
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     self.check_if_kill()
                     if y != (height - 2):
                         if self.swipe_scan(self.scan_fort, self.swipe_left):
@@ -847,14 +847,14 @@ class BarbFort(Task):
                     # self.better_sleep((0.125, 0.195))
                     if time_to_beat < time(): return
                     self.check_if_kill()
-                    self.check_resolve(False)
+                    self.check_captcha(False)
 
                     for _ in range(height):
                         if time_to_beat < time(): return
                         if self.swipe_scan(self.scan_fort, self.swipe_down):
                             return
                         # self.better_sleep((0.125, 0.195))
-                    self.check_resolve(False)
+                    self.check_captcha(False)
                     if y != (height - 2):
                         if self.swipe_scan(self.scan_fort, self.swipe_right):
                             return

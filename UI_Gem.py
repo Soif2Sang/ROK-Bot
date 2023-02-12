@@ -42,8 +42,13 @@ class GemInterface(customtkinter.CTkToplevel):
 
         self.switch_restart = customtkinter.CTkSwitch(self,text='Sometimes restart game'
                                                       ,command=self.command_restart)
+
+        # self.switch_alliance_help = customtkinter.CTkSwitch(self, text='Enable experimental mode',
+        #                                           command=self.command_experimental)
+
         self.switch_experimental = customtkinter.CTkSwitch(self, text='Enable experimental mode',
                                                   command=self.command_experimental)
+
 
         self.button_submit = customtkinter.CTkButton(self, text="Save changes", command=self.submit, corner_radius=4,
                                                      fg_color="white", border_color="grey", border_width=1, text_color="black")
@@ -66,6 +71,7 @@ class GemInterface(customtkinter.CTkToplevel):
         else:
             self.switch_experimental.deselect()
 
+        self.yellow = customtkinter.CTkLabel(self, text="You *MUST* pre-configure Yellow presets", text_color="red").grid(row=0, column=0, columnspan=4, sticky='nesw')
         self.label_kingdom.grid(row=1, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))
         self.entry_kingdom.grid(row=1, column=1, columnspan=2)
         self.label_x.grid(row=2, column=0, columnspan=1, pady=2, sticky='e', padx=(5, 0))

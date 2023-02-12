@@ -7,7 +7,7 @@ from tkinter import ttk
 
 from UI_Narrow import LowerFrame
 from bot_adb import Adb
-from Tasks_lib import *
+from OLD_Tasks_lib import *
 import os
 import pyautogui
 import requests
@@ -105,22 +105,18 @@ def request_acess(username, password):
 
 class Main:
     def __init__(self, days):
-        # root = Frame(master=window)
+        self.days = days + 1
         self.root = customtkinter.CTk()
-        # self.root = Tk()
-        # print(f"{self.root.cget('bg') =}")
         self.root.resizable(False, False)
-        self.root.title(f'RoK Bot - {days} Days left')
+        self.root.title(f'RoK Bot - {self.days} Days left')
         self.root.iconbitmap('Item_Gem.ico')
         self.frames = {}
-        # self.root.geometry(f"{150}x{250}")
-        # self.root['bg']='red'
         s = ttk.Style()
 
         # Set the selection background color to green.
         s.map("Custom.Treeview", background=[("selected", "#a7a7a7")])
         s.configure('Treeview', rowheight=30)
-        self.tree_view = ttk.Treeview(self.root, columns=[1, 2, 3], height=5, show="headings",style="Custom.Treeview")
+        self.tree_view = ttk.Treeview(self.root, columns=[1, 2, 3], height=8, show="headings",style="Custom.Treeview")
         self.tree_view.column(1, width=30, anchor=CENTER)
         self.tree_view.column(2, width=120, anchor=CENTER)
         self.tree_view.column(3, width=160, anchor=W)
@@ -157,23 +153,23 @@ class Main:
         # width = self.root.winfo_width()
         # height = self.root.winfo_height()
         # window.geometry(f"{width}x{height}")
-        def quit_window(icon, item):
-            icon.stop()
-            self.root.destroy()
-
-        # Define a function to show the window again
-        def show_window(icon, item):
-            icon.stop()
-            self.root.after(0, self.root.deiconify())
-
-        def hide_window():
-            self.root.withdraw()
-            image = Image.open("Item_Gem.ico")
-            menu = (item(text='Open', action=show_window, default=True, visible=False),
-                    item(text='Open', action=show_window),
-                    item(text='Quit',  action=quit_window))
-            icon = pystray.Icon("name", image, "Rise of Kingdom Bot", menu)
-            icon.run()
+        # def quit_window(icon, item):
+        #     icon.stop()
+        #     self.root.destroy()
+        #
+        # # Define a function to show the window again
+        # def show_window(icon, item):
+        #     icon.stop()
+        #     self.root.after(0, self.root.deiconify())
+        #
+        # def hide_window():
+        #     self.root.withdraw()
+        #     image = Image.open("Item_Gem.ico")
+        #     menu = (item(text='Open', action=show_window, default=True, visible=False),
+        #             item(text='Open', action=show_window),
+        #             item(text='Quit',  action=quit_window))
+        #     icon = pystray.Icon("name", image, "Rise of Kingdom Bot", menu)
+        #     icon.run()
 
         # def quit():
         #     sys.exit(1)
@@ -200,19 +196,20 @@ class Main:
             data = json.load(config_file)
         try:
             sel = str(self.tree_view.item(event.widget.selection())['values'][0])
-            # print(sel)
+            print(sel)
             # print(self.tree_view.item(event.widget.selection()))
         except:
             self.instance_name.configure(text="")
             return
         all_instances = self.get_all_vms_running()
         dico_instance = self.get_dic_instances()
-        self.instance_name.configure(text=index_of_first(all_instances, sel[0]))
+        # print(index_of_first(all_instances, sel))
+        self.instance_name.configure(text=index_of_first(all_instances, sel))
         default_dic = {
-            'instance': dico_instance[str(sel[0])]['instance'],
-            'name': dico_instance[str(sel[0])]['name'],
+            'instance': dico_instance[str(sel)]['instance'],
+            'name': dico_instance[str(sel)]['name'],
             'host': '127.0.0.1',
-            'port': int(dico_instance[str(sel[0])]['port']),
+            'port': int(dico_instance[str(sel)]['port']),
             'API_KEY': "",
             'loop_task': False,
             'time_to_wait_loop1': 60,
@@ -290,30 +287,31 @@ class Main:
                     "material_choice_2": "leather",
                     "material_choice_3": "leather",
                     "material_choice_4": "leather",
-                    "material_choice_5": "leather"
+                    "material_choice_5": "leather",
+                    "alliance_help": False
             }
         default_dic['schedules'][1]['enabled']= True
-        if str(sel[0]) not in data:
-            data[str(sel[0])] = default_dic
+        if str(sel) not in data:
+            data[str(sel)] = default_dic
         else:
             for key in default_dic:
-                if key not in data[str(sel[0])]:
-                    data[str(sel[0])][key] = default_dic[key]
+                if key not in data[str(sel)]:
+                    data[str(sel)][key] = default_dic[key]
 
             for key in default_dic['schedules'][1]:
                 for i in range(1, 4):
-                    if key not in data[str(sel[0])]['schedules'][str(i)]:
-                        data[str(sel[0])]['schedules'][str(i)][key] = default_dic['schedules'][1][key]
+                    if key not in data[str(sel)]['schedules'][str(i)]:
+                        data[str(sel)]['schedules'][str(i)][key] = default_dic['schedules'][1][key]
 
-        data[str(sel[0])]['name'] = dico_instance[str(sel[0])]['name']
-        data[str(sel[0])]['port'] = int(dico_instance[str(sel[0])]['port'])
-        data[str(sel[0])]['instance'] = dico_instance[str(sel[0])]['instance']
+        data[str(sel)]['name'] = dico_instance[str(sel)]['name']
+        data[str(sel)]['port'] = int(dico_instance[str(sel)]['port'])
+        data[str(sel)]['instance'] = dico_instance[str(sel)]['instance']
         with open('user_settings.json', 'w') as outfile:
             json.dump(data, outfile, indent=2)
-        if sel[0] in self.frames:
-            self.frames[sel[0]].bottom_frame.tkraise()
+        if sel in self.frames:
+            self.frames[sel].bottom_frame.tkraise()
         else:
-            self.frames[sel[0]] = LowerFrame(self, sel)
+            self.frames[sel] = LowerFrame(self, sel)
         self.root.update()
 
     def is_account_expired(self):
@@ -323,7 +321,11 @@ class Main:
                 data = json.load(config_file)
             if "user" in data:
                 if not request_acess(data['user']["username"], data['user']["password"]):
-                    self.root.destroy()
+                    sys.exit()
+                else:
+                    self.root.title(f'RoK Bot - {self.days - 1} Days left')
+            else:
+                sys.exit()
             return self.root.after(1000 * 3600 * 24, self.is_account_expired)
         except Exception:
             print("Problem in is_account_expired")
@@ -381,40 +383,27 @@ class Main:
                 dic[str(i)] = tab[i]
             return dic
         liste_info = []
-        # for element in data_instance:
-        #     if ((('bst.instance.Nougat64' in element or 'bst.instance.Nougat32' in element) and (
-        #             'adb_port' in element)) and 'status' in element) or (
-        #             ('bst.instance.Nougat64' in element or 'bst.instance.Nougat32' in element) and (
-        #             'display_name' in element)):
-        #         liste_info.append(element)
         for element in data_instance:
-            if ((('bst.instance.Nougat64' in element) and (
-                    'adb_port' in element)) and 'status' in element) or (
-                    ('bst.instance.Nougat64' in element) and (
-                    'display_name' in element)):
+            if ((('bst.instance.Nougat64' in element) and ('adb_port' in element))
+                    and 'status' in element) or \
+                    (('bst.instance.Nougat64' in element) and ('display_name' in element)
+                    ):
                 liste_info.append(element)
-        # for element in liste_info: print(element)
         tab_instance = []
         for i in range(0, len(liste_info), 2):
             string = liste_info[i + 1].split('.status.adb_port=')
-            # print(f"{string=} ,  {liste_info[i]=}")
 
-            string[1] = string[1].replace('"', "")
-            string[0] = string[0][13:]
-
-            string2 = liste_info[i].split('.display_name=')
-            string2[1] = string2[1].replace('"', "")
+            instance = string[0].split(".")[-1]
+            port = string[1].replace('"', "")
+            display_name = liste_info[i].split('.display_name=')[1].replace('"', "")
 
             dico_instance = {
-                'instance': str(string[0]),
-                'port': string[1],
-                'name': string2[1]
+                'instance': str(instance),
+                'port': port,
+                'name': display_name
             }
-
             tab_instance.append(dico_instance)
-        dico_instance = sort_by_instance(tab_instance)
-        # print(tab_instance)
-        return dico_instance
+        return sort_by_instance(tab_instance)
 
     def get_names(self, data):
         names = []
@@ -438,6 +427,23 @@ class Main:
         # print(instances_available)
         return instances_available
 
+    def get_list_instances(self):
+        names = self.get_names(self.get_dic_instances())
+        # print(f"{names = }")
+        # print(names)
+        instances_available = []
+        # for win in pyautogui.getAllWindows():
+        #     for name in names:
+        #         if win.title == name[1]:
+        #             instances_available.append(name)
+        for name in names:
+            instances_available.append(name)
+
+        # print(instances_available)
+        instances_available.sort(key=lambda x: x[0])
+        # print(instances_available)
+        return instances_available
+
     def find_window(self):
         hwnd = win32gui.FindWindow(None, self)
         return hwnd != 0
@@ -449,18 +455,22 @@ class Main:
         children = self.tree_view.get_children('')
         for child in children:
             values = self.tree_view.item(child, 'values')
-            # print(type(comparevalue[0]), int(values[0]), str(comparevalue[1]) == str(values[1]))
             if comparevalue[0] == int(values[0]) and str(comparevalue[1]) == str(values[1]):
                 return True
         return False
 
     def clear_all(self, treeview):
+        dic = {}
         for item in treeview.get_children():
+            dic[self.tree_view.item(item)['values'][1]] = self.tree_view.item(item)['values'][2]
             treeview.delete(item)
-
+        return dic
     def update_vms(self):
+        # print(self.get_all_vms_running())
+        # print("---")
+        # print(self.get_list_instances())
         instances = self.get_all_vms_running()
-        # clear_all(self.tree_view)
+        status = self.clear_all(self.tree_view)
         if instances == []:
             for item in self.tree_view.get_children():
                 self.tree_view.delete(item)
@@ -478,29 +488,16 @@ class Main:
                     if self.tree_view.item(item)['values'][0] == instance[0]:
                         to_add = False
                 if to_add:
-                    self.tree_view.insert('', END, values=(instance[0], instance[1], ""))
-        # print(a)
-        # for i in range(len(instances)):
-        #     if len(self.tree_view.get_children()) == 0:
-        #         self.tree_view.insert('', END, values=(instances[i][0], instances[i][1], ""))
-        #     if not self.search((instances[i][0], instances[i][1])):
-        #         self.tree_view.insert('', END, values=(instances[i][0], instances[i][1], ""))
-
+                    self.tree_view.insert('', END, values=(instance[0], instance[1], status.get(instance[1],"")))
+        # for instance in instances:
+        #     self.tree_view.insert('', END, values=(instance[0], instance[1], ""))
         if len(self.tree_view.get_children()) > 3:
             self.tree_view.configure(height=len(self.tree_view.get_children()))
         else:
             self.tree_view.configure(height=3)
-            # for instance in instances:
-            #     for item in self.tree_view.get_children():
-            #         # print(instance)
-            #         # print([self.tree_view.item(item)['values'][0],self.tree_view.item(item)['values'][1]])
-            #         if (self.tree_view.item(item)['values'][0],self.tree_view.item(item)['values'][1]) not in instances:
-            #             print(f"{self.frames =}")
-            #             self.frames[str(self.tree_view.item(item)['values'][0])].bottom_frame.destroy()
-            #             del self.frames[str(self.tree_view.item(item)['values'][0])]
-            #             self.tree_view.delete(item)
 
 def index_of_first(lst, sel):
+    # print(lst,sel)
     for i, v in enumerate(lst):
         if str(v[0]) == sel:
             return lst[i][1]

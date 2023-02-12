@@ -12,12 +12,12 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class BuyMerchant(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -36,10 +36,10 @@ class BuyMerchant(Task):
         if not filter_coordinate(co):
             return
         x, y = co[0] + uniform(0, 10), co[1] + uniform(0, 10)
-        self.print(f'Merchant icon : {x=} {y=}')
+        # self.print(f'Merchant icon : {x=} {y=}')
         self.click(x, y)
         for y in range(2):
-            for _ in range(4):
+            for i in range(4):
                 self.better_sleep((1.8, 2.2))
                 food = self.adb.find_multiple_img("merchant_buy_with_food", 0.8)
                 wood = self.adb.find_multiple_img("merchant_buy_with_wood", 0.8)
@@ -52,7 +52,8 @@ class BuyMerchant(Task):
                     self.better_sleep((0.45, 0.7))
                 x1, y1 = uniform(586, 870), uniform(457, 487)
                 x2, y2 = x1 + uniform(-10, 10), y1 - uniform(120, 150)
-                self.swipe(x1, y1, x2, y2)
+                if i!=3:
+                    self.swipe(x1, y1, x2, y2)
             if y != 0:
                 break
             co = self.adb.find_img(target="free")
@@ -62,3 +63,6 @@ class BuyMerchant(Task):
             self.click(x, y)
         x, y = uniform(1077, 1100), uniform(64, 95)
         self.click(x, y)
+        while(co:=self.adb.find_img(target="close_window")):
+            self.click(co[0] + uniform(5,10), co[1] + uniform(5,10))
+            self.better_sleep((1,1.5))

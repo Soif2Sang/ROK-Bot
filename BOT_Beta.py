@@ -12,7 +12,7 @@ import win32gui
 from pyautogui import getAllWindows
 from urllib3 import Retry, PoolManager
 
-customtkinter.set_appearance_mode("dark")
+customtkinter.set_appearance_mode("light")
 if not os.path.exists("user_settings.json"):
     with open('user_settings.json', 'w') as f:
         json.dump({}, f, indent=2)
@@ -113,7 +113,7 @@ def main():
             diff = future - today
             return UI_Main.Main(diff.days)
         except Exception as e:
-            # print(e)
+            print(e)
             print("Problem occured while trying to connect")
             sys.exit(1)
 
@@ -187,7 +187,6 @@ def acces(date='9999-12-30'):
             response = http.request("GET", "http://worldtimeapi.org/api/timezone/Europe/Paris",
                                     headers={'Content-Type': 'application/json'}, retries=Retry(10))
             tab = json.loads(response.data.decode('utf-8'))['datetime'].split("T")
-            # # print(tab)
             tmp = tab[1].split(".")
             tab[1] = tmp[0]
             # print(tmp, tab[0])
