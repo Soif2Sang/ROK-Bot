@@ -20,9 +20,6 @@ color_bank ={
 
 def Main(page: ft.Page):
     page.title = "Rok Bot - 850 Days left"
-    # page.window_title_bar_hidden = True
-    # page.window_frameless = True
-    # page.window_title_bar_hidden = True
     page.frames = {}
     page.window_width = 400
     page.tile_manager = TileManager(page)
