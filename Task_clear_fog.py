@@ -13,12 +13,12 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class ClearFog(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -94,7 +94,7 @@ class ClearFog(Task):
                     self.click(uniform(co[0], co[0] + 90), uniform(co[1], co[1] + 30))
                     self.better_sleep((3, 4.5))
                 self.print("Scout sent!")
-                self.check_resolve()
+                self.check_captcha()
                 self.go_city()
                 self.better_sleep((3, 4.5))
                 count = False

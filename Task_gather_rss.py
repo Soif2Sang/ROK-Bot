@@ -28,12 +28,12 @@ def change_resource_type(place: str) -> str:
 
 class GatherRss(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -448,7 +448,7 @@ class GatherRss(Task):
     @get_class
     def run(self, node_type=None, resolved=False, level_decrease=0):
         if not resolved:
-            resolved = self.check_resolve()
+            resolved = self.check_captcha()
         if node_type is None:
             node_type = "First"
         # if node_type == "Done":
@@ -546,7 +546,7 @@ class GatherRss(Task):
                 self.better_sleep((2.325, 4.795))
                 return "Done"
             self.better_sleep((1, 1.895))
-            resolved = self.check_resolve()
+            resolved = self.check_captcha()
             node_type = self.change_resource_type2(node_type)
         self.click(x=uniform(22, 90), y=uniform(625, 675))
         return "Done"

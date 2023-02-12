@@ -8,6 +8,7 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
+from Task_alliance_help import AllianceHelp
 from Task_utils import get_name, get_class, filter_coordinate
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -15,12 +16,12 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class HealTroop(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -63,19 +64,6 @@ class HealTroop(Task):
         self.swipe(uniform(740, 780), uniform(140, 150), uniform(740, 780), uniform(630, 650))
         self.better_sleep((1, 1.5))
 
-    @get_name
-    def click_help(self):
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        img_to_find = cv2.imread('resources\\help.png')
-        result = cv2.matchTemplate(cv_image, img_to_find, cv2.TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-        if max_val > 0.7:
-            self.print("Clicking on helps..")
-            return self.click(max_loc[0] + uniform(5, 20), max_loc[1] + uniform(5, 20))
-        else:
-            return
 
     @get_class
     def run(self):
@@ -134,7 +122,7 @@ class HealTroop(Task):
             if int(self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_count')) > int(nb_heal[0]):
                 self.click(uniform(880, 1018), uniform(560, 600))
                 self.better_sleep((1, 1.5))
-                self.click_help()
+                AllianceHelp(self).run()
                 return
             if self.adb.find_img(target="healing_scroll") is None:
                 self.click(uniform(1083, 1098), uniform(71, 92))

@@ -16,12 +16,12 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class HuntBarbarians(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -293,7 +293,7 @@ class HuntBarbarians(Task):
             self.check_log_back()
             self.check_reconnect()
             self.check_if_kill()
-            self.check_resolve()
+            self.check_captcha()
             self.better_sleep((3, 5))
             print(f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian..")
 
@@ -398,7 +398,7 @@ class HuntBarbarians(Task):
                 self.print('Pop-up found, recalling troops')
                 break
 
-            self.check_resolve()
+            self.check_captcha()
             self.wait_until_kill()
         self.check_ap_box()
         self.recall(nb_troop=nb_hunter)

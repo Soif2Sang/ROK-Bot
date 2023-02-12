@@ -9,12 +9,12 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class UpgradeCity(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -88,7 +88,7 @@ class UpgradeCity(Task):
             else:
                 self.click(uniform(916, 1050), uniform(530, 560))
                 self.better_sleep((1.7, 2.2))
-                if (co:=self.adb.find_img(target="hire_constructor")) is not None:
+                if (co:=self.adb.find_img(target="hire_constructor")) is not None or (co:=self.adb.find_img(target="hire_constructor2")):
                     self.click(co[0] + uniform(0,110), co[1] + uniform(0,40))
                     self.better_sleep((1.7, 2.2))
                     self.click(uniform(916, 1050), uniform(530, 560))
@@ -161,14 +161,10 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone', confidence=50) = }")
-        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone2', confidence=50) = }")
-        # print(f"{self.adb.find_multiple_img(target=f'upgrade_stone3', confidence=50) = }")
         upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone",confidence=0.92)
         upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2",confidence=0.92))
         upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.92))
-        upgrades_final = list(filter(lambda co: co[1]<500, upgrades_brut))
-        # print(upgrades_final)
+        upgrades_final = list(filter(lambda co: co[1]<480, upgrades_brut))
         return upgrades_final
 
 

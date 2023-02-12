@@ -14,12 +14,12 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class AllianceDonation(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
+        super().__init__(MainTask.tile)
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
@@ -35,9 +35,9 @@ class AllianceDonation(Task):
         screen = self.adb.get_curr_device_screen_img()
         source = array(screen)
         source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
-        co = self.adb.find_img(source=source, target="alliance_flag1", confidence=0.8)
+        co = self.adb.find_img(source=source, target="alliance_flag1", confidence=0.9)
         if co is None:
-            co = self.adb.find_img(source=source, target="alliance_flag2", confidence=0.8)
+            co = self.adb.find_img(source=source, target="alliance_flag2", confidence=0.9)
         if co is None:
             return
         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 10))
@@ -49,8 +49,8 @@ class AllianceDonation(Task):
         self.click(x, y)
         self.better_sleep((1.0, 1.395))
 
-    @get_class
-    def run(self):
+    @get_name
+    def open_alliance_menu(self):
         # Open du menu
         if self.adb.find_img(target='menu_opened', confidence=0.8) is None:
             x, y = uniform(1200, 1250), uniform(650, 690)
@@ -61,6 +61,8 @@ class AllianceDonation(Task):
         self.click(x, y)
         self.better_sleep((1.725, 2.295))
 
+    @get_name
+    def donate_to_alliance(self):
         alliance_tech_logo = self.adb.find_img(target="alliance_tech")
         if alliance_tech_logo is not None:
             self.click(alliance_tech_logo[0] + uniform(0, 30), alliance_tech_logo[1] + uniform(0, 15))
@@ -85,7 +87,12 @@ class AllianceDonation(Task):
             x, y = uniform(1100, 1130), uniform(60, 80)
             self.click(x, y)
             self.better_sleep((1.8, 2.125))
-            self.collect_alliance_resources()
+
+    @get_class
+    def run(self):
+        self.open_alliance_menu()
+        self.collect_alliance_resources()
+        self.donate_to_alliance()
 
         x, y = uniform(1100, 1130), uniform(30, 58)
         self.click(x, y)
