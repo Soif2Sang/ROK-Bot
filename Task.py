@@ -42,13 +42,15 @@ class Task:
 
     def set_timer(self, seconds:int):
         condition = True
-        while seconds and condition:
+        while seconds:
+            self.script_pause()
             hours, mins = divmod(seconds, 3600)
             mins, secs = divmod(mins, 60)
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             sleep(1)
             seconds -= 1
-            condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
+            # condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
+            # print(":" in self.tile.text_status.value,self.tile.text_status.value != "00:00:01")
             self.tile.text_status.update()
 
     @get_name
@@ -333,12 +335,13 @@ class Task:
 
         if self.tile.stopped:
             self.tile.stopped = False
-            self.print("You stopped the bot","Red")
+            self.set_text("You stopped the bot","Red")
             sys.exit(1)
 
         while not self.tile.started:
             if not said:
-                self.print(f"You is paused.","Yellow")
+
+                # self.print(f"You is paused.","Yellow")
                 self.set_text(f"[{current_time()}] Script is paused.")
                 said = True
                 # self.set_text("Script paused.")
