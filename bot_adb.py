@@ -14,7 +14,7 @@ import io
 import pytesseract as tess
 from PIL import Image
 
-from Task_utils import current_time, get_name, get_data, get_path
+from Task_utils import current_time, get_name, get_data, get_path, write
 
 Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
@@ -93,8 +93,7 @@ class Adb:
 
     def print(self, text:str):
         print(text)
-        with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] {text}\n")
+        write(self.name,text)
 
     def get_curr_device_screen_img_byte_array(self):
         return self.get_device().screencap()

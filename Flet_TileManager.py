@@ -28,7 +28,7 @@ class TileManager(ft.ListView):
     def add_tile(self, number: str):
         self.tiles[number] = Tile(self.page, number)
         self.controls.append(self.tiles[number])
-        self.update()
+        # self.update()
 
     def delete_tile(self, number: str):
         index = self.controls.index(self.tiles[number])

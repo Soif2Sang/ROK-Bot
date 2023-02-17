@@ -30,9 +30,10 @@ def get_time(func):
         if func.__name__ == "check_captcha":
             print(f'[ {date.today()} ] [ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
-            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+            # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
                 # logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
-                logger.write(f"[ {date.today()} ] [ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
+                # logger.write(f"[ {date.today()} ] [ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
+            write(self.name,f"INFO : Verification made in {(end_time - start_time):0.1f}\n" )
         return func_output
 
     return wrapper
@@ -58,8 +59,9 @@ def get_name(func):
         # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
+        write(self.name, f"FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+        # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+        #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
         print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         func_output = func(self, *args, **kwargs)
         return func_output
@@ -72,8 +74,9 @@ def get_class(func):
         # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
+        write(self.name, f"FUNCTION : {self.task_name()}\n")
+        # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+        #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
         # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
         print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)
@@ -94,6 +97,12 @@ def filter_coordinate(couple: tuple[int, int]):
         return False
     return True
 
+def write(name,text:str):
+    try:
+        with open(f"{name}_logs.txt", "a+", encoding="utf-8") as logger:
+            logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
+    except:
+        return
 def get_data():
     with open('user_settings.json') as config_file:
         data = json.load(config_file)

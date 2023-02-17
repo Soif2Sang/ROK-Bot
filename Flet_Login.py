@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import threading
+import traceback
 from datetime import date
 from time import sleep
 
@@ -51,7 +52,7 @@ def change_mac_address(id, key):
         }
         response = requests.patch(url, data=body, headers=headers)
     except Exception:
-        print("Error occured when patching the mac adress")
+        print("Error occurred when patching the mac address")
     # print(f" Change mac address {response.status_code=}")
 
 
@@ -61,15 +62,21 @@ def is_date_valid(date='9999-12-30'):
             retries = Retry(connect=5, read=2, redirect=5)
             http = PoolManager(retries=retries)
             response = http.request("GET", "http://worldtimeapi.org/api/timezone/Europe/Paris",
-                                    headers={'Content-Type': 'application/json'}, retries=Retry(10))
-            tab = json.loads(response.data.decode('utf-8'))['datetime'].split("T")
-            tmp = tab[1].split(".")
-            tab[1] = tmp[0]
-            if tab[0] > date:
+                                    headers={'Content-Type': 'application/json'})
+            tab = json.loads(response.data)
+
+            # print(tab['datetime'], type(tab))
+
+            tmp = tab['datetime'].split(".")
+            # print(tab, tmp)
+            tmp = tmp[0].split("T")
+            # print(tmp)
+            if tmp[0] > date:
                 return False
             else:
                 return True
         except Exception as e:
+            # traceback.print_exc()
             if i == 4:
                 print("Couldn't make connection, contact the admin")
     return False
@@ -108,6 +115,7 @@ class LoginButton(ft.FilledButton):
                 return False
             else:
                 sleep(3600 * 24)
+                # sleep(10)
                 return self.login_schedule(username, password)
         except Exception as e:
             # print(e)
@@ -140,12 +148,12 @@ class LoginButton(ft.FilledButton):
             self.page.clean()
             self.page.window_width = 400
             self.page.window_height = 700
-            Flet_main_interface.Main(self.page)
+            Flet_main_interface.Main(self.page,diff.days)
             threading.Thread(self.login_schedule(username, password))
         except Exception as e:
-            # print(e)
+            print(e)
             self.pop_banner("Problem occurred, please try again")
-            print("Problem occured while trying to connect")
+            print("Problem occurred while trying to connect")
             self.page.window_close()
             exit(1)
 
@@ -190,12 +198,12 @@ class LoginButton(ft.FilledButton):
 
     def login_to_bd(self, password, username):
         try:
-            url = "https://rokbot-2e6f.restdb.io/rest/auth"
+            url = "https://rokbd-1b0e.restdb.io/rest/auth"
             payload = json.dumps({'username': username, 'password': password})
             parameter = {"q": payload}
             headers = {
                 'content-type': "application/json",
-                'x-apikey': "632031befdc15b0265f17372",
+                'x-apikey': "63ef3702478852088da6839f",
                 'cache-control': "no-cache"
             }
             response = requests.request("GET", url, params=parameter, headers=headers)
@@ -206,6 +214,8 @@ class LoginButton(ft.FilledButton):
 
 
 def main(page: ft.Page):
+    os.environ["FLET_APP_LIFETIME_MINUTES"] = "1"
+
     if not os.path.exists("user_settings.json"):
         with open('user_settings.json', 'w') as f:
             json.dump({}, f, indent=2)
@@ -229,6 +239,7 @@ def main(page: ft.Page):
     if not find_window("RoK Bot -"):
         if "user" in data:
             if data["user"]["username"] != "":
+                # pass
                 login_button.login(None, data['user']["username"], data['user']["password"])
 
 

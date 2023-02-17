@@ -462,18 +462,18 @@ class GatherRss(Task):
         nbsearch = 0
         self.check_reconnect()
         self.leave_city_simple()
-        self.better_sleep((2, 3.5))
+        self.better_sleep((2, 7))
         # Vérifie si y'a une troupe
         level_verified = False
         while self.free_troop():
             self.check_log_back()
             self.check_reconnect()
             self.click_loop()
-            self.better_sleep((1.325, 2.195))
+            self.better_sleep((1.325, 4.195))
             x, y = self.change_x_y_by_resource_type(node_type)
             # self.better_sleep((1.325, 1.795))
             self.click(x, y)
-            self.better_sleep((1.325, 1.795))
+            self.better_sleep((1.325, 3.795))
 
             # Click sur la bonne resources + le bon niveau de resources
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get(
@@ -485,17 +485,17 @@ class GatherRss(Task):
             if level_verified is False:
                 self.set_search_level(self.data.get(self.sel).get('schedules').get(self.current_profile).get(
                     f"{node_type}_level") - level_decrease)
-                self.better_sleep((0.325, 0.795))
+                self.better_sleep((0.325, 1.795))
                 level_verified = True
             print(f"{node_type =}")
             self.click_search_node(node_type)
-            self.better_sleep((4, 6))
+            self.better_sleep((6,10))
             # self.better_sleep((1.325, 1.795))
             # Tant que la node trouvée n'est pas minable
 
             while not self.minable():
                 self.check_reconnect()
-                self.better_sleep((1.325, 1.795))
+                self.better_sleep((1.325, 3.795))
                 # Si y'a plus de node on return le prochain rss
 
                 if self.node_found() is False:
@@ -504,13 +504,13 @@ class GatherRss(Task):
                     # self.set_text(f"[{current_time()}] Node not found")
                     # node_type = self.change_resource_type(node_type)
                     self.click(uniform((1280 // 2) - 20, (1280 // 2) + 20), uniform((720 // 3) - 20, (720 // 3) + 20))
-                    self.better_sleep((0.125, 0.495))
+                    self.better_sleep((0.125, 1.495))
                     self.print("No node matched the requirements, reducing the level..")
                     self.print(f"{level_decrease+1 = }, {node_type = }")
                     return self.run(node_type, resolved, level_decrease + 1)
 
                 # Si y'a une cross
-                self.better_sleep((2, 3.5))
+                self.better_sleep((2, 5.5))
                 if self.find_cross() is True:
                     # print(f'[ {current_time()} ] [ {self.name} ] Node occupied')
                     # logging.info(f"[{self.name}] Node occupied")
@@ -520,7 +520,7 @@ class GatherRss(Task):
                         self.print("nbsearch == 2")
                         self.click(uniform((1280 // 2) - 20, (1280 // 2) + 20),
                                    uniform((720 // 3) - 20, (720 // 3) + 20))
-                        self.better_sleep((0.025, 0.295))
+                        self.better_sleep((0.225, 2.295))
 
                         self.print("No node matched the requirements, reducing the level..")
                         self.print(f"{level_decrease+1 = }, {node_type = }")
@@ -529,23 +529,23 @@ class GatherRss(Task):
                         self.print("nbsearch != 2")
                         self.print("Looking for a new node")
                         nbsearch += 1
-                        self.better_sleep((0.5, 0.957))
+                        self.better_sleep((0.5, 2.557))
                         self.click_loop()
-                        self.better_sleep((0.425, 0.795))
+                        self.better_sleep((0.425, 1.795))
                         # x, y = self.change_x_y_by_resource_type(resources)
                         # self.click(x, y)
                         # self.better_sleep((0.725, 1.195))
                         # self.set_search_level(self.data.get(self.sel).get(self.get_key_by_rss(resources) + "_level"])
                         # self.better_sleep((1.325, 1.795))
                         self.click_search_node(node_type)
-                        self.better_sleep((3, 5))
-                self.better_sleep((2, 3.5))
+                        self.better_sleep((4, 6))
+                self.better_sleep((2, 4.5))
             self.check_reconnect()
             if self.click_on_node() and not self.send_troop():
                 self.click(x=uniform(200, 900), y=uniform(300, 500))
-                self.better_sleep((2.325, 4.795))
+                self.better_sleep((2.325, 5.795))
                 return "Done"
-            self.better_sleep((1, 1.895))
+            self.better_sleep((1, 2.895))
             resolved = self.check_captcha()
             node_type = self.change_resource_type2(node_type)
         self.click(x=uniform(22, 90), y=uniform(625, 675))

@@ -6,6 +6,7 @@ from Task import Task
 from Task_academy_research import AcademyResearch
 from Task_alliance_donation import AllianceDonation
 from Task_claim_daily_quests import DailyQuests
+from Task_daily_chest2 import DailyChest2
 from Task_daily_vip import DailyVip
 from Task_runner import TaskRunner
 from Task_upgrade_city import UpgradeCity
@@ -43,6 +44,7 @@ class Bot():
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)
         self.vip = DailyVip(self.main_task)
+        self.chest = DailyChest2(self.main_task)
         self.alliance = AllianceDonation(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
@@ -260,6 +262,7 @@ def upgrade_instance(number:int):
             bot.upgrade.help_build()
             bot.quests.run()
             bot.vip.run()
+            bot.chest.run()
 
 
 def quest_instance(number:int, master):
@@ -385,18 +388,15 @@ if __name__ == "__main__":
     # bot.task.frame.pause = False
     #
     # bot.task.check_reconnect()
-
-
-
-
-
-    # Thread(target=lambda: upgrade_instance(3,master)).start()
+    Thread(target=lambda: upgrade_instance(3)).start()
+    Thread(target=lambda: upgrade_instance(4)).start()
+    Thread(target=lambda: upgrade_instance(5)).start()
+    Thread(target=lambda: upgrade_instance(6)).start()
+    Thread(target=lambda: upgrade_instance(7)).start()
     Thread(target=lambda: upgrade_instance(8)).start()
     Thread(target=lambda: upgrade_instance(9)).start()
     Thread(target=lambda: upgrade_instance(10)).start()
     Thread(target=lambda: upgrade_instance(11)).start()
     Thread(target=lambda: upgrade_instance(12)).start()
     Thread(target=lambda: upgrade_instance(13)).start()
-    # Thread(target=lambda: upgrade_instance(6, master)).start()
-    # Thread(target=lambda: upgrade_instance(7, master)).start()
 

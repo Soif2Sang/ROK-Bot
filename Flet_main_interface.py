@@ -18,14 +18,14 @@ color_bank ={
 }
 
 
-def Main(page: ft.Page):
-    page.title = "Rok Bot - 850 Days left"
+def Main(page: ft.Page, days=950):
+    page.title = f"Rok Bot - {days-1} Days left"
     page.frames = {}
     page.window_width = 400
     page.tile_manager = TileManager(page)
     page.add(page.tile_manager)
-    page.tile_manager.refresh()
     page.add(ft.Divider())
+    page.tile_manager.refresh()
     page.update()
 
 if __name__ == "__main__":
