@@ -15,7 +15,7 @@ from numpy import array
 
 import verification
 
-from Task_utils import get_window_pid, get_name, current_time, get_time, get_data
+from Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write
 from bot_adb import Adb
 from twocaptcha import TwoCaptcha
 
@@ -42,14 +42,15 @@ class Task:
 
     def set_timer(self, seconds:int):
         condition = True
-        while seconds:
+        while seconds and condition:
             self.script_pause()
             hours, mins = divmod(seconds, 3600)
             mins, secs = divmod(mins, 60)
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             sleep(1)
             seconds -= 1
-            # condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
+            # print(seconds)
+            condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
             # print(":" in self.tile.text_status.value,self.tile.text_status.value != "00:00:01")
             self.tile.text_status.update()
 
@@ -183,8 +184,9 @@ class Task:
                     if self.language is None or self.language == "eng":
                         for _ in range(2):
                             string = self.adb.get_device().shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
-                            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-                                logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            write(self.name,f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+                            #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] ")
                             if 'Error' in str(string):
                                 break
                             if 'Activity not started' not in str(string):
@@ -197,9 +199,10 @@ class Task:
                     if self.language is None or self.language == "vn":
                         for i in range(2):
                             string = self.adb.get_device().shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
-                            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-                                logger.write(
-                                    f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            write(self.name,f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+                            #     logger.write(
+                            #         f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
@@ -214,9 +217,11 @@ class Task:
                         for i in range(2):
                             string = self.adb.get_device().shell(
                                 "am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity")
-                            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-                                logger.write(
-                                    f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            write(self.name,f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+
+                            # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+                            #     logger.write(
+                            #         f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
@@ -322,9 +327,10 @@ class Task:
         except Exception as e:
             traceback.print_exc()
             print(f"[ {current_time()} ] [ {self.name} ] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
-            with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-                logger.write(
-                    f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
+            # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+            #     logger.write(
+            #         f"[ {date.today()} ] [ {current_time()} ] [ {self.name} ] EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
+            write(self.name,f"EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
             self.click(uniform(507, 533), uniform(573, 599))
             self.print("Refreshing the captcha.","red")
             self.better_sleep((4, 7))

@@ -4,6 +4,8 @@ import os
 from datetime import datetime, date
 
 import json
+
+from Task_utils import write
 from twocaptcha import TwoCaptcha
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -25,18 +27,23 @@ def solve(path, sel):
     # print(solver)
     try:
         print(f"[ {current_time()} ] [ {data[sel]['name']} ] Trying to resolve the captcha")
-        with open(f"{data[sel]['name']}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {data[sel]['name']} ] INFO : Trying to resolve the captcha\n")
+        # with open(f"{data[sel]['name']}_logs.txt", "a+", encoding="utf-8") as logger:
+        #     logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {data[sel]['name']} ] INFO : Trying to resolve the captcha\n")
+        write(data[sel]['name'],"INFO : Trying to resolve the captcha\n")
         result = solver.coordinates(path,
                                     lang='en')
         print(f"[ {current_time()} ] [ {data[sel]['name']} ] {result = }")
-        with open(f"{data[sel]['name']}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {data[sel]['name']} ] INFO : result = {result}\n")
+        # with open(f"{data[sel]['name']}_logs.txt", "a+", encoding="utf-8") as logger:
+        #     logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {data[sel]['name']} ] INFO : result = {result}\n")
+        write(data[sel]['name'],f"INFO :  result = {result}\n")
+
         return result
     except Exception as e:
         print(f"[ {current_time()} ] [ {data[sel]['name']} ] Exception raised during the resolving of the captcha (verification.py related) :\n{e}")
-        with open(f"{data[sel]['name']}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {data[sel]['name']} ] EXCEPTION : Exception raised during the resolving of the captcha (verification.py related) :\n{e}\n")
+        # with open(f"{data[sel]['name']}_logs.txt", "a+", encoding="utf-8") as logger:
+        #     logger.write(f"[ {date.today()} ] [ {current_time()} ] [ {data[sel]['name']} ] EXCEPTION : Exception raised during the resolving of the captcha (verification.py related) :\n{e}\n")
+        write(data[sel]['name'],f"EXCEPTION : Exception raised during the resolving of the captcha (verification.py related) :\n{e}\n")
+
         return {}
 
 

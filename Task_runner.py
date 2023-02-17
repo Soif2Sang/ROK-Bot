@@ -118,7 +118,7 @@ class TaskRunner(Task):
             self.check_captcha()
             # self.set_status()
             if func.task_name() in ["AllianceDonation", "CollectResource", "BuyMerchant", "ClearFog", "HealTroop",
-                                 "DailyChest","AutoUpgrade"]:
+                                 "DailyChest","AutoUpgrade","ProduceMaterials"]:
                 self.go_city()
             try:
                 # print(f"{ func.__name__ in ['gather_rss','gather_gem'] =}")
@@ -495,7 +495,6 @@ class TaskRunner(Task):
         print("starting")
         self.adb.connect_to_device()
         self.data = self.update_data()
-        self.set_timer(10)
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
 
         starting_time = time()
@@ -568,16 +567,14 @@ class TaskRunner(Task):
                 self.print("")
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes","#f5b400")
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
-                self.set_timer(time_before_redo_tasks)
+
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     if time_before_redo_tasks < 600:
                         self.leave_game(force=True)
                     else:
                         self.leave_game(force=False)
 
-                for _ in range(time_before_redo_tasks):
-                    self.script_pause()
-                    sleep(1)
+                self.set_timer(time_before_redo_tasks)
         self.print("")
         self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.","green")
         return

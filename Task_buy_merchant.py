@@ -30,6 +30,13 @@ class BuyMerchant(Task):
 
     @get_class
     def run(self):
+        co = self.adb.find_img(target="artefact_shop", confidence=0.7)
+        if co is not None:
+            self.click(co[0] + uniform(10,35), co[1] + uniform(0,30))
+            self.better_sleep((1,2))
+            if(co:=self.adb.find_img("close_window")):
+                self.click(uniform(1100,1120),uniform(73,80))
+                self.better_sleep((1, 2))
         co = self.adb.find_img(target="merchant_icon", confidence=0.7)
         if co is None:
             return

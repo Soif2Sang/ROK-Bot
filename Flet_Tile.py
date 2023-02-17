@@ -1,6 +1,6 @@
 import json
 import threading
-from time import sleep
+from time import sleep, time
 
 from Flet_Frame import Frame
 from Task import Task
@@ -68,6 +68,7 @@ class Tile(ft.Row):
             if self.number not in self.page.frames:
                 self.page.frames[self.number] = Frame(self.page, self.number)
             self.page.add(self.page.frames[self.number])
+            # self.page.title = f"{time()}"
             self.page.update()
 
     def start(self):

@@ -115,27 +115,26 @@ class SettingContainer(ft.Container):
                          width=300,
                          border=ft.InputBorder.UNDERLINE,
                          filled=True,
-                         bgcolor="#ebebeb",
                          content_padding=ft.padding.all(10),
                          on_submit=lambda e: self.submit(e, "kingdom", str)),
             ft.TextField(label="Area location X coordinates :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_x"],
                          width=300, border=ft.InputBorder.UNDERLINE,
-                         filled=True,bgcolor="#ebebeb",
+                         filled=True,
                          content_padding=ft.padding.all(10),
                          on_submit=lambda e: self.submit(e, "city_x", int)
                          ),
             ft.TextField(label="Area location Y coordinates :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_y"],
                          width=300, border=ft.InputBorder.UNDERLINE,
-                         filled=True,bgcolor="#ebebeb",
+                         filled=True,
                          content_padding=ft.padding.all(10),
                          on_submit=lambda e: self.submit(e, "city_y", int),
                          ),
             ft.TextField(label="Scanning radius (km) :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["radius"],
                          width=300, border=ft.InputBorder.UNDERLINE,
-                         filled=True,bgcolor="#ebebeb",
+                         filled=True,
                          content_padding=ft.padding.all(10),
                          on_submit=lambda e: self.submit(e, "radius", int)),
             ft.Row(
@@ -145,7 +144,7 @@ class SettingContainer(ft.Container):
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "gather_gem_duration1"],
                                  width=80, border=ft.InputBorder.UNDERLINE,
-                                 filled=True,bgcolor="#ebebeb",
+                                 filled=True,
                                  content_padding=ft.padding.all(10),
                                  on_submit=lambda e: self.submit(e, "gather_gem_duration1", int)
                                  ),
@@ -154,7 +153,7 @@ class SettingContainer(ft.Container):
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "gather_gem_duration2"],
                                  width=90, border=ft.InputBorder.UNDERLINE,
-                                 filled=True,bgcolor="#ebebeb",
+                                 filled=True,
                                  content_padding=ft.padding.all(10),
                                  on_submit=lambda e: self.submit(e, "gather_gem_duration2", int)),
                 ]
@@ -166,7 +165,7 @@ class SettingContainer(ft.Container):
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "gem_check1"],
                                  width=80, border=ft.InputBorder.UNDERLINE,
-                                 filled=True,bgcolor="#ebebeb",
+                                 filled=True,
                                  content_padding=ft.padding.all(10),
                                  on_submit=lambda e: self.submit(e, "gem_check1", int)),
                     ft.Text("~"),
@@ -174,7 +173,7 @@ class SettingContainer(ft.Container):
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "gem_check2"],
                                  width=90, border=ft.InputBorder.UNDERLINE,
-                                 filled=True,bgcolor="#ebebeb",
+                                 filled=True,
                                  content_padding=ft.padding.all(10),
                                  on_submit=lambda e: self.submit(e, "gem_check2", int)),
                 ]
@@ -225,53 +224,322 @@ class SettingContainer(ft.Container):
             "Sixth",
             "Seventh"
         ]
-        for key in keys:
-            self.content.controls.extend([
-                ft.Row(
-                    controls=[
-                        ft.Container(
-                            width=100,
-                            content=ft.Text(f"{key} choice :"),
-                            alignment=ft.alignment.center_right
-                        ),
+        self.content.controls.extend([
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        content=ft.Text(f"First choice :"),
+                        alignment=ft.alignment.center_right
+                    ),
 
-                        ft.Dropdown(
-                            width=140,
-                            height=70,
-                            label="Node Type",
-                            options=[
-                                ft.dropdown.Option("food"),
-                                ft.dropdown.Option("wood"),
-                                ft.dropdown.Option("stone"),
-                                ft.dropdown.Option("gold"),
-                            ],
-                            value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][key],
-                            on_change=lambda e: self.submit(e, key, str)
-                        ),
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Type",
+                        options=[
+                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("wood"),
+                            ft.dropdown.Option("stone"),
+                            ft.dropdown.Option("gold"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["First"],
+                        on_change=lambda e: self.submit(e, "First", str)
+                    ),
 
-                        ft.Dropdown(
-                            width=140,
-                            height=70,
-                            label="Node Level",
-                            options=[
-                                ft.dropdown.Option("1"),
-                                ft.dropdown.Option("2"),
-                                ft.dropdown.Option("3"),
-                                ft.dropdown.Option("4"),
-                                ft.dropdown.Option("5"),
-                                ft.dropdown.Option("6"),
-                                ft.dropdown.Option("7"),
-                                ft.dropdown.Option("8"),
-                                ft.dropdown.Option("9"),
-                            ],
-                            value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                key + "_level"],
-                            on_change=lambda e: self.submit(e, key + "_level", int)
-                        ),
-                    ]
-                )
-            ]
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Level",
+                        options=[
+                            ft.dropdown.Option("1"),
+                            ft.dropdown.Option("2"),
+                            ft.dropdown.Option("3"),
+                            ft.dropdown.Option("4"),
+                            ft.dropdown.Option("5"),
+                            ft.dropdown.Option("6"),
+                            ft.dropdown.Option("7"),
+                            ft.dropdown.Option("8"),
+                            ft.dropdown.Option("9"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "First" + "_level"],
+                        on_change=lambda e: self.submit(e, "First" + "_level", int)
+                    ),
+                ]
             )
+        ])
+        self.content.controls.extend([
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        content=ft.Text(f"Second choice :"),
+                        alignment=ft.alignment.center_right
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Type",
+                        options=[
+                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("wood"),
+                            ft.dropdown.Option("stone"),
+                            ft.dropdown.Option("gold"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["Second"],
+                        on_change=lambda e: self.submit(e, "Second", str)
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Level",
+                        options=[
+                            ft.dropdown.Option("1"),
+                            ft.dropdown.Option("2"),
+                            ft.dropdown.Option("3"),
+                            ft.dropdown.Option("4"),
+                            ft.dropdown.Option("5"),
+                            ft.dropdown.Option("6"),
+                            ft.dropdown.Option("7"),
+                            ft.dropdown.Option("8"),
+                            ft.dropdown.Option("9"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "Second" + "_level"],
+                        on_change=lambda e: self.submit(e, "Second" + "_level", int)
+                    ),
+                ]
+            )
+        ])
+        self.content.controls.extend([
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        content=ft.Text(f"Third choice :"),
+                        alignment=ft.alignment.center_right
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Type",
+                        options=[
+                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("wood"),
+                            ft.dropdown.Option("stone"),
+                            ft.dropdown.Option("gold"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["Third"],
+                        on_change=lambda e: self.submit(e, "Third", str)
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Level",
+                        options=[
+                            ft.dropdown.Option("1"),
+                            ft.dropdown.Option("2"),
+                            ft.dropdown.Option("3"),
+                            ft.dropdown.Option("4"),
+                            ft.dropdown.Option("5"),
+                            ft.dropdown.Option("6"),
+                            ft.dropdown.Option("7"),
+                            ft.dropdown.Option("8"),
+                            ft.dropdown.Option("9"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "Third" + "_level"],
+                        on_change=lambda e: self.submit(e, "Third" + "_level", int)
+                    ),
+                ]
+            )
+        ])
+        self.content.controls.extend([
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        content=ft.Text(f"Fourth choice :"),
+                        alignment=ft.alignment.center_right
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Type",
+                        options=[
+                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("wood"),
+                            ft.dropdown.Option("stone"),
+                            ft.dropdown.Option("gold"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["Fourth"],
+                        on_change=lambda e: self.submit(e, "Fourth", str)
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Level",
+                        options=[
+                            ft.dropdown.Option("1"),
+                            ft.dropdown.Option("2"),
+                            ft.dropdown.Option("3"),
+                            ft.dropdown.Option("4"),
+                            ft.dropdown.Option("5"),
+                            ft.dropdown.Option("6"),
+                            ft.dropdown.Option("7"),
+                            ft.dropdown.Option("8"),
+                            ft.dropdown.Option("9"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "Fourth" + "_level"],
+                        on_change=lambda e: self.submit(e, "Fourth" + "_level", int)
+                    ),
+                ]
+            )
+        ])
+        self.content.controls.extend([
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        content=ft.Text(f"Fifth choice :"),
+                        alignment=ft.alignment.center_right
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Type",
+                        options=[
+                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("wood"),
+                            ft.dropdown.Option("stone"),
+                            ft.dropdown.Option("gold"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["Fifth"],
+                        on_change=lambda e: self.submit(e, "Fifth", str)
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Level",
+                        options=[
+                            ft.dropdown.Option("1"),
+                            ft.dropdown.Option("2"),
+                            ft.dropdown.Option("3"),
+                            ft.dropdown.Option("4"),
+                            ft.dropdown.Option("5"),
+                            ft.dropdown.Option("6"),
+                            ft.dropdown.Option("7"),
+                            ft.dropdown.Option("8"),
+                            ft.dropdown.Option("9"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "Fifth" + "_level"],
+                        on_change=lambda e: self.submit(e, "Fifth" + "_level", int)
+                    ),
+                ]
+            )
+        ])
+        self.content.controls.extend([
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        content=ft.Text(f"Sixth choice :"),
+                        alignment=ft.alignment.center_right
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Type",
+                        options=[
+                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("wood"),
+                            ft.dropdown.Option("stone"),
+                            ft.dropdown.Option("gold"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["Sixth"],
+                        on_change=lambda e: self.submit(e, "Sixth", str)
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Level",
+                        options=[
+                            ft.dropdown.Option("1"),
+                            ft.dropdown.Option("2"),
+                            ft.dropdown.Option("3"),
+                            ft.dropdown.Option("4"),
+                            ft.dropdown.Option("5"),
+                            ft.dropdown.Option("6"),
+                            ft.dropdown.Option("7"),
+                            ft.dropdown.Option("8"),
+                            ft.dropdown.Option("9"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "Sixth" + "_level"],
+                        on_change=lambda e: self.submit(e, "Sixth" + "_level", int)
+                    ),
+                ]
+            )
+        ])
+        self.content.controls.extend([
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        content=ft.Text(f"Seventh choice :"),
+                        alignment=ft.alignment.center_right
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Type",
+                        options=[
+                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("wood"),
+                            ft.dropdown.Option("stone"),
+                            ft.dropdown.Option("gold"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["Seventh"],
+                        on_change=lambda e: self.submit(e, "Seventh", str)
+                    ),
+
+                    ft.Dropdown(
+                        width=140,
+                        height=70,
+                        label="Node Level",
+                        options=[
+                            ft.dropdown.Option("1"),
+                            ft.dropdown.Option("2"),
+                            ft.dropdown.Option("3"),
+                            ft.dropdown.Option("4"),
+                            ft.dropdown.Option("5"),
+                            ft.dropdown.Option("6"),
+                            ft.dropdown.Option("7"),
+                            ft.dropdown.Option("8"),
+                            ft.dropdown.Option("9"),
+                        ],
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "Seventh" + "_level"],
+                        on_change=lambda e: self.submit(e, "Seventh" + "_level", int)
+                    ),
+                ]
+            )
+        ])
+
         self.update()
 
     def page_fog(self):
