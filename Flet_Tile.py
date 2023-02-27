@@ -40,7 +40,7 @@ class Tile(ft.Row):
             on_click=lambda _: self.stop()
         )
         self.text_name = ft.Text(value=data[str(number)]['name'], width=70)
-        self.text_status = ft.Text(value="Active")
+        self.text_status = ft.Text(value="")
 
         self.controls.extend([
             self.button_select,
@@ -54,44 +54,37 @@ class Tile(ft.Row):
     def select(self):
         self.page.tile_manager.unselect_all()
         self.button_select.selected = True
-        self.button_select.update()
-
-        if self.page.frames == {}:
-            print("Frame empty")
+        print(f"{len(self.page.controls)>2 =}")
+        if len(self.page.controls)>2:
+            self.page.controls.pop()
+        if self.number not in self.page.frames:
             self.page.frames[self.number] = Frame(self.page, self.number)
-            self.page.add(self.page.frames[self.number])
-            self.page.update()
-        else:
-            print(f"{len(self.page.controls)>2 =}")
-            if len(self.page.controls)>2:
-                self.page.controls.pop()
-            if self.number not in self.page.frames:
-                self.page.frames[self.number] = Frame(self.page, self.number)
-            self.page.add(self.page.frames[self.number])
-            # self.page.title = f"{time()}"
-            self.page.update()
+        self.page.add(self.page.frames[self.number])
+        # self.page.title = f"{time()}"
+        self.page.update()
 
     def start(self):
         self.started = not self.started
+        self.stopped = False
         if self.started:
             self.button_start.icon = ft.icons.PAUSE
             self.button_stop.disabled = False
         else:
             self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-            self.button_stop.disabled = True
+            self.button_stop.disabled = False
         self.start_tasks()
-        self.update()
+        self.button_start.update()
+        self.button_stop.update()
 
     def process_is_alive(self):
-        while True:
-            if not self.tasks_process.is_alive():
-                self.started = False
-                self.stopped = False
-                self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-                self.button_stop.disabled = True
-                self.page.update()
-                return self.set_text("")
-            sleep(1)
+        self.tasks_process.join()
+        self.started = False
+        self.stopped = False
+        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_stop.disabled = True
+        self.button_start.update()
+        self.button_stop.update()
+        self.set_text("")
 
     def start_tasks(self):
         # print(f"{self.tasks_process.is_alive() = }")
@@ -100,9 +93,9 @@ class Tile(ft.Row):
             self.tasks_process.daemon = True
             self.tasks_process.start()
             # asyncio.create_task(run(self.runner.run))
-            is_alive = threading.Thread(target=self.process_is_alive)
-            is_alive.deamon = True
-            is_alive.start()
+            # is_alive = threading.Thread(target=self.process_is_alive)
+            # is_alive.deamon = True
+            # is_alive.start()
         else:
             print("Task is running")
 
@@ -112,28 +105,22 @@ class Tile(ft.Row):
         self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
         self.button_stop.disabled = True
         self.set_text("")
-        self.update()
+        self.button_start.update()
+        self.button_stop.update()
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        self.update()
+        self.text_status.update()
 
-    def add_text(self, phrase: str, color = "black"):
-        # print(self.page.frames)
+    def add_text(self, phrase: str, color = None):
+        # # print(self.page.frames)
+        # if len(self.page.controls) > 2:
+        #     self.page.controls.pop()
         if self.number not in self.page.frames:
             self.page.frames[self.number] = Frame(self.page, self.number)
+            # self.page.add(self.page.frames[self.number])
+            # self.page.update()
+
         self.page.frames[self.number].logger.add_text(phrase, color)
-        self.page.update()
 
-    def set_timer(self, seconds:int):
-        threading.Thread(target=self.set_timer2, args=(seconds))
-
-    def set_timer2(self, seconds: int):
-        condition = True
-        while seconds and condition:
-            hours, mins = divmod(seconds, 3600)
-            mins, secs = divmod(mins, 60)
-            self.set_text(f"{hours:02d}:{mins:02d}:{secs:02d}")
-            seconds -= 1
-            condition = ":" in self.text_status.value
-            sleep(1)
+        # self.page.update()

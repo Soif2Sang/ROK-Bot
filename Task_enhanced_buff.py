@@ -24,7 +24,6 @@ class UseEnhancedBuff(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -82,6 +81,7 @@ class UseEnhancedBuff(Task):
             scrolled = False
             for element in buffs_to_do:
                 # print(element)
+                self.print(f"Enabling {element} boost")
                 co = self.adb.find_img(target="no")
                 if co is not None:
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(1, 15))

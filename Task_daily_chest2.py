@@ -23,7 +23,6 @@ class DailyChest2(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -66,7 +65,7 @@ class DailyChest2(Task):
         for chest in chests:
             if entered:
                 break
-            if co := self.adb.find_img(source=cv_image, target=chest, confidence=0.85):
+            if co := self.adb.find_img(source=cv_image, target=chest, confidence=0.8):
                 entered = True
                 self.click(co[0] + uniform(0, 35), co[1] + uniform(0, 35))
                 self.better_sleep((1.7, 3))

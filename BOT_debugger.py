@@ -8,6 +8,7 @@ from Task_alliance_donation import AllianceDonation
 from Task_claim_daily_quests import DailyQuests
 from Task_daily_chest2 import DailyChest2
 from Task_daily_vip import DailyVip
+from Task_rss_transfert import RssTransfert
 from Task_runner import TaskRunner
 from Task_upgrade_city import UpgradeCity
 from bot_adb import *
@@ -46,6 +47,7 @@ class Bot():
         self.vip = DailyVip(self.main_task)
         self.chest = DailyChest2(self.main_task)
         self.alliance = AllianceDonation(self.main_task)
+        self.trade = RssTransfert(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -253,6 +255,7 @@ def upgrade_instance(number:int):
         else:
             sleep(60)
             current_sec += 60
+            bot.alliance.close_windows()
             if current_sec>claim_allaince:
                 bot.alliance.run()
                 sleep(1)
@@ -264,6 +267,31 @@ def upgrade_instance(number:int):
             bot.vip.run()
             bot.chest.run()
 
+def rss_transfert(number:int, type:str, amount: int):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+
+    bot.main_task.print = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.status = lambda txt: print(txt)
+    bot.main_task.script_pause = lambda: print("")
+
+
+
+
+    bot.task.current_profile="1"
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
+    bot.trade.run(type,amount)
 
 def quest_instance(number:int, master):
     adb = Adb(number)
@@ -335,30 +363,30 @@ def research_instance(number:int, master):
     # bot.task.better_sleep((0.9, 1.2))
     bot.research.run()
 
-def stop_start_emulators(master):
-    instances = [
-        create_instance(3, master),
-        # create_instance(4, master),
-        # create_instance(5, master)
-    ]
-    # while True:
-    # for i in instances:
-    threads = []
-    while True:
-        for instance in instances:
-            instance.task.start_emulator()
-            sleep(60)
-            instance.task.run_game()
-            t = Thread(target=lambda: instance.task.dynamique_city_upgrade())
-            t.start()
-            t.join()
-            instance.adb.home_button()
-            sleep(2)
-            instance.task.kill_emulator()
-        sleep(uniform(900, 1200))
+# def stop_start_emulators(master):
+#     instances = [
+#         create_instance(3, master),
+#         # create_instance(4, master),
+#         # create_instance(5, master)
+#     ]
+#     # while True:
+#     # for i in instances:
+#     threads = []
+#     while True:
+#         for instance in instances:
+#             instance.task.start_emulator()
+#             sleep(60)
+#             instance.task.run_game()
+#             t = Thread(target=lambda: instance.task.dynamique_city_upgrade())
+#             t.start()
+#             t.join()
+#             instance.adb.home_button()
+#             sleep(2)
+#             instance.task.kill_emulator()
+#         sleep(uniform(900, 1200))
 
 def main(page:ft.Page):
-    Thread(target=lambda: upgrade_instance(page,8)).start()
+    # Thread(target=lambda: upgrade_instance(page,8)).start()
     Thread(target=lambda: upgrade_instance(page,9)).start()
     Thread(target=lambda: upgrade_instance(page,10)).start()
     Thread(target=lambda: upgrade_instance(page,11)).start()
@@ -388,6 +416,9 @@ if __name__ == "__main__":
     # bot.task.frame.pause = False
     #
     # bot.task.check_reconnect()
+    # Thread(target=lambda: rss_transfert(1,"gold",130_000_000)).start()
+    # Thread(target=lambda: rss_transfert(0,"wood",400_000_000)).start()
+    # Thread(target=lambda: upgrade_instance(0)).start()
     Thread(target=lambda: upgrade_instance(3)).start()
     Thread(target=lambda: upgrade_instance(4)).start()
     Thread(target=lambda: upgrade_instance(5)).start()

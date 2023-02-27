@@ -21,7 +21,6 @@ class CollectResource(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -62,8 +61,8 @@ class CollectResource(Task):
         tab = []
         for task in tasks:
             result = task()
-            self.print(f"{task.__name__} {result = }")
             if result is not None:
+                self.print(f"{task.__name__} found")
                 tab.append(result)
             else:
                 self.print(f"{task.__name__} not found")

@@ -19,7 +19,6 @@ class UpgradeCity(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -106,15 +105,15 @@ class UpgradeCity(Task):
         y = uniform(517, 560)
         # print(x,y)
         self.click(x, y)
-        self.better_sleep((0.9, 1.5))
+        self.better_sleep((1.9,3))
         x = uniform(1096, 1120)
         y = uniform(186, 210)
         self.click(x, y)
-        self.better_sleep((0.9, 1.5))
+        self.better_sleep((1.9,3))
         x = uniform(1223, 1241)
         y = uniform(28, 46)
         self.click(x, y)
-        self.better_sleep((0.9, 1.5))
+        self.better_sleep((1.9,3))
 
     @get_name
     def is_city_hall_upgradable(self):
