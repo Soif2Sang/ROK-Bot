@@ -1,9 +1,21 @@
+import json
+
 import flet as ft
 
 class Logger(ft.ListView):
-    def __init__(self,**kwargs):
+    def __init__(self,frame,page,**kwargs):
         super().__init__(**kwargs)
-        self.auto_scroll= True
+        with open('user_settings.json') as config_file:
+            data = json.load(config_file)
+        self.auto_scroll= data["interface"]["auto_scroll"]
+        self.parent = frame
+        self.page = page
 
-    def add_text(self, texte:str, color="black"):
-        self.controls.append(ft.Text(value=texte,weight=ft.FontWeight.W_600,color=color))
+    def add_text(self, texte:str, color=None):
+        if color is None:
+            text = ft.Text(value=texte,weight=ft.FontWeight.W_600)
+        else:
+            text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)
+        self.controls.append(text)
+        if self.parent == self.page.controls[-1]:
+            self.update()

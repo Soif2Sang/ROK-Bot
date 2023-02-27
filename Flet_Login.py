@@ -43,11 +43,11 @@ def mac_address_exists(dict):
 
 def change_mac_address(id, key):
     try:
-        url = f"https://rokbot-2e6f.restdb.io/rest/auth/{id}"
+        url = f"https://rokbd-1b0e.restdb.io/rest/auth/{id}"
         body = json.dumps({f"{key}": get_mac_address()})
         headers = {
             'content-type': "application/json",
-            'x-apikey': "632031befdc15b0265f17372",
+            'x-apikey': "63ef3702478852088da6839f",
             'cache-control': "no-cache"
         }
         response = requests.patch(url, data=body, headers=headers)
@@ -215,11 +215,13 @@ class LoginButton(ft.FilledButton):
 
 def main(page: ft.Page):
     os.environ["FLET_APP_LIFETIME_MINUTES"] = "1"
-
-    if not os.path.exists("user_settings.json"):
-        with open('user_settings.json', 'w') as f:
-            json.dump({}, f, indent=2)
-            print("User settings created")
+    try:
+        if not os.path.exists("user_settings.json"):
+            with open('user_settings.json', 'w') as f:
+                json.dump({}, f, indent=2)
+                print("User settings created")
+    except:
+        pass
     with open('user_settings.json') as config_file:
         data = json.load(config_file)
 
@@ -236,11 +238,11 @@ def main(page: ft.Page):
     cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
     subprocess.Popen(cmd)
     print("Bot is starting..")
-    if not find_window("RoK Bot -"):
-        if "user" in data:
-            if data["user"]["username"] != "":
-                # pass
-                login_button.login(None, data['user']["username"], data['user']["password"])
+    # if not find_window("RoK Bot -"):
+    if "user" in data:
+        if data["user"]["username"] != "":
+            # pass
+            login_button.login(None, data['user']["username"], data['user']["password"])
 
 
 if __name__ == "__main__":

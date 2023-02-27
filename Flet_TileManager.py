@@ -1,6 +1,8 @@
 import json
 import shutil
+import threading
 from os.path import exists
+from time import sleep
 
 import flet as ft
 import pyautogui
@@ -21,8 +23,8 @@ class TileManager(ft.ListView):
         self.page = page
         self.height = 250
         self.expand = 0
-        self.tiles = {}
-        self.navigation_bar = NavigationBar(self)
+        self.tiles:dict[str,Tile] = {}
+        self.navigation_bar:NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
 
     def add_tile(self, number: str):
@@ -46,6 +48,24 @@ class TileManager(ft.ListView):
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
 
+    def process_is_alive(self):
+        while 1:
+            for tile in self.tiles.values():
+                if not tile.tasks_process.is_alive():
+                    tile.started = False
+                    tile.stopped = False
+                    tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+                    tile.button_stop.disabled = True
+                    tile.button_start.update()
+                    tile.button_stop.update()
+                    tile.set_text("")
+            sleep(1)
+
+    def update_tiles(self):
+        is_alive = threading.Thread(target=self.process_is_alive)
+        is_alive.deamon = True
+        is_alive.start()
+
     def get_dic_instances(self):
         try:
             with open('path.json', encoding='utf-8') as config_file:
@@ -58,7 +78,7 @@ class TileManager(ft.ListView):
                 data_instance = file.read().split('\n')
         except:
             raise OSError(
-                "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\bluestacks.conf'")
+                "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'")
 
         def sort_by_instance(tab):
             for i in range(len(tab)):

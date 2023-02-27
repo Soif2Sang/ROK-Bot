@@ -9,7 +9,7 @@ from pytesseract import pytesseract
 
 from Task import Task
 from Task_alliance_help import AllianceHelp
-from Task_utils import get_name, get_class, filter_coordinate
+from Task_utils import get_name, get_class, filter_coordinate, write
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -26,7 +26,6 @@ class HealTroop(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -79,13 +78,13 @@ class HealTroop(Task):
                 shuffle(tier_icons)
                 self.click(tier_icons[0][0] + uniform(-5, 20), tier_icons[0][1] + uniform(-15, 10))
                 self.better_sleep((1, 1.8))
-            self.print("après les tier_icons")
+            write(self.name,"après les tier_icons")
             # print(f"{self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') =}")
             healing_hut = (
                 self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') + uniform(-5, 5),
                 self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_y') + uniform(-5, 5)
             )
-            self.print(f"Healing building placement (randomised) : {healing_hut}")
+            write(self.name,f"Healing building placement (randomised) : {healing_hut}")
             self.click(healing_hut[0], healing_hut[1])
             # print("après les healing_hut")
             co = self.adb.find_img(target="heal_icon")

@@ -24,7 +24,6 @@ class DailyVip(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -40,12 +39,14 @@ class DailyVip(Task):
             cv_image = self.adb.get_cv2_img()
             img = Image.fromarray(cv_image)
             if img.getpixel((1041, 155)) == (0, 0, 227):
+                self.print("Claiming daily VIP points")
                 self.click(uniform(1000, 1044), uniform(163, 192))
                 self.better_sleep((2, 2.5))
                 self.click(uniform(1082, 1100), uniform(73, 90))
                 self.better_sleep((2, 2.5))
             co = self.adb.find_img(target="claim_daily")
             if co is not None:
+                self.print("Claiming daily VIP chest reward")
                 self.click(uniform(co[0] - 5, co[0] + 80), uniform(co[1], co[1] + 25))
                 self.better_sleep((4.5, 6))
                 self.click(uniform(300, 1000), uniform(33, 87))

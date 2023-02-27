@@ -32,9 +32,8 @@ class Task:
         self.pid = get_window_pid(self.adb.name)
         self.language = None
         self.name = self.adb.name
-        self.resource_type = None
 
-    def set_text(self, text, color="black"):
+    def set_text(self, text, color=None):
         return self.tile.add_text(text,color)
 
     def set_status(self, text):
@@ -49,10 +48,7 @@ class Task:
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             sleep(1)
             seconds -= 1
-            # print(seconds)
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
-            # print(":" in self.tile.text_status.value,self.tile.text_status.value != "00:00:01")
-            self.tile.text_status.update()
 
     @get_name
     def update_data(self):
@@ -67,7 +63,7 @@ class Task:
         self.resource_type = self.data[str(self.sel)]['schedules'][self.current_profile]["First"]
 
     @get_name
-    def print(self, text: str, color="black") -> None:
+    def print(self, text: str, color=None) -> None:
         # print(f'[ {current_time()} ] [ {self.name} ] {text}')
         if text != "":
             self.set_text(f"[{current_time()}] {text}",color)
@@ -262,7 +258,7 @@ class Task:
         self.print(f"Resolve count = {compteur}")
         if compteur > 5:
             self.print("Error in resolving the captcha, human action needed.")
-            self.status("Error")
+            self.set_status("Error")
             while True:
                 self.script_pause()
                 sleep(1)
@@ -341,18 +337,20 @@ class Task:
 
         if self.tile.stopped:
             self.tile.stopped = False
-            self.set_text("You stopped the bot","Red")
+            self.set_text(f"[{current_time()}] You stopped the bot","Red")
+            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot")
             sys.exit(1)
 
         while not self.tile.started:
             if not said:
-
                 # self.print(f"You is paused.","Yellow")
-                self.set_text(f"[{current_time()}] Script is paused.")
+                self.set_text(f"[{current_time()}] Script is paused.","orange")
+                print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Script is paused.")
                 said = True
                 # self.set_text("Script paused.")
         if said:
-            self.print(f"You resumed the script.","Green")
+            self.set_text(f"[{current_time()}] You resumed the script.","Green")
+            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You resumed the script.")
 
     @get_name
     def check_log_back(self, cv_image=None):
@@ -380,8 +378,8 @@ class Task:
 
                 value = randint(self.data.get(self.sel).get('schedules').get(self.current_profile).get('log_back1'),
                                 self.data.get(self.sel).get('schedules').get(self.current_profile).get(
-                                    'log_back2') * 60)
-                self.print(f"Waiting for the timer to end.. {value} minutes")
+                                    'log_back2') * 60) + randint(0,59)
+                self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
                 for i in range(value):
                     self.script_pause()
                     sleep(1)
@@ -391,7 +389,7 @@ class Task:
                 self.run_game()
                 return True
             else:
-                self.set_text("Auto Log-back off")
+                self.set_text("Auto Log-back off","red")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -433,7 +431,7 @@ class Task:
                 self.wait_until_connected()
                 return True
             else:
-                self.set_text("Reconnection disabled")
+                self.print("Reconnection disabled","red")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -456,6 +454,7 @@ class Task:
             self.check_reconnect()
             self.check_log_back()
             self.check_captcha()
+            self.close_windows()
 
     @get_name
     def leave_kd_buff(self, Source=None):
@@ -497,12 +496,14 @@ class Task:
     @get_name
     def check_chest(self):
         for _ in range(2):
+            self.script_pause()
             pil_image = self.adb.get_curr_device_screen_img()
             cv_image = array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[30:170, 770:1225]
             chest = None
             for i in range(1, 4):
+                self.script_pause()
                 chest = self.adb.find_img(target=f"verification_chest{i}", source=cropped_image, confidence=0.6)
                 if chest is None:
                     break
@@ -514,7 +515,7 @@ class Task:
                     self.better_sleep((3, 4))
                     return True
                 else:
-                    self.set_text("Captcha is Off")
+                    self.set_text(f"[{current_time()}] Captcha verification is Off")
                     self.set_status("Captcha is Off")
                     while True:
                         self.script_pause()
@@ -561,13 +562,13 @@ class Task:
     def report_feedback(self, captchaId, resolved, solver):
         co = self.adb.find_img(target="refresh_resolve")
         if co is not None:
-            self.print("Captcha failed !")
+            self.print("Captcha failed !","red")
             if captchaId is not None:
                 solver.report(captchaId, False)
         else:
             resolved = True
             solver.report(captchaId, True)
-            self.print("Captcha successfully solved !")
+            self.print("Captcha successfully solved !","green")
         return resolved
 
     @get_name
@@ -625,5 +626,14 @@ class Task:
         """
         return self.adb.find_img(target='gem_search_button') is None
 
-    def status(self, text):
-        self.tile.update_label2(self.sel, text)
+    @get_name
+    def close_windows(self):
+        image = self.adb.get_cv2_img()[0:322, 0:1280]
+        while (co:=self.adb.find_img(target="close_window",source=image)):
+            self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
+            self.better_sleep((1.3,2.8))
+            image = self.adb.get_cv2_img()[0:322, 0:1280]
+        while (co:=self.adb.find_img(target="close_window2",source=image, confidence=0.83)):
+            self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
+            self.better_sleep((1.3,2.8))
+            image = self.adb.get_cv2_img()[0:322, 0:1280]

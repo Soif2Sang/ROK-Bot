@@ -19,7 +19,6 @@ class ProduceMaterials(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -65,15 +64,6 @@ class ProduceMaterials(Task):
                     string = self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}']
 
                     self.click(materials[string][0], materials[string][1])
-
-                    # if self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}'] == "leather":
-                    #     self.click(uniform(737, 785), uniform(208, 255))
-                    # if self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}'] == "stone":
-                    #     self.click(uniform(830, 880), uniform(208, 255))
-                    # if self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}'] == "ebony":
-                    #     self.click(uniform(922, 972), uniform(208, 255))
-                    # if self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}'] == "bones":
-                    #     self.click(uniform(1018, 1064), uniform(208, 255))
                     self.better_sleep((0.5, 1.2))
             self.click(uniform(1080, 1100), uniform(70, 90))
             self.better_sleep((1, 1.425))

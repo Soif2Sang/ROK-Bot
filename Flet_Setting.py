@@ -20,6 +20,7 @@ class SettingContainer(ft.Container):
         self.color_choice = color_bank[self.profile_index]
         self.content = ft.ListView(height=500, expand=0, padding=1, )
 
+
         self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
         self.create_normal_switch("collect_ressource", "Collect city rss")
@@ -46,6 +47,9 @@ class SettingContainer(ft.Container):
 
         self.create_advanced_switch("loop_task", "Re-do Tasks", self.page_redo)
         self.create_advanced_switch("scheduler", "Profiles", self.page_profile)
+
+        self.content.controls.append(ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'], on_change=lambda e: self.submit(e, 'API_KEY', str)))
+
 
     def reset(self):
         self.clean()
@@ -76,11 +80,16 @@ class SettingContainer(ft.Container):
 
         self.create_advanced_switch("loop_task", "Re-do Tasks", self.page_redo)
         self.create_advanced_switch("scheduler", "Profiles", self.page_profile)
+        self.content.controls.append(ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'], on_change=lambda e: self.submit(e, 'API_KEY', str)))
+
         self.page.update()
 
     def submit(self, e, keyword, method):
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1"]:
+        with open('user_settings.json') as config_file:
+            self.data = json.load(config_file)
+        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1",'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
+            print(self.data[str(self.instance_index)][keyword])
             with open('user_settings.json', 'w') as config_file:
                 config_file.write(json.dumps(self.data, indent=2))
             return
@@ -110,33 +119,34 @@ class SettingContainer(ft.Container):
         )
 
         self.content.controls.extend([
+            ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure yellow-lineups with farmers !",size=15,color="red"),
             ft.TextField(label="Your kingdom :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kingdom"],
                          width=300,
                          border=ft.InputBorder.UNDERLINE,
                          filled=True,
                          content_padding=ft.padding.all(10),
-                         on_submit=lambda e: self.submit(e, "kingdom", str)),
+                         on_change=lambda e: self.submit(e, "kingdom", str)),
             ft.TextField(label="Area location X coordinates :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_x"],
                          width=300, border=ft.InputBorder.UNDERLINE,
                          filled=True,
                          content_padding=ft.padding.all(10),
-                         on_submit=lambda e: self.submit(e, "city_x", int)
+                         on_change=lambda e: self.submit(e, "city_x", int)
                          ),
             ft.TextField(label="Area location Y coordinates :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_y"],
                          width=300, border=ft.InputBorder.UNDERLINE,
                          filled=True,
                          content_padding=ft.padding.all(10),
-                         on_submit=lambda e: self.submit(e, "city_y", int),
+                         on_change=lambda e: self.submit(e, "city_y", int),
                          ),
             ft.TextField(label="Scanning radius (km) :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["radius"],
                          width=300, border=ft.InputBorder.UNDERLINE,
                          filled=True,
                          content_padding=ft.padding.all(10),
-                         on_submit=lambda e: self.submit(e, "radius", int)),
+                         on_change=lambda e: self.submit(e, "radius", int)),
             ft.Row(
                 controls=[
                     ft.Text("Mining duration (mins)"),
@@ -146,7 +156,7 @@ class SettingContainer(ft.Container):
                                  width=80, border=ft.InputBorder.UNDERLINE,
                                  filled=True,
                                  content_padding=ft.padding.all(10),
-                                 on_submit=lambda e: self.submit(e, "gather_gem_duration1", int)
+                                 on_change=lambda e: self.submit(e, "gather_gem_duration1", int)
                                  ),
                     ft.Text("~"),
                     ft.TextField(label="Maximum",
@@ -155,7 +165,7 @@ class SettingContainer(ft.Container):
                                  width=90, border=ft.InputBorder.UNDERLINE,
                                  filled=True,
                                  content_padding=ft.padding.all(10),
-                                 on_submit=lambda e: self.submit(e, "gather_gem_duration2", int)),
+                                 on_change=lambda e: self.submit(e, "gather_gem_duration2", int)),
                 ]
             ),
             ft.Row(
@@ -167,7 +177,7 @@ class SettingContainer(ft.Container):
                                  width=80, border=ft.InputBorder.UNDERLINE,
                                  filled=True,
                                  content_padding=ft.padding.all(10),
-                                 on_submit=lambda e: self.submit(e, "gem_check1", int)),
+                                 on_change=lambda e: self.submit(e, "gem_check1", int)),
                     ft.Text("~"),
                     ft.TextField(label="Maximum",
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
@@ -175,7 +185,7 @@ class SettingContainer(ft.Container):
                                  width=90, border=ft.InputBorder.UNDERLINE,
                                  filled=True,
                                  content_padding=ft.padding.all(10),
-                                 on_submit=lambda e: self.submit(e, "gem_check2", int)),
+                                 on_change=lambda e: self.submit(e, "gem_check2", int)),
                 ]
             ),
             ft.Switch(
@@ -224,6 +234,17 @@ class SettingContainer(ft.Container):
             "Sixth",
             "Seventh"
         ]
+        with open('user_settings.json') as config_file:
+            self.data = json.load(config_file)
+        self.content.controls.append(
+            ft.Switch(
+                label="Use Yellow presets as gatherers",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "rss_custom_preset"] else False,
+                on_change=lambda _: self.reverse_keyword("rss_custom_preset")
+            )
+        )
         self.content.controls.extend([
             ft.Row(
                 controls=[
@@ -449,8 +470,7 @@ class SettingContainer(ft.Container):
                 ]
             )
         ])
-        self.content.controls.extend([
-            ft.Row(
+        self.content.controls.extend([ft.Row(
                 controls=[
                     ft.Container(
                         width=100,
@@ -546,7 +566,7 @@ class SettingContainer(ft.Container):
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.clean()
-        self.content = ft.Column()
+        self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
             ft.Row(
                 controls=[
@@ -561,13 +581,13 @@ class SettingContainer(ft.Container):
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                              "scout_building_x"],
                          width=300,
-                         on_submit=lambda e: self.submit(e, "scout_building_x", int),
+                         on_change=lambda e: self.submit(e, "scout_building_x", int),
                          ),
             ft.TextField(label="Scout building placement Y :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                              "scout_building_y"],
                          width=300,
-                         on_submit=lambda e: self.submit(e, "scout_building_y", int)),
+                         on_change=lambda e: self.submit(e, "scout_building_y", int)),
             ft.Row(
                 controls=[
                     ft.Text("Scout duration (mins)"),
@@ -575,14 +595,14 @@ class SettingContainer(ft.Container):
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "scout_duration1"],
                                  width=80,
-                                 on_submit=lambda e: self.submit(e, "scout_duration1", int)
+                                 on_change=lambda e: self.submit(e, "scout_duration1", int)
                                  ),
                     ft.Text("~"),
                     ft.TextField(label="Maximum",
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "scout_duration2"],
                                  width=90,
-                                 on_submit=lambda e: self.submit(e, "scout_duration2", int)),
+                                 on_change=lambda e: self.submit(e, "scout_duration2", int)),
                 ]
             )]
         )
@@ -592,7 +612,7 @@ class SettingContainer(ft.Container):
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.clean()
-        self.content = ft.Column()
+        self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
             ft.Row(
                 controls=[
@@ -607,18 +627,18 @@ class SettingContainer(ft.Container):
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                              "healing_building_y"],
                          width=300,
-                         on_submit=lambda e: self.submit(e, "healing_building_x", int)),
+                         on_change=lambda e: self.submit(e, "healing_building_x", int)),
             ft.TextField(label="Healing building placement Y :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                              "healing_building_y"],
                          width=300,
-                         on_submit=lambda e: self.submit(e, "healing_building_y", int)
+                         on_change=lambda e: self.submit(e, "healing_building_y", int)
                          ),
             ft.TextField(label="Heal batch :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                              "healing_count"],
                          width=300,
-                         on_submit=lambda e: self.submit(e, "healing_count", int),
+                         on_change=lambda e: self.submit(e, "healing_count", int),
                          )
         ]
         )
@@ -677,11 +697,31 @@ class SettingContainer(ft.Container):
             )
         self.update()
 
+    def page_barbs(self):
+        with open('user_settings.json') as config_file:
+            self.data = json.load(config_file)
+        self.clean()
+        self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content.controls.append(
+            ft.Row(
+                controls=[
+                    ft.IconButton(
+                        icon=ft.icons.ARROW_BACK,
+                        on_click=lambda _: self.reset()
+                    ),
+                    ft.Text("Settings", size=20),
+                ],
+            )
+        )
+        self.content.controls.append(
+            ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure all red slot with PeaceKeeper\nNote this function is not designed for New accounts !", size=15, color="red"),
+        )
+
     def page_rally(self):
         with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.clean()
-        self.content = ft.Column()
+        self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
             ft.Row(
                 controls=[
@@ -703,6 +743,7 @@ class SettingContainer(ft.Container):
             "Seventh"
         ]
         self.content.controls.extend([
+            ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure first slot of red line-up with rally Leader !", size=15, color="red"),
             ft.Row(
                 controls=[
                     ft.Container(
@@ -798,20 +839,24 @@ class SettingContainer(ft.Container):
             ft.Row(
                 controls=[
                     ft.Text(
-                        "Time to wait before the bot log\nback from your connection(mins): "
+                        "Time to wait before the bot log\nback from your connection(mins): \n\n", size=17
                     ),
+                ]
+            ),
+            ft.Row(
+                controls=[
                     ft.TextField(label="Minimum",
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "log_back1"],
                                  width=80,
-                                 on_submit=lambda e: self.submit(e, "log_back1", int)
+                                 on_change=lambda e: self.submit(e, "log_back1", int)
                                  ),
                     ft.Text("~"),
                     ft.TextField(label="Maximum",
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "log_back2"],
                                  width=90,
-                                 on_submit=lambda e: self.submit(e, "log_back2", int)
+                                 on_change=lambda e: self.submit(e, "log_back2", int)
                                  )
                 ]
             )
@@ -905,13 +950,13 @@ class SettingContainer(ft.Container):
                     ft.TextField(label="Minimum",
                                  value=self.data[str(self.instance_index)]["time_to_wait_loop1"],
                                  width=80,
-                                 on_submit=lambda e: self.submit(e, "time_to_wait_loop1", int)
+                                 on_change=lambda e: self.submit(e, "time_to_wait_loop1", int)
                                  ),
                     ft.Text("~"),
                     ft.TextField(label="Maximum",
                                  value=self.data[str(self.instance_index)]["time_to_wait_loop2"],
                                  width=90,
-                                 on_submit=lambda e: self.submit(e, "time_to_wait_loop2", int)
+                                 on_change=lambda e: self.submit(e, "time_to_wait_loop2", int)
                                  )
                 ]
             )
@@ -1002,16 +1047,6 @@ class SettingContainer(ft.Container):
                     value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                         "defeat_barbarians"] else False,
                     on_change=lambda _: self.reverse_keyword("defeat_barbarians")
-                ),
-                ft.Dropdown(
-                    width=140,
-                    height=70,
-                    label="Multiplicator",
-                    options=[
-                        ft.dropdown.Option(f"level {i}") for i in range(1,51)],
-                    value="level " +str(self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                  "barbarians_level"]),
-                    on_change=lambda e: self.submit(e, "barbarians_level", str)
                 )
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN

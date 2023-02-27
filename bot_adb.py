@@ -96,7 +96,11 @@ class Adb:
         write(self.name,text)
 
     def get_curr_device_screen_img_byte_array(self):
-        return self.get_device().screencap()
+        try:
+            return self.get_device().screencap()
+        except:
+            sleep(1)
+            return self.get_device().screencap()
 
 
     def get_curr_device_screen_img(self):
@@ -117,10 +121,17 @@ class Adb:
             return self.get_curr_device_screen_img()
 
     def get_cv2_img(self):
-        screen = self.get_curr_device_screen_img()
-        screen = array(screen)
-        screen = cvtColor(screen, COLOR_BGR2RGB)
-        return screen
+        try:
+            screen = self.get_curr_device_screen_img()
+            screen = array(screen)
+            screen = cvtColor(screen, COLOR_BGR2RGB)
+            return screen
+        except:
+            sleep(1)
+            screen = self.get_curr_device_screen_img()
+            screen = array(screen)
+            screen = cvtColor(screen, COLOR_BGR2RGB)
+            return screen
 
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))

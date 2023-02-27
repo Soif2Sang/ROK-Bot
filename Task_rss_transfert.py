@@ -17,7 +17,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class RssTransfert(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
+        with open('../../../../../Downloads/user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
@@ -26,7 +26,6 @@ class RssTransfert(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -62,13 +61,25 @@ class RssTransfert(Task):
 
 
     @get_name
-    def setup_ui(self):
+    def setup_ui(self,deadstop = 0):
+        if deadstop ==3:
+            raise ValueError()
         x,y = uniform(596,630), uniform(284,329)
         self.click(x,y)
         self.better_sleep((1,2))
-        x,y = uniform(730,900), uniform(415,450)
-        self.click(x,y)
+        co = self.adb.find_img(target="assist_button")
+        if co is None:
+            self.close_windows()
+            return self.setup_ui(deadstop = deadstop+1)
+        self.click(co[0]+ uniform(0,40),co[1] + uniform(0,20))
         self.better_sleep((1,2))
+
+    @get_name
+    def check_captcha(self,chest=True):
+        if not chest:
+            super().check_captcha(chest)
+            sleep(1)
+        super().check_captcha(chest)
 
     @get_name
     def send_rss(self, type):
@@ -84,10 +95,11 @@ class RssTransfert(Task):
         self.better_sleep((0.7, 1.4))
 
     @get_class
-    def run(self):
+    def run(self,type,quantity):
         self.check_captcha()
-        transfert_wanted = 20_000_000
+        transfert_wanted = quantity
         self.setup_ui()
+        self.better_sleep((0.7, 1.4))
         transportation_capacity = self.get_capacity()
         rss_sent = 0
         loop = int(transfert_wanted/transportation_capacity)
@@ -95,6 +107,7 @@ class RssTransfert(Task):
             loop+=1
         for i in range(loop):
             rss_sent += transportation_capacity
-            self.send_rss("stone")
-            self.check_captcha()
-            self.setup_ui()
+            self.send_rss(type)
+            self.check_captcha(chest=True)
+            if i!=loop-1:
+                self.setup_ui()

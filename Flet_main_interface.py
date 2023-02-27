@@ -27,6 +27,7 @@ def Main(page: ft.Page, days=950):
     page.add(ft.Divider())
     page.tile_manager.refresh()
     page.update()
+    page.tile_manager.update_tiles()
 
 if __name__ == "__main__":
     ft.app(target=Main, view=ft.FLET_APP)

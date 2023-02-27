@@ -35,7 +35,6 @@ class GatherGem(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
         self.end_time = None
         self.block = False
@@ -435,7 +434,7 @@ class GatherGem(Task):
 
         try:
             for i in range(1, 4):
-                points = self.adb.find_multiple_img(target=f"back_icon{i}")
+                points = self.adb.find_multiple_img(target=f"back_icon{i}", confidence=0.85)
                 if points != []:
                     break
             if points == []:
@@ -609,9 +608,9 @@ class GatherGem(Task):
         for second_string in ["left", "mid", "right"]:
             for first_string in ["up", "mid", "down"]:
                 self.check_if_kill()
-                co = self.validate_co(self.adb.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}", confidence=0.8))
+                co = self.validate_co(self.adb.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}", confidence=0.82))
                 if co is None:
-                    co = self.validate_co(self.adb.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}", confidence=0.8))
+                    co = self.validate_co(self.adb.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}", confidence=0.82))
                 if co is not None:
                     self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                     self.check_if_kill()

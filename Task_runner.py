@@ -45,12 +45,12 @@ class TaskRunner(Task):
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
         return "runner"
 
+    @get_name
     def set_current_task(self, name):
         names = {
             "ClaimCampaign": "Claiming campaign rewards",
@@ -73,6 +73,7 @@ class TaskRunner(Task):
         }
         return self.set_status(names.get(name, name))
 
+    @get_name
     def get_current_task(self, name):
         names = {
             "ClaimCampaign": "Claiming campaign rewards",
@@ -107,10 +108,10 @@ class TaskRunner(Task):
                 AllianceHelp(self).run()
             self.check_download_page()
             self.leave_kd_buff()
-            self.print("")
+            #self.print("")
             self.print(f"Task {current_task}/{len(lib_tasks)}","blue")
             self.print(f"Currently executing : {self.get_current_task(func.task_name())}","blue")
-            self.print("")
+            #self.print("")
             self.set_current_task(func.task_name())
             self.run_game()
             self.check_log_back()
@@ -140,6 +141,7 @@ class TaskRunner(Task):
                 self.better_sleep((5, 10))
                 self.run_game()
             self.better_sleep((0.795, 1.2))
+            self.close_windows()
             current_task += 1
             if ('BuyMerchant' in func.task_name()) or ('GatherRss' in func.task_name()):
                 self.check_captcha()
@@ -198,8 +200,8 @@ class TaskRunner(Task):
         if "BarbarianFort" in tasks_name:
             for element in ["GatherRss", "GatherGem","hunt_barbarians"]:
                 if element in tasks_name:
-                    a = lib_tasks.index("BarbarianFort")
-                    b = lib_tasks.index(element)
+                    a = tasks_name.index("BarbarianFort")
+                    b = tasks_name.index(element)
                     if a > b:
                         lib_tasks[a], lib_tasks[b] = lib_tasks[b], lib_tasks[a]
         # print(f"{lib_tasks}")
@@ -330,11 +332,11 @@ class TaskRunner(Task):
         x, y = self.adb.find_img(target="logged_icon")
         self.print('Current character detected.')
         if x < 1280 // 2:
-            self.print(f"x < 1280 // 2")
+            # self.print(f"x < 1280 // 2")
             self.click(x + uniform(480, 780), y + uniform(-20, 0))
             self.better_sleep((2.425, 2.795))
         elif y > 520 and x > 1280 // 2:
-            self.print("y > 520 and x > 1280 // 2")
+            # self.print("y > 520 and x > 1280 // 2")
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
@@ -388,12 +390,11 @@ class TaskRunner(Task):
     @get_name
     def run2(self):
         print("starting")
-        self.set_status = lambda text: print(text)
-        self.set_text = lambda text: print(text)
+        self.set_status = lambda text, color=None: print(text)
+        self.set_text = lambda text,color=None: print(text)
         self.set_sel("0")
         self.adb.connect_to_device()
         self.data = self.update_data()
-        self.set_timer(10)
         i=0
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
         for i in range(loop_task):
@@ -470,12 +471,12 @@ class TaskRunner(Task):
                 ttw1, ttw2 = self.data.get("0").get("time_to_wait_loop1", 60), self.data.get("0").get(
                     "time_to_wait_loop2", 90)
 
-                self.print("")
+                #self.print("")
                 self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                self.print("")
+                #self.print("")
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
                 self.set_timer(time_before_redo_tasks)
@@ -502,7 +503,7 @@ class TaskRunner(Task):
             loop_time = time()
             self.set_status("Starting..")
             self.print(" Script is starting ! ".center(20, "-"), "green")
-            self.print("")
+            #self.print("")
             self.data = self.update_data()
 
             first_profile_first_instance = True if self.sel == 1 or self.sel == '1' and self.data[self.sel]['scheduler'] else False
@@ -510,10 +511,10 @@ class TaskRunner(Task):
                 if self.data[self.sel]['schedules'][profile]['enabled']:
                     self.current_profile = profile
                     self.print(f" Profile n°{profile} enabled ! ","blue")
-                    self.print("")
+                    #self.print("")
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character"):
                         self.print(f"Character n°1", "blue")
-                        self.print("")
+                        #self.print("")
                     self.run_game()
                     self.check_log_back()
                     self.check_reconnect()
@@ -522,8 +523,8 @@ class TaskRunner(Task):
                     self.leave_kd_buff()
                     # First character
                     self.execute_tasks(self.get_available_task(profile),profile)
-                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
-                                                                                              False):
+                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",False):
+                        self.close_windows()
                         co_first = self.get_first_character()
                         boolean = True
                         self.wait_until_connected()
@@ -536,7 +537,7 @@ class TaskRunner(Task):
                         nb_characters = 2
                         while boolean:
                             self.print(f"Character n°{nb_characters}","blue")
-                            self.print("")
+                            #self.print("")
                             self.run_game()
 
                             self.check_log_back()
@@ -549,6 +550,7 @@ class TaskRunner(Task):
                             self.better_sleep((2.2, 4))
 
                             nb_characters += 1
+                            self.close_windows()
                             boolean = self.change_character_param(co_first, nb_characters)
                             self.wait_until_connected()
                     if not self.data[self.sel]['scheduler']:
@@ -557,14 +559,14 @@ class TaskRunner(Task):
             if self.data.get(self.sel).get("loop_task"):
                 ttw1, ttw2 = self.data.get(self.sel).get("time_to_wait_loop1", 60), self.data.get(self.sel).get(
                     "time_to_wait_loop2", 90)
-                self.print("")
+                #self.print("")
                 heures, minutes = divmod((int(time()) - loop_time), 60)
                 minutes,secondes = divmod(int(minutes), 60)
                 self.print(f"Run nb°{i} took {int(heures):02d}:{int(minutes):02d}:{int(secondes):02d} to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                self.print("")
+                #self.print("")
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes","#f5b400")
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
 
@@ -575,7 +577,7 @@ class TaskRunner(Task):
                         self.leave_game(force=False)
 
                 self.set_timer(time_before_redo_tasks)
-        self.print("")
+        #self.print("")
         self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.","green")
         return
 
