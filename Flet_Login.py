@@ -108,24 +108,31 @@ class LoginButton(ft.FilledButton):
         try:
             data = self.login_to_bd(password, username)
             # print(data)
-            heure = self.is_data_valid(data)
-            if heure == 0:
+            days = self.is_data_valid(data)
+            if days == 0:
                 self.page.clean()
                 main(self.page)
                 return False
             else:
+                heures = days[0].split('-')
+                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
+                diff = future - date.today()
+                self.page.title = f"Rok Bot - {diff.days - 1} Days left"
+                self.page.update()
                 sleep(3600 * 24)
-                # sleep(10)
                 return self.login_schedule(username, password)
         except Exception as e:
-            # print(e)
+            print(e)
+            traceback.print_exc()
             self.pop_banner("Problem occurred, please try again")
             print("Problem occured while trying to connect")
             self.page.clean()
             main(self.page)
-            exit(1)
+            for element in self.tile_manager.tiles.values():
+                element.started = False
+                element.stopped = False
 
-    def login(self, e, username=None, password=None):
+    def login(self, e=None, username=None, password=None):
         print("Trying to login...")
         if username is None and password is None:
             username = self.page.controls[0].value
@@ -208,8 +215,11 @@ class LoginButton(ft.FilledButton):
             }
             response = requests.request("GET", url, params=parameter, headers=headers)
             data = response.json()
+            print(data)
+
             return data[0]
-        except:
+        except Exception as e:
+            traceback.print_exc()
             return {}
 
 
@@ -241,7 +251,7 @@ def main(page: ft.Page):
     # if not find_window("RoK Bot -"):
     if "user" in data:
         if data["user"]["username"] != "":
-            # pass
+            # Flet_main_interface.Main(page, 100)
             login_button.login(None, data['user']["username"], data['user']["password"])
 
 
