@@ -8,7 +8,7 @@ from Task_alliance_donation import AllianceDonation
 from Task_claim_daily_quests import DailyQuests
 from Task_daily_chest2 import DailyChest2
 from Task_daily_vip import DailyVip
-from Task_rss_transfert import RssTransfert
+from Task_rss_transfert import RssTransfer
 from Task_runner import TaskRunner
 from Task_upgrade_city import UpgradeCity
 from bot_adb import *
@@ -47,7 +47,7 @@ class Bot():
         self.vip = DailyVip(self.main_task)
         self.chest = DailyChest2(self.main_task)
         self.alliance = AllianceDonation(self.main_task)
-        self.trade = RssTransfert(self.main_task)
+        self.trade = RssTransfer(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -393,32 +393,32 @@ def main(page:ft.Page):
     # Thread(target=lambda: upgrade_instance(page,12)).start()
     # Thread(target=lambda: upgrade_instance(page,13)).start()
 
-if __name__ == "__main__":
-    # master = customtkinter.CTk()
-    # adb = Adb(1)
-    # bot = Bot(adb)
-    # bot.adb.connect_to_device()
-    #
-    # bot.main_task.print = lambda txt: print(txt)
-    # bot.main_task.set_text = lambda txt: print(txt)
-    # bot.main_task.status = lambda txt: print(txt)
-    # bot.main_task.script_pause = lambda: print("")
-    # bot.task.current_profile="1"
-    # master = customtkinter.CTk()
-    # frame = customtkinter.CTkFrame(master)
-    # frame.pr_tasks_button = customtkinter.CTkButton(master, fg_color="white")
-    # frame.end_tasks_button = customtkinter.CTkButton(master)
-    # frame.adb = bot.adb
-    # frame.pause = False
-    # frame.stop = False
-    # frame.update_label2 = lambda x,_: print(x)
-    # bot.task.frame = frame
-    # bot.task.frame.pause = False
-    #
-    # bot.task.check_reconnect()
-    # Thread(target=lambda: rss_transfert(1,"gold",130_000_000)).start()
-    # Thread(target=lambda: rss_transfert(0,"wood",400_000_000)).start()
-    # Thread(target=lambda: upgrade_instance(0)).start()
+def get_bot(number):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+
+    bot.main_task.print = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.status = lambda txt: print(txt)
+    bot.main_task.script_pause = lambda: print("")
+
+
+
+
+    bot.task.current_profile="1"
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
+    return bot
+def upgrade_all():
     Thread(target=lambda: upgrade_instance(3)).start()
     Thread(target=lambda: upgrade_instance(4)).start()
     Thread(target=lambda: upgrade_instance(5)).start()
@@ -430,4 +430,14 @@ if __name__ == "__main__":
     Thread(target=lambda: upgrade_instance(11)).start()
     Thread(target=lambda: upgrade_instance(12)).start()
     Thread(target=lambda: upgrade_instance(13)).start()
+
+
+if __name__ == "__main__":
+    upgrade_all()
+    # bot = get_bot(1)
+    # bot.trade.get_capacity()
+    # Thread(target=lambda: rss_transfert(1,"gold",130_000_000)).start()
+    # Thread(target=lambda: rss_transfert(0,"wood",400_000_000)).start()
+    # Thread(target=lambda: upgrade_instance(0)).start()
+    # upgrade_all()
 

@@ -107,7 +107,7 @@ class GatherRss(Task):
     @get_name
     def click_loop(self) -> None:
         print(f'[ {current_time()} ] [ {self.name} ] click loop call')
-        if not self.adb.find_img(target="gem_search_button"):
+        if not self.find_img(target="gem_search_button"):
             print(f'[ {current_time()} ] [ {self.name} ] Loop icon not found, leaving the city')
             self.leave_city()
             self.better_sleep((2, 3))
@@ -139,7 +139,7 @@ class GatherRss(Task):
         pil_image = self.adb.get_curr_device_screen_img()
         cv_image = np.array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        co = self.adb.find_img(source=cv_image, target="button_level", confidence=0.8)
+        co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
             self.print(f'Cannot find the button_level')
             # self.set_text(f"[{current_time()}] Cannot find the level button")
@@ -159,10 +159,10 @@ class GatherRss(Task):
             level_to_go = level - int(string[1])
             if level_to_go > 0:
                 word = "Increasing"
-                x, y = self.adb.find_img(target='plus_button')
+                x, y = self.find_img(target='plus_button')
             else:
                 word = "Decreasing"
-                x, y = self.adb.find_img(target='minus_button')
+                x, y = self.find_img(target='minus_button')
             self.print(f'{word} the level by : {abs(level_to_go)}')
             # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
             for _ in range(abs(level_to_go)):
@@ -174,7 +174,7 @@ class GatherRss(Task):
 
     @get_name
     def node_found(self) -> bool:
-        if self.adb.find_img(target='search_button') is not None:
+        if self.find_img(target='search_button') is not None:
             self.print("Node not found")
             return False
         return True
@@ -201,7 +201,7 @@ class GatherRss(Task):
 
     @get_name
     def minable(self) -> bool:
-        if self.adb.find_img(target="search_button") is None and not self.find_cross():
+        if self.find_img(target="search_button") is None and not self.find_cross():
             return True
         # self.print("Unable to gather this node")
         return False
@@ -265,7 +265,7 @@ class GatherRss(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.adb.find_img(target=f'{color}_icon', confidence=0.95) is None and self.adb.find_img(target=
+        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
                                                                                                        "troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
@@ -295,7 +295,7 @@ class GatherRss(Task):
             self.better_sleep((1.325, 1.795))
             return False
         self.check_if_kill()
-        co = self.adb.find_img(target="new_troops_button")
+        co = self.find_img(target="new_troops_button")
         if co is not None:
             # print("Home button found")
             x, y = co[0], co[1]
@@ -317,7 +317,7 @@ class GatherRss(Task):
                     #         final.append(co)
                     final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
                     if final != []:
-                        x, y = self.adb.find_img(target="troops_march_button")
+                        x, y = self.find_img(target="troops_march_button")
                         x, y = x + uniform(0, 20), y + uniform(0, 20)
                         self.check_if_kill()
                         self.click(x, y)
@@ -325,7 +325,7 @@ class GatherRss(Task):
                         self.print("New Troop sent !","green")
                         return True
             self.check_if_kill()
-            co = self.adb.find_img(target="troops_march_button")
+            co = self.find_img(target="troops_march_button")
             if co is None:
                 return self.send_new_troop(deadstop=deadstop + 1)
             x, y = co[0], co[1]
@@ -335,7 +335,7 @@ class GatherRss(Task):
             self.better_sleep((0.5, 0.7))
             self.print("New Troop sent !","green")
             return True
-        co = self.adb.find_img(target="march_bar")
+        co = self.find_img(target="march_bar")
         if co is not None and self.free_troop_gem():
             x, y = uniform(1177, 1250), uniform(80, 116)
             self.check_if_kill()
@@ -377,7 +377,7 @@ class GatherRss(Task):
         """
         i = 0
         self.print("Clicking on the node..")
-        while self.adb.find_img(target="resource_gather_button") is None:
+        while self.find_img(target="resource_gather_button") is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.995,1.4))
@@ -385,7 +385,7 @@ class GatherRss(Task):
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        co = self.adb.find_img(target="resource_gather_button")
+        co = self.find_img(target="resource_gather_button")
         if co is not None:
             x, y = co[0], co[1]
             self.click(x + uniform(0, 150), y + uniform(0, 30))
@@ -403,18 +403,18 @@ class GatherRss(Task):
             self.send_new_troop()
             self.better_sleep((0.7, 1.1))
         else:
-            co = self.adb.find_img(target="new_troops_button")
+            co = self.find_img(target="new_troops_button")
             if co is None:
                 return False
             x, y = co[0], co[1]
             x, y = x + uniform(0, 160), y + uniform(0, 30)
             self.click(x, y)
             self.better_sleep((2.325, 2.795))
-            x, y = self.adb.find_img(target="troops_march_button")
+            x, y = self.find_img(target="troops_march_button")
             x, y = x + uniform(0, 80), y + uniform(0, 20)
             self.click(x, y)
             self.better_sleep((1.1,2))
-        if self.adb.find_img(target="troops_march_button") is not None:
+        if self.find_img(target="troops_march_button") is not None:
             self.click(uniform(1106, 1123), uniform(36, 55))
             self.better_sleep((1.1, 1.5))
             self.print("Cannot send the troop")

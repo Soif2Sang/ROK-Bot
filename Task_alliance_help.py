@@ -25,7 +25,7 @@ class AllianceHelp(Task):
     @get_class
     def run(self):
         for i in range(1,4):
-            if(co:=self.adb.find_img(f"help{i}")):
+            if(co:=self.find_img(f"help{i}")):
                 if co is not None:
                     cond = filter_coordinate(co)
                     if cond:

@@ -27,6 +27,8 @@ import numpy as np
 from pytesseract import pytesseract
 
 from Task import Task
+from Task_rss_transfert import RssTransfer
+from Task_training import TroopTraining
 from Task_upgrade_city import UpgradeCity
 from Task_utils import get_class, get_name, current_time, get_window_pid
 from bot_adb import Adb
@@ -69,7 +71,9 @@ class TaskRunner(Task):
             "ProduceMaterials":"Producing materials",
             "AutoUpgrade":"Upgrading the city..",
             "AllianceHelp": "Helping the alliance..",
-            "claim_daily_quests": "Claiming daily quests.."
+            "DailyQuests": "Claiming daily quests..",
+            "TroopTraining": "Training troop..",
+            "RssTransfer": "Transferring rss.."
         }
         return self.set_status(names.get(name, name))
 
@@ -92,13 +96,15 @@ class TaskRunner(Task):
             "ProduceMaterials": "Producing materials",
             "AutoUpgrade": "Upgrading the city..",
             "AllianceHelp": "Helping the alliance..",
-            "claim_daily_quests": "Claiming daily quests.."
+            "claim_daily_quests": "Claiming daily quests..",
+            "TroopTraining": "Training troop..",
+            "RssTransfer": "Transferring rss.."
         }
 
         return names.get(name,name)
 
     def execute_tasks(self, lib_tasks, profile):
-        co = self.adb.find_img(target="hide_quests")
+        co = self.find_img(target="hide_quests")
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         self.check_download_page()
@@ -119,7 +125,7 @@ class TaskRunner(Task):
             self.check_captcha()
             # self.set_status()
             if func.task_name() in ["AllianceDonation", "CollectResource", "BuyMerchant", "ClearFog", "HealTroop",
-                                 "DailyChest","AutoUpgrade","ProduceMaterials"]:
+                                 "DailyChest","AutoUpgrade","ProduceMaterials","TroopTraining"]:
                 self.go_city()
             try:
                 # print(f"{ func.__name__ in ['gather_rss','gather_gem'] =}")
@@ -128,7 +134,7 @@ class TaskRunner(Task):
                     cv_image = np.array(pil_image)
                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                     cv_image = cv_image[0:100, 0:800]
-                    if self.adb.find_img(target="block_icon", source=cv_image, confidence=0.90) is None:
+                    if self.find_img(target="block_icon", source=cv_image, confidence=0.90) is None:
                         func.run()
                 else:
                     func.run()
@@ -188,6 +194,10 @@ class TaskRunner(Task):
             lib_tasks.append(DailyQuests(self))
         if profile.get('auto_upgrade', False):
             lib_tasks.append(UpgradeCity(self))
+        if profile.get('train_troops', False):
+            lib_tasks.append(TroopTraining(self))
+        if profile.get('transfer_enable',False):
+            lib_tasks.append(RssTransfer(self))
         shuffle(lib_tasks)
         tasks_name = [task.task_name() for task in lib_tasks]
 
@@ -236,7 +246,7 @@ class TaskRunner(Task):
         self.click(x, y)
         self.better_sleep((4, 5.795))
         trigger_stop = 0
-        while self.adb.find_img(target="logged_icon") is None:
+        while self.find_img(target="logged_icon") is None:
             self.check_captcha()
             print(
                 f'[ {current_time()} ] [ {self.name} ] while get_first_character')
@@ -251,8 +261,8 @@ class TaskRunner(Task):
                 while True:
                     self.script_pause()
                     sleep(1)
-        x, y = self.adb.find_img(target="logged_icon")
-        co = self.adb.find_img(target="logged_icon")
+        x, y = self.find_img(target="logged_icon")
+        co = self.find_img(target="logged_icon")
         self.print("Current character detected.")
         if x < 1280 // 2:
             x2 = x + uniform(480, 780)
@@ -264,7 +274,7 @@ class TaskRunner(Task):
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
             self.better_sleep((2.425, 2.795))
-            x, y = self.adb.find_img(target="logged_icon")
+            x, y = self.find_img(target="logged_icon")
             self.better_sleep((2.025, 2.795))
             x2 = x - uniform(100, 320)
             y2 = y + uniform(80, 100)
@@ -276,12 +286,12 @@ class TaskRunner(Task):
             self.click(x2, y2)
             self.better_sleep((2.425, 2.795))
             # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] test login" + str(
-            #     self.adb.find_img(target="character_login_confirm")))
+            #     self.find_img(target="character_login_confirm")))
             # print(f'[ {current_time()} ] [ {self.name} ] TEST Login')
         self.better_sleep((2.425, 2.795))
         # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] character login" + str(
-        #     self.adb.find_img(target="character_login_confirm")))
-        if self.adb.find_img(target="character_login_confirm") is not None:
+        #     self.find_img(target="character_login_confirm")))
+        if self.find_img(target="character_login_confirm") is not None:
             self.print("Switching between character")
             x, y = uniform(700, 900), uniform(490, 527)
             self.click(x, y)
@@ -311,7 +321,7 @@ class TaskRunner(Task):
         self.enter_profile()
         self.enter_setting()
         self.enter_characters()
-        while self.adb.find_img(target="logged_icon") is None:
+        while self.find_img(target="logged_icon") is None:
             if deadstop == 5:
                 if not trigger_stop:
                     self.run_game()
@@ -329,7 +339,7 @@ class TaskRunner(Task):
             self.swipe(x1, y1, x2, y2)
             self.better_sleep((1.925, 2.795))
             deadstop = deadstop + 1
-        x, y = self.adb.find_img(target="logged_icon")
+        x, y = self.find_img(target="logged_icon")
         self.print('Current character detected.')
         if x < 1280 // 2:
             # self.print(f"x < 1280 // 2")
@@ -341,7 +351,7 @@ class TaskRunner(Task):
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
             self.better_sleep((2.425, 2.795))
-            x, y = self.adb.find_img(target="logged_icon")
+            x, y = self.find_img(target="logged_icon")
             self.better_sleep((2.025, 2.795))
             self.click(x - uniform(100, 320), y + uniform(80, 100))
             self.better_sleep((2.425, 2.795))
@@ -350,7 +360,7 @@ class TaskRunner(Task):
             self.click(x - uniform(100, 320), y + uniform(80, 100))
             self.better_sleep((2.425, 2.795))
         self.better_sleep((3.425, 3.995))
-        if self.adb.find_img(target="character_login_confirm") is not None:
+        if self.find_img(target="character_login_confirm") is not None:
             self.print("Switching to the next character")
             self.click(uniform(700, 900), uniform(490, 527))
             return True

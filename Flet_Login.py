@@ -1,20 +1,28 @@
-import asyncio
+import hashlib
 import json
 import os
 import subprocess
+import sys
 import threading
 import traceback
-from datetime import date
+from datetime import date, datetime
 from time import sleep
 
 import flet as ft
-import requests
 from pyautogui import getAllWindows
-from getmac import get_mac_address as gma
-from urllib3 import Retry, PoolManager
 
 import Flet_main_interface
+from keyauth import api
 
+def getchecksum():
+    md5_hash = hashlib.md5()
+    try:
+        file = open(''.join(sys.argv), "rb")
+    except:
+        file = open(''.join(sys.argv[0]), "rb")
+    md5_hash.update(file.read())
+    digest = md5_hash.hexdigest()
+    return digest
 
 def update_user_info(password, username):
     with open('user_settings.json') as config_file:
@@ -28,63 +36,10 @@ def find_window(window_title):
     return any(window_title in element.title for element in getAllWindows())
 
 
-def get_mac_address():
-    return gma()
-
-
-def mac_address_exists(dict):
-    keys = ['mac1', 'mac2']
-    mac_address = get_mac_address()
-    for key in keys:
-        if dict[key] == mac_address:
-            return True
-    return False
-
-
-def change_mac_address(id, key):
-    try:
-        url = f"https://rokbd-1b0e.restdb.io/rest/auth/{id}"
-        body = json.dumps({f"{key}": get_mac_address()})
-        headers = {
-            'content-type': "application/json",
-            'x-apikey': "63ef3702478852088da6839f",
-            'cache-control': "no-cache"
-        }
-        response = requests.patch(url, data=body, headers=headers)
-    except Exception:
-        print("Error occurred when patching the mac address")
-    # print(f" Change mac address {response.status_code=}")
-
-
-def is_date_valid(date='9999-12-30'):
-    for i in range(5):
-        try:
-            retries = Retry(connect=5, read=2, redirect=5)
-            http = PoolManager(retries=retries)
-            response = http.request("GET", "http://worldtimeapi.org/api/timezone/Europe/Paris",
-                                    headers={'Content-Type': 'application/json'})
-            tab = json.loads(response.data)
-
-            # print(tab['datetime'], type(tab))
-
-            tmp = tab['datetime'].split(".")
-            # print(tab, tmp)
-            tmp = tmp[0].split("T")
-            # print(tmp)
-            if tmp[0] > date:
-                return False
-            else:
-                return True
-        except Exception as e:
-            # traceback.print_exc()
-            if i == 4:
-                print("Couldn't make connection, contact the admin")
-    return False
-
-
 class LoginButton(ft.FilledButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.keyauthapp:api = None
 
     def is_str_valid(self, username, password):
         for element in ['#', "$", "&", "|", "\0",
@@ -102,35 +57,39 @@ class LoginButton(ft.FilledButton):
         print("Login schedule...")
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
-            exit(1)
             main(self.page)
+            sys.exit()
             return False
         try:
-            data = self.login_to_bd(password, username)
-            # print(data)
-            days = self.is_data_valid(data)
-            if days == 0:
-                self.page.clean()
-                main(self.page)
-                return False
-            else:
-                heures = days[0].split('-')
+            if self.keyauthapp.login(username, password,page=self.page):
+                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
+                print(date_brut)
+                heures = date_brut.split('-')
                 future = date(int(heures[0]), int(heures[1]), int(heures[2]))
                 diff = future - date.today()
-                self.page.title = f"Rok Bot - {diff.days - 1} Days left"
+                print(diff)
+                self.page.title = f"Rok Bot - {diff.days} Days left"
                 self.page.update()
-                sleep(3600 * 24)
+                sleep(24 * 3600)
                 return self.login_schedule(username, password)
+            else:
+                self.page.clean()
+                main(self.page)
+                for element in self.page.tile_manager.tiles.values():
+                    element.started = False
+                    element.stopped = False
+                self.page.update()
         except Exception as e:
-            print(e)
-            traceback.print_exc()
+            # print(e)
+            # traceback.print_exc()
             self.pop_banner("Problem occurred, please try again")
-            print("Problem occured while trying to connect")
+            print("Problem occurred while trying to connect")
             self.page.clean()
             main(self.page)
-            for element in self.tile_manager.tiles.values():
+            for element in self.page.tile_manager.tiles.values():
                 element.started = False
                 element.stopped = False
+            self.page.update()
 
     def login(self, e=None, username=None, password=None):
         print("Trying to login...")
@@ -141,28 +100,25 @@ class LoginButton(ft.FilledButton):
             self.pop_banner("Illegal characters..")
             return False
         try:
-            data = self.login_to_bd(password, username)
-            # print(data)
-            heure = self.is_data_valid(data)
-            if heure == 0:
-                return False
-            update_user_info(password, username)
-            today = date.today()
-            heures = heure[0].split('-')
-            future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-            diff = future - today
-            print("Login successful")
-            self.page.clean()
-            self.page.window_width = 400
-            self.page.window_height = 700
-            Flet_main_interface.Main(self.page,diff.days)
-            threading.Thread(self.login_schedule(username, password))
+            print(f"{username =} {password =}")
+            if self.keyauthapp.login(username, password,page=self.page):
+                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
+                heures = date_brut.split('-')
+                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
+                diff = future - date.today()
+                print(diff)
+                print("Login successful")
+                self.page.clean()
+                self.page.window_width = 400
+                self.page.window_height = 700
+                Flet_main_interface.Main(self.page,diff.days)
+                threading.Thread(self.login_schedule(username, password))
         except Exception as e:
             print(e)
             self.pop_banner("Problem occurred, please try again")
             print("Problem occurred while trying to connect")
             self.page.window_close()
-            exit(1)
+            sys.exit(1)
 
     def close_banner(self, e):
         self.page.banner.open = False
@@ -182,47 +138,6 @@ class LoginButton(ft.FilledButton):
         )
         self.page.update()
 
-    def is_data_valid(self, data):
-        if data == {}:
-            return 0
-        if data['abo'] is None:
-            return 0
-        heure = data['abo'].split("T")
-        if not is_date_valid(heure[0]):
-            self.pop_banner("Subscription expired")
-            print("Subscription expired")
-            return 0
-        if not mac_address_exists(data):
-            if data['mac1'] == '':
-                change_mac_address(data['_id'], 'mac1')
-            elif data['mac2'] == '':
-                change_mac_address(data['_id'], 'mac2')
-            else:
-                self.pop_banner("The account seems to be connected on too much machines, contact the administrator")
-                print("None of the mac addresses match the mac address..")
-                return 0
-        return heure
-
-    def login_to_bd(self, password, username):
-        try:
-            url = "https://rokbd-1b0e.restdb.io/rest/auth"
-            payload = json.dumps({'username': username, 'password': password})
-            parameter = {"q": payload}
-            headers = {
-                'content-type': "application/json",
-                'x-apikey': "63ef3702478852088da6839f",
-                'cache-control': "no-cache"
-            }
-            response = requests.request("GET", url, params=parameter, headers=headers)
-            data = response.json()
-            print(data)
-
-            return data[0]
-        except Exception as e:
-            traceback.print_exc()
-            return {}
-
-
 def main(page: ft.Page):
     os.environ["FLET_APP_LIFETIME_MINUTES"] = "1"
     try:
@@ -234,6 +149,22 @@ def main(page: ft.Page):
         pass
     with open('user_settings.json') as config_file:
         data = json.load(config_file)
+    for i in range(5):
+        ready = False
+        try:
+            keyauthapp = api(
+                name="Rokbd",
+                ownerid="7oofxdj8uH",
+                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+                version="1.0",
+                hash_to_check=getchecksum()
+            )
+            ready = True
+        except :
+            keyauthapp = None
+            print("Problem in the database loading..Wait a bit please..")
+            sleep(5)
+        if ready:break
 
     page.window_width = 330
     page.window_height = 330
@@ -241,6 +172,8 @@ def main(page: ft.Page):
     page.add(ft.TextField(label="Password", password=True, can_reveal_password=True, width=300,value=data.get("user",{}).get("password","")))
     login_button = LoginButton(text="Login", width=100)
     login_button.on_click = login_button.login
+    login_button.keyauthapp = keyauthapp
+    page.close_banner = login_button.close_banner
     page.add(login_button)
     page.update()
     with open('path.json') as config_file:

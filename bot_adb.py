@@ -39,6 +39,7 @@ class Adb:
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
+        return f"JsonNumber:{self.number} port:{self.port}"
 
 
     def connect_to_device(self, host='127.0.0.1'):
@@ -92,7 +93,8 @@ class Adb:
             return self.get_device()
 
     def print(self, text:str):
-        print(text)
+        data = get_data()
+        print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
         write(self.name,text)
 
     def get_curr_device_screen_img_byte_array(self):
@@ -135,7 +137,7 @@ class Adb:
 
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
-        image.save('resources\\' + file_name + '.png')
+        image.save(file_name + '.png')
         return True
 
     def find_img_cv(self, img_to_find, confidence=0.9):

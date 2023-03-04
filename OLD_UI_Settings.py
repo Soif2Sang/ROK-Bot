@@ -4,9 +4,9 @@ from tkinter import Label
 import customtkinter
 from tktooltip import ToolTip
 
-import UI_Narrow
-from UI_Gem import GemInterface
-from UI_Rss import RssInterface
+import OLD_UI_Narrow
+from OLD_UI_Gem import GemInterface
+from OLD_UI_Rss import RssInterface
 
 
 class Settings:
