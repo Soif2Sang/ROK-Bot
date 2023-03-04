@@ -5,7 +5,7 @@ import tkinter
 from tkinter import *
 from tkinter import ttk
 
-from UI_Narrow import LowerFrame
+from OLD_UI_Narrow import LowerFrame
 from bot_adb import Adb
 from OLD_Tasks_lib import *
 import os

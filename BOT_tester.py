@@ -325,27 +325,6 @@ def research_instance(number:int, master):
     # bot.task.better_sleep((0.9, 1.2))
     bot.research.run()
 
-def stop_start_emulators(master):
-    instances = [
-        create_instance(3, master),
-        # create_instance(4, master),
-        # create_instance(5, master)
-    ]
-    # while True:
-    # for i in instances:
-    threads = []
-    while True:
-        for instance in instances:
-            instance.task.start_emulator()
-            sleep(60)
-            instance.task.run_game()
-            t = Thread(target=lambda: instance.task.dynamique_city_upgrade())
-            t.start()
-            t.join()
-            instance.adb.home_button()
-            sleep(2)
-            instance.task.kill_emulator()
-        sleep(uniform(900, 1200))
 
 
 if __name__ == "__main__":

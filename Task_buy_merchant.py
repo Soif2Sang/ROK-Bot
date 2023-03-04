@@ -29,14 +29,14 @@ class BuyMerchant(Task):
 
     @get_class
     def run(self):
-        co = self.adb.find_img(target="artefact_shop", confidence=0.7)
+        co = self.find_img(target="artefact_shop", confidence=0.7)
         if co is not None:
             self.click(co[0] + uniform(10,35), co[1] + uniform(0,30))
             self.better_sleep((1,2))
-            if(co:=self.adb.find_img("close_window")):
+            if(co:=self.find_img("close_window")):
                 self.click(uniform(1100,1120),uniform(73,80))
                 self.better_sleep((1, 2))
-        co = self.adb.find_img(target="merchant_icon", confidence=0.7)
+        co = self.find_img(target="merchant_icon", confidence=0.7)
         if co is None:
             return
         if not filter_coordinate(co):
@@ -62,7 +62,7 @@ class BuyMerchant(Task):
                     self.swipe(x1, y1, x2, y2)
             if y != 0:
                 break
-            co = self.adb.find_img(target="free")
+            co = self.find_img(target="free")
             if co is None:
                 break
             x, y = co[0] + uniform(0, 50), co[1] + uniform(0, 20)
@@ -70,6 +70,9 @@ class BuyMerchant(Task):
         x, y = uniform(1077, 1100), uniform(64, 95)
         self.click(x, y)
         self.better_sleep((1, 1.5))
-        while(co:=self.adb.find_img(target="close_window")):
+        if (co := self.find_img(target=f"get_more_rss")) is not None:
+            self.click(uniform(1000, 1020), uniform(129, 148))
+            self.better_sleep((1, 1.425))
+        while(co:=self.find_img(target="close_window")):
             self.click(co[0] + uniform(5,10), co[1] + uniform(5,10))
             self.better_sleep((1,1.5))

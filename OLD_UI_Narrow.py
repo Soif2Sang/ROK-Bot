@@ -10,7 +10,7 @@ from tkinter import Text
 import customtkinter
 
 from Task import Task
-from UI_Settings import Settings
+from OLD_UI_Settings import Settings
 from bot_adb import Adb
 from Task_runner import TaskRunner
 

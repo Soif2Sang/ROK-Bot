@@ -19,7 +19,7 @@ color_bank ={
 
 
 def Main(page: ft.Page, days=950):
-    page.title = f"Rok Bot - {days-1} Days left"
+    page.title = f"Rok Bot - {days} Days left"
     page.frames = {}
     page.window_width = 400
     page.tile_manager = TileManager(page)

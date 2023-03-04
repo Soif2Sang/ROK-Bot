@@ -34,9 +34,9 @@ class AllianceDonation(Task):
         screen = self.adb.get_curr_device_screen_img()
         source = array(screen)
         source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
-        co = self.adb.find_img(source=source, target="alliance_flag1", confidence=0.9)
+        co = self.find_img(source=source, target="alliance_flag1", confidence=0.9)
         if co is None:
-            co = self.adb.find_img(source=source, target="alliance_flag2", confidence=0.9)
+            co = self.find_img(source=source, target="alliance_flag2", confidence=0.9)
         if co is None:
             return
         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 10))
@@ -51,7 +51,7 @@ class AllianceDonation(Task):
     @get_name
     def open_alliance_menu(self):
         # Open du menu
-        if self.adb.find_img(target='menu_opened', confidence=0.8) is None:
+        if self.find_img(target='menu_opened', confidence=0.8) is None:
             x, y = uniform(1200, 1250), uniform(650, 690)
             self.click(x, y)
             self.better_sleep((1.725, 1.995))
@@ -62,22 +62,22 @@ class AllianceDonation(Task):
 
     @get_name
     def donate_to_alliance(self):
-        alliance_tech_logo = self.adb.find_img(target="alliance_tech")
+        alliance_tech_logo = self.find_img(target="alliance_tech")
         if alliance_tech_logo is not None:
             self.click(alliance_tech_logo[0] + uniform(0, 30), alliance_tech_logo[1] + uniform(0, 15))
             self.better_sleep((2, 3))
-            donation_logo = self.adb.find_img(target="tech")
+            donation_logo = self.find_img(target="tech")
 
             if donation_logo is not None:
                 self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
                 self.better_sleep((1, 2))
                 # Holding click on the donation button
-                while self.adb.find_img(target="donate_button"):
+                while self.find_img(target="donate_button"):
                     x, y, arg = uniform(910, 1040), uniform(550, 580), randint(2500, 3475)
                     self.swipe_arg(x, y, x, y, arg)
                     self.better_sleep((0.7, 1.3))
                 # Check if the resources pop-up comes
-                if self.adb.find_img(target="get_more_rss") is not None:
+                if self.find_img(target="get_more_rss") is not None:
                     self.click(uniform(1000, 1020), uniform(129, 148))
                     self.better_sleep((1, 1.425))
                 self.click(uniform(1080, 1100), uniform(70, 90))

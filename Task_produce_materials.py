@@ -27,14 +27,14 @@ class ProduceMaterials(Task):
     @get_class
     def run(self):
         self.data = self.update_data()
-        # co = self.adb.find_img("forge_icon")
+        # co = self.find_img("forge_icon")
         # if co is not None:
         #     self.click(co[0] + uniform(0, 24), co[1] + uniform(80, 100))
         #     self.better_sleep((1, 1.5))
         # else:
         strings = ["forge_icon", "bones_icon", "ebony_icon", "leather_icon", "stone_icon"]
         for string in strings:
-            co = self.adb.find_img(string)
+            co = self.find_img(string)
             if co is not None:
                 if string != "forge_icon":
                     self.click(co[0] + uniform(0, 24), co[1] + uniform(0, 24))
@@ -42,14 +42,14 @@ class ProduceMaterials(Task):
                 self.click(co[0] + uniform(0, 24), co[1] + uniform(80, 100))
                 self.better_sleep((1, 1.5))
                 break
-        co = self.adb.find_img(target="forge_button")
+        co = self.find_img(target="forge_button")
         if co is not None:
             self.click(co[0] + uniform(0, 50), co[1] + uniform(0, 60))
             self.better_sleep((1, 1.5))
             cv_image = self.adb.get_cv2_img()
             nb = 0
             for i in range(1, 6):
-                co = self.adb.find_img(target=f"forge_{i}", source=cv_image, confidence=0.9)
+                co = self.find_img(target=f"forge_{i}", source=cv_image, confidence=0.9)
                 if co is not None:
                     nb = 6 - i
                     break

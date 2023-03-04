@@ -13,6 +13,17 @@ from numpy import ndarray
 def current_time():
     return datetime.now().strftime("%H:%M:%S")
 
+def string_to_co(string):
+    string = string.replace("coordinates:", "")
+    string = string.replace("x=", "")
+    string = string.replace("y=", "")
+    tmp = string.split(';')
+    boolean = True
+    for i in range(len(tmp)):
+        tmp[i] = tmp[i].split(",")
+        tmp[i][0] = int(tmp[i][0]) + 441
+        tmp[i][1] = int(tmp[i][1]) + 101
+    return tmp
 
 def get_window_pid(title):
     hwnd = win32gui.FindWindow(None, title)

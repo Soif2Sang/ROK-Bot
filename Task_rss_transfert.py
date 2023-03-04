@@ -14,10 +14,10 @@ from Task_utils import get_name, get_class, current_time
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
-class RssTransfert(Task):
+class RssTransfer(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('../../../../../Downloads/user_settings.json') as config_file:
+        with open('user_settings.json') as config_file:
             self.data = json.load(config_file)
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
@@ -39,11 +39,18 @@ class RssTransfert(Task):
                 """
         pil_image = self.adb.get_curr_device_screen_img()
         cv_image = array(pil_image)
-        cropped_image3 = cv_image[558:590, 285:435]
-        cv_image = cv2.cvtColor(cropped_image3, cv2.COLOR_BGR2HSV)
-        native_text = pytesseract.image_to_string(cv_image,
+        transport_capacity = cv_image[558:590, 285:435]
+        transport_capacity = cv2.cvtColor(transport_capacity, cv2.COLOR_BGR2HSV)
+        transport_capacity = pytesseract.image_to_string(transport_capacity,
                                                   config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789/,')
-        return int(native_text.split("/")[1].replace(",",""))
+
+        cv_image = array(pil_image)
+        tax_rate = cv_image[450:480, 374:420]
+        tax_rate = cv2.cvtColor(tax_rate, cv2.COLOR_BGR2HSV)
+        tax_rate = pytesseract.image_to_string(tax_rate,
+                                                  config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789%,')
+        print(tax_rate)
+        return int(transport_capacity.split("/")[1].replace(",","")) + (int(transport_capacity.split("/")[1].replace(",",""))*int(tax_rate.replace("%","")) /100)
 
     # @get_name
     # def get_capacity(self):
@@ -64,10 +71,11 @@ class RssTransfert(Task):
     def setup_ui(self,deadstop = 0):
         if deadstop ==3:
             raise ValueError()
-        x,y = uniform(596,630), uniform(284,329)
-        self.click(x,y)
+
+        city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
+        self.click(city[0]+uniform(-10,10),city[1]+uniform(-10,10))
         self.better_sleep((1,2))
-        co = self.adb.find_img(target="assist_button")
+        co = self.find_img(target="assist_button")
         if co is None:
             self.close_windows()
             return self.setup_ui(deadstop = deadstop+1)
@@ -91,23 +99,38 @@ class RssTransfert(Task):
         end = (uniform(1045,1100), types[type]+uniform(-10,10))
         self.swipe(start[0],start[1],end[0],end[1])
         self.better_sleep((0.7,1.4))
-        self.click(uniform(700,850),uniform(556,606))
+        self.click(uniform(700,850),uniform(570,600))
         self.better_sleep((0.7, 1.4))
 
     @get_class
-    def run(self,type,quantity):
+    def run(self,type = None,quantity = None):
+        with open('user_settings.json') as config_file:
+            self.data = json.load(config_file)
+        if self.data[self.sel]['API_KEY'] =="":
+            return self.print("This feature require a custom ApiKey")
         self.check_captcha()
-        transfert_wanted = quantity
+
         self.setup_ui()
         self.better_sleep((0.7, 1.4))
         transportation_capacity = self.get_capacity()
-        rss_sent = 0
-        loop = int(transfert_wanted/transportation_capacity)
-        if transportation_capacity * loop < transfert_wanted:
-            loop+=1
-        for i in range(loop):
-            rss_sent += transportation_capacity
-            self.send_rss(type)
-            self.check_captcha(chest=True)
-            if i!=loop-1:
+
+        print(f"{transportation_capacity = }")
+        for type in ["food","wood","stone","gold"]:
+
+            rss_sent = 0
+            transfert_wanted = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"transfer_{type}"] * 1_000_000
+            loop = int(transfert_wanted / transportation_capacity)
+            if transportation_capacity * loop < transfert_wanted:
+                loop += 1
+            print(f"{transfert_wanted = }")
+            for i in range(loop):
+
+                rss_sent += transportation_capacity
+                self.send_rss(type)
+                print(f"{type} amount sent : {rss_sent}")
+                self.better_sleep((1,2))
+                self.check_captcha(chest=True)
                 self.setup_ui()
+
+
+        self.close_windows()

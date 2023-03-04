@@ -7,6 +7,10 @@ class Logger(ft.ListView):
         super().__init__(**kwargs)
         with open('user_settings.json') as config_file:
             data = json.load(config_file)
+        if "interface" not in data:
+            data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
+        with open('user_settings.json', 'w') as f:
+            json.dump(data, f, indent=2)
         self.auto_scroll= data["interface"]["auto_scroll"]
         self.parent = frame
         self.page = page

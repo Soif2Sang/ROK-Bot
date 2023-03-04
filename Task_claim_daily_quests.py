@@ -56,7 +56,7 @@ class DailyQuests(Task):
 
     @get_name
     def claim_all(self):
-        while (co:=self.adb.find_img("claim_quest")) is not None:
+        while (co:=self.find_img("claim_quest")) is not None:
             self.click(co[0] + uniform(0,30), co[1]+ uniform(0,10))
             self.better_sleep((1.725, 1.995))
 

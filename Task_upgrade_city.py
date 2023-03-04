@@ -70,29 +70,29 @@ class UpgradeCity(Task):
 
     @get_name
     def help_build(self):
-        if co := self.adb.find_img(target='help_build', confidence=0.8):
+        if co := self.find_img(target='help_build', confidence=0.8):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
     @get_name
     def recursive_upgrade(self):
-        co = self.adb.find_img(target="upgrade_build")
+        co = self.find_img(target="upgrade_build")
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
-            if co := self.adb.find_img(target="upgrade_go"):
+            if co := self.find_img(target="upgrade_go"):
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(0, 20))
                 self.better_sleep((0.9, 1.2))
                 return self.recursive_upgrade()
             else:
                 self.click(uniform(916, 1050), uniform(530, 560))
                 self.better_sleep((1.7, 2.2))
-                if (co:=self.adb.find_img(target="hire_constructor")) is not None or (co:=self.adb.find_img(target="hire_constructor2")):
+                if (co:=self.find_img(target="hire_constructor")) is not None or (co:=self.find_img(target="hire_constructor2")):
                     self.click(co[0] + uniform(0,110), co[1] + uniform(0,40))
                     self.better_sleep((1.7, 2.2))
                     self.click(uniform(916, 1050), uniform(530, 560))
                     self.better_sleep((1.7, 2.2))
-                while co := self.adb.find_img(target="close_window"):
+                while co := self.find_img(target="close_window"):
                     self.click(co[0] + uniform(10, 15), co[1] + uniform(10, 15))
                     self.better_sleep((1.7, 2.2))
             self.better_sleep((1.7, 2.2))
@@ -117,20 +117,20 @@ class UpgradeCity(Task):
 
     @get_name
     def is_city_hall_upgradable(self):
-        co = self.adb.find_img(target="upgrade_build")
+        co = self.find_img(target="upgrade_build")
         if co is not None:
             return True
         return False
 
     @get_name
     def help_alliance(self):
-        if co := self.adb.find_img(target='help_alliance', confidence=0.75):
+        if co := self.find_img(target='help_alliance', confidence=0.75):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
     @get_name
     def free_constructor(self):
-        if self.adb.find_img("upgrade_stone") is None and self.adb.find_img("upgrade_stone2") is None:
+        if self.find_img("upgrade_stone") is None and self.find_img("upgrade_stone2") is None:
             return False
         return True
 

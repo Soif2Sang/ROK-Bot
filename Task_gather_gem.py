@@ -97,13 +97,13 @@ class GatherGem(Task):
         self.script_pause()
         try:
             self.print("Zooming out..")
-            co = self.adb.find_img(target='gem_search_button')
+            co = self.find_img(target='gem_search_button')
             if co is not None:
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
                 for _ in range(4):
                     self.script_pause()
-                    boolean = self.adb.find_img(target="gem_search_button")
+                    boolean = self.find_img(target="gem_search_button")
                     if boolean is not None:
                         for _ in range(2):
                             self.script_pause()
@@ -268,7 +268,7 @@ class GatherGem(Task):
         """
         i = 0
         self.print("Clicking on the node..")
-        while self.adb.find_img(target="resource_gather_button") is None:
+        while self.find_img(target="resource_gather_button") is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -276,7 +276,7 @@ class GatherGem(Task):
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        co = self.adb.find_img(target="resource_gather_button")
+        co = self.find_img(target="resource_gather_button")
         if co is not None:
             x, y = co[0], co[1]
             self.click(x + uniform(0, 150), y + uniform(0, 30))
@@ -316,7 +316,7 @@ class GatherGem(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.adb.find_img(target=f'{color}_icon', confidence=0.95) is None and self.adb.find_img(target=
+        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
                                                                                                        "troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
@@ -365,7 +365,7 @@ class GatherGem(Task):
                 self.better_sleep((1.325, 1.795))
                 return False
             self.check_if_kill()
-            co = self.adb.find_img(target="new_troops_button")
+            co = self.find_img(target="new_troops_button")
             if co is not None:
                 # print("Home button found")
                 x, y = co[0], co[1]
@@ -387,7 +387,7 @@ class GatherGem(Task):
                         #         final.append(co)
                         final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
                         if final != []:
-                            x, y = self.adb.find_img(target="troops_march_button")
+                            x, y = self.find_img(target="troops_march_button")
                             x, y = x + uniform(0, 20), y + uniform(0, 20)
                             self.check_if_kill()
                             self.click(x, y)
@@ -395,15 +395,15 @@ class GatherGem(Task):
                             self.print("New Troop sent !")
                             return True
 
-                    # if self.adb.find_img(target="choose_right", confidence=0.8):
-                    #     x, y = self.adb.find_img(target="troops_march_button")
+                    # if self.find_img(target="choose_right", confidence=0.8):
+                    #     x, y = self.find_img(target="troops_march_button")
                     #     x, y = x + uniform(0, 20), y + uniform(0, 20)
                     #     self.check_if_kill()
                     #     self.click(x, y)
                     #     self.better_sleep((0.5, 0.7))
                     #     return True
                 self.check_if_kill()
-                co = self.adb.find_img(target="troops_march_button")
+                co = self.find_img(target="troops_march_button")
                 if co is None:
                     return self.send_new_troop(deadstop=deadstop + 1)
                 x, y = co[0], co[1]
@@ -413,7 +413,7 @@ class GatherGem(Task):
                 self.better_sleep((0.5, 0.7))
                 self.print("New Troop sent !")
                 return True
-            co = self.adb.find_img(target="march_bar")
+            co = self.find_img(target="march_bar")
             if co is not None and self.free_troop_gem():
                 x, y = uniform(1177, 1250), uniform(80, 116)
                 self.check_if_kill()
@@ -452,7 +452,7 @@ class GatherGem(Task):
                 pil_image = self.adb.get_curr_device_screen_img()
                 cv_image = array(pil_image)
                 cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-                co = self.adb.find_img(source=cv_image, target="march_bar", confidence=0.8)
+                co = self.find_img(source=cv_image, target="march_bar", confidence=0.8)
                 if co is not None:
                     x, y = co[0], co[1]
                     cv_image = array(pil_image)
@@ -481,7 +481,7 @@ class GatherGem(Task):
             self.click(x=fastest[0] + uniform(90, 150), y=fastest[1] + uniform(-1, 20))
             self.better_sleep((0.9, 1.3))
 
-            if self.adb.find_img(target="troops_march_button") is not None:
+            if self.find_img(target="troops_march_button") is not None:
                 self.click(x=uniform(1110, 1127), y=uniform(30, 55))
                 self.better_sleep((0.9, 1.3))
                 return self.send_new_troop()
@@ -577,7 +577,7 @@ class GatherGem(Task):
         cropped_image = screen[420:540, 480:810]
 
         if random() > 0.7:
-            co = self.adb.find_img(source=screen, target="verification_button", confidence=0.8)
+            co = self.find_img(source=screen, target="verification_button", confidence=0.8)
             if co is not None:
                 self.check_captcha()
             self.check_reconnect(cropped_image)
@@ -588,19 +588,19 @@ class GatherGem(Task):
 
         cropped_image = screen[616:710, 1168:1270]
 
-        if self.adb.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
+        if self.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
             self.click(uniform(500, 700), uniform(250, 450))
             self.better_sleep((1, 2))
             return self.zoom_out_city()
 
-        if self.adb.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
+        if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
             screen = self.adb.get_cv2_img()
 
-        if self.adb.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
+        if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
             self.zoom_out_city()
             self.better_sleep((2, 3))
             screen = self.adb.get_cv2_img()
@@ -608,9 +608,9 @@ class GatherGem(Task):
         for second_string in ["left", "mid", "right"]:
             for first_string in ["up", "mid", "down"]:
                 self.check_if_kill()
-                co = self.validate_co(self.adb.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}", confidence=0.82))
+                co = self.validate_co(self.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}", confidence=0.82))
                 if co is None:
-                    co = self.validate_co(self.adb.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}", confidence=0.82))
+                    co = self.validate_co(self.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}", confidence=0.82))
                 if co is not None:
                     self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                     self.check_if_kill()
@@ -631,7 +631,7 @@ class GatherGem(Task):
                             return self.run(self.end_time)
                         screen = self.adb.get_cv2_img()
                         cv_image = screen[0:100, 0:800]
-                        if self.adb.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
+                        if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
                             self.print("Bot detected the block icon, now cancelling the function..")
                             self.block = False
                             return
@@ -654,7 +654,7 @@ class GatherGem(Task):
                             break
                         self.print("Trying to send the nearest troop..")
                         if self.send_nearest_troop_gem():
-                            if self.adb.find_img(target="new_troops_button"):
+                            if self.find_img(target="new_troops_button"):
                                 self.send_new_troop()
                                 self.check_if_kill()
                             self.check_if_kill()
@@ -690,7 +690,7 @@ class GatherGem(Task):
                                 if self.find_cross_source(cross_image):
                                     return self.adjusted_leave_city(x_click, y_click)
                                 if self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_experimental"):
-                                    if self.adb.find_img(target="back_normal_view", source=back_image, confidence=0.9) is not None:
+                                    if self.find_img(target="back_normal_view", source=back_image, confidence=0.9) is not None:
                                         self.print("Bot detected a troop is going back to the city, now bypassing the sleep time..")
                                         break
                                     if self.free_troop():
@@ -915,7 +915,7 @@ class GatherGem(Task):
             cv_image = np.array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[0:100, 0:800]
-            if self.adb.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
+            if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
                 self.print("Block icon detected. Cancelling the function !")
                 return
             self.check_if_kill()
