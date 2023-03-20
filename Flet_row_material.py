@@ -2,10 +2,13 @@ import json
 
 import flet as ft
 
+from Task_utils import get_data, write_data
+
+
 class FletRowMaterial(ft.Row):
     def __init__(self, keys, i, instance_index, profile_index):
         super().__init__()
-        with open('user_settings.json') as config_file: self.data = json.load(config_file)
+        self.data = get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.controls=[
@@ -32,17 +35,14 @@ class FletRowMaterial(ft.Row):
             ]
 
     def submit(self, e, keyword, method):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1",'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
             print(self.data[str(self.instance_index)][keyword])
-            with open('user_settings.json', 'w') as config_file:
-                config_file.write(json.dumps(self.data, indent=2))
+            write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator","defeat_barbarians"]:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
         else:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(e.control.value.replace("x", "").replace("level ",""))
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(self.data, indent=2))
+        write_data(self.data)

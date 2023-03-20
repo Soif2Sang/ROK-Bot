@@ -6,6 +6,9 @@ import traceback
 from datetime import datetime, timedelta
 from random import uniform, randint, shuffle
 from time import time, sleep
+
+import win32gui
+
 from Task_alliance_donation import AllianceDonation
 from Task_alliance_help import AllianceHelp
 from Task_barb_fort import BarbFort
@@ -30,7 +33,7 @@ from Task import Task
 from Task_rss_transfert import RssTransfer
 from Task_training import TroopTraining
 from Task_upgrade_city import UpgradeCity
-from Task_utils import get_class, get_name, current_time, get_window_pid
+from Task_utils import get_class, get_name, current_time, get_window_pid, get_path, get_data
 from bot_adb import Adb
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -38,8 +41,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
         super().__init__(tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -107,12 +109,10 @@ class TaskRunner(Task):
         co = self.find_img(target="hide_quests")
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
-        self.check_download_page()
         current_task = 1
         for func in lib_tasks:
-            if self.data[self.sel]['schedules'][profile].get('alliance_help', False):
-                AllianceHelp(self).run()
             self.check_download_page()
+
             self.leave_kd_buff()
             #self.print("")
             self.print(f"Task {current_task}/{len(lib_tasks)}","blue")
@@ -124,6 +124,9 @@ class TaskRunner(Task):
             self.check_reconnect()
             self.check_captcha()
             # self.set_status()
+            if self.data[self.sel]['schedules'][profile].get('alliance_help', False):
+                AllianceHelp(self).run()
+
             if func.task_name() in ["AllianceDonation", "CollectResource", "BuyMerchant", "ClearFog", "HealTroop",
                                  "DailyChest","AutoUpgrade","ProduceMaterials","TroopTraining"]:
                 self.go_city()
@@ -131,11 +134,13 @@ class TaskRunner(Task):
                 # print(f"{ func.__name__ in ['gather_rss','gather_gem'] =}")
                 if func.task_name() in ["GatherRss", "GatherGem"]:
                     pil_image = self.adb.get_curr_device_screen_img()
-                    cv_image = np.array(pil_image)
+                    cv_image = self.pil_to_array(pil_image)
                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                     cv_image = cv_image[0:100, 0:800]
                     if self.find_img(target="block_icon", source=cv_image, confidence=0.90) is None:
                         func.run()
+                    else:
+                        self.print("Bot detected that you got restricted","red")
                 else:
                     func.run()
                 self.better_sleep((1, 2))
@@ -146,13 +151,12 @@ class TaskRunner(Task):
                 self.leave_game()
                 self.better_sleep((5, 10))
                 self.run_game()
-            self.better_sleep((0.795, 1.2))
             self.close_windows()
             current_task += 1
-            if ('BuyMerchant' in func.task_name()) or ('GatherRss' in func.task_name()):
-                self.check_captcha()
-                self.better_sleep((0.795, 1.2))
-            self.check_reconnect()
+            # if ('BuyMerchant' in func.task_name()) or ('GatherRss' in func.task_name()):
+            #     self.check_captcha()
+            #     self.better_sleep((0.795, 1.2))
+            # self.check_reconnect()
 
     def get_available_task(self, profile:str =None):
         self.data = self.update_data()
@@ -312,6 +316,35 @@ class TaskRunner(Task):
             self.click(x, y)
             return uniform(660, 1000), uniform(215, 280)
 
+    @get_name
+    def findNextChar(self):
+        screen = self.adb.get_cv2_img()
+        logged_icon = self.find_img(source=screen,target="logged_icon")
+        stars_all = self.adb.find_multiple_img(target="star")
+        stars_bellow = []
+        for star in stars_all:
+            if logged_icon[0] > 640:
+                minus = 0
+            else:
+                minus = 40
+            if logged_icon[1]-minus < star[1]:
+                stars_bellow.append(star)
+        stars_bellow.sort(key=lambda co:co[1])
+        final = []
+        for star in stars_bellow:
+            add = True
+            for i in range(-3,4):
+                for y in range(-3,4):
+                    if (star[0]+i,star[1]+y) in final:
+                        add = False
+            if add:
+                final.append(star)
+        if final:
+            if logged_icon[0] < 640:
+                final.pop(0)
+        if final:
+            final = final[0]
+            self.click(final[0]+uniform(-100,50),final[1]+uniform(-5,5))
 
     @get_name
     def change_character_param(self, co_first, nb_chars=0, trigger_stop = False):
@@ -328,7 +361,7 @@ class TaskRunner(Task):
                     self.print(f"Error in character switch. Restarting the character switch..")
                     return self.change_character_param(co_first, nb_chars, trigger_stop = True)
                 while trigger_stop:
-                    self.print(f"Error in character switch. Bot is now stopped")
+                    self.print(f"Error in character switch. Bot is now stopped","red")
                     self.set_status("Error.")
                     self.script_pause()
                     sleep(1)
@@ -353,13 +386,11 @@ class TaskRunner(Task):
             self.better_sleep((2.425, 2.795))
             x, y = self.find_img(target="logged_icon")
             self.better_sleep((2.025, 2.795))
-            self.click(x - uniform(100, 320), y + uniform(80, 100))
-            self.better_sleep((2.425, 2.795))
+            self.findNextChar()
         elif x > 1280 // 2:
-            self.print("x > 1280 // 2")
-            self.click(x - uniform(100, 320), y + uniform(80, 100))
-            self.better_sleep((2.425, 2.795))
+            self.findNextChar()
         self.better_sleep((3.425, 3.995))
+
         if self.find_img(target="character_login_confirm") is not None:
             self.print("Switching to the next character")
             self.click(uniform(700, 900), uniform(490, 527))
@@ -387,15 +418,19 @@ class TaskRunner(Task):
 
     @get_name
     def start_emulator(self, emulator:str):
-        with open('path.json') as config_file: path = json.load(config_file)
+        path = get_path()
         cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
         self.print(f'Executing {cmd}')
         process = multiprocessing.Process(target=subprocess.Popen, args=(cmd,))
         process.start()
 
         print(f'Bot will wait 1 min from now.')
-        sleep(60)
-
+        sleep(120)
+        if win32gui.FindWindow(None, self.name) is None:
+            self.print(f'Executing {cmd}')
+            process = multiprocessing.Process(target=subprocess.Popen, args=(cmd,))
+            process.start()
+            sleep(120)
 
     @get_name
     def run2(self):
@@ -590,4 +625,114 @@ class TaskRunner(Task):
         #self.print("")
         self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.","green")
         return
+
+
+    @get_name
+    def run3(self):
+        # print("starting")
+        self.set_sel("0")
+        # self.adb.connect_to_device()
+        self.data = self.update_data()
+        i=0
+        loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
+        for i in range(loop_task):
+            loop_time = time()
+
+            first=self.tile.get_enabled_sel()[0]
+            for emulator in self.tile.get_enabled_sel():
+                self.set_sel(emulator)
+                self.start_emulator(emulator)
+                self.print("Changing adb..")
+                self.print(f"{self.adb.number = } {self.adb.port =}")
+                self.adb = Adb(int(emulator))
+                self.adb.__repr__()
+                self.print("Connecting to the emulator..")
+                self.adb.connect_to_device()
+
+                # self.run_game()
+                # self.check_log_back()
+                # self.check_reconnect()
+                # self.leave_kd_buff()
+                # self.check_mge()
+                # self.check_captcha()
+                # # First character
+                # self.current_profile = "1"
+                # self.print("Reminder : only the first profile is available")
+                # self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
+                # self.better_sleep((2.2, 4))
+                # self.go_city()
+                # city_upgrade = UpgradeCity(self)
+                # city_upgrade.setup_view()
+                #
+                # for i in range(2):
+                #     sleep(5)
+                #     city_upgrade.run()
+                #
+                #
+                # if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
+                #                                                                           False):
+                #
+                #
+                #     co_first = self.get_first_character()
+                #     boolean = True
+                #     self.wait_until_connected()
+                #
+                #     self.run_game()
+                #     # Characters remaining
+                #     nb_characters = 2
+                #     while boolean:
+                #         self.print(f"---- Character n°{nb_characters} ----".center(60))
+                #         self.run_game()
+                #         self.check_log_back()
+                #         self.check_reconnect()
+                #         self.leave_kd_buff()
+                #         self.check_mge()
+                #         self.check_captcha()
+                #
+                #         self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
+                #         self.better_sleep((2.2, 4))
+                #
+                #         self.go_city()
+                #         city_upgrade = UpgradeCity(self)
+                #         city_upgrade.setup_view()
+                #
+                #         for i in range(2):
+                #             sleep(5)
+                #             city_upgrade.run()
+                #
+                #         nb_characters += 1
+                #         boolean = self.change_character_param(co_first, nb_characters)
+                #         self.wait_until_connected()
+                #
+                # self.leave_game()
+                self.pid = get_window_pid(self.adb.name)
+                cmd = f"taskkill /PID {self.pid} /F"
+                print(f'[ {current_time()} ] [ {self.name} ] Executing {cmd}')
+                subprocess.Popen(cmd)
+                self.print("Shutdown the emulator, waiting for 15seconds")
+                sleep(15)
+
+            if self.data.get(first).get("loop_task"):
+                # ttw1, ttw2 = self.data.get(first).get("time_to_wait_loop1", 60), self.data.get(first).get(
+                #     "time_to_wait_loop2", 90)
+                ttw1,ttw2 = 1,1
+                #self.print("")
+                self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
+                if ttw1 > ttw2:
+                    ttw1, ttw2 = ttw2, ttw1
+                time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
+                #self.print("")
+                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
+                # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
+                self.set_timer(time_before_redo_tasks)
+                # if self.data.get(first).get("leave_game_loop", False):
+                #     if time_before_redo_tasks < 600:
+                #         self.leave_game(force=True)
+                #     else:
+                #         self.leave_game(force=False)
+
+                for _ in range(time_before_redo_tasks):
+                    self.script_pause()
+                    sleep(1)
+
 

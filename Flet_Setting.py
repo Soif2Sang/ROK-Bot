@@ -8,6 +8,7 @@ from Flet_row_rss import FletRowRss
 from Flet_col_transfer import FletColumnRss
 from Flet_row_troops import FletRowTraining
 from Flet_city_layout import start
+from Task_utils import get_data, write_data
 
 color_bank = {
     1: "#3b8ed0",
@@ -19,7 +20,7 @@ color_bank = {
 class SettingContainer(ft.Container):
     def __init__(self, page, tab, instance_index: int, profile_index: int):
         super().__init__()
-        with open('user_settings.json') as config_file: self.data = json.load(config_file)
+        self.data = get_data()        
         self.tabs = tab
         self.page = page
         self.instance_index = instance_index
@@ -97,24 +98,20 @@ class SettingContainer(ft.Container):
         self.page.update()
 
     def submit(self, e, keyword, method):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1",'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
             print(self.data[str(self.instance_index)][keyword])
-            with open('user_settings.json', 'w') as config_file:
-                config_file.write(json.dumps(self.data, indent=2))
-            return
+            return write_data(self.data)
+
         if keyword not in ["sleep_multiplicator","defeat_barbarians"]:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
         else:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(e.control.value.replace("x", "").replace("level ",""))
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(self.data, indent=2))
+        write_data(self.data)
 
     def page_gems(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=1, )
@@ -220,8 +217,7 @@ class SettingContainer(ft.Container):
         self.page.update()
 
     def page_troops(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.tabs.expand = True
         self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -256,8 +252,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_rss(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.tabs.expand = True
         self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -284,8 +279,7 @@ class SettingContainer(ft.Container):
             "Sixth",
             "Seventh"
         ]
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.content.controls.append(
             ft.Switch(
                 label="Use Yellow presets as gatherers",
@@ -301,8 +295,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_fog(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
@@ -347,8 +340,7 @@ class SettingContainer(ft.Container):
 
 
     def page_heal(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
@@ -377,8 +369,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_materials(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -407,8 +398,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_transfer(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -433,8 +423,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_barbs(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -454,8 +443,7 @@ class SettingContainer(ft.Container):
         )
 
     def page_rally(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -530,8 +518,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_character(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -558,8 +545,7 @@ class SettingContainer(ft.Container):
         self.page.update()
 
     def page_logback(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -604,8 +590,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_profile(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -649,8 +634,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_redo(self):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -697,26 +681,28 @@ class SettingContainer(ft.Container):
                                  on_change=lambda e: self.submit(e, "time_to_wait_loop2", int)
                                  )
                 ]
-            )
+            ),
+            ft.Switch(label="Close the game after all the tasks are done",
+                      value=self.data[str(self.instance_index)]["leave_game_loop"],
+                      on_change=lambda _:self.reverse_keyword('leave_game_loop'))
         ]
         )
         self.update()
 
+
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
             index = self.profile_index
-        if keyword not in ["loop_task", "scheduler"]:
-            self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not \
-                self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
+        if keyword not in ["loop_task", "scheduler","leave_game_loop"]:
+            self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
         else:
-            self.data[str(self.instance_index)][keyword] = not \
-                self.data[str(self.instance_index)][keyword]
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(self.data, indent=2))
+            print(keyword,self.data[str(self.instance_index)][keyword])
+
+            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
+        write_data(self.data)
 
     def create_normal_switch(self, keyword: str, text: str):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.content.controls.append(
             ft.Switch(
                 label=text,
@@ -728,8 +714,7 @@ class SettingContainer(ft.Container):
         )
 
     def create_advanced_switch(self, keyword: str, text: str, function):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         if keyword not in ["loop_task", "scheduler"]:
             self.content.controls.append(
                 ft.Row(

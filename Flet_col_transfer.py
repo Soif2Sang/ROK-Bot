@@ -2,10 +2,13 @@ import json
 
 import flet as ft
 
+from Task_utils import get_data, write_data
+
+
 class FletColumnRss(ft.Column):
     def __init__(self,instance_index, profile_index):
         super().__init__()
-        with open('user_settings.json') as config_file: self.data = json.load(config_file)
+        self.data = get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.controls=[
@@ -29,8 +32,7 @@ class FletColumnRss(ft.Column):
             ]
 
     def submit(self, e, keyword, method):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
+
         self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value) if e.control.value !="" else 0
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(self.data, indent=2))
+        write_data(self.data)

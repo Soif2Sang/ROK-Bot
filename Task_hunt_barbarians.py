@@ -10,15 +10,15 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_name, get_class, current_time
+from Task_utils import get_name, get_class, current_time, get_data
+
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class HuntBarbarians(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -60,7 +60,7 @@ class HuntBarbarians(Task):
         """
 
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         cropped_image = cv_image[13:35, 1225:1254]
         cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
@@ -187,7 +187,7 @@ class HuntBarbarians(Task):
     @get_name
     def enough_action_points(self) -> bool:
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(cv_image)
         print(img.getpixel((33, 73)))
@@ -226,7 +226,7 @@ class HuntBarbarians(Task):
     @get_name
     def set_search_level(self, level: int = 10) -> None:
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:

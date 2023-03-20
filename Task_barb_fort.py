@@ -17,7 +17,7 @@ from pytesseract import pytesseract
 
 from Task import Task, get_name, current_time
 from Task_heal_troop import HealTroop
-from Task_utils import get_class
+from Task_utils import get_class, get_data, get_path
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -25,8 +25,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class BarbFort(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -42,8 +41,7 @@ class BarbFort(Task):
     @get_name
     def random_macro(self) -> None:
         try:
-            with open('path.json', encoding="UTF-8") as config_file:
-                path_json = json.load(config_file)
+            path_json = get_path()
             for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg", "com.lilithgames.rok.gp.jp.cfg",
                          "com.lilithgames.rok.gpkr.cfg"]:
                 path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
@@ -54,8 +52,7 @@ class BarbFort(Task):
             # print(f"{path2 = }")
             shutil.copy(path, path2)
             # print("test")
-            with open(path2, encoding="UTF-8") as config_file:
-                path_json = json.load(config_file)
+            path_json = get_path()
             for element in path_json['ControlSchemes']:
                 if element["Name"] == "Custom":
                     # print(element["Name"])
@@ -140,9 +137,7 @@ class BarbFort(Task):
 
     @get_name
     def enough_action_points(self) -> bool:
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         img = Image.fromarray(cv_image)
         print(img.getpixel((33, 73)))
         if (
@@ -192,7 +187,7 @@ class BarbFort(Task):
         :return: True if node is not free
         :return: False if node is free to gather
         """
-        cv_image = array(image)
+        cv_image = self.pil_to_array(image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         try:
             cropped_image = cv_image[y - 40:y + 50, x - 30:x + 50]
@@ -281,9 +276,7 @@ class BarbFort(Task):
         :return: False if node is free to gather
         """
         self.print("Scanning the node..")
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         cropped_image = cv_image[230:480, 441:814]
         img = Image.fromarray(cropped_image)
         for i in range(img.size[0]):
@@ -381,7 +374,7 @@ class BarbFort(Task):
         """
         self.data = self.update_data()
         screen = self.adb.get_curr_device_screen_img()
-        info_screen = array(screen)
+        info_screen = self.pil_to_array(screen)
         info_screen = cv2.cvtColor(info_screen, cv2.COLOR_BGR2RGB)
         info_screen = info_screen[470:700, 0:115]
 
@@ -397,7 +390,7 @@ class BarbFort(Task):
             self.better_sleep((2, 3))
             screen = self.adb.get_curr_device_screen_img()
 
-        screen = array(screen)
+        screen = self.pil_to_array(screen)
         screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
 
         if not self.data[self.sel]['schedules'][self.current_profile]["mauraudeurs_forts"]:
@@ -478,7 +471,7 @@ class BarbFort(Task):
                                     self.click(uniform(1092, 1112), uniform(330, 350))
                                     self.better_sleep((2,3))
                                     pil_image = self.adb.get_curr_device_screen_img()
-                                    cv_image = array(pil_image)
+                                    cv_image =self.pil_to_array(pil_image)
                                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)
                                     cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
@@ -577,7 +570,7 @@ class BarbFort(Task):
                             self.click(uniform(1092, 1112), uniform(330, 350))
                             self.better_sleep((0.5, 1))
                             pil_image = self.adb.get_curr_device_screen_img()
-                            cv_image = array(pil_image)
+                            cv_image =self.pil_to_array(pil_image)
                             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
                             x, y = self.find_img(source=cv_image, target="troops_march_button", confidence=0.8)
                             cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
@@ -725,7 +718,7 @@ class BarbFort(Task):
             self.print(
                 f"time to beat : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {time_to_beat > time()}")
             pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = np.array(pil_image)
+            cv_image =self.pil_to_array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[0:100, :800]
             if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:

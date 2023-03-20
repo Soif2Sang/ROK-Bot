@@ -10,27 +10,14 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_name, current_time, get_class
+from Task_utils import get_name, current_time, get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
-
-
-def change_resource_type(place: str) -> str:
-    if place == "First":
-        return "Second"
-    elif place == "Second":
-        return "Third"
-    elif place == "Third":
-        return "Fourth"
-    elif place == "Fourth":
-        return "Done"
-
 
 class GatherRss(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -63,7 +50,7 @@ class GatherRss(Task):
         :return: False if queues are occupied
         """
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image =self.pil_to_array(pil_image)
         cropped_image3 = cv_image[162:179, 1210:1242]
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
         # cropped_image1 = cv_image[162:179, 1212:1224]
@@ -106,9 +93,7 @@ class GatherRss(Task):
 
     @get_name
     def click_loop(self) -> None:
-        print(f'[ {current_time()} ] [ {self.name} ] click loop call')
         if not self.find_img(target="gem_search_button"):
-            print(f'[ {current_time()} ] [ {self.name} ] Loop icon not found, leaving the city')
             self.leave_city()
             self.better_sleep((2, 3))
         x = uniform(33, 76)
@@ -137,7 +122,7 @@ class GatherRss(Task):
     @get_name
     def set_search_level(self, level: int = 10) -> None:
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
+        cv_image =self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
@@ -214,7 +199,7 @@ class GatherRss(Task):
         """
         self.print("Scanning the node..")
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image =self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         cropped_image = cv_image[230:480, 441:814]
         img = Image.fromarray(cropped_image)
@@ -352,7 +337,7 @@ class GatherRss(Task):
         """
 
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image =self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         cropped_image = cv_image[13:35, 1225:1254]
         cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
@@ -450,6 +435,7 @@ class GatherRss(Task):
             self.click(uniform(600,700),(uniform(250,400)))
             self.better_sleep((2, 4))
             return
+
         nbsearch = 0
         self.check_reconnect()
         self.leave_city_simple()
@@ -541,11 +527,14 @@ class GatherRss(Task):
             resolved = self.check_captcha()
         self.check_reconnect()
         self.check_log_back()
+        self.check_download_page()
         if node_type is None:
             node_type = "First"
         if node_type == "Done":
             self.click(uniform(600,700),(uniform(250,400)))
             self.better_sleep((2, 4))
+            return
+        if self.data[str(self.sel)]['schedules'][self.current_profile][node_type] == 'nothing':
             return
         nbsearch = 0
         self.leave_city_simple()

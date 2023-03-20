@@ -2,12 +2,12 @@ import json
 import logging
 from datetime import datetime
 from functools import wraps
-from time import perf_counter
+from time import perf_counter, sleep
 from datetime import date
 import win32gui
 import win32process
 from PIL import Image
-from numpy import ndarray
+from numpy import ndarray, array
 
 
 def current_time():
@@ -114,16 +114,20 @@ def write(name,text:str):
             logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
     except:
         return
+
 def get_data():
-    with open('user_settings.json') as config_file:
+    with open('user_settings.json',encoding='utf-8') as config_file:
         data = json.load(config_file)
     return data
 
-
 def get_path():
-    with open('path.json') as config_file:
+    with open('path.json',encoding='utf-8') as config_file:
         path = json.load(config_file)
     return path
+
+def write_data(data):
+    with open('user_settings.json', mode='w', encoding='utf-8') as f:
+        f.write(json.dumps(data))
 
 def change_resource_type(place: str) -> str:
     if place == "First":
@@ -134,3 +138,4 @@ def change_resource_type(place: str) -> str:
         return "Fourth"
     elif place == "Fourth":
         return "Done"
+

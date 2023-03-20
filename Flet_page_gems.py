@@ -2,11 +2,12 @@ import flet as ft
 import json
 
 from Flet_page import FletPage
+from Task_utils import get_data
 
 
 def page_gems(self):
-    with open('user_settings.json') as config_file:
-        self.data = json.load(config_file)
+    self.data = get_data()
+
     self.clean()
     self.tabs.expand = True
     self.content = ft.ListView(height=500, expand=0, padding=1, )

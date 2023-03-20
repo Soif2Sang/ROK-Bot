@@ -2,7 +2,7 @@ import json
 from random import uniform, choice
 from pytesseract import pytesseract
 from Task import Task
-from Task_utils import get_class, get_name
+from Task_utils import get_class, get_name, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -10,8 +10,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class UpgradeCity(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb

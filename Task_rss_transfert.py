@@ -10,15 +10,15 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_name, get_class, current_time
+from Task_utils import get_name, get_class, current_time, get_data
+
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class RssTransfer(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -38,13 +38,13 @@ class RssTransfer(Task):
                 :return: False if queues are occupied
                 """
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         transport_capacity = cv_image[558:590, 285:435]
         transport_capacity = cv2.cvtColor(transport_capacity, cv2.COLOR_BGR2HSV)
         transport_capacity = pytesseract.image_to_string(transport_capacity,
                                                   config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789/,')
 
-        cv_image = array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         tax_rate = cv_image[450:480, 374:420]
         tax_rate = cv2.cvtColor(tax_rate, cv2.COLOR_BGR2HSV)
         tax_rate = pytesseract.image_to_string(tax_rate,
@@ -59,7 +59,7 @@ class RssTransfer(Task):
     #             :return: False if queues are occupied
     #             """
     #     pil_image = self.adb.get_curr_device_screen_img()
-    #     cv_image = array(pil_image)
+    #     cv_image = self.pil_to_array(pil_image)
     #     cropped_image3 = cv_image[558:590, 285:435]
     #     cv_image = cv2.cvtColor(cropped_image3, cv2.COLOR_BGR2HSV)
     #     native_text = pytesseract.image_to_string(cv_image,
@@ -83,6 +83,10 @@ class RssTransfer(Task):
         self.better_sleep((1,2))
 
     @get_name
+    def solve(self,path, sel, defaultApiKey=False):
+        return super().solve(path,sel,defaultApiKey)
+
+    @get_name
     def check_captcha(self,chest=True):
         if not chest:
             super().check_captcha(chest)
@@ -104,8 +108,7 @@ class RssTransfer(Task):
 
     @get_class
     def run(self,type = None,quantity = None):
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         if self.data[self.sel]['API_KEY'] =="":
             return self.print("This feature require a custom ApiKey")
         self.check_captcha()

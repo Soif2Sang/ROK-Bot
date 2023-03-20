@@ -8,7 +8,9 @@ import flet as ft
 import pyautogui
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from Flet_Logger import get_date
 from Flet_Tile import Tile
+from Task_utils import get_path, get_data, write_data
 
 
 class NavigationBar(ft.Row):
@@ -72,8 +74,7 @@ class TileManager(ft.ListView):
 
     def get_dic_instances(self):
         try:
-            with open('path.json', encoding='utf-8') as config_file:
-                path = json.load(config_file)
+            path = get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"
@@ -147,8 +148,7 @@ class TileManager(ft.ListView):
         return self.get_current_instances(self.get_dic_instances())
 
     def refresh(self):
-        with open("user_settings.json","r") as f:
-            data = json.load(f)
+        data = get_data()
 
 
         instances = self.get_dic_instances()
@@ -275,8 +275,7 @@ class TileManager(ft.ListView):
             data[str(key)]['name'] = instances[str(key)]['name']
             data[str(key)]['port'] = int(instances[str(key)]['port'])
 
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(data, indent=2))
+        write_data(data)
         instances = self.get_all_vms_running()
         for i in range(len(self.controls) - 1):
             self.controls.pop()

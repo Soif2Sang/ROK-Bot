@@ -12,6 +12,8 @@ import win32gui
 from pyautogui import getAllWindows
 from urllib3 import Retry, PoolManager
 
+from Task_utils import get_data, write_data
+
 customtkinter.set_appearance_mode("light")
 if not os.path.exists("user_settings.json"):
     with open('user_settings.json', 'w') as f:
@@ -101,11 +103,10 @@ def main():
                 else:
                     print("None of the mac addresses match the mac address..")
                     return False
-            with open('user_settings.json') as config_file:
+            with open('user_settings.json',encoding='utf-8') as config_file:
                 data = json.load(config_file)
             data["user"] = {'username': username, 'password': password}
-            with open('user_settings.json', 'w') as config_file:
-                config_file.write(json.dumps(data, indent=2))
+            write_data(data)
             root.destroy()
             today = date.today()
             heures = heure[0].split('-')
@@ -242,11 +243,10 @@ def request_acess(username, password):
         # print(f"{mac_address_exists(data) = }")
 
         if mac_address_exists(data):
-            with open('user_settings.json') as config_file:
-                data = json.load(config_file)
+            data = get_data()
             data["user"] = {'username': username, 'password': password}
-            with open('user_settings.json', 'w') as config_file:
-                config_file.write(json.dumps(data, indent=2))
+            with open('user_settings.json', 'w',encoding='utf-8') as config_file:
+                f.write(json.dumps(data, indent=2))
             # print(f"{data = }")
             today = date.today()
             heures = heure[0].split('-')
@@ -285,7 +285,7 @@ if __name__ == "__main__":
             json.dump({}, f, indent=2)
             print("User settings created")
 
-    with open('user_settings.json') as config_file:
+    with open('user_settings.json',encoding='utf-8') as config_file:
         data = json.load(config_file)
     if not find_window("RoK Bot -"):
         if "user" in data:
