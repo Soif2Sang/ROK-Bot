@@ -1,12 +1,13 @@
 import json
 import traceback
 
+
 from random import uniform
 import cv2
 from pytesseract import pytesseract
 
 from Task import Task, get_name
-from Task_utils import get_class
+from Task_utils import get_class,get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -14,8 +15,8 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class DailyChest(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
+
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -31,7 +32,7 @@ class DailyChest(Task):
     @get_name
     def close_chest_popup(self):
         for i in range(2):
-            co = self.find_img(f"popup{i}")
+            co = self.find_img(target=f"popup{i}",confidence=0.8)
             if co is not None:
                 self.click(uniform(1102, 1030), uniform(92, 118))
                 self.better_sleep((2, 4))

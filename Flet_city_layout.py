@@ -8,11 +8,12 @@ from multiprocessing import Process
 
 from PIL import Image
 
+from Task_utils import get_data, write_data
+
 global sel,profile
 
 def main(page:ft.Page):
-    with open('user_settings.json') as config_file:
-        data = json.load(config_file)
+    data = get_data()
     page.window_width = 830
     page.window_height = 430
     page.current_build = None
@@ -61,8 +62,7 @@ def main(page:ft.Page):
         except Exception as e:
             traceback.print_exc()
             return
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(data, indent=2))
+        write_data(data)
 
     c = ft.Container(bgcolor=ft.colors.RED,left=0, top=0, image_src="city.png",height=720/2,width=1280/2)
 

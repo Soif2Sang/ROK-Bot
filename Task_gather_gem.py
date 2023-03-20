@@ -18,7 +18,7 @@ from pytesseract import pytesseract
 
 from Task import Task
 from Task_alliance_help import AllianceHelp
-from Task_utils import get_name, get_class, current_time
+from Task_utils import get_name, get_class, current_time, get_data, get_path
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -26,8 +26,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class GatherGem(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -49,8 +48,7 @@ class GatherGem(Task):
     @get_name
     def random_macro(self) -> None:
         try:
-            with open('path.json', encoding="UTF-8") as config_file:
-                path_json = json.load(config_file)
+            path_json = get_path()
             for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg", "com.lilithgames.rok.gp.jp.cfg",
                          "com.lilithgames.rok.gpkr.cfg"]:
                 path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
@@ -58,8 +56,8 @@ class GatherGem(Task):
                     break
             path2 = path.replace("cfg", "json")
             shutil.copy(path, path2)
-            with open(path2, encoding="UTF-8") as config_file:
-                path_json = json.load(config_file)
+
+            path_json = get_path()
             for element in path_json['ControlSchemes']:
                 if element["Name"] == "Custom":
                     # print(element["Name"])
@@ -167,7 +165,7 @@ class GatherGem(Task):
         :return: True if node is not free
         :return: False if node is free to gather
         """
-        cv_image = array(image)
+        cv_image =self.pil_to_array(image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         try:
             cropped_image = cv_image[y - 40:y + 50, x - 30:x + 50]
@@ -190,7 +188,7 @@ class GatherGem(Task):
         """
         self.print("Scanning the node..")
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image =self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         cropped_image = cv_image[230:480, 441:814]
         img = Image.fromarray(cropped_image)
@@ -294,7 +292,7 @@ class GatherGem(Task):
         """
 
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image  =self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         cropped_image = cv_image[13:35, 1225:1254]
         cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
@@ -450,12 +448,12 @@ class GatherGem(Task):
                 self.click(points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0))
                 self.better_sleep((1, 1.7))
                 pil_image = self.adb.get_curr_device_screen_img()
-                cv_image = array(pil_image)
+                cv_image =self.pil_to_array(pil_image)
                 cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                 co = self.find_img(source=cv_image, target="march_bar", confidence=0.8)
                 if co is not None:
                     x, y = co[0], co[1]
-                    cv_image = array(pil_image)
+                    cv_image =self.pil_to_array(pil_image)
                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                     cropped_image = cv_image[y + 30:y + 50, x:x + 120]
                     # cv2.imwrite("timer.png", cropped_image)
@@ -573,37 +571,37 @@ class GatherGem(Task):
         self.restart_if_game_crashed()
         screen = self.adb.get_cv2_img()
 
-        info_screen = screen[470:700, 0:115]
-        cropped_image = screen[420:540, 480:810]
-
-        if random() > 0.7:
-            co = self.find_img(source=screen, target="verification_button", confidence=0.8)
-            if co is not None:
-                self.check_captcha()
-            self.check_reconnect(cropped_image)
-
-        if random() > 0.4:
-            self.check_download_page(screen)
-            self.leave_kd_buff(screen)
-
-        cropped_image = screen[616:710, 1168:1270]
-
-        if self.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
-            self.click(uniform(500, 700), uniform(250, 450))
-            self.better_sleep((1, 2))
-            return self.zoom_out_city()
-
-        if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
-            self.click(uniform(24, 91), uniform(625, 680))
-            self.better_sleep((1.5, 2))
-            self.zoom_out_city()
-            self.better_sleep((2, 3))
-            screen = self.adb.get_cv2_img()
-
-        if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
-            self.zoom_out_city()
-            self.better_sleep((2, 3))
-            screen = self.adb.get_cv2_img()
+        # info_screen = screen[470:700, 0:115]
+        # cropped_image = screen[420:540, 480:810]
+        #
+        # if random() > 0.7:
+        #     co = self.find_img(source=screen, target="verification_button", confidence=0.8)
+        #     if co is not None:
+        #         self.check_captcha()
+        #     self.check_reconnect(cropped_image)
+        #
+        # if random() > 0.4:
+        #     self.check_download_page(screen)
+        #     self.leave_kd_buff(screen)
+        #
+        # cropped_image = screen[616:710, 1168:1270]
+        #
+        # if self.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
+        #     self.click(uniform(500, 700), uniform(250, 450))
+        #     self.better_sleep((1, 2))
+        #     return self.zoom_out_city()
+        #
+        # if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
+        #     self.click(uniform(24, 91), uniform(625, 680))
+        #     self.better_sleep((1.5, 2))
+        #     self.zoom_out_city()
+        #     self.better_sleep((2, 3))
+        #     screen = self.adb.get_cv2_img()
+        #
+        # if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
+        #     self.zoom_out_city()
+        #     self.better_sleep((2, 3))
+        #     screen = self.adb.get_cv2_img()
 
         for second_string in ["left", "mid", "right"]:
             for first_string in ["up", "mid", "down"]:
@@ -625,6 +623,7 @@ class GatherGem(Task):
                     self.check_if_kill()
                     self.check_captcha()
                     while True:
+                        self.check_download_page()
                         self.leave_kd_buff()
                         if self.check_log_back():
                             self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
@@ -680,6 +679,7 @@ class GatherGem(Task):
                             sleep(1)
                             scan_frequency_timer += 1
                             if scan_frequency_timer >= random_wait:
+
                                 if self.check_log_back():
                                     self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
                                     return self.run(self.end_time)
@@ -750,28 +750,33 @@ class GatherGem(Task):
             self.click(uniform(400, 480), uniform(130, 150))
             self.better_sleep((0.3, 0.5))
             if i == 0:
+                self.script_pause()
                 # string = "input keyevent --longpress 67 67 67 67 67"
                 string = "input keyevent 67 67 67 67 67 67"
-                self.adb.get_device().shell(string)
+                self.adb.shell(string)
+                self.script_pause()
                 self.better_sleep((0.3, 0.5))
-                self.adb.get_device().shell(
+                self.adb.shell(
                     f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}")
                 self.better_sleep((0.3, 0.5))
+                self.script_pause()
         self.better_sleep((0.3, 0.5))
         for i in range(2):
             self.click(uniform(590, 685), uniform(130, 150))
             self.better_sleep((0.3, 0.5))
             if i == 0:
                 string = f'input text {x2}'
-                self.adb.get_device().shell(string)
+                self.script_pause()
+                self.adb.shell(string)
                 self.better_sleep((0.3, 0.5))
         self.better_sleep((0.3, 0.5))
         for i in range(2):
             self.click(uniform(750, 830), uniform(130, 150))
             self.better_sleep((0.3, 0.5))
             if i == 0:
+                self.script_pause()
                 string = f'input text {y2}'
-                self.adb.get_device().shell(string)
+                self.adb.shell(string)
                 self.better_sleep((0.3, 0.5))
         self.better_sleep((0.3, 0.5))
         for _ in range(2):
@@ -785,7 +790,39 @@ class GatherGem(Task):
         self.script_pause()
         # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
         direction()
-        self.better_sleep((1, 1.25))
+        screen = self.adb.get_cv2_img()
+
+        info_screen = screen[470:700, 0:115]
+        cropped_image = screen[420:540, 480:810]
+
+        if random() > 0.7:
+            co = self.find_img(source=screen, target="verification_button", confidence=0.8)
+            if co is not None:
+                self.check_captcha()
+            self.check_reconnect(cropped_image)
+
+        if random() > 0.4:
+            self.check_download_page(screen)
+            self.leave_kd_buff(screen)
+
+        cropped_image = screen[616:710, 1168:1270]
+
+        if self.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
+            self.click(uniform(500, 700), uniform(250, 450))
+            self.better_sleep((1, 2))
+            return self.zoom_out_city()
+
+        if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
+            self.click(uniform(24, 91), uniform(625, 680))
+            self.better_sleep((1.5, 2))
+            self.zoom_out_city()
+            self.better_sleep((2, 3))
+
+        if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
+            self.zoom_out_city()
+            self.better_sleep((2, 3))
+
+        self.better_sleep((0.5,0.7))
         return scan()
 
     @get_name
@@ -795,7 +832,7 @@ class GatherGem(Task):
         :return: False if queues are occupied
         """
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image =self.pil_to_array(pil_image)
         cropped_image3 = cv_image[162:179, 1210:1242]
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
         # cropped_image1 = cv_image[162:179, 1212:1224]
@@ -912,7 +949,7 @@ class GatherGem(Task):
                     time_restart = time()
 
             pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = np.array(pil_image)
+            cv_image =self.pil_to_array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[0:100, 0:800]
             if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:

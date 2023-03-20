@@ -7,13 +7,14 @@ from Task import Task
 import flet as ft
 
 from Task_runner import TaskRunner
+from Task_utils import get_data
+
 
 class Tile(ft.Row):
     def __init__(self, page, number, **kwargs):
         super().__init__(**kwargs)
 
-        with open('user_settings.json') as config_file:
-            data = json.load(config_file)
+        data = get_data()
 
         self.page = page
         self.number = number
@@ -54,7 +55,7 @@ class Tile(ft.Row):
     def select(self):
         self.page.tile_manager.unselect_all()
         self.button_select.selected = True
-        print(f"{len(self.page.controls)>2 =}")
+        # print(f"{len(self.page.controls)>2 =}")
         if len(self.page.controls)>2:
             self.page.controls.pop()
         if self.number not in self.page.frames:
@@ -111,6 +112,9 @@ class Tile(ft.Row):
     def set_text(self, phrase: str):
         self.text_status.value = phrase
         self.text_status.update()
+
+    def get_text(self):
+        return self.text_status.value
 
     def add_text(self, phrase: str, color = None):
         # # print(self.page.frames)

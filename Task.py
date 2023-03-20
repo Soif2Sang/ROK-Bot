@@ -7,12 +7,12 @@ from random import uniform, randint
 from time import sleep
 from psutil import pid_exists
 import cv2
-from PIL import Image
+from PIL import Image, ImageFile
 from numpy import array, ndarray
 from Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write, string_to_co
 from bot_adb import Adb
 from twocaptcha import TwoCaptcha
-
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Task:
@@ -21,7 +21,9 @@ class Task:
         self.current_profile = '1'
         self.tile = tile
         self.sel = tile.number
+        # print(self.sel)
         self.adb = Adb(self.sel)
+        # print(self.sel)
         self.ppid = os.getppid()
         self.pid = get_window_pid(self.adb.name)
         self.language = None
@@ -53,8 +55,6 @@ class Task:
         self.data = self.update_data()
         self.sel = sel
         self.name = self.data.get(self.sel).get('name', "Name not found")
-        # print(self.name)
-        self.resource_type = self.data[str(self.sel)]['schedules'][self.current_profile]["First"]
 
     @get_name
     def print(self, text: str, color=None) -> None:
@@ -157,9 +157,12 @@ class Task:
 
     @get_name
     def find_img(self,target:str, source:  ndarray = None, confidence=0.9):
-        self.print(f"Loading {target}")
+        # self.print(f"Loading {target}")
+        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
         result = self.adb.find_img(target=target,source=source,confidence=confidence)
-        self.print(f"Successfully loaded {target}")
+        # self.print(f"Successfully loaded {target}")
+        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Successfully loaded {target}")
+
         return result 
     
     @get_name
@@ -180,7 +183,7 @@ class Task:
                 if count == 1:
                     if self.language is None or self.language == "eng":
                         for _ in range(2):
-                            string = self.adb.get_device().shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
+                            string = self.adb.shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
                             write(self.name,f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 break
@@ -193,7 +196,7 @@ class Task:
                                 return
                     if self.language is None or self.language == "vn":
                         for i in range(2):
-                            string = self.adb.get_device().shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
+                            string = self.adb.shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
                             write(self.name,f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
@@ -207,7 +210,7 @@ class Task:
                                 return
                     if self.language is None or self.language == "kr":
                         for i in range(2):
-                            string = self.adb.get_device().shell(
+                            string = self.adb.shell(
                                 "am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity")
                             write(self.name,f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
@@ -240,27 +243,31 @@ class Task:
 
     @get_name
     def solve(self,path, sel, defaultApiKey=True):
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
         data = self.update_data()
         # print(sel, type(sel))
         if defaultApiKey:
-            api_key = os.getenv('APIKEY_2CAPTCHA', '4805a29997857b110ef26530c7f39db1')
+            api_key = '4805a29997857b110ef26530c7f39db1'
         else:
-            api_key = os.getenv('APIKEY_2CAPTCHA', data[sel]['API_KEY'])
+            api_key = data[sel]['API_KEY']
             if api_key == "":
                 return self.print("This feature require a custom ApiKey")
-        solver = TwoCaptcha(api_key, defaultTimeout=90, pollingInterval=5)
+
+        solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
         try:
             self.print("Trying to resolve the captcha")
             result = solver.coordinates(path, lang='en')
             self.print(f"{result = }\n")
             return result
         except Exception as e:
-            self.print(f"EXCEPTION : Exception raised during the resolving of the captcha (verification.py related) :\n{e}\n","red")
+            if e == 'ERROR_CAPTCHA_UNSOLVABLE':
+                if self.refresh_captcha():
+                    return self.check_captcha()
+
+            self.print(f"EXCEPTION : Exception raised during the resolving of the captcha :\n{e}\n","red")
             return {'error':e}
 
     @get_name
-    def resolve_captcha(self, compteur=0):
+    def resolve_captcha(self, compteur=0 , defaultApiKey=True):
         """
         Resolve verification
         """
@@ -272,34 +279,23 @@ class Task:
                 self.script_pause()
                 sleep(1)
         try:
-            captcha = self.save_captcha(compteur)
+            data = self.update_data()
 
-            result = self.solve(f"captcha{self.sel}.jpg", self.sel)
+            if defaultApiKey:
+                api_key = '4805a29997857b110ef26530c7f39db1'
+            else:
+                api_key = data[self.sel]['API_KEY']
+                if api_key == "":
+                    return self.print("This feature require a custom ApiKey")
+
+            self.print("Trying to resolve the captcha")
+
+            captcha = self.save_captcha(compteur)
+            solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
+
+            result = solver.coordinates(f"captcha{self.sel}.jpg", lang='en')
+
             print(result)
-            if result == 0:
-                if compteur >= 3:
-                    self.click(uniform(100, 300), uniform(100, 400))
-                    self.better_sleep((2, 3))
-                    return None
-                self.refresh_captcha()
-                return self.resolve_captcha(compteur=compteur + 1)
-            if 'code' not in result and 'error' in result:
-                self.print("The captcha resolving service seems to have a problem..")
-                self.print(result['error'],"red")
-                self.set_status("Error")
-                while True:
-                    self.script_pause()
-                    sleep(1)
-            if result['code'] is None:
-                self.refresh_captcha()
-                return self.resolve_captcha(compteur=compteur + 1)
-            if result['code'] == 0:
-                if compteur >= 3:
-                    self.click(uniform(100, 300), uniform(100, 400))
-                    self.better_sleep((2, 3))
-                    return None
-                self.refresh_captcha()
-                return self.resolve_captcha(compteur=compteur + 1)
 
             co = string_to_co(result['code'])
             if self.adb.find_img_cv(captcha) is not None:
@@ -308,19 +304,31 @@ class Task:
                     self.better_sleep((0.4, 0.795))
                 self.click(uniform(700, 830), uniform(570, 600))
                 self.better_sleep((1, 1.795))
+
             return result['captchaId']
         except Exception as e:
             traceback.print_exc()
             print(f"[ {current_time()} ] [ {self.name} ] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
             write(self.name,f"EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
-            self.click(uniform(507, 533), uniform(573, 599))
+
+            if e == 'ERROR_CAPTCHA_UNSOLVABLE':
+                if self.refresh_captcha():
+                    return self.resolve_captcha()
+                else:
+                    return None
+            self.refresh_captcha()
             self.print("Refreshing the captcha.","red")
             self.better_sleep((4, 7))
             return self.resolve_captcha(compteur=compteur + 1)
 
-    def save_captcha(self,compteur):
+    def save_captcha(self):
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        try:
+            cv_image = array(pil_image)
+        except OSError:
+            sleep(1)
+
+            return self.save_captcha()
         cropped_image = cv_image[100:560, 440:840]
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
         im_pil = Image.fromarray(cropped_image)
@@ -329,9 +337,8 @@ class Task:
         size = os.path.getsize(rf"{os.getcwd()}\captcha{self.sel}.jpg")
         if size > 99999:
             self.print(f"Captcha is too big ({size}), refreshing it..")
-            self.adb.click(uniform(508, 532), uniform(580, 596))
-            self.better_sleep((4, 7))
-            return self.resolve_captcha(compteur + 1)
+            self.refresh_captcha()
+            return self.save_captcha()
         return cropped_image
 
 
@@ -342,6 +349,9 @@ class Task:
             x, y = co[0] + 3, co[1] + 3
             self.click(x, y)
             self.better_sleep((2, 3))
+            return True
+        return False
+
 
     def script_pause(self):
         said = False
@@ -466,6 +476,15 @@ class Task:
             self.check_log_back()
             self.check_captcha()
             self.close_windows()
+            self.close_upgrade_popup()
+
+    @get_name
+    def close_upgrade_popup(self):
+        for i in range(4):
+            co = self.find_img(f"upgrade_popup_{i}")
+            if co is not None:
+                self.click(uniform(1102, 1030), uniform(92, 118))
+                self.better_sleep((2, 4))
 
     @get_name
     def leave_kd_buff(self, Source=None):
@@ -475,6 +494,14 @@ class Task:
             self.click(uniform(70, 270), uniform(100, 542))
             self.better_sleep((1.8, 3))
 
+    def pil_to_array(self,image):
+        try:
+            cv_image = array(image)
+            return cv_image
+        except OSError:
+            self.print("Cannot load the image..")
+            sleep(1)
+            return self.pil_to_array(image)
     # @get_name
     def check_if_kill(self):
         """
@@ -508,9 +535,10 @@ class Task:
     def check_chest(self):
         for _ in range(2):
             self.script_pause()
-            pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = array(pil_image)
-            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            # pil_image = self.adb.get_curr_device_screen_img()
+            # cv_image = array(pil_image)
+            # cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            cv_image = self.adb.get_cv2_img()
             cropped_image = cv_image[30:170, 770:1225]
             chest = None
             for i in range(1, 4):
@@ -535,7 +563,7 @@ class Task:
         return False
 
     @get_time
-    def check_captcha(self, chest=True) -> bool:
+    def check_captcha(self, chest=True, DefaultApiKey=True) -> bool:
         """
         Check and resolve verification
         """
@@ -545,29 +573,78 @@ class Task:
 
         if chest:
             self.check_chest()
+            sleep(1)
 
         co = self.find_img(target="verification_button")
         if co is not None:
             self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
-            self.better_sleep((5, 6))
-
+            while self.find_img(target="close_refresh_ok", confidence=0.75) is None:
+                co = self.find_img(target="verification_button")
+                if co is not None:
+                    self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
+                sleep(uniform(1,3))
         i = 0
         resolved = False
         solver = None
+        previous_text = self.get_text()
+
         while self.find_img(target="close_refresh_ok", confidence=0.75) is not None:
-            if i == 0:
-                self.print("Verification detected")
-                solver = self.getSolver()
-            captchaId = self.resolve_captcha()
-            self.better_sleep((3, 4))
-            if self.find_img(target="close_refresh_ok", confidence=0.75) is None:
-                resolved = True
+            self.solve_captcha(i,DefaultApiKey)
+            i+=1
             if i == 5:
                 self.print("Error, unable to resolve the captcha for 5 times in a row !")
                 return False
-            self.report_feedback(captchaId, resolved, solver)
-            i = i + 1
+        self.set_status(previous_text)
         return resolved
+
+    @get_name
+    def solve_captcha(self,compteur:int=0, DefaultApiKey:bool=True):
+        try:
+            self.print("Verification detected")
+            self.set_status("Resolving captcha")
+
+            data = self.update_data()
+
+            if DefaultApiKey:
+                api_key = '4805a29997857b110ef26530c7f39db1'
+            else:
+                api_key = data[self.sel]['API_KEY']
+                if api_key == "":
+                    return self.print("This feature require a custom ApiKey")
+
+            self.print("Trying to resolve the captcha")
+
+            captcha = self.save_captcha()
+            solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
+
+            result = solver.coordinates(f"captcha{self.sel}.jpg", lang='en')
+
+            print(result)
+
+            co = string_to_co(result['code'])
+            if self.adb.find_img_cv(captcha) is not None:
+                for x, y in co:
+                    self.click(x, y)
+                    self.better_sleep((0.4, 0.795))
+                self.click(uniform(700, 830), uniform(570, 600))
+                self.better_sleep((1, 1.795))
+            captchaId = result['captchaId']
+            self.better_sleep((3, 4))
+
+            if self.find_img(target="close_refresh_ok", confidence=0.75) is None:
+                resolved = True
+            else:
+                resolved = False
+
+            if captchaId is not None:
+                self.report_feedback(captchaId, resolved, solver)
+        except Exception as e:
+            traceback.print_exc()
+            self.print(f"Exception raised :\n{e}\n")
+            if self.refresh_captcha():
+                if compteur <5:
+                    return self.solve_captcha(compteur +1)
+
 
     @get_name
     def report_feedback(self, captchaId, resolved, solver):
@@ -598,28 +675,28 @@ class Task:
         Send adb signal to leave application
         """
         self.print(f"Leaving the game..")
-        self.adb.get_device().shell("input keyevent KEYCODE_APP_SWITCH")
+        self.adb.shell("input keyevent KEYCODE_APP_SWITCH")
         sleep(2)
         self.click(920,62)
         sleep(2)
 
     @get_name
     def kill_game(self) -> None:
-        self.adb.get_device().shell("am force-stop com.lilithgame.roc.gp")
-        self.adb.get_device().shell("am force-stop com.rok.gp.vn")
-        self.adb.get_device().shell("am force-stop com.lilithgame.rok.gpkr")
-        self.adb.get_device().shell("am force-stop com.lilithgames.rok.gpkr")
+        self.adb.shell("am force-stop com.lilithgame.roc.gp")
+        self.adb.shell("am force-stop com.rok.gp.vn")
+        self.adb.shell("am force-stop com.lilithgame.rok.gpkr")
+        self.adb.shell("am force-stop com.lilithgames.rok.gpkr")
 
     @get_name
     def check_download_page(self, screen=None):
         if screen is None:
-            if self.find_img(target="download_page", confidence=0.9):
-                self.adb.click(uniform(1018, 1041), uniform(127, 146))
-                self.better_sleep((1.925, 2.795))
-        else:
-            if self.find_img(target="download_page", source=screen, confidence=0.9):
-                self.adb.click(uniform(1018, 1041), uniform(127, 146))
-                self.better_sleep((1.925, 2.795))
+            screen = self.adb.get_cv2_img()
+        if self.find_img(target="download_page", source=screen, confidence=0.8):
+            self.click(uniform(1018, 1041), uniform(127, 146))
+            self.better_sleep((1.925, 2.795))
+        elif self.find_img(target="download_icon", source=screen, confidence=0.8):
+            self.click(uniform(1018, 1041), uniform(127, 146))
+            self.better_sleep((1.925, 2.795))
 
     @get_name
     def go_city(self):
@@ -635,7 +712,7 @@ class Task:
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='gem_search_button') is None
+        return self.find_img(target='gem_search_button',confidence=0.93) is None
 
     @get_name
     def close_windows(self):
@@ -648,3 +725,6 @@ class Task:
             self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
             self.better_sleep((1.3,2.8))
             image = self.adb.get_cv2_img()[0:322, 0:1280]
+
+    def get_text(self):
+        return self.tile.get_text()

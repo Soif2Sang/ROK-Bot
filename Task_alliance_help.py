@@ -2,14 +2,13 @@ import json
 from random import uniform
 
 from Task import Task
-from Task_utils import get_class, get_name, filter_coordinate
+from Task_utils import get_class, get_name, filter_coordinate, get_data
 
 
 class AllianceHelp(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb

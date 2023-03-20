@@ -12,6 +12,8 @@ import flet as ft
 from pyautogui import getAllWindows
 
 import Flet_main_interface
+from Flet_Path import find_file_in_all_drives
+from Task_utils import get_data, get_path, write_data
 from keyauth import api
 
 def getchecksum():
@@ -25,12 +27,9 @@ def getchecksum():
     return digest
 
 def update_user_info(password, username):
-    with open('user_settings.json') as config_file:
-        data = json.load(config_file)
+    data = get_data()
     data["user"] = {'username': username, 'password': password}
-    with open('user_settings.json', 'w') as config_file:
-        config_file.write(json.dumps(data, indent=2))
-
+    write_data(data)
 
 def find_window(window_title):
     return any(window_title in element.title for element in getAllWindows())
@@ -54,36 +53,30 @@ class LoginButton(ft.FilledButton):
         return True
 
     def login_schedule(self, username, password):
+        self.keyauthapp = api(
+            name="Rokbd",
+            ownerid="7oofxdj8uH",
+            secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+            version="1.0",
+            hash_to_check=getchecksum()
+        )
         print("Login schedule...")
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
             main(self.page)
             sys.exit()
             return False
-        try:
-            if self.keyauthapp.login(username, password,page=self.page):
-                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-                print(date_brut)
-                heures = date_brut.split('-')
-                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-                diff = future - date.today()
-                print(diff)
-                self.page.title = f"Rok Bot - {diff.days} Days left"
-                self.page.update()
-                sleep(24 * 3600)
-                return self.login_schedule(username, password)
-            else:
-                self.page.clean()
-                main(self.page)
-                for element in self.page.tile_manager.tiles.values():
-                    element.started = False
-                    element.stopped = False
-                self.page.update()
-        except Exception as e:
-            # print(e)
-            # traceback.print_exc()
-            self.pop_banner("Problem occurred, please try again")
-            print("Problem occurred while trying to connect")
+
+        if self.keyauthapp.login(user=username, password=password,page=self.page):
+            date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
+            heures = date_brut.split('-')
+            future = date(int(heures[0]), int(heures[1]), int(heures[2]))
+            diff = future - date.today()
+            self.page.title = f"Rok Bot - {diff.days} Days left"
+            self.page.update()
+            sleep(24 * 3600)
+            return self.login_schedule(username, password)
+        else:
             self.page.clean()
             main(self.page)
             for element in self.page.tile_manager.tiles.values():
@@ -91,7 +84,24 @@ class LoginButton(ft.FilledButton):
                 element.stopped = False
             self.page.update()
 
+        #     traceback.print_exc()
+        #     self.pop_banner("Problem occurred, please try again")
+        #     print("Problem occurred during the connection")
+        #     self.page.clean()
+        #     main(self.page)
+        #     for element in self.page.tile_manager.tiles.values():
+        #         element.started = False
+        #         element.stopped = False
+        #     self.page.update()
+
     def login(self, e=None, username=None, password=None):
+        self.keyauthapp = api(
+            name="Rokbd",
+            ownerid="7oofxdj8uH",
+            secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+            version="1.0",
+            hash_to_check=getchecksum()
+        )
         print("Trying to login...")
         if username is None and password is None:
             username = self.page.controls[0].value
@@ -99,26 +109,28 @@ class LoginButton(ft.FilledButton):
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
             return False
-        try:
-            print(f"{username =} {password =}")
-            if self.keyauthapp.login(username, password,page=self.page):
-                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-                heures = date_brut.split('-')
-                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-                diff = future - date.today()
-                print(diff)
-                print("Login successful")
-                self.page.clean()
-                self.page.window_width = 400
-                self.page.window_height = 700
-                Flet_main_interface.Main(self.page,diff.days)
-                threading.Thread(self.login_schedule(username, password))
-        except Exception as e:
-            print(e)
-            self.pop_banner("Problem occurred, please try again")
-            print("Problem occurred while trying to connect")
-            self.page.window_close()
-            sys.exit(1)
+        # try:
+        if self.keyauthapp.login(username, password,page=self.page):
+            print("Login successful")
+            data = get_data()
+            if 'user' not in data:
+                data['user'] = {'username':username,'password':password}
+                write_data(data)
+            date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
+            heures = date_brut.split('-')
+            future = date(int(heures[0]), int(heures[1]), int(heures[2]))
+            diff = future - date.today()
+            self.page.clean()
+            self.page.window_width = 400
+            self.page.window_height = 700
+            Flet_main_interface.Main(self.page,diff.days)
+            threading.Thread(self.login_schedule(username, password))
+        # except Exception as e:
+        #     print(e)
+        #     self.pop_banner("Problem occurred, please try again")
+        #     print("Problem occurred during the connection")
+        #     self.page.window_close()
+        #     sys.exit(1)
 
     def close_banner(self, e):
         self.page.banner.open = False
@@ -139,7 +151,6 @@ class LoginButton(ft.FilledButton):
         self.page.update()
 
 def main(page: ft.Page):
-    os.environ["FLET_APP_LIFETIME_MINUTES"] = "1"
     try:
         if not os.path.exists("user_settings.json"):
             with open('user_settings.json', 'w') as f:
@@ -147,8 +158,18 @@ def main(page: ft.Page):
                 print("User settings created")
     except:
         pass
-    with open('user_settings.json') as config_file:
-        data = json.load(config_file)
+    path = get_path()
+    if not os.path.exists(path['bluestacks']) or not os.path.exists(path['HD-Player']):
+        if result:=find_file_in_all_drives('bluestacks\.conf'):
+            path['bluestacks\.conf'.split("\\")[0]] = result
+            with open('path.json', 'w',encoding="UTF-8") as f:
+                json.dump(path, f, indent=2)
+        if result := find_file_in_all_drives('HD-Player\.exe'):
+            path['HD-Player\.exe'.split("\\")[0]] = result
+            with open('path.json', 'w', encoding="UTF-8") as f:
+                json.dump(path, f, indent=2)
+
+    data = get_data()
     for i in range(5):
         ready = False
         try:
@@ -176,8 +197,7 @@ def main(page: ft.Page):
     page.close_banner = login_button.close_banner
     page.add(login_button)
     page.update()
-    with open('path.json') as config_file:
-        path = json.load(config_file)
+    path = get_path()
     cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
     subprocess.Popen(cmd)
     print("Bot is starting..")

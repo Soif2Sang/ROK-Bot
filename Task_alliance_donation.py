@@ -7,7 +7,7 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_class, get_name
+from Task_utils import get_class, get_name, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -15,8 +15,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class AllianceDonation(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -31,9 +30,7 @@ class AllianceDonation(Task):
 
     @get_name
     def collect_alliance_resources(self) -> None:
-        screen = self.adb.get_curr_device_screen_img()
-        source = array(screen)
-        source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
+        source = self.adb.get_cv2_img()
         co = self.find_img(source=source, target="alliance_flag1", confidence=0.9)
         if co is None:
             co = self.find_img(source=source, target="alliance_flag2", confidence=0.9)

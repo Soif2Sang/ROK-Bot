@@ -3,15 +3,14 @@ import json
 from random import uniform
 from pytesseract import pytesseract
 from Task import Task
-from Task_utils import get_class
+from Task_utils import get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class ProduceMaterials(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -34,7 +33,7 @@ class ProduceMaterials(Task):
         # else:
         strings = ["forge_icon", "bones_icon", "ebony_icon", "leather_icon", "stone_icon"]
         for string in strings:
-            co = self.find_img(string)
+            co = self.find_img(target=string, confidence=0.8)
             if co is not None:
                 if string != "forge_icon":
                     self.click(co[0] + uniform(0, 24), co[1] + uniform(0, 24))

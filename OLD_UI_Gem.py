@@ -8,7 +8,7 @@ class GemInterface(customtkinter.CTkToplevel):
     def __init__(self, root, instance, profile):
         super().__init__(root)
 
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
 
         self.instance = instance
@@ -93,7 +93,7 @@ class GemInterface(customtkinter.CTkToplevel):
         self.button_submit.grid(row=81, column=0, columnspan=4, pady=(5, 5))
 
     def command_restart(self):
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
         # print(f" {self.restart_button.get() = }")
         if self.switch_restart.get():
@@ -107,7 +107,7 @@ class GemInterface(customtkinter.CTkToplevel):
         print(f"{data[self.instance]['schedules'][self.profile]['restart_game'] = }")
 
     def command_experimental(self):
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
         # print(f" {self.restart_button.get() = }")
         if self.switch_experimental.get():
@@ -121,7 +121,7 @@ class GemInterface(customtkinter.CTkToplevel):
         print(f"{data[self.instance]['schedules'][self.profile]['gem_experimental'] = }")
 
     def submit(self):
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
         data[self.instance]['schedules'][self.profile]['kingdom'] = self.entry_kingdom.get()
         data[self.instance]['schedules'][self.profile]['city_y'] = int(self.entry_y.get())
@@ -138,7 +138,7 @@ class GemInterface(customtkinter.CTkToplevel):
 
 
 #     def submit(self):
-#         with open('user_settings.json') as config_file:
+#         with open('user_settings.json',encoding='utf-8') as config_file:
 #             data = json.load(config_file)
 #         data[self.instance]['schedules'][self.profile]['kingdom'] = self.entry_kingdom.get()
 #         data[self.instance]['schedules'][self.profile]['city_y'] = int(self.entry_y.get())

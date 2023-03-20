@@ -329,9 +329,10 @@ def research_instance(number:int, master):
 
 if __name__ == "__main__":
     master = customtkinter.CTk()
-    adb = Adb(2)
+    adb = Adb(1)
     bot = Bot(adb)
     bot.adb.connect_to_device()
+
 
     bot.main_task.print = lambda txt: print(txt)
     bot.main_task.set_text = lambda txt: print(txt)

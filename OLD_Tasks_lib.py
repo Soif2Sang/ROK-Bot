@@ -489,9 +489,7 @@ class Tasks:
         :return: False if node is free to gather
         """
         self.print("Scanning the node..")
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         cropped_image = cv_image[230:480, 441:814]
         img = Image.fromarray(cropped_image)
         for i in range(img.size[0]):
@@ -3403,8 +3401,8 @@ class Tasks:
         self.adb.port = dico_instance[self.sel]['port']
         self.data = self.update_data()
         self.data[self.sel]["port"] = int(dico_instance[self.sel]['port'])
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(self.data))
+        with open('user_settings.json', encoding='utf-8', mode='w') as f:
+            f.write(json.dumps(self.data, indent=2))
         self.data = self.update_data()
         # adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
         # cmd = f'"{adb_path}" connect 127.0.0.1:{self.data.get(self.sel).get("port")}'

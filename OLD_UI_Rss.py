@@ -10,7 +10,7 @@ class RssInterface(customtkinter.CTkToplevel):
     def __init__(self, root, instance, profile):
         super().__init__(root)
 
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
 
         self.instance = instance
@@ -132,7 +132,7 @@ class RssInterface(customtkinter.CTkToplevel):
 
         self.switch_custom.grid(row=7, column=0, columnspan=4, pady=(5, 5))
     def switch_keyword(self, keyword):
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
         # print(f" {self.restart_button.get() = }")
         if self.switch_custom.get():
@@ -141,12 +141,12 @@ class RssInterface(customtkinter.CTkToplevel):
         else:
             data[self.instance]['schedules'][self.profile][keyword] = False
             self.switch_custom.deselect()
-        with open('user_settings.json', 'w') as config_file:
-            config_file.write(json.dumps(data, indent=2))
+        with open('user_settings.json', encoding='utf-8', mode='w') as f:
+            f.write(json.dumps(data, indent=2))
         print(f"{data[self.instance]['schedules'][self.profile][keyword] = }")
 
     def choice_box(self, keyword, box):
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
 
         data[self.instance]['schedules'][str(self.profile)][keyword] = box.get().split(" node")[0]
@@ -155,7 +155,7 @@ class RssInterface(customtkinter.CTkToplevel):
             config_file.write(json.dumps(data, indent=2))
 
     def choice_box1(self, keyword, box):
-        with open('user_settings.json') as config_file:
+        with open('user_settings.json',encoding='utf-8') as config_file:
             data = json.load(config_file)
 
         data[self.instance]['schedules'][str(self.profile)][keyword] = int(box.get()[-1])

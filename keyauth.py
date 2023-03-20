@@ -27,13 +27,15 @@ class api:
 
     def __init__(self, name, ownerid, secret, version, hash_to_check, page = None):
         self.name = name
-        self.page = page
 
         self.ownerid = ownerid
 
         self.secret = secret
         self.version = version
         self.hash_to_check = hash_to_check
+
+        self.page = page
+
         self.init()
 
     sessionid = enckey = ""
@@ -150,8 +152,10 @@ class api:
         self.checkinit()
         if hwid is None:
             hwid = others.get_hwid()
-        if self.page == None:
+
+        if page is not None and self.page is None:
             self.page = page
+
         init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
 
         post_data = {
@@ -538,16 +542,21 @@ class api:
             print(json["message"])
             os._exit(1)
 
-    def __do_request(self, post_data):
+    def __do_request(self, post_data, deadstop = 0):
         try:
             rq_out = s.post(
                 "https://keyauth.win/api/1.0/", data=post_data, timeout=30
             )
             return rq_out.text
         except requests.exceptions.Timeout:
-            if self.page is not None:
-                self.pop_banner("Request timed out.. Please wait few minutes")
-            print("Request timed out")
+            if deadstop < 5:
+                if self.page is not None:
+                    self.pop_banner("Request timed out.. Please wait few minutes")
+                print("Request timed out")
+        except requests.exceptions.ConnectionError:
+            if deadstop < 5:
+                time.sleep(30)
+                return self.__do_request(post_data, deadstop+1)
 
     class application_data_class:
         numUsers = numKeys = app_ver = customer_panel = onlineUsers = ""

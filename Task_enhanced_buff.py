@@ -7,7 +7,7 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_class, get_name
+from Task_utils import get_class, get_name, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -15,8 +15,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class UseEnhancedBuff(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -33,7 +32,7 @@ class UseEnhancedBuff(Task):
     def get_remaining_buffs(self):
         buffs_to_do = []
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         image = image[0:110, 0:680]
         here = False

@@ -16,7 +16,7 @@ from OLD_Tasks_lib import *
 #from rkp import *
 #from auto_upgrade import *
 
-with open('user_settings.json') as config_file: data = json.load(config_file)
+data = get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 
 class Frame():
@@ -242,7 +242,7 @@ def upgrade_instance(number:int):
     frame.started = True
     frame.add_text = lambda x,_: print(x)
     frame.set_text = lambda x, _: print(x)
-
+    frame.get_text = ""
     bot.task.tile = frame
     bot.task.tile.stopped = False
     bot.upgrade.setup_view()
@@ -250,6 +250,7 @@ def upgrade_instance(number:int):
     claim_allaince = randint(4000,6000)
     current_sec = 0
     while 1:
+        bot.task.run_game()
         while bot.upgrade.free_worker():
             bot.upgrade.run()
         else:
@@ -425,16 +426,34 @@ def upgrade_all():
     Thread(target=lambda: upgrade_instance(6)).start()
     Thread(target=lambda: upgrade_instance(7)).start()
     Thread(target=lambda: upgrade_instance(8)).start()
-    Thread(target=lambda: upgrade_instance(9)).start()
-    Thread(target=lambda: upgrade_instance(10)).start()
-    Thread(target=lambda: upgrade_instance(11)).start()
-    Thread(target=lambda: upgrade_instance(12)).start()
-    Thread(target=lambda: upgrade_instance(13)).start()
+    # Thread(target=lambda: upgrade_instance(9)).start()
+    # Thread(target=lambda: upgrade_instance(10)).start()
+    # Thread(target=lambda: upgrade_instance(11)).start()
+    # Thread(target=lambda: upgrade_instance(12)).start()
+    # Thread(target=lambda: upgrade_instance(13)).start()
 
 
 if __name__ == "__main__":
     upgrade_all()
-    # bot = get_bot(1)
+    # bot = get_bot(2)
+    # print(bot.task.findNextChar())
+    # bot1 = get_bot(0)
+
+    # print(id(bot.adb.images)==id(bot1.adb.images))
+    # while True:
+    #     print("Asking screencap")
+    #     pil_image = bot.adb.get_curr_device_screen_img()
+    #     print("Screencap received")
+    #     source = array(pil_image)
+    #     print("Screencap converted to np array")
+    #     source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
+    #     print("Reading academy.png")
+    #     img_to_find = cv2.imread('resources/academy.png')
+    #     print("Read academy.png")
+    #     result = cv2.matchTemplate(source, img_to_find, cv2.TM_CCOEFF_NORMED)
+    #     print("Template matched")
+    #     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    #     print("MinMaxLoc")
     # bot.trade.get_capacity()
     # Thread(target=lambda: rss_transfert(1,"gold",130_000_000)).start()
     # Thread(target=lambda: rss_transfert(0,"wood",400_000_000)).start()
