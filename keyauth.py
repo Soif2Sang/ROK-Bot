@@ -13,6 +13,9 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
 
+
+import Crypto
+
 try:  # Connection check
     s = requests.Session()  # Session
     s.get('https://google.com')

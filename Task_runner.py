@@ -551,9 +551,13 @@ class TaskRunner(Task):
             #self.print("")
             self.data = self.update_data()
 
-            first_profile_first_instance = True if self.sel == 1 or self.sel == '1' and self.data[self.sel]['scheduler'] else False
+            # first_profile_first_instance = True
+            #
+            # co_first = []
+            # nb_profile = 0
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
+                    # nb_profile += 1
                     self.current_profile = profile
                     self.print(f" Profile n°{profile} enabled ! ","blue")
                     #self.print("")
@@ -575,9 +579,6 @@ class TaskRunner(Task):
                         self.wait_until_connected()
 
                         self.run_game()
-                        if(first_profile_first_instance):
-                            first_profile_first_instance = False
-                            continue
                         # Characters remaining
                         nb_characters = 2
                         while boolean:
