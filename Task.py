@@ -480,7 +480,7 @@ class Task:
 
     @get_name
     def close_upgrade_popup(self):
-        for i in range(4):
+        for i in range(3):
             co = self.find_img(f"upgrade_popup_{i}")
             if co is not None:
                 self.click(uniform(1102, 1030), uniform(92, 118))
@@ -611,7 +611,8 @@ class Task:
                 api_key = data[self.sel]['API_KEY']
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
-
+            if data[self.sel]['API_KEY'] != "":
+                api_key = data[self.sel]['API_KEY']
             self.print("Trying to resolve the captcha")
 
             captcha = self.save_captcha()
