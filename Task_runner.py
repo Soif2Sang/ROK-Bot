@@ -9,6 +9,7 @@ from time import time, sleep
 
 import win32gui
 
+from Flet_time_allower import is_in_frametime, random_time_in_frametime
 from Task_alliance_donation import AllianceDonation
 from Task_alliance_help import AllianceHelp
 from Task_barb_fort import BarbFort
@@ -110,19 +111,19 @@ class TaskRunner(Task):
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         current_task = 1
+        self.check_captcha()
         for func in lib_tasks:
-            self.check_download_page()
-
-            self.leave_kd_buff()
+            self.run_game()
+            screen = self.adb.get_cv2_img()
+            screen = self.check_download_page(screen)
+            screen = self.leave_kd_buff(screen)
             #self.print("")
             self.print(f"Task {current_task}/{len(lib_tasks)}","blue")
             self.print(f"Currently executing : {self.get_current_task(func.task_name())}","blue")
             #self.print("")
             self.set_current_task(func.task_name())
-            self.run_game()
-            self.check_log_back()
+            self.check_log_back(screen)
             self.check_reconnect()
-            self.check_captcha()
             # self.set_status()
             if self.data[self.sel]['schedules'][profile].get('alliance_help', False):
                 AllianceHelp(self).run()
@@ -133,15 +134,15 @@ class TaskRunner(Task):
             try:
                 # print(f"{ func.__name__ in ['gather_rss','gather_gem'] =}")
                 if func.task_name() in ["GatherRss", "GatherGem"]:
-                    pil_image = self.adb.get_curr_device_screen_img()
-                    cv_image = self.pil_to_array(pil_image)
-                    cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+                    cv_image = self.adb.get_cv2_img()
                     cv_image = cv_image[0:100, 0:800]
                     if self.find_img(target="block_icon", source=cv_image, confidence=0.90) is None:
                         func.run()
                     else:
                         self.print("Bot detected that you got restricted","red")
                 else:
+                    if func.task_name() in ["GatherRss", "GatherGem"]:
+                        self.check_captcha()
                     func.run()
                 self.better_sleep((1, 2))
             except Exception as e:
@@ -157,7 +158,7 @@ class TaskRunner(Task):
             #     self.check_captcha()
             #     self.better_sleep((0.795, 1.2))
             # self.check_reconnect()
-
+        self.check_captcha()
     def get_available_task(self, profile:str =None):
         self.data = self.update_data()
         if profile is None:
@@ -344,7 +345,7 @@ class TaskRunner(Task):
                 final.pop(0)
         if final:
             final = final[0]
-            self.click(final[0]+uniform(-100,50),final[1]+uniform(-5,5))
+            self.click(final[0]+uniform(-100,-50),final[1]+uniform(-5,5))
 
     @get_name
     def change_character_param(self, co_first, nb_chars=0, trigger_stop = False):
@@ -359,6 +360,7 @@ class TaskRunner(Task):
                 if not trigger_stop:
                     self.run_game()
                     self.print(f"Error in character switch. Restarting the character switch..")
+                    self.check_captcha()
                     return self.change_character_param(co_first, nb_chars, trigger_stop = True)
                 while trigger_stop:
                     self.print(f"Error in character switch. Bot is now stopped","red")
@@ -555,8 +557,30 @@ class TaskRunner(Task):
             #
             # co_first = []
             # nb_profile = 0
+            can_go = None
+            when_go = None
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
+                    print(f"Profile {profile} enabled")
+                    if self.data[self.sel]['schedules'][profile]["enable_timing"]:
+                        can_go = False
+                        when_go = 0
+                        print(f"Profile {profile} enabled")
+                        for t in self.data[self.sel]['schedules'][profile]["timing"]:
+                            if is_in_frametime(t[0],t[1]):
+                                can_go = True
+                                when_go = random_time_in_frametime(t[0],t[1])
+                                self.print(f"Profile {profile} able to run")
+                                break
+                        if not can_go:
+                            print(f"The current time does not match the rules you set")
+                            sleep(5)
+                            continue
+                        if when_go:
+                            self.print("In order to mimic a player, the bot will wait a random time")
+                            self.set_timer(when_go)
+                    else:
+                        print(f"Profile {profile} no rules set")
                     # nb_profile += 1
                     self.current_profile = profile
                     self.print(f" Profile n°{profile} enabled ! ","blue")
