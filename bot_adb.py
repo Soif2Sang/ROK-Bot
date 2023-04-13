@@ -22,12 +22,6 @@ import json
 import logging
 from resources import *
 
-if not os.path.exists("user_settings.json"):
-    with open('user_settings.json', 'w') as f:
-        json.dump({}, f, indent=2)
-        print("User settings created")
-
-
 class Adb:
     def __init__(self, number, host='127.0.0.1', port=5037):
         data = get_data()
