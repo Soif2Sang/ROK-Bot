@@ -378,15 +378,14 @@ class Task:
         self.data = self.update_data()
         # print(f'{self.data.get(self.sel).get("auto_log_back"] =}')
         if cv_image is None:
-            co = self.find_img(target="already_connected")
+            cv_image = self.adb.get_cv2_img()
             # print(f'{co}')
-        else:
-            co = self.find_img(source=cv_image, target="already_connected", confidence=0.9)
-            if co is not None:
-                if cv_image is None:
-                    co = self.find_img(target="reconnect")
-                else:
-                    co = self.find_img(source=cv_image, target="reconnect", confidence=0.9)
+        co = self.find_img(source=cv_image, target="already_connected", confidence=0.9)
+        if co is not None:
+            if cv_image is None:
+                co = self.find_img(target="reconnect")
+            else:
+                co = self.find_img(source=cv_image, target="reconnect", confidence=0.9)
         if co is not None:
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_log_back', False):
 
@@ -450,12 +449,13 @@ class Task:
                     self.click(a[0], a[1])
                 sleep(10)
                 self.wait_until_connected()
-                return True
+                return self.adb.get_cv2_img()
             else:
                 self.print("Reconnection disabled","red")
                 while True:
                     self.script_pause()
                     sleep(1)
+
     @get_name
     def wait_until_connected(self) -> None:
         self.print("Script is paused until game is fully loaded..")
@@ -493,6 +493,8 @@ class Task:
         if co is not None:
             self.click(uniform(70, 270), uniform(100, 542))
             self.better_sleep((1.8, 3))
+            Source = self.adb.get_cv2_img()
+        return Source
 
     def pil_to_array(self,image):
         try:
@@ -585,7 +587,6 @@ class Task:
                 sleep(uniform(1,3))
         i = 0
         resolved = False
-        solver = None
         previous_text = self.get_text()
 
         while self.find_img(target="close_refresh_ok", confidence=0.75) is not None:
@@ -593,7 +594,9 @@ class Task:
             i+=1
             if i == 5:
                 self.print("Error, unable to resolve the captcha for 5 times in a row !")
+                self.set_status(previous_text)
                 return False
+            resolved = True
         self.set_status(previous_text)
         return resolved
 
@@ -695,10 +698,12 @@ class Task:
         if self.find_img(target="download_page", source=screen, confidence=0.8):
             self.click(uniform(1018, 1041), uniform(127, 146))
             self.better_sleep((1.925, 2.795))
+            screen = self.adb.get_cv2_img()
         elif self.find_img(target="download_icon", source=screen, confidence=0.8):
             self.click(uniform(1018, 1041), uniform(127, 146))
             self.better_sleep((1.925, 2.795))
-
+            screen = self.adb.get_cv2_img()
+        return screen
     @get_name
     def go_city(self):
         if not self.in_city():
@@ -726,6 +731,9 @@ class Task:
             self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
             self.better_sleep((1.3,2.8))
             image = self.adb.get_cv2_img()[0:322, 0:1280]
+        while (co:=self.find_img(target="close_chat", confidence=0.83)):
+            self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
+            self.better_sleep((1.3,2.8))
 
     def get_text(self):
         return self.tile.get_text()
