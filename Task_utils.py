@@ -2,6 +2,7 @@ import json
 import logging
 from datetime import datetime
 from functools import wraps
+from threading import Lock
 from time import perf_counter, sleep
 from datetime import date
 import win32gui
@@ -9,7 +10,11 @@ import win32process
 from PIL import Image
 from numpy import ndarray, array
 
+PathLock = Lock()
 
+DataLock = Lock()
+
+LogsLock = Lock()
 def current_time():
     return datetime.now().strftime("%H:%M:%S")
 
@@ -110,24 +115,28 @@ def filter_coordinate(couple: tuple[int, int]):
 
 def write(name,text:str):
     try:
-        with open(f"{name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
+        with LogsLock:
+            with open(f"{name}_logs.txt", "a+", encoding="utf-8") as logger:
+                logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
     except:
         return
 
 def get_data():
-    with open('user_settings.json',encoding='utf-8') as config_file:
-        data = json.load(config_file)
+    with DataLock:
+        with open('user_settings.json',encoding='utf-8') as config_file:
+            data = json.load(config_file)
     return data
 
 def get_path():
-    with open('path.json',encoding='utf-8') as config_file:
-        path = json.load(config_file)
+    with PathLock:
+        with open('path.json',encoding='utf-8') as config_file:
+            path = json.load(config_file)
     return path
 
 def write_data(data):
-    with open('user_settings.json', mode='w', encoding='utf-8') as f:
-        f.write(json.dumps(data))
+    with DataLock:
+        with open('user_settings.json', mode='w', encoding='utf-8') as f:
+            f.write(json.dumps(data,indent=2))
 
 def change_resource_type(place: str) -> str:
     if place == "First":
