@@ -121,9 +121,7 @@ class GatherRss(Task):
 
     @get_name
     def set_search_level(self, level: int = 10) -> None:
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image =self.pil_to_array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
             self.print(f'Cannot find the button_level')
@@ -141,7 +139,14 @@ class GatherRss(Task):
             string = string.split(":")
             self.print(f'Current level : {string[1]}')
             # self.set_text(f"[{current_time()}] Current level : {string[1]}")
-            level_to_go = level - int(string[1])
+            try:
+                level_to_go = level - int(string[1])
+            except:
+                x, y = self.find_img(target='minus_button')
+                for i in range(6):
+                    self.click(x+ uniform(0, 20),y +uniform(0, 20))
+                    self.better_sleep((0.450, 1))
+                level_to_go = level
             if level_to_go > 0:
                 word = "Increasing"
                 x, y = self.find_img(target='plus_button')
@@ -198,9 +203,7 @@ class GatherRss(Task):
         :return: False if node is free to gather
         """
         self.print("Scanning the node..")
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image =self.pil_to_array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         cropped_image = cv_image[230:480, 441:814]
         img = Image.fromarray(cropped_image)
         for i in range(img.size[0]):
@@ -404,7 +407,7 @@ class GatherRss(Task):
             self.better_sleep((1.1, 1.5))
             self.print("Cannot send the troop")
             return False
-        self.print("Troop sent !")
+        self.print("Troop sent !","green")
         return True
 
     @get_name
@@ -536,7 +539,6 @@ class GatherRss(Task):
             return
         if self.data[str(self.sel)]['schedules'][self.current_profile][node_type] == 'nothing':
             return
-        nbsearch = 0
         self.leave_city_simple()
         # self.better_sleep((2, 4))
         # Vérifie si y'a une troupe
@@ -585,7 +587,8 @@ class GatherRss(Task):
                 self.better_sleep((2.325, 5.795))
                 return "Done"
             self.better_sleep((1, 2.895))
-            resolved = self.check_captcha()
+            if not resolved:
+                resolved = self.check_captcha()
             node_type = self.next_resource_type(node_type)
             return self.run(node_type,resolved,0)
         # self.click(uniform(22, 90), uniform(625, 675))
