@@ -5,7 +5,7 @@ from random import uniform, shuffle
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_class, filter_coordinate, get_data
+from Task_utils import get_class, filter_coordinate, get_data, get_name
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -27,8 +27,8 @@ class BuyMerchant(Task):
     def task_name(self):
         return "BuyMerchant"
 
-    @get_class
-    def run(self):
+    @get_name
+    def manage_artefact_shop(self):
         co = self.find_img(target="artefact_shop", confidence=0.7)
         if co is not None:
             self.click(co[0] + uniform(10,35), co[1] + uniform(0,30))
@@ -36,21 +36,15 @@ class BuyMerchant(Task):
             if(co:=self.find_img("close_window")):
                 self.click(uniform(1100,1120),uniform(73,80))
                 self.better_sleep((1, 2))
-        co = self.find_img(target="merchant_icon", confidence=0.7)
-        if co is None:
-            return
-        if not filter_coordinate(co):
-            return
-        x, y = co[0] + uniform(0, 10), co[1] + uniform(0, 10)
-        # self.print(f'Merchant icon : {x=} {y=}')
-        self.click(x, y)
+
+
+    @get_name
+    def buy_from_shop(self):
         for y in range(2):
             for i in range(4):
                 self.better_sleep((1.8, 2.2))
                 food = self.adb.find_multiple_img("merchant_buy_with_food", 0.8)
                 wood = self.adb.find_multiple_img("merchant_buy_with_wood", 0.8)
-                # for element in wood:
-                #     food.append(element)
                 food.extend(wood)
                 shuffle(food)
                 for element in food:
@@ -65,14 +59,23 @@ class BuyMerchant(Task):
             co = self.find_img(target="free")
             if co is None:
                 break
+            self.print("Refreshing the merchant")
             x, y = co[0] + uniform(0, 50), co[1] + uniform(0, 20)
             self.click(x, y)
-        x, y = uniform(1077, 1100), uniform(64, 95)
-        self.click(x, y)
+    @get_class
+    def run(self):
+        self.manage_artefact_shop()
+        co = self.find_img(target="merchant_icon", confidence=0.7)
+        if co is None:
+            return
+        if not filter_coordinate(co):
+            return
+        self.print("Buying things from the shop")
+        self.click(co[0] + uniform(0, 10), uniform(0, 10))
+        self.buy_from_shop()
+        self.click(uniform(1077, 1100), uniform(64, 95))
         self.better_sleep((1, 1.5))
-        if (co := self.find_img(target=f"get_more_rss")) is not None:
+        if self.find_img(target=f"get_more_rss") is not None:
             self.click(uniform(1000, 1020), uniform(129, 148))
             self.better_sleep((1, 1.425))
-        while(co:=self.find_img(target="close_window")):
-            self.click(co[0] + uniform(5,10), co[1] + uniform(5,10))
-            self.better_sleep((1,1.5))
+        self.close_windows()
