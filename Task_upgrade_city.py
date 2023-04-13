@@ -1,5 +1,10 @@
 import json
 from random import uniform, choice
+from time import sleep
+
+import win32api
+import win32con
+import win32gui
 from pytesseract import pytesseract
 from Task import Task
 from Task_utils import get_class, get_name, get_data
@@ -100,6 +105,16 @@ class UpgradeCity(Task):
 
     @get_name
     def setup_view(self):
+        hwnd = win32gui.FindWindow(None, self.adb.name)
+        hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+        for _ in range(2):
+            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+            sleep(0.20)
+            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+            self.better_sleep((1.4, 2))
+        return
         x = uniform(33, 76)
         y = uniform(517, 560)
         # print(x,y)
