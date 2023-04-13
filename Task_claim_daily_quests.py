@@ -54,7 +54,11 @@ class DailyQuests(Task):
 
     @get_name
     def claim_all(self):
+        said = False
         while (co:=self.find_img("claim_quest")) is not None:
+            if not said:
+                self.print("Claiming the quests rewards")
+                said = True
             self.click(co[0] + uniform(0,30), co[1]+ uniform(0,10))
             self.better_sleep((1.725, 1.995))
 
@@ -69,6 +73,7 @@ class DailyQuests(Task):
                 self.better_sleep((1.725, 1.995))
                 self.claim_all()
                 if self.daily_objectives():
+                    self.print("Claiming daily objectives")
                     cos = [
                         [360,203],
                         [530,203],
