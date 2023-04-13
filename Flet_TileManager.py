@@ -153,127 +153,130 @@ class TileManager(ft.ListView):
 
         instances = self.get_dic_instances()
 
-
-        for key in instances:
-            default_dic = {
-                'instance': instances[str(key)]['instance'],
-                'name': instances[str(key)]['name'],
-                'host': '127.0.0.1',
-                'port': int(instances[str(key)]['port']),
-                'API_KEY': "",
-                'loop_task': False,
-                'time_to_wait_loop1': 60,
-                'time_to_wait_loop2': 110,
-                'leave_game_loop': True,
-                'scheduler': False,
-                'schedules': {}
-            }
-            for i in range(1, 4):
-                default_dic['schedules'][i] = {
-                    'enabled': False,
-                    'kingdom': 0,
-                    'city_x': 0,
-                    'city_y': 0,
-                    'radius': 30,
-                    "First": "stone",
-                    "Second": "food",
-                    "Third": "gold",
-                    "Fourth": "wood",
-                    "Fifth": "food",
-                    "Sixth": "food",
-                    "Seventh": "food",
-                    "First_level": 6,
-                    "Second_level": 6,
-                    "Third_level": 6,
-                    "Fourth_level": 6,
-                    "Fifth_level": 6,
-                    "Sixth_level": 6,
-                    "Seventh_level": 6,
-                    "rss_custom_preset": False,
-                    'auto_reconnect': True,
-                    'auto_captcha': True,
-                    'check_donation': False,
-                    'use_enhanced_buff': False,
-                    'gather_rss': False,
-                    'buy_merchant': False,
-                    'claim_daily_quests': False,
-                    'collect_ressource': False,
-                    'defeat_barbarians': False,
-                    'barbarians_level': 25,
-                    'gather_gem': False,
-                    'gem_check1': 60,
-                    'gem_check2': 120,
-                    'gem_experimental': False,
-                    'gather_gem_duration1': 60,
-                    'gather_gem_duration2': 90,
-                    'restart_game': False,
-                    'switch_character': False,
-                    'leave_game_switch_character': False,
-                    "scout_fog": False,
-                    "scout_duration1": 60,
-                    "scout_duration2": 90,
-                    "slow_mode": False,
-                    "sleep_multiplicator": 1,
-                    "auto_log_back": True,
-                    "log_back1": 5,
-                    "log_back2": 10,
-                    "claim_daily_vip": False,
-                    "claim_daily_chest": False,
-                    "claim_campaign": False,
-                    "start_fort": False,
-                    "rally_type": 'cav',
-                    "rally_time": 10,
-                    "rally_radius": 20,
-                    "rally_count": 2,
-                    "mauraudeurs_forts": False,
-                    "heal_troop": False,
-                    "healing_building_x": 980,
-                    "healing_building_y": 267,
-                    "healing_count": 1500,
-                    "material_production": False,
-                    "material_choice_1": "leather",
-                    "material_choice_2": "leather",
-                    "material_choice_3": "leather",
-                    "material_choice_4": "leather",
-                    "material_choice_5": "leather",
-                    "alliance_help": False,
-                    "train_troops" : False,
-                    "infantry_camp" : [],
-                    "cavalry_camp": [],
-                    "archery_camp": [],
-                    "siege_camp": [],
-                    "hospital": None,
-                    "scout_camp": [],
-                    "infantry_enable":True,
-                    "cavalry_enable": True,
-                    "archery_enable": True,
-                    "siege_enable": True,
-                    "infantry_tier":"t1",
-                    "cavalry_tier": "t1",
-                    "archery_tier": "t1",
-                    "siege_tier": "t1",
-                    "city_transfer" : [],
-                    "transfer_enable": False,
-                    "transfer_food" : 0,
-                    "transfer_wood": 0,
-                    "transfer_stone": 0,
-                    "transfer_gold": 0
-                }
-            if str(key) not in data:
-                default_dic['schedules'][1]['enabled'] = True
-                data[str(key)] = default_dic
+        default_dic = {
+            'instance': "",
+            'name': "",
+            'host': '127.0.0.1',
+            'port': 0,
+            'API_KEY': "",
+            'loop_task': False,
+            'time_to_wait_loop1': 60,
+            'time_to_wait_loop2': 110,
+            'leave_game_loop': True,
+            'scheduler': False,
+            'schedules': {}
+        }
+        default_profile = {
+            'timing' : [],
+            'enable_timing' : False,
+            'enabled': False,
+            'kingdom': 0,
+            'city_x': 0,
+            'city_y': 0,
+            'radius': 30,
+            "First": "stone",
+            "Second": "food",
+            "Third": "gold",
+            "Fourth": "wood",
+            "Fifth": "food",
+            "Sixth": "food",
+            "Seventh": "food",
+            "First_level": 5,
+            "Second_level": 5,
+            "Third_level": 5,
+            "Fourth_level": 5,
+            "Fifth_level": 5,
+            "Sixth_level": 4,
+            "Seventh_level": 4,
+            "rss_custom_preset": False,
+            'auto_reconnect': True,
+            'auto_captcha': True,
+            'check_donation': False,
+            'use_enhanced_buff': False,
+            'gather_rss': False,
+            'buy_merchant': False,
+            'claim_daily_quests': False,
+            'collect_ressource': False,
+            'defeat_barbarians': False,
+            'barbarians_level': 25,
+            'gather_gem': False,
+            'gem_check1': 60,
+            'gem_check2': 120,
+            'gem_experimental': False,
+            'gather_gem_duration1': 60,
+            'gather_gem_duration2': 90,
+            'restart_game': False,
+            'switch_character': False,
+            'leave_game_switch_character': False,
+            "scout_fog": False,
+            "scout_duration1": 60,
+            "scout_duration2": 90,
+            "slow_mode": False,
+            "sleep_multiplicator": 1,
+            "auto_log_back": True,
+            "log_back1": 5,
+            "log_back2": 10,
+            "claim_daily_vip": False,
+            "claim_daily_chest": False,
+            "claim_campaign": False,
+            "start_fort": False,
+            "rally_type": 'cav',
+            "rally_time": 10,
+            "rally_radius": 20,
+            "rally_count": 2,
+            "mauraudeurs_forts": False,
+            "heal_troop": False,
+            "healing_building_x": 980,
+            "healing_building_y": 267,
+            "healing_count": 1500,
+            "material_production": False,
+            "material_choice_1": "leather",
+            "material_choice_2": "leather",
+            "material_choice_3": "leather",
+            "material_choice_4": "leather",
+            "material_choice_5": "leather",
+            "alliance_help": False,
+            "train_troops": False,
+            "infantry_camp": [],
+            "cavalry_camp": [],
+            "archery_camp": [],
+            "siege_camp": [],
+            "hospital": [],
+            "scout_camp": [],
+            "infantry_enable": True,
+            "cavalry_enable": True,
+            "archery_enable": True,
+            "siege_enable": True,
+            "infantry_tier": "t1",
+            "cavalry_tier": "t1",
+            "archery_tier": "t1",
+            "siege_tier": "t1",
+            "city_transfer": [],
+            "transfer_enable": False,
+            "transfer_food": 0,
+            "transfer_wood": 0,
+            "transfer_stone": 0,
+            "transfer_gold": 0
+        }
+        for i in range(1, 4):
+            default_dic['schedules'][i] = default_profile
+        for instance in instances:
+            if str(instance) not in data:
+                data[str(instance)] = default_dic
+                data[str(instance)]['schedules'][1]['enabled'] = True
             else:
-                for key2 in default_dic:
-                    if key2 not in data[str(key)]:
-                        data[str(key)][key2] = default_dic[key2]
+                for key in default_dic:
+                    if key not in data[str(instance)]:
+                        data[str(instance)][key] = default_dic[key]
 
-                for key2 in default_dic['schedules'][1]:
+                for key in default_profile:
                     for i in range(1, 4):
-                        if key2 not in data[str(key)]['schedules'][str(i)]:
-                            data[str(key)]['schedules'][str(i)][key2] = default_dic['schedules'][1][key2]
-            data[str(key)]['instance'] = instances[str(key)]['instance']
-            data[str(key)]['name'] = instances[str(key)]['name']
-            data[str(key)]['port'] = int(instances[str(key)]['port'])
+                        if key not in data[str(instance)]['schedules'][str(i)]:
+                            data[str(instance)]['schedules'][str(i)][key] = default_profile[key]
+
+            data[str(instance)]['instance'] = instances[str(instance)]['instance']
+            data[str(instance)]['name'] = instances[str(instance)]['name']
+            data[str(instance)]['port'] = int(instances[str(instance)]['port'])
 
         write_data(data)
         instances = self.get_all_vms_running()
