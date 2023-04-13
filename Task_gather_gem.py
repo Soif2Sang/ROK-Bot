@@ -54,12 +54,14 @@ class GatherGem(Task):
                 path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
                 if os.path.isfile(path):
                     break
+
             path2 = path.replace("cfg", "json")
             shutil.copy(path, path2)
 
-            path_json = get_path()
-            for element in path_json['ControlSchemes']:
-                if element["Name"] == "Custom":
+            with open(path2,encoding='utf-8') as config_file:
+                macro_json = json.load(config_file)
+            for element in macro_json['ControlSchemes']:
+                if element["Selected"]:
                     # print(element["Name"])
                     for macro in element["GameControls"]:
                         # print(macro)
@@ -73,7 +75,7 @@ class GatherGem(Task):
                             macro["Y1"] = y + 0.64
                             macro["Y2"] = y + 43.42
             with open(path2, 'w', encoding="UTF-8") as outfile:
-                json.dump(path_json, outfile, ensure_ascii=False)
+                json.dump(macro_json, outfile, ensure_ascii=False)
             shutil.copy(path2, path)
 
         except Exception as e:
@@ -390,7 +392,7 @@ class GatherGem(Task):
                             self.check_if_kill()
                             self.click(x, y)
                             self.better_sleep((0.5, 0.7))
-                            self.print("New Troop sent !")
+                            self.print("New Troop sent !","green")
                             return True
 
                     # if self.find_img(target="choose_right", confidence=0.8):
@@ -409,7 +411,7 @@ class GatherGem(Task):
                 self.click(x, y)
                 self.check_if_kill()
                 self.better_sleep((0.5, 0.7))
-                self.print("New Troop sent !")
+                self.print("New Troop sent !","green")
                 return True
             co = self.find_img(target="march_bar")
             if co is not None and self.free_troop_gem():
@@ -417,11 +419,11 @@ class GatherGem(Task):
                 self.check_if_kill()
                 self.better_sleep((0.5, 0.7))
                 return self.send_new_troop(deadstop=deadstop + 1)
-            self.print("Unable to send a new troop")
+            self.print("Unable to send a new troop","red")
             return False
         except Exception as e:
             traceback.print_exc()
-            self.print("Error sending a new march to the gem node !")
+            self.print("Error sending a new march to the gem node !","red")
 
     @get_name
     def send_nearest_troop_gem(self, deadstop=0) -> bool:
@@ -483,7 +485,7 @@ class GatherGem(Task):
                 self.click(x=uniform(1110, 1127), y=uniform(30, 55))
                 self.better_sleep((0.9, 1.3))
                 return self.send_new_troop()
-            self.print("Nearest troop sent to the node..")
+            self.print("Nearest troop sent to the node..","green")
             return True
         except Exception as e:
             traceback.print_exc()
@@ -632,7 +634,7 @@ class GatherGem(Task):
                         cv_image = screen[0:100, 0:800]
                         if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
                             self.print("Bot detected the block icon, now cancelling the function..")
-                            self.block = False
+                            self.block = True
                             return
 
                         if self.find_cross():
@@ -804,6 +806,9 @@ class GatherGem(Task):
         if random() > 0.4:
             self.check_download_page(screen)
             self.leave_kd_buff(screen)
+
+        if random() > 0.9:
+            self.close_windows()
 
         cropped_image = screen[616:710, 1168:1270]
 
