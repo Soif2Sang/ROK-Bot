@@ -3,6 +3,8 @@ import multiprocessing
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+
+import Flet_time_allower
 from Flet_row_material import FletRowMaterial
 from Flet_row_rss import FletRowRss
 from Flet_col_transfer import FletColumnRss
@@ -26,9 +28,12 @@ class SettingContainer(ft.Container):
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.color_choice = color_bank[self.profile_index]
-        self.content = ft.ListView(height=500, expand=0, padding=1, )
+        self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300,spacing=2)
+        self.init()
 
 
+
+    def init(self):
         self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
         self.create_normal_switch("collect_ressource", "Collect city rss")
@@ -59,42 +64,10 @@ class SettingContainer(ft.Container):
         self.create_advanced_switch("scheduler", "Profiles", self.page_profile)
 
         self.content.controls.append(ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'], on_change=lambda e: self.submit(e, 'API_KEY', str)))
-
 
     def reset(self):
-        self.clean()
-        self.content = ft.ListView(height=500, expand=0, padding=1, )
-        self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
-        self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
-        self.create_normal_switch("collect_ressource", "Collect city rss")
-        self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
-        self.create_normal_switch("buy_merchant", "Buy merchant")
-        self.create_normal_switch("check_donation", "Alliance donation")
-        self.create_advanced_switch("material_production", "Material Production", self.page_materials)
-        self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
-        self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
-        self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
-        self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
-        self.create_normal_switch("claim_campaign", "Claim Campaign Rewards")
-        self.create_normal_switch("alliance_help", "Alliance Help")
-        self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
-        self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
-        self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
-        self.create_advanced_switch("transfer_enable", "Rss Transfer", self.page_transfer)
-
-        self.content.controls.append(ft.Divider())
-
-        self.create_normal_switch("auto_reconnect", "Auto reconnection")
-        self.create_normal_switch("auto_captcha", "Resolve captchas")
-        self.create_slow_mode()
-        self.create_advanced_switch("switch_character", "Characters switching", self.page_character)
-        self.create_advanced_switch("auto_log_back", "Log back from other device", self.page_logback)
-
-        self.create_advanced_switch("loop_task", "Re-do Tasks", self.page_redo)
-        self.create_advanced_switch("scheduler", "Profiles", self.page_profile)
-
-        self.content.controls.append(ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'], on_change=lambda e: self.submit(e, 'API_KEY', str)))
-
+        self.content.clean()
+        self.init()
         self.page.update()
 
     def submit(self, e, keyword, method):
@@ -607,14 +580,17 @@ class SettingContainer(ft.Container):
         )
         self.content.controls.append(ft.Divider(), )
         self.content.controls.extend([
-
-            ft.Switch(
-                label="Profile n°1",
-                active_track_color="#3b8ed0",
-                value=True if self.data[str(self.instance_index)]['schedules'][str(1)][
-                    "enabled"] else False,
-                on_change=lambda _: self.reverse_keyword("enabled", 1)
-            ),
+            ft.Row(
+                controls=[ft.Switch(
+                    label="Profile n°1",
+                    active_track_color="#3b8ed0",
+                    value=True if self.data[str(self.instance_index)]['schedules'][str(1)][
+                        "enabled"] else False,
+                    on_change=lambda _: self.reverse_keyword("enabled", 1)
+                ),
+                ft.ElevatedButton(text="Settings",on_click=lambda _:multiprocessing.Process(target=Flet_time_allower.start, args=(self.instance_index, "1")).start())
+            ]),
+            ft.Row(controls=[
             ft.Switch(
                 label="Profile n°2",
                 active_track_color="#ba4543",
@@ -622,13 +598,21 @@ class SettingContainer(ft.Container):
                     "enabled"] else False,
                 on_change=lambda _: self.reverse_keyword("enabled", 2)
             ),
+            ft.ElevatedButton(text="Settings",
+                              on_click=lambda _: multiprocessing.Process(target=Flet_time_allower.start,
+                                                                         args=(self.instance_index, "2")).start())]),
+            ft.Row(controls=[
             ft.Switch(
                 label="Profile n°3",
                 active_track_color="#dec433",
                 value=True if self.data[str(self.instance_index)]['schedules'][str(3)][
                     "enabled"] else False,
                 on_change=lambda _: self.reverse_keyword("enabled", 3)
-            )
+            ),
+            ft.ElevatedButton(text="Settings",
+                              on_click=lambda _: multiprocessing.Process(target=Flet_time_allower.start,
+                                                                         args=(self.instance_index, "3")).start())])
+
         ]
         )
         self.update()
