@@ -2,7 +2,7 @@ import json
 
 import flet as ft
 
-from Task_utils import get_data
+from Task_utils import get_data, write_data
 
 
 class Logger(ft.ListView):
@@ -11,8 +11,7 @@ class Logger(ft.ListView):
         data = get_data()
         if "interface" not in data:
             data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
-        with open('user_settings.json', 'w') as f:
-            json.dump(data, f, indent=2)
+        write_data(data)
         self.auto_scroll= data["interface"]["auto_scroll"]
         self.parent = frame
         self.page = page
@@ -39,8 +38,7 @@ class LoggerUpgrade(ft.ListView):
         data = get_data()
         if "interface" not in data:
             data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
-        with open('user_settings.json', 'w') as f:
-            json.dump(data, f, indent=2)
+        write_data(data)
         self.auto_scroll= True
         self.page= page
 

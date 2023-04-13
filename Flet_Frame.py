@@ -4,7 +4,7 @@ import flet as ft
 
 from Flet_Logger import Logger
 from Flet_Setting import SettingContainer
-from Task_utils import get_data
+from Task_utils import get_data, write_data
 
 
 class InterfaceSettings(ft.Tab):
@@ -14,8 +14,7 @@ class InterfaceSettings(ft.Tab):
         data = get_data()
         if "interface" not in data:
             data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
-        with open('user_settings.json', 'w') as f:
-            json.dump(data, f, indent=2)
+        write_data(data)
         self.content = ft.Column(
             controls=[        ft.Switch(
             label="Logger autoscroll",
@@ -30,8 +29,7 @@ class InterfaceSettings(ft.Tab):
         
         data = get_data()
         data["interface"][keyword] = not data["interface"][keyword]
-        with open('user_settings.json', 'w') as f:
-            json.dump(data, f, indent=2)
+        write_data(data)
         if keyword == 'auto_scroll':
             for frame in self.page.frames:
                 self.page.frames[frame].logger.auto_scroll = data["interface"][keyword]

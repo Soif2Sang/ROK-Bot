@@ -15,6 +15,8 @@ import Flet_main_interface
 from Flet_Path import find_file_in_all_drives
 from Task_utils import get_data, get_path, write_data
 from keyauth import api
+from pathlib import Path
+
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -38,7 +40,7 @@ def find_window(window_title):
 class LoginButton(ft.FilledButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.keyauthapp:api = None
+        self.keyauthapp:api | None= None
 
     def is_str_valid(self, username, password):
         for element in ['#', "$", "&", "|", "\0",
@@ -64,25 +66,32 @@ class LoginButton(ft.FilledButton):
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
             main(self.page)
-            sys.exit()
-            return False
-
-        if self.keyauthapp.login(user=username, password=password,page=self.page):
-            date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-            heures = date_brut.split('-')
-            future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-            diff = future - date.today()
-            self.page.title = f"Rok Bot - {diff.days} Days left"
-            self.page.update()
-            sleep(24 * 3600)
-            return self.login_schedule(username, password)
-        else:
-            self.page.clean()
-            main(self.page)
-            for element in self.page.tile_manager.tiles.values():
-                element.started = False
-                element.stopped = False
-            self.page.update()
+            try:
+                os._exit(1)
+            except:
+                sys.exit(1)
+        try:
+            if self.keyauthapp.login(user=username, password=password,page=self.page):
+                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
+                heures = date_brut.split('-')
+                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
+                diff = future - date.today()
+                self.page.title = f"Rok Bot - {diff.days} Days left"
+                self.page.update()
+                sleep(24 * 3600)
+                return self.login_schedule(username, password)
+            else:
+                self.page.clean()
+                main(self.page)
+                for element in self.page.tile_manager.tiles.values():
+                    element.started = False
+                    element.stopped = False
+                self.page.update()
+        except:
+            try:
+                os._exit(1)
+            except:
+                sys.exit(1)
 
         #     traceback.print_exc()
         #     self.pop_banner("Problem occurred, please try again")
@@ -153,9 +162,8 @@ class LoginButton(ft.FilledButton):
 def main(page: ft.Page):
     try:
         if not os.path.exists("user_settings.json"):
-            with open('user_settings.json', 'w') as f:
-                json.dump({}, f, indent=2)
-                print("User settings created")
+            write_data({})
+            print("User settings created")
     except:
         pass
     path = get_path()
