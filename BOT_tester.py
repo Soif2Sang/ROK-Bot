@@ -1,14 +1,13 @@
 
 from threading import Thread
 
-import customtkinter
 
 from Task import Task
 from Task_academy_research import AcademyResearch
 from Task_alliance_donation import AllianceDonation
 from Task_claim_daily_quests import DailyQuests
 from Task_daily_vip import DailyVip
-from Task_rss_transfert import RssTransfert
+from Task_rss_transfert import RssTransfer
 from Task_runner import TaskRunner
 from Task_upgrade_city import UpgradeCity
 from bot_adb import *
@@ -24,6 +23,7 @@ class Frame():
         self.pause = False
         self.stop = False
         self.sel = sel
+        self.number = sel
 
 class Bot():
     def __init__(self,adb):
@@ -39,7 +39,7 @@ class Bot():
         self.quests = DailyQuests(self.main_task)
         self.vip = DailyVip(self.main_task)
         self.alliance = AllianceDonation(self.main_task)
-        self.transfert = RssTransfert(self.main_task)
+        self.transfert = RssTransfer(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -176,23 +176,15 @@ def create_instance(number:int, master):
     bot.adb.connect_to_device()
     bot.task.print = lambda txt: print(txt)
     bot.task.current_profile="1"
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.pause = False
     frame.stop = False
     bot.task.frame = frame
     # bot.task.setup_view()
     # bot.task.better_sleep((0.9, 1.2))
     return bot
-    while 0:
-        while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
-            bot.upgrade.run()
-        else:
-            sleep(30)
-            bot.upgrade.help_alliance()
-    bot.task.dynamique_city_upgrade()
-    bot.task.kill_emulator()
 
 def upgrade_instance(number:int, master):
     adb = Adb(number)
@@ -224,10 +216,10 @@ def upgrade_instance(number:int, master):
 
 
     bot.task.current_profile="1"
-    # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master, fg_color="white")
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    # object()
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
@@ -278,10 +270,10 @@ def quest_instance(number:int, master):
 
 
     bot.task.current_profile="1"
-    # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    # object()
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
@@ -311,10 +303,10 @@ def research_instance(number:int, master):
     bot.research.status = lambda txt: print(txt)
     bot.research.script_pause = 5
     bot.task.current_profile="1"
-    # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    # object()
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
@@ -328,8 +320,7 @@ def research_instance(number:int, master):
 
 
 if __name__ == "__main__":
-    master = customtkinter.CTk()
-    adb = Adb(1)
+    adb = Adb(2)
     bot = Bot(adb)
     bot.adb.connect_to_device()
 
@@ -339,20 +330,17 @@ if __name__ == "__main__":
     bot.main_task.status = lambda txt: print(txt)
     bot.main_task.script_pause = lambda: print("")
     bot.task.current_profile="1"
-    master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master, fg_color="white")
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
     frame.update_label2 = lambda x,_: print(x)
+    frame.number = adb.number
     bot.task.frame.write = lambda _: _
     bot.task.frame = frame
     bot.task.frame.pause = False
 
-    bot.transfert.run()
-
-
-    master.mainloop()
-
+    print(f"{bot.adb.find_img(target='tech', confidence=0.97) = }")
+    print(f"{bot.adb.find_img(target='tech_2', confidence=0.97) = }")

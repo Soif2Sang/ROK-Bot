@@ -1,6 +1,5 @@
 from threading import Thread
 import flet as ft
-import customtkinter
 
 from Task import Task
 from Task_academy_research import AcademyResearch
@@ -184,24 +183,15 @@ def create_instance(number:int, master):
     bot.adb.connect_to_device()
     bot.task.print = lambda txt: print(txt)
     bot.task.current_profile="1"
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.pause = False
     frame.stop = False
     bot.task.frame = frame
     # bot.task.setup_view()
     # bot.task.better_sleep((0.9, 1.2))
     return bot
-    while 0:
-        while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
-            bot.upgrade.run()
-        else:
-            sleep(30)
-            bot.upgrade.help_alliance()
-    bot.task.dynamique_city_upgrade()
-    bot.task.kill_emulator()
-
 
 class FakeText():
     def __init__(self):
@@ -318,9 +308,9 @@ def quest_instance(number:int, master):
 
     bot.task.current_profile="1"
     # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
@@ -351,9 +341,9 @@ def research_instance(number:int, master):
     bot.research.script_pause = 5
     bot.task.current_profile="1"
     # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
@@ -434,8 +424,19 @@ def upgrade_all():
 
 
 if __name__ == "__main__":
-    upgrade_all()
-    # bot = get_bot(2)
+    # upgrade_all()
+    bot = get_bot(0)
+    hwnd = win32gui.FindWindow(None, bot.adb.name)
+    hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+    for _ in range(2):
+        win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+        win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+        sleep(0.20)
+        win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+        win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+        bot.task.better_sleep((1.4, 2))
+    print(bot.upgrade.free_worker())
+
     # print(bot.task.findNextChar())
     # bot1 = get_bot(0)
 
