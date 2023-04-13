@@ -36,6 +36,7 @@ class AllianceDonation(Task):
             co = self.find_img(source=source, target="alliance_flag2", confidence=0.9)
         if co is None:
             return
+        self.print("Collecting the alliance resources")
         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 10))
         self.better_sleep((1.0, 1.395))
         x, y = uniform(955, 1067), uniform(122, 150)
@@ -63,13 +64,18 @@ class AllianceDonation(Task):
         if alliance_tech_logo is not None:
             self.click(alliance_tech_logo[0] + uniform(0, 30), alliance_tech_logo[1] + uniform(0, 15))
             self.better_sleep((2, 3))
-            donation_logo = self.find_img(target="tech")
-
+            donation_logo = self.find_img(target="tech_2",confidence=0.97)
+            # if donation_logo is None:
+                # donation_logo = self.find_img(target="tech_2",confidence=0.97)
             if donation_logo is not None:
                 self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
                 self.better_sleep((1, 2))
                 # Holding click on the donation button
+                talked = False
                 while self.find_img(target="donate_button"):
+                    if not talked:
+                        self.print("Donating to the alliance")
+                        talked = True
                     x, y, arg = uniform(910, 1040), uniform(550, 580), randint(2500, 3475)
                     self.swipe_arg(x, y, x, y, arg)
                     self.better_sleep((0.7, 1.3))
