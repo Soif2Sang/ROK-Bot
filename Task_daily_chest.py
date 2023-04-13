@@ -72,6 +72,7 @@ class DailyChest(Task):
                 self.better_sleep((1.7, 3))
                 open_chests = self.adb.find_multiple_img("open_chest")
                 for open in open_chests:
+                    self.print("Opening a chest..")
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
                     self.better_sleep((5, 8))
                     while confirm := self.find_img(target="confirm_tavern"):
