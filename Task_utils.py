@@ -1,17 +1,34 @@
+import json
 import logging
 from datetime import datetime
 from functools import wraps
-from time import perf_counter
-
+from threading import Lock
+from time import perf_counter, sleep
+from datetime import date
 import win32gui
 import win32process
 from PIL import Image
-from numpy import ndarray
+from numpy import ndarray, array
 
+PathLock = Lock()
 
+DataLock = Lock()
+
+LogsLock = Lock()
 def current_time():
     return datetime.now().strftime("%H:%M:%S")
 
+def string_to_co(string):
+    string = string.replace("coordinates:", "")
+    string = string.replace("x=", "")
+    string = string.replace("y=", "")
+    tmp = string.split(';')
+    boolean = True
+    for i in range(len(tmp)):
+        tmp[i] = tmp[i].split(",")
+        tmp[i][0] = int(tmp[i][0]) + 441
+        tmp[i][1] = int(tmp[i][1]) + 101
+    return tmp
 
 def get_window_pid(title):
     hwnd = win32gui.FindWindow(None, title)
@@ -26,12 +43,13 @@ def get_time(func):
         func_output = func(self, *args, **kwargs)
         end_time = perf_counter()
 
-        if func.__name__ == "check_resolve":
-            print(f'[ {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
+        if func.__name__ == "check_captcha":
+            print(f'[ {date.today()} {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
-            with open(f"{self.name}_logs.txt", "a+") as logger:
+            # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
                 # logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
-                logger.write(f"[ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
+                # logger.write(f"[ {date.today()} ] [ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
+            write(self.name,f"INFO : Verification made in {(end_time - start_time):0.1f}\n" )
         return func_output
 
     return wrapper
@@ -57,9 +75,10 @@ def get_name(func):
         # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        with open(f"{self.name}_logs.txt", "a+") as logger:
-            logger.write(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
-        print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+        write(self.name, f"FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+        # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+        #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
+        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         func_output = func(self, *args, **kwargs)
         return func_output
 
@@ -71,10 +90,11 @@ def get_class(func):
         # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        with open(f"{self.name}_logs.txt", "a+") as logger:
-            logger.write(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
+        write(self.name, f"FUNCTION : {self.task_name()}\n")
+        # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
+        #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
         # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
-        print(f"[ {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
+        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)
         return func_output
 
@@ -93,6 +113,30 @@ def filter_coordinate(couple: tuple[int, int]):
         return False
     return True
 
+def write(name,text:str):
+    try:
+        with LogsLock:
+            with open(f"{name}_logs.txt", "a+", encoding="utf-8") as logger:
+                logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
+    except:
+        return
+
+def get_data():
+    with DataLock:
+        with open('user_settings.json',encoding='utf-8') as config_file:
+            data = json.load(config_file)
+    return data
+
+def get_path():
+    with PathLock:
+        with open('path.json',encoding='utf-8') as config_file:
+            path = json.load(config_file)
+    return path
+
+def write_data(data):
+    with DataLock:
+        with open('user_settings.json', mode='w', encoding='utf-8') as f:
+            f.write(json.dumps(data,indent=2))
 
 def change_resource_type(place: str) -> str:
     if place == "First":
@@ -103,3 +147,4 @@ def change_resource_type(place: str) -> str:
         return "Fourth"
     elif place == "Fourth":
         return "Done"
+
