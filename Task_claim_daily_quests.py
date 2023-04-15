@@ -8,24 +8,22 @@ from numpy import array
 from pytesseract import pytesseract
 
 from Task import Task, get_name
-from Task_utils import get_class
+from Task_utils import get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class DailyQuests(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        super().__init__(MainTask.tile)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -34,9 +32,10 @@ class DailyQuests(Task):
 
     @get_name
     def available_quests(self):
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        # pil_image = self.adb.get_curr_device_screen_img()
+        # cv_image = array(pil_image)
+        # cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         img = Image.fromarray(cv_image)
         # print(img.getpixel((75, 126)))
         # print(img.getpixel((65, 135)))
@@ -44,9 +43,7 @@ class DailyQuests(Task):
 
     @get_name
     def daily_objectives(self):
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         img = Image.fromarray(cv_image)
         return img.getpixel((62, 265))[0]>220 or img.getpixel((62, 265))[2]>220
 
@@ -57,7 +54,11 @@ class DailyQuests(Task):
 
     @get_name
     def claim_all(self):
-        while (co:=self.adb.find_img("claim_quest")) is not None:
+        said = False
+        while (co:=self.find_img("claim_quest")) is not None:
+            if not said:
+                self.print("Claiming the quests rewards")
+                said = True
             self.click(co[0] + uniform(0,30), co[1]+ uniform(0,10))
             self.better_sleep((1.725, 1.995))
 
@@ -72,6 +73,7 @@ class DailyQuests(Task):
                 self.better_sleep((1.725, 1.995))
                 self.claim_all()
                 if self.daily_objectives():
+                    self.print("Claiming daily objectives")
                     cos = [
                         [360,203],
                         [530,203],

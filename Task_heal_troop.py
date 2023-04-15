@@ -8,24 +8,23 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_name, get_class, filter_coordinate
+from Task_alliance_help import AllianceHelp
+from Task_utils import get_name, get_class, filter_coordinate, write, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class HealTroop(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        super().__init__(MainTask.tile)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
-        self.adb = MainTask.frame.adb
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -36,7 +35,7 @@ class HealTroop(Task):
         for i in range(2):
             buttons = self.adb.find_multiple_img("healing_scroll")
             pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = array(pil_image)
+            cv_image =self.pil_to_array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
             # cv2.imwrite("timer.png", cropped_image)
             for button in buttons:
@@ -63,19 +62,6 @@ class HealTroop(Task):
         self.swipe(uniform(740, 780), uniform(140, 150), uniform(740, 780), uniform(630, 650))
         self.better_sleep((1, 1.5))
 
-    @get_name
-    def click_help(self):
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        img_to_find = cv2.imread('resources\\help.png')
-        result = cv2.matchTemplate(cv_image, img_to_find, cv2.TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-        if max_val > 0.7:
-            self.print("Clicking on helps..")
-            return self.click(max_loc[0] + uniform(5, 20), max_loc[1] + uniform(5, 20))
-        else:
-            return
 
     @get_class
     def run(self):
@@ -91,22 +77,19 @@ class HealTroop(Task):
                 shuffle(tier_icons)
                 self.click(tier_icons[0][0] + uniform(-5, 20), tier_icons[0][1] + uniform(-15, 10))
                 self.better_sleep((1, 1.8))
-            self.print("après les tier_icons")
+            write(self.name,"après les tier_icons")
             # print(f"{self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') =}")
-            healing_hut = (
-                self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') + uniform(-5, 5),
-                self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_y') + uniform(-5, 5)
-            )
-            self.print(f"Healing building placement (randomised) : {healing_hut}")
+            healing_hut =  self.data[str(self.sel)]['schedules'][self.current_profile]['hospital']
+            write(self.name,f"Healing building placement (randomised) : {healing_hut}")
             self.click(healing_hut[0], healing_hut[1])
             # print("après les healing_hut")
-            co = self.adb.find_img(target="heal_icon")
+            co = self.find_img(target="heal_icon")
             if co is None:
-                co = self.adb.find_img(target="heal_icon")
+                co = self.find_img(target="heal_icon")
             if co is None:
                 self.print(f"Healing not found")
                 return
-            if self.adb.find_img(target="speedup_healing") is not None:
+            if self.find_img(target="speedup_healing") is not None:
                 self.print("Speed-up button found, can't heal more troops..")
                 return
             self.print(f"{co =}")
@@ -114,11 +97,11 @@ class HealTroop(Task):
 
             # print(f'[ {current_time()} ] [ {self.name} ] Bot will now look for the healing icon..')
             # logging.info(f"[{self.name}] Bot will now look for the healing icon..")
-            # while self.adb.find_img("heal_icon") is None:
+            # while self.find_img("heal_icon") is None:
             #     sleep(uniform(30,40))
             # print(f'[ {current_time()} ] [ {self.name} ] Healing icon found')
             # logging.info(f"[{self.name}] Healing icon found")
-            # x,y = self.adb.find_img("heal_icon")
+            # x,y = self.find_img("heal_icon")
             # self.click(x,y)
             self.better_sleep((1.5, 2.4))
             cv_image = self.adb.get_cv2_img()
@@ -134,9 +117,9 @@ class HealTroop(Task):
             if int(self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_count')) > int(nb_heal[0]):
                 self.click(uniform(880, 1018), uniform(560, 600))
                 self.better_sleep((1, 1.5))
-                self.click_help()
+                AllianceHelp(self).run()
                 return
-            if self.adb.find_img(target="healing_scroll") is None:
+            if self.find_img(target="healing_scroll") is None:
                 self.click(uniform(1083, 1098), uniform(71, 92))
                 return self.better_sleep((1.5, 2.4))
             self.clear_all_healing()
@@ -152,3 +135,6 @@ class HealTroop(Task):
             self.click(uniform(880, 1018), uniform(560, 600))
             self.better_sleep((1, 1.5))
             self.click_help()
+
+    def click_help(self):
+        AllianceHelp(self).run()
