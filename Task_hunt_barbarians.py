@@ -329,7 +329,7 @@ class HuntBarbarians(Task):
 
     @get_class
     def run(self):
-        wanted_level = self.data.get(self.sel).get('schedules').get(self.current_profile).get("barbarians_level", 10)
+        wanted_level = 24
         hunter_selection = False
         self.leave_city()
         self.better_sleep((1, 1.3))
