@@ -47,6 +47,7 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
         self.create_normal_switch("claim_campaign", "Claim Campaign Rewards")
         self.create_normal_switch("alliance_help", "Alliance Help")
+        # self.create_normal_switch("hunt_barbarians", "Alliance Help")
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
         self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
         self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)

@@ -544,7 +544,6 @@ class TaskRunner(Task):
         self.adb.connect_to_device()
         self.data = self.update_data()
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
-
         starting_time = time()
         for i in range(loop_task):
             loop_time = time()
