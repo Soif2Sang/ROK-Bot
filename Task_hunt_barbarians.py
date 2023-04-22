@@ -127,6 +127,7 @@ class HuntBarbarians(Task):
             self.better_sleep((0.5, 0.7))
             if self.find_img(target="troops_march_button"):
                 self.print("Unable to send a new troop")
+                self.close_windows()
                 return False
             self.print("New Troop sent !")
             return True
@@ -215,28 +216,30 @@ class HuntBarbarians(Task):
 
     @get_name
     def set_search_level(self, level: int = 10) -> None:
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = self.pil_to_array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        level = int(level)
+        cv_image = self.adb.get_cv2_img()
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
             self.print(f'Cannot find the button_level')
-            # self.set_text(f"[{current_time()}] Cannot find the level button")
             self.click_loop()
-            self.better_sleep((1, 1.2))
+            self.better_sleep((1, 1.7))
         else:
-            # x,y = uniform(225,285) , uniform(607,667)
-            # self.click(x,y)
-            self.better_sleep((1, 1.3))
+
             cv_image = cv_image[co[1] - 30:co[1], co[0] - 40:co[0] + 40]
-            # cv2.imwrite("level.png", cv_image)
             string = pytesseract.image_to_string(cv_image,
                                                  config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
             string = string.replace("\n", "")
             string = string.split(":")
             self.print(f'Current level : {string[1]}')
             # self.set_text(f"[{current_time()}] Current level : {string[1]}")
-            level_to_go = level - int(string[1])
+            try:
+                level_to_go = level - int(string[1])
+            except:
+                x, y = self.find_img(target='minus_button')
+                for i in range(6):
+                    self.click(x+ uniform(0, 20),y +uniform(0, 20))
+                    self.better_sleep((0.450, 1))
+                level_to_go = level
             if level_to_go > 0:
                 word = "Increasing"
                 x, y = self.find_img(target='plus_button')
@@ -249,7 +252,7 @@ class HuntBarbarians(Task):
                 x2 = x + uniform(0, 30)
                 y2 = y + uniform(0, 27)
                 self.click(x2, y2)
-                self.better_sleep((0.115, 0.300))
+                self.better_sleep((0.450,1))
             return
 
     @get_name
@@ -319,7 +322,7 @@ class HuntBarbarians(Task):
 
     @get_class
     def run(self):
-        wanted_level = 24
+        wanted_level = self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_level"]
         hunter_selection = False
         self.leave_city()
         self.better_sleep((1, 1.3))
