@@ -369,22 +369,33 @@ class HuntBarbarians(Task):
                 self.click(x, y)
                 self.better_sleep((2.2, 3.5))
                 tab = self.adb.find_multiple_img("selected_icon")
-                tab = tab[nb_hunter:-1]
-                for element in tab:
-                    x, y = element[0] + uniform(0, 5), element[1] + uniform(0, 5)
-                    self.click(x, y)
-                    self.better_sleep((0.3, 0.5))
-                hunter_selection = True
+                if tab:
+                    tab = tab[nb_hunter:-1]
+                    for element in tab:
+                        x, y = element[0] + uniform(0, 5), element[1] + uniform(0, 5)
+                        self.click(x, y)
+                        self.better_sleep((0.3, 0.5))
+                    hunter_selection = True
+                    one_hunter = False
+                    self.click(uniform(1163, 1183), uniform(665, 685))
+                    self.better_sleep((1.2, 1.5))
+                else:
+                    hunter_selection = True
+                    one_hunter = True
+            if not one_hunter:
+                self.print('Selecting all the troops')
+                self.better_sleep((2, 3))
                 self.click(uniform(1163, 1183), uniform(665, 685))
                 self.better_sleep((1.2, 1.5))
 
-            self.print('Selecting the whole troops')
-            self.better_sleep((2, 3))
-            self.click(uniform(1163, 1183), uniform(665, 685))
-            self.better_sleep((1.2, 1.5))
-
-            self.click(uniform(940, 1075), uniform(640, 670))
-            self.better_sleep((1.2, 1.5))
+                self.click(uniform(940, 1075), uniform(640, 670))
+                self.better_sleep((1.2, 1.5))
+            else:
+                self.print("Selecting the single march..")
+                self.click(uniform(1200,1220),uniform(210,230))
+                self.better_sleep((1.2, 1.5))
+                self.click(uniform(990,1010),uniform(290,310))
+                self.better_sleep((1.2, 1.5))
             self.print(f'Check if AP pop-op box is detected')
             if self.check_ap_box():
                 self.print('Pop-up found, recalling troops')
