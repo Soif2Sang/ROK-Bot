@@ -47,7 +47,7 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
         self.create_normal_switch("claim_campaign", "Claim Campaign Rewards")
         self.create_normal_switch("alliance_help", "Alliance Help")
-        # self.create_normal_switch("hunt_barbarians", "Alliance Help")
+        self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", self.page_barbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
         self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
         self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
@@ -412,9 +412,26 @@ class SettingContainer(ft.Container):
             )
         )
         self.content.controls.append(ft.Divider(),)
-        self.content.controls.append(
+        self.content.controls.extend([
             ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure all red slot with PeaceKeeper\nNote this function is not designed for New accounts !", size=15, color="red"),
+            ft.Divider(),
+            ft.Row(
+                controls=[
+                ft.Text(value="Barbarian Level"),
+                ft.Dropdown(
+                    width=50,
+                    options=[
+                        ft.dropdown.Option(str(i)) for i in range(1, 56)
+                    ], on_change=lambda e: self.submit(e, "barbarians_level", str),
+                    value = self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["barbarians_level"]
+                )
+                ]
+                , width=300
+            )
+            ]
         )
+        self.update()
+
 
     def page_rally(self):
         self.data = get_data()
