@@ -168,7 +168,13 @@ class HuntBarbarians(Task):
         hunters = 0
         while not full_sent:
             co = choice(full_area)
-            print("done", co)
+            self.print(f"Choice {co}")
+            for i in range(-20, 20, 5):
+                for y in range(-20, 20, 5):
+                    try:
+                        full_area.remove((co[1] - i, co[0] - y))
+                    except ValueError:
+                        ""
             self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
             self.better_sleep((1.325, 1.795))
             co = self.find_img(target="deploy_march_button")
@@ -182,6 +188,9 @@ class HuntBarbarians(Task):
                     self.click(uniform(150, 500), uniform(150, 500))
                     full_sent = True
                 self.better_sleep((1.325, 1.795))
+            if self.find_img(target="new_troops_button"):
+                self.close_windows()
+                full_sent = True
         return hunters
 
     @get_name
