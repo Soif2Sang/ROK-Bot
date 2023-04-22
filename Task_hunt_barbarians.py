@@ -85,15 +85,14 @@ class HuntBarbarians(Task):
         """
 
         self.print("Trying to send new troop..")
-        self.print(f"Send new troop count : {deadstop}")
+        if deadstop!=0:
+            self.print(f"Send new troop count : {deadstop}")
         if deadstop == 5:
             self.click(uniform(700, 800), uniform(300, 500))
             self.better_sleep((1.325, 1.795))
             return False
-        self.check_if_kill()
         co = self.find_img(target="new_troops_button")
         if co is not None:
-            # print("Home button found")
             x, y = co[0], co[1]
             x, y = x + uniform(0, 20), y + uniform(0, 20)
             self.click(x, y)
@@ -102,22 +101,20 @@ class HuntBarbarians(Task):
             self.better_sleep((1.225, 1.795))
             self.select_lineup_color(color=color)
             for i in range(7):  # change if you have 6-7 troops
-                self.check_if_kill()
                 x_click, y_click = uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54)
                 self.click(x_click, y_click)
                 self.better_sleep((1, 2))
                 if color != 'red':
                     cos = self.adb.find_multiple_img("choose_right", 0.8)
-                    # for co in cos:
-                    #     if co[0] > 1060 and co[1] > 200:
-                    #         final.append(co)
                     final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
                     if final != []:
                         x, y = self.find_img(target="troops_march_button")
                         x, y = x + uniform(0, 20), y + uniform(0, 20)
-                        self.check_if_kill()
                         self.click(x, y)
                         self.better_sleep((0.5, 0.7))
+                        if self.find_img(target="troops_march_button"):
+                            self.print("No Troops available","red")
+                            return False
                         self.print("New Troop sent !")
                         return True
 
@@ -128,14 +125,12 @@ class HuntBarbarians(Task):
                 #     self.click(x, y)
                 #     self.better_sleep((0.5, 0.7))
                 #     return True
-            self.check_if_kill()
             co = self.find_img(target="troops_march_button")
             if co is None:
                 return self.send_new_troop(deadstop=deadstop + 1)
             x, y = co[0], co[1]
             x, y = x + uniform(0, 20), y + uniform(0, 20)
             self.click(x, y)
-            self.check_if_kill()
             self.better_sleep((0.5, 0.7))
             if self.find_img(target="march_bar"):
                 self.print("Unable to send a new troop")
@@ -153,20 +148,7 @@ class HuntBarbarians(Task):
 
     @get_name
     def deploy_hunter(self):
-        # top_left = (415,202)
-        # top_right = (840,202)
-        # bottom_left =(415,530)
-        # top_left = (840,530)
-        # list = []
         full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if not (795 > i > 490 and 210 < y < 490)]
-        # forbidden_area = [(i, y) for i in range(490, 795,5) for y in range(230, 490,5)]
-        # for element in forbidden_area:
-        #     try:
-        #         full_area.remove(element)
-        #     except:
-        #         pass
-        # print("done")
-
         full_sent = False
         hunters = 0
         while not full_sent:
