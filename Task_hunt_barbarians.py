@@ -137,6 +137,9 @@ class HuntBarbarians(Task):
             self.click(x, y)
             self.check_if_kill()
             self.better_sleep((0.5, 0.7))
+            if self.find_img(target="march_bar"):
+                self.print("Unable to send a new troop")
+                return False
             self.print("New Troop sent !")
             return True
         co = self.find_img(target="march_bar")
@@ -182,12 +185,15 @@ class HuntBarbarians(Task):
                 self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
                 self.better_sleep((1.325, 1.795))
                 if self.find_img(target="new_troops_button"):
-                    self.send_new_troop(color='red')
-                    hunters += 1
+                    if not self.send_new_troop(color='red'):
+                        full_sent = True
+                    else:
+                        hunters += 1
                 else:
                     self.click(uniform(150, 500), uniform(150, 500))
                     full_sent = True
                 self.better_sleep((1.325, 1.795))
+
             if self.find_img(target="new_troops_button"):
                 self.close_windows()
                 full_sent = True
