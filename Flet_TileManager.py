@@ -199,6 +199,7 @@ class TileManager(ft.ListView):
             'collect_ressource': False,
             'defeat_barbarians': False,
             'barbarians_level': 25,
+            'nb_max_barbarians': 5,
             'gather_gem': False,
             'gem_check1': 60,
             'gem_check2': 120,

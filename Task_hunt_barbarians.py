@@ -145,7 +145,10 @@ class HuntBarbarians(Task):
         full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if not (795 > i > 490 and 210 < y < 490)]
         full_sent = False
         hunters = 0
+        nb_max_barbarians = self.data[str(self.sel)]['schedules'][str(self.current_profile)]["nb_max_barbarians"]
         while not full_sent:
+            if nb_max_barbarians == hunters:
+                break
             self.print(f"{hunters =}")
             co = choice(full_area)
             self.print(f"Choice {co}")
@@ -338,14 +341,12 @@ class HuntBarbarians(Task):
 
             self.click_loop()  # Clicking on the loop
             self.better_sleep((1, 2))
-            x, y = uniform(225, 285), uniform(607, 667)
 
-            self.click(x, y)  # Selecting the barbarian section
+            self.click(uniform(225, 285), uniform(607, 667))  # Selecting the barbarian section
             self.better_sleep((1, 1.3))
             self.set_search_level(wanted_level)  # Setting the barbarian level to the desired level
 
-            x, y = uniform(200, 330), uniform(466, 506)
-            self.click(x, y)  # Searching the barbarian
+            self.click(uniform(200, 330), uniform(466, 506))  # Searching the barbarian
             self.better_sleep((1, 2))
 
             reduced_level = wanted_level
@@ -358,8 +359,10 @@ class HuntBarbarians(Task):
 
                 self.better_sleep((1, 2))
             wanted_level = reduced_level
+
             self.click(1280 // 2 + uniform(-10, 10), 720 // 2 + uniform(-10, 10))  # Selecting the barbarian
             self.better_sleep((1, 1.4))
+
             button_attack = self.find_img(target="attack_button")
             if button_attack is None:
                 continue  # Skipping all the code bellow to re-execute the barbarian search
