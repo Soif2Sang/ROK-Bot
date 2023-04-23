@@ -6,6 +6,7 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 
 import Flet_time_allower
 from Flet_row_material import FletRowMaterial
+from Flet_row_presets import FletRowPresets
 from Flet_row_rss import FletRowRss
 from Flet_col_transfer import FletColumnRss
 from Flet_row_troops import FletRowTraining
@@ -428,20 +429,16 @@ class SettingContainer(ft.Container):
                 ]
                 , width=300
             ),
-            ft.Row(
-                controls=[
-                    ft.Text(value="Peacekeeper Limit (nb)"),
-                    ft.Dropdown(
-                        width=50,
-                        options=[
-                            ft.dropdown.Option(str(i)) for i in range(1, 8)
-                        ], on_change=lambda e: self.submit(e, "nb_max_barbarians", int),
-                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                            "nb_max_barbarians"]
-                    )
-                ]
-                , width=300
-            )
+            ft.Divider(),
+            ft.Text(value="Peacekeeper presets"),
+            ft.Column(
+                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in
+                          range(1, 8)],
+                wrap=True,
+                spacing=10,
+                run_spacing=10,
+                height=150
+                )
             ]
         )
         self.update()
