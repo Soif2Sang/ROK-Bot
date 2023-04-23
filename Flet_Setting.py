@@ -414,7 +414,7 @@ class SettingContainer(ft.Container):
         )
         self.content.controls.append(ft.Divider(),)
         self.content.controls.extend([
-            ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure all red slot with PeaceKeeper\nNote this function is not designed for New accounts !", size=15, color="red"),
+            ft.Text(value="*REQUIREMENT*\n\n/!\ Pre-configure all red slot with PeaceKeeper/!\ \n\n/!\Avoid AOE to not hit higher barb level/!\ \n\n/!\The bot is unenable see to the troops health/!\ \n\nNote this function is not designed for New accounts !", size=15, color="red"),
             ft.Divider(),
             ft.Row(
                 controls=[

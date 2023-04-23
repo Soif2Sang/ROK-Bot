@@ -253,6 +253,7 @@ class HuntBarbarians(Task):
                 self.close_windows()
                 return False
             self.close_windows()
+            self.click(uniform(700,800),uniform(300,400))
             return True
         self.print(f'AP pop-op box Not detected')
         return False
