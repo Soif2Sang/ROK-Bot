@@ -146,10 +146,11 @@ class HuntBarbarians(Task):
         full_sent = False
         hunters = 0
         while not full_sent:
+            self.print(f"{hunters =}")
             co = choice(full_area)
             self.print(f"Choice {co}")
-            for i in range(-20, 20, 5):
-                for y in range(-20, 20, 5):
+            for i in range(-35, 35, 5):
+                for y in range(-35, 35, 5):
                     try:
                         full_area.remove((co[1] - i, co[0] - y))
                     except ValueError:
@@ -281,10 +282,12 @@ class HuntBarbarians(Task):
     def wait_until_kill(self):
         self.print(f"Waiting for the troops to kill the barbarian..")
         while self.find_img(target="troop_idle") is None or self.find_img(target="troop_walking") is not None:
+            if not self.adb.is_game_alive():
+                self.run_game()
+                self.leave_city()
             self.script_pause()
             self.check_log_back()
             self.check_reconnect()
-            self.check_if_kill()
             self.check_captcha()
             self.better_sleep((3, 5))
             print(f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian..")
@@ -330,6 +333,7 @@ class HuntBarbarians(Task):
         if nb_hunter == 0:
             return
         while self.enough_action_points():
+            self.run_game()
             self.better_sleep((1.5, 3))
 
             self.click_loop()  # Clicking on the loop
