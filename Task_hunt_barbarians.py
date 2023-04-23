@@ -161,8 +161,8 @@ class HuntBarbarians(Task):
             self.print(f"{hunters =}, {preset =}")
             co = choice(full_area)
             self.print(f"Choice {co}")
-            for i in range(-35, 35, 5):
-                for y in range(-35, 35, 5):
+            for i in range(-45, 45, 5):
+                for y in range(-45, 45, 5):
                     try:
                         full_area.remove((co[1] - i, co[0] - y))
                     except ValueError:
