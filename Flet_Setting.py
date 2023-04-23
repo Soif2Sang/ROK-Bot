@@ -427,6 +427,20 @@ class SettingContainer(ft.Container):
                 )
                 ]
                 , width=300
+            ),
+            ft.Row(
+                controls=[
+                    ft.Text(value="Peacekeeper Limit (nb)"),
+                    ft.Dropdown(
+                        width=50,
+                        options=[
+                            ft.dropdown.Option(str(i)) for i in range(1, 8)
+                        ], on_change=lambda e: self.submit(e, "nb_max_barbarians", int),
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "nb_max_barbarians"]
+                    )
+                ]
+                , width=300
             )
             ]
         )
