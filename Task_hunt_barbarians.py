@@ -107,30 +107,6 @@ class HuntBarbarians(Task):
             }
             self.click(uniform(1096, 1118), presets[preset])
             self.better_sleep((0.5,1))
-            # for i in range(7):  # change if you have 6-7 troops
-            #     self.click(uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54))
-            #     self.better_sleep((0.5,1))
-                # if color != 'red':
-                #     cos = self.adb.find_multiple_img("choose_right", 0.8)
-                #     final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
-                #     if final != []:
-                #         x, y = self.find_img(target="troops_march_button")
-                #         x, y = x + uniform(0, 20), y + uniform(0, 20)
-                #         self.click(x, y)
-                #         self.better_sleep((0.5, 0.7))
-                #         if self.find_img(target="troops_march_button"):
-                #             self.print("No Troops available","red")
-                #             return False
-                #         self.print("New Troop sent !")
-                #         return True
-
-                # if self.find_img(target="choose_right", confidence=0.8):
-                #     x, y = self.find_img(target="troops_march_button")
-                #     x, y = x + uniform(0, 20), y + uniform(0, 20)
-                #     self.check_if_kill()
-                #     self.click(x, y)
-                #     self.better_sleep((0.5, 0.7))
-                #     return True
             co = self.find_img(target="troops_march_button")
             if co is None:
                 return self.send_new_troop(deadstop=deadstop + 1, preset=preset)
@@ -268,22 +244,17 @@ class HuntBarbarians(Task):
     def check_ap_box(self) -> bool:
         self.print(f'Check if AP pop-op box is detected')
         if self.find_img(target="ap_bottle"):
-            co = self.find_img(target="daily_ap_claim")
-            if co is None:
-                co = self.find_img(target="close_window")
-                self.click(co[0], co[1])
-                self.better_sleep((1.325, 1.795))
-            else:
+            self.print(f'AP pop-op box Detected')
+            if (co:=self.find_img(target="daily_ap_claim")):
                 x, y = co[0] + uniform(0, 30), co[1] + uniform(0, 20)
                 self.click(x, y)
-            self.better_sleep((1.325, 1.795))
-            co = self.find_img(target="close_window")
-            if co is not None:
-                self.click(co[0], co[1])
+                self.print("Claiming Free AP","green")
                 self.better_sleep((1.325, 1.795))
-            self.print(f'Detected')
+                self.close_windows()
+                return False
+            self.close_windows()
             return True
-        self.print(f'Not detected')
+        self.print(f'AP pop-op box Not detected')
         return False
 
     @get_name
@@ -343,8 +314,10 @@ class HuntBarbarians(Task):
         self.better_sleep((1, 1.3))
         nb_hunter = self.deploy_hunter()
         if nb_hunter == 0:
-            return
-        while self.enough_action_points():
+            return self.print("No PeaceKeeper sent, cancelling the function","red")
+        if not self.enough_action_points():
+            return self.print("It looks like you are low in AP, cancelling the function","red")
+        while not self.check_ap_box():
             self.run_game()
             self.better_sleep((1.5, 3))
 
