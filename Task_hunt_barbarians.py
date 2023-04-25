@@ -44,6 +44,7 @@ class HuntBarbarians(Task):
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_text("Error in line-up selection")
+                self.send_discord_message("Error in line-up selection, please fix the game")
                 while True:
                     self.script_pause()
                     sleep(1)
