@@ -178,6 +178,9 @@ def main(page: ft.Page):
                 json.dump(path, f, indent=2)
 
     data = get_data()
+    if "discord" not in data:
+        data["discord"] = {"user_id":0, "enabled":False}
+        write_data(data)
     for i in range(5):
         ready = False
         try:
