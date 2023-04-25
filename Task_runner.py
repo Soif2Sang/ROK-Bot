@@ -6,7 +6,7 @@ import traceback
 from datetime import datetime, timedelta
 from random import uniform, randint, shuffle
 from time import time, sleep
-
+import discord_bot
 import win32gui
 
 from Flet_time_allower import is_in_frametime, random_time_in_frametime
@@ -263,6 +263,7 @@ class TaskRunner(Task):
             if trigger_stop > 4:
                 self.print("Error in character switch. Bot is now stopped")
                 self.set_status("Error.")
+                self.send_discord_message("Error in character switch, human interaction required.")
                 while True:
                     self.script_pause()
                     sleep(1)
