@@ -14,7 +14,7 @@ from pyautogui import getAllWindows
 import Flet_main_interface
 from Flet_Path import find_file_in_all_drives
 from Task_utils import get_data, get_path, write_data
-from keyauth import api
+from auth import selfApi
 from pathlib import Path
 
 
@@ -55,7 +55,7 @@ class LoginButton(ft.FilledButton):
         return True
 
     def login_schedule(self, username, password):
-        self.keyauthapp = api(
+        self.keyauthapp = selfApi(
             name="Rokbd",
             ownerid="7oofxdj8uH",
             secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
@@ -104,7 +104,7 @@ class LoginButton(ft.FilledButton):
         #     self.page.update()
 
     def login(self, e=None, username=None, password=None):
-        self.keyauthapp = api(
+        self.keyauthapp = selfApi(
             name="Rokbd",
             ownerid="7oofxdj8uH",
             secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
@@ -184,7 +184,7 @@ def main(page: ft.Page):
     for i in range(5):
         ready = False
         try:
-            keyauthapp = api(
+            keyauthapp = selfApi(
                 name="Rokbd",
                 ownerid="7oofxdj8uH",
                 secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
