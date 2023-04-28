@@ -7,7 +7,7 @@ from uuid import uuid4
 import requests
 from Crypto.Hash import SHA256
 
-from keyauth import api, encryption
+from auth import api, encryption
 
 def getchecksum():
     md5_hash = hashlib.md5()

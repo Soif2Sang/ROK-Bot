@@ -3,7 +3,7 @@ import flet as ft
 import requests
 
 from auth_tests import getchecksum
-from keyauth import api
+from auth import api
 
 print("creating the Api")
 keyauthapp = api(

@@ -14,7 +14,7 @@ from pyautogui import getAllWindows
 import Flet_main_interface
 import Flet_secret_interface
 from Task_utils import get_data, get_path, write_data
-from keyauth import api
+from auth import api
 
 def getchecksum():
     md5_hash = hashlib.md5()
