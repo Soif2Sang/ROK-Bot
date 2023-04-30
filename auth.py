@@ -25,7 +25,7 @@ except requests.exceptions.RequestException as e:
     os._exit(1)
 
 
-class api:
+class selfApi:
     name = ownerid = secret = version = hash_to_check = ""
 
     def __init__(self, name, ownerid, secret, version, hash_to_check, page = None):
@@ -90,65 +90,6 @@ class api:
         self.sessionid = json["sessionid"]
         self.initialized = True
         self.__load_app_data(json["appinfo"])
-
-    def register(self, user, password, license, hwid=None):
-        self.checkinit()
-        if hwid is None:
-            hwid = others.get_hwid()
-
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-
-        post_data = {
-            "type": binascii.hexlify("register".encode()),
-            "username": encryption.encrypt(user, self.enckey, init_iv),
-            "pass": encryption.encrypt(password, self.enckey, init_iv),
-            "key": encryption.encrypt(license, self.enckey, init_iv),
-            "hwid": encryption.encrypt(hwid, self.enckey, init_iv),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-
-        response = self.__do_request(post_data)
-        response = encryption.decrypt(response, self.enckey, init_iv)
-        json = jsond.loads(response)
-
-        if json["success"]:
-            print("successfully registered")
-            self.__load_user_data(json["info"])
-        else:
-            print(json["message"])
-            os._exit(1)
-
-    def upgrade(self, user, license):
-        self.checkinit()
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-
-        post_data = {
-            "type": binascii.hexlify("upgrade".encode()),
-            "username": encryption.encrypt(user, self.enckey, init_iv),
-            "key": encryption.encrypt(license, self.enckey, init_iv),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-
-        response = self.__do_request(post_data)
-
-        response = encryption.decrypt(response, self.enckey, init_iv)
-
-        json = jsond.loads(response)
-
-        if json["success"]:
-            print("successfully upgraded user")
-            print("please restart program and login")
-            time.sleep(2)
-            os._exit(1)
-        else:
-            print(json["message"])
-            os._exit(1)
 
     def login(self, user, password, hwid=None, page=None):
 
@@ -215,34 +156,6 @@ class api:
             open=True
         )
         self.page.update()
-
-    def license(self, key, hwid=None):
-        self.checkinit()
-        if hwid is None:
-            hwid = others.get_hwid()
-
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-
-        post_data = {
-            "type": binascii.hexlify("license".encode()),
-            "key": encryption.encrypt(key, self.enckey, init_iv),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-
-        response = self.__do_request(post_data)
-        response = encryption.decrypt(response, self.enckey, init_iv)
-
-        json = jsond.loads(response)
-
-        if json["success"]:
-            self.__load_user_data(json["info"])
-            print("successfully logged into license")
-        else:
-            print(json["message"])
-            os._exit(1)
 
     def var(self, name):
         self.checkinit()
@@ -313,52 +226,6 @@ class api:
         else:
             print(json["message"])
 
-    def ban(self):
-        self.checkinit()
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-        post_data = {
-            "type": binascii.hexlify("ban".encode()),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-        response = self.__do_request(post_data)
-        response = encryption.decrypt(response, self.enckey, init_iv)
-        json = jsond.loads(response)
-
-        if json["success"]:
-            return True
-        else:
-            print(json["message"])
-            time.sleep(5)
-            os._exit(1)
-
-    def file(self, fileid):
-        self.checkinit()
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-
-        post_data = {
-            "type": binascii.hexlify("file".encode()),
-            "fileid": encryption.encrypt(fileid, self.enckey, init_iv),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-
-        response = self.__do_request(post_data)
-
-        response = encryption.decrypt(response, self.enckey, init_iv)
-
-        json = jsond.loads(response)
-
-        if not json["success"]:
-            print(json["message"])
-            time.sleep(5)
-            os._exit(1)
-        return binascii.unhexlify(json["contents"])
-
     def webhook(self, webid, param, body="", conttype=""):
         self.checkinit()
         init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
@@ -393,27 +260,6 @@ class api:
         print(self.name)
         post_data = {
             "type": binascii.hexlify("check".encode()),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-        response = self.__do_request(post_data)
-
-        response = encryption.decrypt(response, self.enckey, init_iv)
-        json = jsond.loads(response)
-        if json["success"]:
-            return True
-        else:
-            return False
-
-    def checkblacklist(self):
-        self.checkinit()
-        hwid = others.get_hwid()
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-        post_data = {
-            "type": binascii.hexlify("checkblacklist".encode()),
-            "hwid": encryption.encrypt(hwid, self.enckey, init_iv),
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
@@ -470,79 +316,10 @@ class api:
         else:
             return None
 
-    def chatGet(self, channel):
-        self.checkinit()
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-
-        post_data = {
-            "type": binascii.hexlify("chatget".encode()),
-            "channel": encryption.encrypt(channel, self.enckey, init_iv),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-
-        response = self.__do_request(post_data)
-        response = encryption.decrypt(response, self.enckey, init_iv)
-
-        json = jsond.loads(response)
-
-        if json["success"]:
-            return json["messages"]
-        else:
-            return None
-
-    def chatSend(self, message, channel):
-        self.checkinit()
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-
-        post_data = {
-            "type": binascii.hexlify("chatsend".encode()),
-            "message": encryption.encrypt(message, self.enckey, init_iv),
-            "channel": encryption.encrypt(channel, self.enckey, init_iv),
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-
-        response = self.__do_request(post_data)
-        response = encryption.decrypt(response, self.enckey, init_iv)
-
-        json = jsond.loads(response)
-
-        if json["success"]:
-            return True
-        else:
-            return False
-
     def checkinit(self):
         if not self.initialized:
             print("Initialize first, in order to use the functions")
             time.sleep(2)
-            os._exit(1)
-
-    def changeUsername(self, username):
-        self.checkinit()
-        init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-        post_data = {
-            "type": binascii.hexlify("changeUsername".encode()),
-            "newUsername": username,
-            "sessionid": binascii.hexlify(self.sessionid.encode()),
-            "name": binascii.hexlify(self.name.encode()),
-            "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
-        }
-
-        response = self.__do_request(post_data)
-        response = encryption.decrypt(response, self.enckey, init_iv)
-        json = jsond.loads(response)
-
-        if json["success"]:
-            print("successfully Changed Username")
-        else:
-            print(json["message"])
             os._exit(1)
 
     def __do_request(self, post_data, deadstop = 0):
@@ -561,16 +338,16 @@ class api:
                 time.sleep(30)
                 return self.__do_request(post_data, deadstop+1)
 
-    class application_data_class:
+    class application_data_c:
         numUsers = numKeys = app_ver = customer_panel = onlineUsers = ""
 
     # region user_data
 
-    class user_data_class:
+    class user_data_c:
         username = ip = hwid = expires = createdate = lastlogin = subscription = subscriptions = ""
 
-    user_data = user_data_class()
-    app_data = application_data_class()
+    user_data = user_data_c()
+    app_data = application_data_c()
 
     def __load_app_data(self, data):
         self.app_data.numUsers = data["numUsers"]
