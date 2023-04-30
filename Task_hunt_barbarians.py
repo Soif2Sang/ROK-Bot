@@ -85,7 +85,7 @@ class HuntBarbarians(Task):
         :return: False is not successfully
         """
 
-        self.print("Trying to send new troop..")
+        self.print(f"Trying to send new troop.. {preset=}")
         if deadstop!=0:
             self.print(f"Send new troop count : {deadstop}")
         if deadstop == 5:
@@ -121,8 +121,7 @@ class HuntBarbarians(Task):
             return True
         co = self.find_img(target="march_bar")
         if co is not None and self.free_troop_gem():
-            x, y = uniform(1177, 1250), uniform(80, 116)
-            self.check_if_kill()
+            self.close_windows()
             self.better_sleep((0.5, 0.7))
             return self.send_new_troop(deadstop=deadstop + 1,preset=preset)
         self.print("Unable to send a new troop")
@@ -132,35 +131,43 @@ class HuntBarbarians(Task):
     def deploy_hunter(self):
         full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if not (795 > i > 490 and 210 < y < 490)]
         hunters = 0
+        breakloop = False
         for preset in self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"]:
             if not self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"][preset]:
                 continue
-            self.print(f"{hunters =}, {preset =}")
-            co = choice(full_area)
-            self.print(f"Choice {co}")
-            for i in range(-45, 45, 5):
-                for y in range(-45, 45, 5):
-                    try:
-                        full_area.remove((co[1] - i, co[0] - y))
-                    except ValueError:
-                        ""
-            self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
-            self.better_sleep((1.325, 1.795))
-            co = self.find_img(target="deploy_march_button")
-            if co is not None:
-                self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
+            sent = False
+            if breakloop:
+                break
+            while not sent:
+                self.print(f"{hunters =}, {preset =}")
+                if not full_area:
+                    breakloop = True
+                    break
+                co = choice(full_area)
+                self.print(f"Choice {co}")
+                for i in range(-65, 80, 5):
+                    for y in range(-65, 70, 5):
+                        if (co[0] + i, co[1] + y) in full_area:
+                            full_area.remove((co[0] + i, co[1] + y))
+                self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
                 self.better_sleep((1.325, 1.795))
-                if self.find_img(target="new_troops_button"):
-                    if not self.send_new_troop(preset=preset):
-                        break
+                co = self.find_img(target="deploy_march_button")
+                if co is not None:
+                    self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
+                    self.better_sleep((1.325, 1.795))
+                    if self.find_img(target="new_troops_button"):
+                        if not self.send_new_troop(preset=preset):
+                            breakloop = True
+                            break
+                        else:
+                            sent = True
+                            hunters += 1
                     else:
-                        hunters += 1
-                else:
-                    self.click(uniform(150, 500), uniform(150, 500))
-                self.better_sleep((1.325, 1.795))
+                        self.click(uniform(150, 500), uniform(150, 500))
+                    self.better_sleep((1.325, 1.795))
 
-            if self.find_img(target="new_troops_button"):
-                self.close_windows()
+                if self.find_img(target="new_troops_button"):
+                    self.close_windows()
         return hunters
 
     @get_name
@@ -252,6 +259,9 @@ class HuntBarbarians(Task):
                 self.print("Claiming Free AP","green")
                 self.better_sleep((1.325, 1.795))
                 self.close_windows()
+                if (co := self.find_img('march_bar')):
+                    self.click(co[0] + uniform(0, 30), co[1] + uniform(0, 10))
+                    self.better_sleep((2, 3))
                 return False
             self.close_windows()
             self.click(uniform(700,800),uniform(300,400))
@@ -310,7 +320,7 @@ class HuntBarbarians(Task):
         if preset_selected  == 0:
             return self.print("No presets selected, canceling the function","red")
 
-        wanted_level = self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_level"]
+        wanted_level = int(self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_level"])
         hunter_selection = False
         self.leave_city()
         self.better_sleep((1, 1.3))
@@ -374,16 +384,14 @@ class HuntBarbarians(Task):
                     one_hunter = True
             if not one_hunter:
                 self.print('Selecting all the troops')
-                self.better_sleep((2, 3))
                 self.click(uniform(1163, 1183), uniform(665, 685))
-                self.better_sleep((2, 3))
-                self.click(uniform(940, 1075), uniform(640, 670))
                 self.better_sleep((2, 3))
             else:
                 self.print("Selecting the single march..")
                 self.click(uniform(1200,1220),uniform(210,230))
                 self.better_sleep((2, 3))
-                self.click(uniform(990,1010),uniform(290,310))
+            if (co:=self.find_img('march_bar')):
+                self.click(co[0] + uniform(0,30), co[1] + uniform(0,10))
                 self.better_sleep((2, 3))
             self.print(f'Check if AP pop-op box is detected')
             if self.check_ap_box():
@@ -394,3 +402,9 @@ class HuntBarbarians(Task):
             self.wait_until_kill()
         self.check_ap_box()
         self.recall(nb_troop=nb_hunter)
+        said = False
+        while self.find_img(target="back_normal_view", confidence=0.9):
+            if not said:
+                said = True
+                self.print("Waiting for the troop to come back..")
+            sleep(5)
