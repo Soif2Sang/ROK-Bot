@@ -555,7 +555,7 @@ class GatherRss(Task):
 
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get(f"{node_type}_level") - level_decrease <= 0:
                 node_type = self.next_resource_type(node_type)
-                self.print(f" Cannot decrease the current level.. Too low ! next type : {node_type}")
+                self.print(f"Cannot decrease the current level.. Too low ! next type : {node_type}")
                 return self.run(node_type, resolved, 0)
 
             self.set_search_level(self.data.get(self.sel).get('schedules').get(self.current_profile).get(f"{node_type}_level") - level_decrease)
