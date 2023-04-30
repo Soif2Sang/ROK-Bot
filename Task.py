@@ -165,10 +165,10 @@ class Task:
     @get_name
     def find_img(self,target:str, source:  ndarray = None, confidence=0.9):
         # self.print(f"Loading {target}")
-        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
+        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
         result = self.adb.find_img(target=target,source=source,confidence=confidence)
         # self.print(f"Successfully loaded {target}")
-        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Successfully loaded {target}")
+        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Successfully loaded {target}")
 
         return result 
     
@@ -177,7 +177,7 @@ class Task:
         print(self.adb.is_game_alive())
         a = self.adb.is_game_alive()
         if not a:
-            self.print(f"Looks like game is not running ")
+            self.print(f"Looks like game is not running")
             co = self.find_img(target="rokicon", confidence=0.8)
             if co is not None:
                 self.click(co[0] + 10, co[1] + 10)
