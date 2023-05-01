@@ -1,15 +1,18 @@
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, date
 from tkinter import *
-import UI_Main
+import OLD_UI_Main
 import requests
 from getmac import get_mac_address as gma
 import customtkinter
 import win32gui
 from pyautogui import getAllWindows
 from urllib3 import Retry, PoolManager
+
+from Task_utils import get_data, write_data
 
 customtkinter.set_appearance_mode("light")
 if not os.path.exists("user_settings.json"):
@@ -100,11 +103,10 @@ def main():
                 else:
                     print("None of the mac addresses match the mac address..")
                     return False
-            with open('user_settings.json') as config_file:
+            with open('user_settings.json',encoding='utf-8') as config_file:
                 data = json.load(config_file)
             data["user"] = {'username': username, 'password': password}
-            with open('user_settings.json', 'w') as config_file:
-                config_file.write(json.dumps(data, indent=2))
+            write_data(data)
             root.destroy()
             today = date.today()
             heures = heure[0].split('-')
@@ -113,30 +115,29 @@ def main():
             return UI_Main.Main(diff.days)
         except Exception as e:
             print(e)
-            # print("Problem occured while trying to connect")
-            exit(1)
+            print("Problem occured while trying to connect")
+            sys.exit(1)
 
     root = Tk()
     root.resizable(False, False)
     root.title('GEM 1.0')
     root.iconbitmap('./Item_Gem.ico')
-
     usernameL = customtkinter.CTkLabel(root, text="Username : ")
     usernameE = customtkinter.CTkEntry(root)
-    usernameL.grid(row=0, column=0)
-    usernameE.grid(row=0, column=1, pady=(5, 0))
+    usernameL.grid(row=0, column=0, sticky='ew',padx=(40, 0),pady=(20,0))
+    usernameE.grid(row=0, column=1,padx=(0, 40),pady=(20,0), sticky='ew')
 
     passwordL = customtkinter.CTkLabel(root, text="Password : ")
     passwordE = customtkinter.CTkEntry(root)
-    passwordL.grid(row=1, column=0)
-    passwordE.grid(row=1, column=1)
+    passwordL.grid(row=1, column=0, sticky='ew',padx=(40, 5))
+    passwordE.grid(row=1, column=1, sticky='ew',padx=(0, 40))
 
     def test():
         request_acess(usernameE.get(), passwordE.get())
 
     login_button = customtkinter.CTkButton(root, text="Login", command=test, corner_radius=4, fg_color="white",
                                            border_color="grey", border_width=1, text_color="black")
-    login_button.grid(row=3, column=0, sticky='nswe', padx=5, pady=5, columnspan=2)
+    login_button.grid(row=3, column=0, sticky='nswe', padx=60, columnspan=2,pady=(5,20))
 
     #
     # register_button = Button(root, text="Register", command=login)
@@ -187,7 +188,6 @@ def acces(date='9999-12-30'):
             response = http.request("GET", "http://worldtimeapi.org/api/timezone/Europe/Paris",
                                     headers={'Content-Type': 'application/json'}, retries=Retry(10))
             tab = json.loads(response.data.decode('utf-8'))['datetime'].split("T")
-            # # print(tab)
             tmp = tab[1].split(".")
             tab[1] = tmp[0]
             # print(tmp, tab[0])
@@ -243,11 +243,10 @@ def request_acess(username, password):
         # print(f"{mac_address_exists(data) = }")
 
         if mac_address_exists(data):
-            with open('user_settings.json') as config_file:
-                data = json.load(config_file)
+            data = get_data()
             data["user"] = {'username': username, 'password': password}
-            with open('user_settings.json', 'w') as config_file:
-                config_file.write(json.dumps(data, indent=2))
+            with open('user_settings.json', 'w',encoding='utf-8') as config_file:
+                f.write(json.dumps(data, indent=2))
             # print(f"{data = }")
             today = date.today()
             heures = heure[0].split('-')
@@ -258,7 +257,7 @@ def request_acess(username, password):
             return main()
     except Exception:
         print("Problem occured while trying to connect")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
@@ -286,10 +285,13 @@ if __name__ == "__main__":
             json.dump({}, f, indent=2)
             print("User settings created")
 
-    with open('user_settings.json') as config_file:
+    with open('user_settings.json',encoding='utf-8') as config_file:
         data = json.load(config_file)
     if not find_window("RoK Bot -"):
         if "user" in data:
-            request_acess(data['user']["username"], data['user']["password"])
+            if data["user"]["username"]!="":
+                request_acess(data['user']["username"], data['user']["password"])
+            else:
+                main()
         else:
             main()

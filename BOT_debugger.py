@@ -1,22 +1,57 @@
+from random import randint
+from threading import Thread
+import flet as ft
+import win32api
+import win32con
+import win32gui
+
+from COD_Task_gather_rss import CodGatherRss
+from Task import Task
+from Task_academy_research import AcademyResearch
+from Task_alliance_donation import AllianceDonation
+from Task_claim_daily_quests import DailyQuests
+from Task_daily_chest2 import DailyChest2
+from Task_daily_vip import DailyVip
+from Task_rss_transfert import RssTransfer
+from Task_runner import TaskRunner
+from Task_upgrade_city import UpgradeCity
 from bot_adb import *
-from tasks_lib import *
 #from rkp import *
 #from auto_upgrade import *
 
-with open('user_settings.json') as config_file: data = json.load(config_file)
+data = get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 
 class Frame():
-    def __init__(self, adb):
-        self.adb = adb
+    def __init__(self,sel):
+        self.started = True
+        self.stopped = False
+        self.number = sel
+
+    def add_text(self,phrase, color="black"):
+        print(phrase)
+
+    def add_status(self, phrase, color="black"):
+        return
+
 
 class Bot():
     def __init__(self,adb):
         self.adb=adb
         self.device= adb.get_device()
-        self.task= Tasks(Frame(self.adb)) #tasksGEM / tasks
+        self.main_task= Task(Frame(adb.number)) #tasksGEM / tasks
+        self.main_task.adb = adb
         #self.task = Tasks(self.adb)
-        self.task.set_sel(str(adb.number))
+        self.main_task.set_sel(str(adb.number))
+        self.task = TaskRunner(self.main_task, self.main_task.tile)
+        self.upgrade = UpgradeCity(self.main_task)
+        self.research = AcademyResearch(self.main_task)
+        self.quests = DailyQuests(self.main_task)
+        self.vip = DailyVip(self.main_task)
+        self.chest = DailyChest2(self.main_task)
+        self.alliance = AllianceDonation(self.main_task)
+        self.trade = RssTransfer(self.main_task)
+        self.cod_rss = CodGatherRss(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -147,129 +182,288 @@ class AdbInput:
         self.sendEvent('0000 0002 00000000')
         self.sendEvent('0000 0000 00000000')# SYN_REPORT
 
+def create_instance(number:int, master):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.current_profile="1"
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
+    frame.pause = False
+    frame.stop = False
+    bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    return bot
 
-if __name__ == "__main__":
-    # Create client and AdbInput
-    adb = Adb(1)
+class FakeText():
+    def __init__(self):
+        self.value = ""
+
+    def update(self):
+        return
+
+class lightTile():
+    def ___init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        with open('user_settings.json') as config_file:
+            data = json.load(config_file)
+
+        self.started = True
+        self.stopped = False
+        self.text_status = FakeText()
+
+def upgrade_instance(number:int):
+    adb = Adb(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
 
-    print(isinstance(array(bot.adb.get_curr_device_screen_img()), ndarray))
-    # bot.task.send_nearest_troop_gem()
-    # print(bot.adb.find_img("rokicon",0.8))
-    # print(bot.task.run_game())
-    # touch = AdbInput(bot, 4)
-    # bot.task.heal_troops()
-    # bot.task.current_profile="1"
-    # print(change_resource_type("Second"))
-    # 140 204
-    # Touch
-    # touch.smoothSwipe([(3600, 3000), (3600, 10000)])
-    # def swipe(arg):
-    #     final = []
-    #     for tuples in arg:
-    #         x = tuples[0] * (3600/140)
-    #         y = tuples[1] * (9400/204)
-    #         final.append((x,y))
-    #     touch.smoothSwipe(final)
-    # # bot.task.send_new_troop()
-    # cos = bot.adb.find_multiple_img("choose_right", 0.8)
-    # final = []
-    # for co in cos:
-    #     if co[0]>1060 and co[1]>200:
-    #         final.append(co)
-    # print(final)
-    # threading.Thread(target=swipe, args=([(970, 395), (225, 395)],)).start()
-    # threading.Thread(target=swipe, args=([(225, 300), (970, 300)],)).start()
-    # Thread(target = swipe, arg=[(970, 395), (225, 395)]).start()
-    # swipe([(225, 300), (970, 300)])
-    # touch.smoothSwipe([(140, 140),
-    # (140, 204)])
-    # touch.smoothSwipe([(30000, 3000), (3600, 10000)])
-    # touch.swipe([(200, 200), (200, 300), (300, 300)])
-
-
-# # bot.task.leave_city_simple()
-# pil_image = bot.adb.get_curr_device_screen_img()
-# cv_image = array(pil_image)
-# cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-# cropped_image = cv_image[541:568, 265:434]
-# # cv2.imwrite("timer.png", cropped_image)
-# string = pytesseract.image_to_string(cropped_image,
-#                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890/,')
-# string = string.replace("\n", "")
-# for i in range(4):
-#     string = string.replace(",", "")
-# print(string)
-# bot.device.shell("sendevent /dev/input/event4: 1 330 1")     # Puts down finger
-# bot.device.shell("sendevent /dev/input/event4: 3 57 10")     # Sets pressure
-# bot.device.shell("sendevent /dev/input/event4: 3 53 100")    # Sets X to 100
-# bot.device.shell("sendevent /dev/input/event4: 3 54 230")    # Sets Y to 230
-# bot.device.shell("sendevent /dev/input/event4: 0 0 0")       # "0 0 0" (its called a SYN_REPORT)
-# bot.device.shell("sendevent /dev/input/event4: 1 330 0")     # Lift up finger
-# bot.device.shell("sendevent /dev/input/event4: 0 0 0")
-# print(bot.task.scan_gem())
-# bot.task.from_city_upgrade()
-# bot.adb.find_img_arg_conf("fort2",0.5)
-
-# pil_image = bot.adb.get_curr_device_screen_img()
-# cv_image = array(pil_image)
-# cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-#
-# # cv_image = cv2.imread("maraudeur_screen.png")
-# img_to_find = cv2.imread('resources\\heal_icon.png')
-#
-# result = cv2.matchTemplate(cv_image, img_to_find, cv2.TM_CCOEFF_NORMED)
-# needle_w = img_to_find.shape[1]
-# needle_h = img_to_find.shape[0]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-# min_thresh = 0.85
-# location = where(result >= min_thresh)
-# location = list(zip(*location[::-1]))
-# # print(location)
-#
-# rectangles = []
-# for loc in location:
-#     rect = [int(loc[0]), int(loc[1]), needle_w, needle_h]
-#     rectangles.append(rect)
-# # print(rectangles)
-#
-# localisations = []
-#
-# for i in range(len(rectangles)):
-#     localisations.append((rectangles[i][0], rectangles[i][1]))
-# element_to_delete = []
-# for i in range(len(localisations) - 1):
-#     if ((
-#             (localisations[i][0] + 1 == localisations[i + 1][0]) or
-#             (localisations[i][0] - 1 == localisations[i + 1][0]) or
-#             (localisations[i][0] == localisations[i + 1][0])
-#     ) and
-#             (
-#                     (localisations[i][1] + 1 == localisations[i + 1][1]) or
-#                     (localisations[i][1] - 1 == localisations[i + 1][1]) or
-#                     (localisations[i][1] == localisations[i + 1][1])
-#             )):
-#         element_to_delete.append(localisations[i])
-#
-# print(element_to_delete)
-# for element in element_to_delete:
-#     localisations.remove(element)
-# print(localisations)
+    bot.main_task.print = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.status = lambda txt: print(txt)
+    bot.main_task.script_pause = lambda: print("")
 
 
 
 
+    bot.task.current_profile="1"
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+    frame.get_text = ""
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
+    bot.upgrade.setup_view()
+    bot.task.better_sleep((0.9, 1.2))
+    claim_allaince = randint(4000,6000)
+    current_sec = 0
+    while 1:
+        bot.task.run_game()
+        while bot.upgrade.free_worker():
+            bot.upgrade.run()
+        else:
+            sleep(60)
+            current_sec += 60
+            bot.alliance.close_windows()
+            if current_sec>claim_allaince:
+                bot.alliance.run()
+                sleep(1)
+                current_sec = 0
+                claim_allaince = randint(4000, 6000)
+            bot.upgrade.help_alliance()
+            bot.upgrade.help_build()
+            bot.quests.run()
+            bot.vip.run()
+            bot.chest.run()
+
+def rss_transfert(number:int, type:str, amount: int):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+
+    bot.main_task.print = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.status = lambda txt: print(txt)
+    bot.main_task.script_pause = lambda: print("")
 
 
 
 
+    bot.task.current_profile="1"
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
+    bot.trade.run(type,amount)
+
+def quest_instance(number:int, master):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.set_text = lambda txt: print(txt)
+    bot.task.status = lambda txt: print(txt)
+    bot.task.script_pause = lambda: print("")
+    bot.upgrade.script_pause = lambda: print("")
+    bot.upgrade.print = lambda txt: print(txt)
+    bot.upgrade.set_text = lambda txt: print(txt)
+    bot.upgrade.status = lambda txt: print(txt)
+    bot.upgrade.script_pause = lambda: print("")
+    bot.quests = DailyQuests(bot.main_task)
+    bot.quests.script_pause = lambda: print("")
+    bot.quests.print = lambda txt: print(txt)
+    bot.quests.set_text = lambda txt: print(txt)
+    bot.quests.status = lambda txt: print(txt)
+    bot.quests.script_pause = lambda: print("")
+
+
+
+    bot.task.current_profile="1"
+    # master = customtkinter.CTk()
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
+    frame.adb = bot.adb
+    frame.pause = False
+    frame.stop = False
+    frame.update_label2 = lambda x,_: print(x)
+    bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    print(bot.quests.run())
+
+
+def research_instance(number:int, master):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+    bot.task.print = lambda txt: print(txt)
+    bot.task.set_text = lambda txt: print(txt)
+    bot.task.status = lambda txt: print(txt)
+    bot.task.script_pause = lambda: print
+    bot.upgrade.script_pause = lambda: print
+    bot.upgrade.print = lambda txt: print(txt)
+    bot.upgrade.set_text = lambda txt: print(txt)
+    bot.upgrade.status = lambda txt: print(txt)
+    bot.upgrade.script_pause = lambda: print
+    bot.research.script_pause = lambda: print
+    bot.research.print = lambda txt: print(txt)
+    bot.research.set_text = lambda txt: print(txt)
+    bot.research.status = lambda txt: print(txt)
+    bot.research.script_pause = 5
+    bot.task.current_profile="1"
+    # master = customtkinter.CTk()
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
+    frame.adb = bot.adb
+    frame.pause = False
+    frame.stop = False
+
+    frame.update_label2 = lambda x,_: print(x)
+    bot.task.frame = frame
+    # bot.task.setup_view()
+    # bot.task.better_sleep((0.9, 1.2))
+    bot.research.run()
+
+# def stop_start_emulators(master):
+#     instances = [
+#         create_instance(3, master),
+#         # create_instance(4, master),
+#         # create_instance(5, master)
+#     ]
+#     # while True:
+#     # for i in instances:
+#     threads = []
+#     while True:
+#         for instance in instances:
+#             instance.task.start_emulator()
+#             sleep(60)
+#             instance.task.run_game()
+#             t = Thread(target=lambda: instance.task.dynamique_city_upgrade())
+#             t.start()
+#             t.join()
+#             instance.adb.home_button()
+#             sleep(2)
+#             instance.task.kill_emulator()
+#         sleep(uniform(900, 1200))
+
+def main(page:ft.Page):
+    # Thread(target=lambda: upgrade_instance(page,8)).start()
+    Thread(target=lambda: upgrade_instance(page,9)).start()
+    Thread(target=lambda: upgrade_instance(page,10)).start()
+    Thread(target=lambda: upgrade_instance(page,11)).start()
+    # Thread(target=lambda: upgrade_instance(page,12)).start()
+    # Thread(target=lambda: upgrade_instance(page,13)).start()
+
+def get_bot(number):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+
+    bot.main_task.print = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.status = lambda txt: print(txt)
+    bot.main_task.script_pause = lambda: print("")
 
 
 
 
+    bot.task.current_profile="1"
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
+    return bot
+def upgrade_all():
+    Thread(target=lambda: upgrade_instance(3)).start()
+    Thread(target=lambda: upgrade_instance(4)).start()
+    Thread(target=lambda: upgrade_instance(5)).start()
+    Thread(target=lambda: upgrade_instance(6)).start()
+    Thread(target=lambda: upgrade_instance(7)).start()
+    Thread(target=lambda: upgrade_instance(8)).start()
+    # Thread(target=lambda: upgrade_instance(9)).start()
+    # Thread(target=lambda: upgrade_instance(10)).start()
+    # Thread(target=lambda: upgrade_instance(11)).start()
+    # Thread(target=lambda: upgrade_instance(12)).start()
+    # Thread(target=lambda: upgrade_instance(13)).start()
 
 
+if __name__ == "__main__":
+    # upgrade_all()
+    bot = get_bot(0)
+    bot.cod_rss.set_search_level(6)
+    # hwnd = win32gui.FindWindow(None, bot.adb.name)
+    # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+    # for _ in range(2):
+    #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+    #     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+    #     sleep(0.20)
+    #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+    #     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+    #     bot.task.better_sleep((1.4, 2))
+    # print(bot.upgrade.free_worker())
 
+    # print(bot.task.findNextChar())
+    # bot1 = get_bot(0)
 
+    # print(id(bot.adb.images)==id(bot1.adb.images))
+    # while True:
+    #     print("Asking screencap")
+    #     pil_image = bot.adb.get_curr_device_screen_img()
+    #     print("Screencap received")
+    #     source = array(pil_image)
+    #     print("Screencap converted to np array")
+    #     source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
+    #     print("Reading academy.png")
+    #     img_to_find = cv2.imread('resources/academy.png')
+    #     print("Read academy.png")
+    #     result = cv2.matchTemplate(source, img_to_find, cv2.TM_CCOEFF_NORMED)
+    #     print("Template matched")
+    #     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    #     print("MinMaxLoc")
+    # bot.trade.get_capacity()
+    # Thread(target=lambda: rss_transfert(1,"gold",130_000_000)).start()
+    # Thread(target=lambda: rss_transfert(0,"wood",400_000_000)).start()
+    # Thread(target=lambda: upgrade_instance(0)).start()
+    # upgrade_all()
 

@@ -16,12 +16,14 @@
 /images to crop
 /*.txt
 /*.exe
-/Task.py
 /*.lnk
-/BotInterface.py
 /Flet_Countdown.py
 /Sample.py
 /*png
 /Flet_RoutesExemple.py!
 
 auth compiled/
+/main.build/
+/main.dist/
+/main.onefile-build/
+/.vscode/
