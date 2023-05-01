@@ -23,3 +23,7 @@
 /Flet_RoutesExemple.py!
 
 auth compiled/
+/main.build/
+/main.dist/
+/main.onefile-build/
+/.vscode/
