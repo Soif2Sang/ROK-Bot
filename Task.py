@@ -174,6 +174,7 @@ class Task:
     
     @get_name
     def run_game(self, count=0) -> None:
+        return
         print(self.adb.is_game_alive())
         a = self.adb.is_game_alive()
         if not a:

@@ -9,6 +9,7 @@ from time import time, sleep
 import discord_bot
 import win32gui
 
+from COD_Task_gather_rss import CodGatherRss
 from Flet_time_allower import is_in_frametime, random_time_in_frametime
 from Task_alliance_donation import AllianceDonation
 from Task_alliance_help import AllianceHelp
@@ -30,7 +31,7 @@ import cv2
 import numpy as np
 from pytesseract import pytesseract
 
-from Task import Task
+from COD_Task import Task
 from Task_rss_transfert import RssTransfer
 from Task_training import TroopTraining
 from Task_upgrade_city import UpgradeCity
@@ -174,7 +175,7 @@ class TaskRunner(Task):
         if profile.get('buy_merchant', False):
             lib_tasks.append(BuyMerchant(self))
         if profile.get('gather_rss', False):
-            lib_tasks.append(GatherRss(self))
+            lib_tasks.append(CodGatherRss(self))
         if profile.get('use_enhanced_buff', False):
             lib_tasks.append(UseEnhancedBuff(self))
         if profile.get('check_donation', False):
@@ -674,62 +675,62 @@ class TaskRunner(Task):
                 self.print("Connecting to the emulator..")
                 self.adb.connect_to_device()
 
-                # self.run_game()
-                # self.check_log_back()
-                # self.check_reconnect()
-                # self.leave_kd_buff()
-                # self.check_mge()
-                # self.check_captcha()
-                # # First character
-                # self.current_profile = "1"
-                # self.print("Reminder : only the first profile is available")
-                # self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
-                # self.better_sleep((2.2, 4))
-                # self.go_city()
-                # city_upgrade = UpgradeCity(self)
-                # city_upgrade.setup_view()
-                #
-                # for i in range(2):
-                #     sleep(5)
-                #     city_upgrade.run()
-                #
-                #
-                # if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
-                #                                                                           False):
-                #
-                #
-                #     co_first = self.get_first_character()
-                #     boolean = True
-                #     self.wait_until_connected()
-                #
-                #     self.run_game()
-                #     # Characters remaining
-                #     nb_characters = 2
-                #     while boolean:
-                #         self.print(f"---- Character n°{nb_characters} ----".center(60))
-                #         self.run_game()
-                #         self.check_log_back()
-                #         self.check_reconnect()
-                #         self.leave_kd_buff()
-                #         self.check_mge()
-                #         self.check_captcha()
-                #
-                #         self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
-                #         self.better_sleep((2.2, 4))
-                #
-                #         self.go_city()
-                #         city_upgrade = UpgradeCity(self)
-                #         city_upgrade.setup_view()
-                #
-                #         for i in range(2):
-                #             sleep(5)
-                #             city_upgrade.run()
-                #
-                #         nb_characters += 1
-                #         boolean = self.change_character_param(co_first, nb_characters)
-                #         self.wait_until_connected()
-                #
-                # self.leave_game()
+                self.run_game()
+                self.check_log_back()
+                self.check_reconnect()
+                self.leave_kd_buff()
+                self.check_mge()
+                self.check_captcha()
+                # First character
+                self.current_profile = "1"
+                self.print("Reminder : only the first profile is available")
+                self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
+                self.better_sleep((2.2, 4))
+                self.go_city()
+                city_upgrade = UpgradeCity(self)
+                city_upgrade.setup_view()
+
+                for i in range(2):
+                    sleep(5)
+                    city_upgrade.run()
+
+
+                if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
+                                                                                          False):
+
+
+                    co_first = self.get_first_character()
+                    boolean = True
+                    self.wait_until_connected()
+
+                    self.run_game()
+                    # Characters remaining
+                    nb_characters = 2
+                    while boolean:
+                        self.print(f"---- Character n°{nb_characters} ----".center(60))
+                        self.run_game()
+                        self.check_log_back()
+                        self.check_reconnect()
+                        self.leave_kd_buff()
+                        self.check_mge()
+                        self.check_captcha()
+
+                        self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
+                        self.better_sleep((2.2, 4))
+
+                        self.go_city()
+                        city_upgrade = UpgradeCity(self)
+                        city_upgrade.setup_view()
+
+                        for i in range(2):
+                            sleep(5)
+                            city_upgrade.run()
+
+                        nb_characters += 1
+                        boolean = self.change_character_param(co_first, nb_characters)
+                        self.wait_until_connected()
+
+                self.leave_game()
                 self.pid = get_window_pid(self.adb.name)
                 cmd = f"taskkill /PID {self.pid} /F"
                 print(f'[ {current_time()} ] [ {self.name} ] Executing {cmd}')
@@ -759,5 +760,8 @@ class TaskRunner(Task):
                 for _ in range(time_before_redo_tasks):
                     self.script_pause()
                     sleep(1)
+
+    def check_captcha(self):
+        pass
 
 

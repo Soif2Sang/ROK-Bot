@@ -165,7 +165,7 @@ class Task:
     @get_name
     def find_img(self,target:str, source:  ndarray = None, confidence=0.9):
         # self.print(f"Loading {target}")
-        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
+        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
         result = self.adb.find_img(target=target,source=source,confidence=confidence)
         # self.print(f"Successfully loaded {target}")
         # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Successfully loaded {target}")
@@ -174,6 +174,7 @@ class Task:
     
     @get_name
     def run_game(self, count=0) -> None:
+        return
         if (co := self.find_img(target="codicon", confidence=0.8)):
             self.print(f"Looks like game is not running")
             self.click(co[0] + 10, co[1] + 10)
@@ -395,7 +396,8 @@ class Task:
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='cod_city_hammer',confidence=0.93) is None
+        cv_image = self.adb.get_cv2_img()
+        return self.find_img(target='cod_city_hammer',source=cv_image,confidence=0.9) is not None
 
     @get_name
     def close_windows(self):

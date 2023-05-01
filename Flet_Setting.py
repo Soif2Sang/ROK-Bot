@@ -35,24 +35,7 @@ class SettingContainer(ft.Container):
 
 
     def init(self):
-        self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
-        self.create_normal_switch("collect_ressource", "Collect city rss")
-        self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
-        self.create_normal_switch("buy_merchant", "Buy merchant")
-        self.create_normal_switch("check_donation", "Alliance donation")
-        self.create_advanced_switch("material_production", "Material Production", self.page_materials)
-        self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
-        self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
-        self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
-        self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
-        self.create_normal_switch("claim_campaign", "Claim Campaign Rewards")
-        self.create_normal_switch("alliance_help", "Alliance Help")
-        self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", self.page_barbs)
-        self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
-        self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
-        self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
-        self.create_advanced_switch("transfer_enable", "Rss Transfer", self.page_transfer)
 
         self.content.controls.append(ft.Divider())
 
