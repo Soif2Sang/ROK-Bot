@@ -9,6 +9,8 @@ from psutil import pid_exists
 import cv2
 from PIL import Image, ImageFile
 from numpy import array, ndarray
+
+import discord_bot
 from Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write, string_to_co
 from bot_adb import Adb
 from twocaptcha import TwoCaptcha
@@ -63,6 +65,11 @@ class Task:
             self.set_text(f"[{current_time()}] {text}",color)
         else:
             self.set_text("")
+
+    @get_name
+    def send_discord_message(self, message):
+        if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
+            return discord_bot.send_message(self.data["discord"]["user_id"],f"[{current_time()}] {message}")
 
     @get_name
     def click(self, x, y):
@@ -158,18 +165,19 @@ class Task:
     @get_name
     def find_img(self,target:str, source:  ndarray = None, confidence=0.9):
         # self.print(f"Loading {target}")
-        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
+        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
         result = self.adb.find_img(target=target,source=source,confidence=confidence)
         # self.print(f"Successfully loaded {target}")
-        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Successfully loaded {target}")
+        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Successfully loaded {target}")
 
         return result 
     
     @get_name
     def run_game(self, count=0) -> None:
+        print(self.adb.is_game_alive())
         a = self.adb.is_game_alive()
         if not a:
-            self.print(f"Looks like game is not running ")
+            self.print(f"Looks like game is not running")
             co = self.find_img(target="rokicon", confidence=0.8)
             if co is not None:
                 self.click(co[0] + 10, co[1] + 10)
@@ -225,6 +233,7 @@ class Task:
                                 return
 
                 self.print("ERROR CANNOT START THE GAME.")
+                self.send_discord_message("ERROR CANNOT START THE GAME.")
                 while True:
                     self.set_status("ERROR CANNOT START GAME")
                     self.script_pause()
@@ -275,6 +284,7 @@ class Task:
         if compteur > 5:
             self.print("Error in resolving the captcha, human action needed.")
             self.set_status("Error")
+            self.send_discord_message("Error in resolving the captcha, human action required.")
             while True:
                 self.script_pause()
                 sleep(1)
@@ -410,6 +420,7 @@ class Task:
                 return True
             else:
                 self.set_text("Auto Log-back off","red")
+                self.send_discord_message("The game got disconnected, Log-back off.")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -452,6 +463,7 @@ class Task:
                 return self.adb.get_cv2_img()
             else:
                 self.print("Reconnection disabled","red")
+                self.send_discord_message("The game got disconnected, auto-Reconnection off.")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -558,6 +570,7 @@ class Task:
                 else:
                     self.set_text(f"[{current_time()}] Captcha verification is Off")
                     self.set_status("Captcha is Off")
+                    self.send_discord_message("Captcha detected, Captcha verification off.")
                     while True:
                         self.script_pause()
                         sleep(1)

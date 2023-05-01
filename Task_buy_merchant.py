@@ -71,7 +71,7 @@ class BuyMerchant(Task):
         if not filter_coordinate(co):
             return
         self.print("Buying things from the shop")
-        self.click(co[0] + uniform(0, 10), uniform(0, 10))
+        self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
         self.buy_from_shop()
         self.click(uniform(1077, 1100), uniform(64, 95))
         self.better_sleep((1, 1.5))

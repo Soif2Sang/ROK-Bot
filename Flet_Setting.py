@@ -6,6 +6,7 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 
 import Flet_time_allower
 from Flet_row_material import FletRowMaterial
+from Flet_row_presets import FletRowPresets
 from Flet_row_rss import FletRowRss
 from Flet_col_transfer import FletColumnRss
 from Flet_row_troops import FletRowTraining
@@ -47,6 +48,7 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
         self.create_normal_switch("claim_campaign", "Claim Campaign Rewards")
         self.create_normal_switch("alliance_help", "Alliance Help")
+        self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", self.page_barbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
         self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
         self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
@@ -411,9 +413,36 @@ class SettingContainer(ft.Container):
             )
         )
         self.content.controls.append(ft.Divider(),)
-        self.content.controls.append(
-            ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure all red slot with PeaceKeeper\nNote this function is not designed for New accounts !", size=15, color="red"),
+        self.content.controls.extend([
+            ft.Text(value="*REQUIREMENT*\n\n/!\ Pre-configure all red slot with PeaceKeeper/!\ \n\n/!\Avoid AOE to not hit higher barb level/!\ \n\n/!\The bot is unenable see to the troops health/!\ \n\nNote this function is not designed for New accounts !", size=15, color="red"),
+            ft.Divider(),
+            ft.Row(
+                controls=[
+                ft.Text(value="Barbarian Level"),
+                ft.Dropdown(
+                    width=50,
+                    options=[
+                        ft.dropdown.Option(str(i)) for i in range(1, 56)
+                    ], on_change=lambda e: self.submit(e, "barbarians_level", str),
+                    value = self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["barbarians_level"]
+                )
+                ]
+                , width=300
+            ),
+            ft.Divider(),
+            ft.Text(value="Peacekeeper presets"),
+            ft.Column(
+                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in
+                          range(1, 8)],
+                wrap=True,
+                spacing=10,
+                run_spacing=10,
+                height=150
+                )
+            ]
         )
+        self.update()
+
 
     def page_rally(self):
         self.data = get_data()

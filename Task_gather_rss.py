@@ -260,6 +260,7 @@ class GatherRss(Task):
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_text("Error in line-up selection")
+                self.send_discord_message("Error in line-up selection, human interaction required.")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -554,7 +555,7 @@ class GatherRss(Task):
 
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get(f"{node_type}_level") - level_decrease <= 0:
                 node_type = self.next_resource_type(node_type)
-                self.print(f" Cannot decrease the current level.. Too low ! next type : {node_type}")
+                self.print(f"Cannot decrease the current level.. Too low ! next type : {node_type}")
                 return self.run(node_type, resolved, 0)
 
             self.set_search_level(self.data.get(self.sel).get('schedules').get(self.current_profile).get(f"{node_type}_level") - level_decrease)
