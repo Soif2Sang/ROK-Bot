@@ -215,19 +215,7 @@ class SettingContainer(ft.Container):
         self.color_choice = color_bank[self.profile_index]
         self.content = ft.ListView(height=500, expand=0, padding=1, )
 
-        self.create_advanced_switch("gather_gem", f"Gather gems{self.profile_index}", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
-        self.create_normal_switch("collect_ressource", "Collect city rss")
-        self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
-        self.create_normal_switch("buy_merchant", "Buy merchant")
-        self.create_normal_switch("check_donation", "Alliance donation")
-        self.create_advanced_switch("material_production", "Material Production", self.page_materials)
-        self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
-        self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
-        self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
-        self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
-        self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
-
 
         self.content.controls.append(ft.Divider())
 
@@ -243,18 +231,7 @@ class SettingContainer(ft.Container):
     def reset(self):
         self.clean()
         self.content = ft.ListView(height=500, expand=0, padding=1, )
-        self.create_advanced_switch("gather_gem", f"Gather gems{self.profile_index}", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
-        self.create_normal_switch("collect_ressource", "Collect city rss")
-        self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
-        self.create_normal_switch("buy_merchant", "Buy merchant")
-        self.create_normal_switch("check_donation", "Alliance donation")
-        self.create_advanced_switch("material_production", "Material Production", self.page_materials)
-        self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
-        self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
-        self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
-        self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
-        self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
 
         self.content.controls.append(ft.Divider())
 
@@ -412,10 +389,10 @@ class SettingContainer(ft.Container):
                             height=70,
                             label="Node Type",
                             options=[
-                                ft.dropdown.Option("food"),
+                                ft.dropdown.Option("gold"),
                                 ft.dropdown.Option("wood"),
                                 ft.dropdown.Option("stone"),
-                                ft.dropdown.Option("gold"),
+                                ft.dropdown.Option("mana"),
                             ],
                             value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][key],
                             on_change=lambda e: self.submit(e, key, str)
@@ -432,9 +409,6 @@ class SettingContainer(ft.Container):
                                 ft.dropdown.Option("4"),
                                 ft.dropdown.Option("5"),
                                 ft.dropdown.Option("6"),
-                                ft.dropdown.Option("7"),
-                                ft.dropdown.Option("8"),
-                                ft.dropdown.Option("9"),
                             ],
                             value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                 key + "_level"],

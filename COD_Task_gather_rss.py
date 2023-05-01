@@ -9,7 +9,7 @@ from random import uniform
 import cv2
 from pytesseract import pytesseract
 
-from Task import Task
+from COD_Task import Task
 from Task_utils import get_name, current_time, get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -128,16 +128,16 @@ class CodGatherRss(Task):
         else:
             # x,y = uniform(225,285) , uniform(607,667)
             # self.click(x,y)
-            cv_image = cv_image[co[1] - 30:co[1], co[0] - 40:co[0] + 40]
+            cv_image = cv_image[co[1] - 30:co[1] -5, co[0] - 80:co[0] + 80]
             # cv2.imwrite("level.png", cv_image)
             string = pytesseract.image_to_string(cv_image,
                                                  config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
             print(string)
             string = string.replace("\n", "")
-            self.print(f'Current level : {string[-1]}')
             # self.set_text(f"[{current_time()}] Current level : {string[1]}")
             try:
                 level_to_go = level - int(string[-1])
+                self.print(f'Current level : {string[-1]}')
             except:
                 x, y = self.find_img(target='cod_search_minus_button')
                 for i in range(6):
@@ -383,10 +383,10 @@ class CodGatherRss(Task):
 
     @get_class
     def run(self, node_type=None, level_decrease=0):
-        self.run_game()
-        self.check_reconnect()
-        self.check_log_back()
-        self.check_download_page()
+        # self.run_game()
+        # self.check_reconnect()
+        # self.check_log_back()
+        # self.check_download_page()
         if node_type is None:
             node_type = "First"
         if node_type == "Done":
