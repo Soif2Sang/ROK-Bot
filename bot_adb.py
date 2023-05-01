@@ -14,19 +14,13 @@ import io
 import pytesseract as tess
 from PIL import Image
 
-from Task_utils import current_time, get_name, get_data, get_path
+from Task_utils import current_time, get_name, get_data, get_path, write
 
 Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
 import json
 import logging
 from resources import *
-
-if not os.path.exists("user_settings.json"):
-    with open('user_settings.json', 'w') as f:
-        json.dump({}, f, indent=2)
-        print("User settings created")
-
 
 class Adb:
     def __init__(self, number, host='127.0.0.1', port=5037):
@@ -36,9 +30,11 @@ class Adb:
         self.port = port
         self.number = number
         self.name = data[str(self.number)]['name']
+        self.images = ImageSingleton()
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
+        return f"JsonNumber:{self.number} port:{self.port}"
 
 
     def connect_to_device(self, host='127.0.0.1'):
@@ -48,7 +44,6 @@ class Adb:
         self.port = int(data[str(self.number)]['port'])
         adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
         cmd = f"{adb_path} connect {host}:{self.port}"
-
         subprocess.Popen(cmd)
 
     def get_client_devices(self):
@@ -92,12 +87,16 @@ class Adb:
             return self.get_device()
 
     def print(self, text:str):
-        print(text)
-        with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] {text}\n")
+        data = get_data()
+        print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
+        write(self.name,text)
 
     def get_curr_device_screen_img_byte_array(self):
-        return self.get_device().screencap()
+        try:
+            return self.get_device().screencap()
+        except:
+            sleep(1)
+            return self.get_device().screencap()
 
 
     def get_curr_device_screen_img(self):
@@ -109,7 +108,7 @@ class Adb:
             output = io.BytesIO(device.screencap())
             # output.seek(0)
             image = Image.open(output)
-            self.print("INFO : Image opened")
+            # self.print("INFO : Image opened")
             return image
         except Exception as e:
             self.print(f"EXCEPTION : get_screen_device")
@@ -118,14 +117,21 @@ class Adb:
             return self.get_curr_device_screen_img()
 
     def get_cv2_img(self):
-        screen = self.get_curr_device_screen_img()
-        screen = array(screen)
-        screen = cvtColor(screen, COLOR_BGR2RGB)
-        return screen
+        try:
+            screen = self.get_curr_device_screen_img()
+            screen = array(screen)
+            screen = cvtColor(screen, COLOR_BGR2RGB)
+            return screen
+        except:
+            sleep(1)
+            screen = self.get_curr_device_screen_img()
+            screen = array(screen)
+            screen = cvtColor(screen, COLOR_BGR2RGB)
+            return screen
 
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
-        image.save('resources\\' + file_name + '.png')
+        image.save(file_name + '.png')
         return True
 
     def find_img_cv(self, img_to_find, confidence=0.9):
@@ -151,7 +157,7 @@ class Adb:
 
                 source = cvtColor(source, COLOR_BGR2RGB)
 
-            img_to_find = get_file_name(target)
+            img_to_find = self.images.get_file_name(target)
 
             result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = minMaxLoc(result)
@@ -169,7 +175,7 @@ class Adb:
 
 
     def find_img_src_conf(self, src, target, confidence):
-        img_to_find = get_file_name(target)
+        img_to_find = self.images.get_file_name(target)
         result = matchTemplate(src, img_to_find, TM_CCOEFF_NORMED)
         min_val, max_val, min_loc, max_loc = minMaxLoc(result)
         if max_val > confidence:
@@ -183,7 +189,7 @@ class Adb:
         cv_image = cvtColor(cv_image, COLOR_BGR2RGB)
         # print(cv_image)
 
-        img_to_find = get_file_name(target)
+        img_to_find = self.images.get_file_name(target)
         if target == "back_icon":
             cv_image = cv_image[0:720, 1000:1280]
         # print(img_to_find)
@@ -235,23 +241,33 @@ class Adb:
 
     def is_game_alive(self):
         string = "dumpsys activity activities | grep mFocusedActivity"
-        a = self.get_device().shell(string)
+        a = self.shell(string)
         # print(a)
         return 'lilithgame' in a or 'rok' in a or 'lilithgames' in a
 
     def click(self, x, y):
         string = f'input tap {x} {y}'
-        self.get_device().shell(string)
+        self.shell(string)
         return
+
+    def shell(self, string):
+        device = self.get_device()
+        try:
+            return device.shell(string)
+        except RuntimeError:
+            print(RuntimeError)
+            sleep(3)
+            self.connect_to_device()
+            return self.shell(string)
 
     def swipe(self, x, y, x2, y2):
         string = f'input swipe {x} {y} {x2} {y2} 420'
-        self.get_device().shell(string)
+        self.shell(string)
         return
 
     def swipe_arg(self, x, y, x2, y2, arg):
         string = f'input swipe {x} {y} {x2} {y2} {arg}'
-        self.get_device().shell(string)
+        self.shell(string)
         return
 
     #
@@ -279,8 +295,7 @@ class Adb:
 
     def restart_emulator(self):
         try:
-            with open('path.json') as config_file:
-                path = json.load(config_file)
+            path = get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"
@@ -311,7 +326,7 @@ class Adb:
             dico_instance[str(len(dico_instance) - 1)]['name'] = string2[1]
 
     def home_button(self):
-        self.get_device().shell('input keyevent KEYCODE_HOME')
+        self.shell('input keyevent KEYCODE_HOME')
     #
     # def enable_adb(self,host='127.0.0.1', port=5037):
     #     adb = None

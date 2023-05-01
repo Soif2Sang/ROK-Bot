@@ -10,23 +10,22 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_name, get_class, current_time
+from Task_utils import get_name, get_class, current_time, get_data
+
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class HuntBarbarians(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        super().__init__(MainTask.tile)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
+        self.frame = MainTask.tile
         self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -38,7 +37,7 @@ class HuntBarbarians(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.adb.find_img(target=f'{color}_icon', confidence=0.95) is None and self.adb.find_img(target=
+        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
                                                                                                        "troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
@@ -61,7 +60,7 @@ class HuntBarbarians(Task):
         """
 
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         cropped_image = cv_image[13:35, 1225:1254]
         cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
@@ -92,7 +91,7 @@ class HuntBarbarians(Task):
             self.better_sleep((1.325, 1.795))
             return False
         self.check_if_kill()
-        co = self.adb.find_img(target="new_troops_button")
+        co = self.find_img(target="new_troops_button")
         if co is not None:
             # print("Home button found")
             x, y = co[0], co[1]
@@ -114,7 +113,7 @@ class HuntBarbarians(Task):
                     #         final.append(co)
                     final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
                     if final != []:
-                        x, y = self.adb.find_img(target="troops_march_button")
+                        x, y = self.find_img(target="troops_march_button")
                         x, y = x + uniform(0, 20), y + uniform(0, 20)
                         self.check_if_kill()
                         self.click(x, y)
@@ -122,15 +121,15 @@ class HuntBarbarians(Task):
                         self.print("New Troop sent !")
                         return True
 
-                # if self.adb.find_img(target="choose_right", confidence=0.8):
-                #     x, y = self.adb.find_img(target="troops_march_button")
+                # if self.find_img(target="choose_right", confidence=0.8):
+                #     x, y = self.find_img(target="troops_march_button")
                 #     x, y = x + uniform(0, 20), y + uniform(0, 20)
                 #     self.check_if_kill()
                 #     self.click(x, y)
                 #     self.better_sleep((0.5, 0.7))
                 #     return True
             self.check_if_kill()
-            co = self.adb.find_img(target="troops_march_button")
+            co = self.find_img(target="troops_march_button")
             if co is None:
                 return self.send_new_troop(deadstop=deadstop + 1)
             x, y = co[0], co[1]
@@ -140,7 +139,7 @@ class HuntBarbarians(Task):
             self.better_sleep((0.5, 0.7))
             self.print("New Troop sent !")
             return True
-        co = self.adb.find_img(target="march_bar")
+        co = self.find_img(target="march_bar")
         if co is not None and self.free_troop_gem():
             x, y = uniform(1177, 1250), uniform(80, 116)
             self.check_if_kill()
@@ -172,11 +171,11 @@ class HuntBarbarians(Task):
             print("done", co)
             self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
             self.better_sleep((1.325, 1.795))
-            co = self.adb.find_img(target="deploy_march_button")
+            co = self.find_img(target="deploy_march_button")
             if co is not None:
                 self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
                 self.better_sleep((1.325, 1.795))
-                if self.adb.find_img(target="new_troops_button"):
+                if self.find_img(target="new_troops_button"):
                     self.send_new_troop(color='red')
                     hunters += 1
                 else:
@@ -188,7 +187,7 @@ class HuntBarbarians(Task):
     @get_name
     def enough_action_points(self) -> bool:
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(cv_image)
         print(img.getpixel((33, 73)))
@@ -214,7 +213,7 @@ class HuntBarbarians(Task):
 
     @get_name
     def click_loop(self) -> None:
-        if not self.adb.find_img(target="gem_search_button"):
+        if not self.find_img(target="gem_search_button"):
             self.print(f'Loop icon not found, leaving the city')
             self.leave_city()
             self.better_sleep((2, 3))
@@ -227,9 +226,9 @@ class HuntBarbarians(Task):
     @get_name
     def set_search_level(self, level: int = 10) -> None:
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        co = self.adb.find_img(source=cv_image, target="button_level", confidence=0.8)
+        co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
             self.print(f'Cannot find the button_level')
             # self.set_text(f"[{current_time()}] Cannot find the level button")
@@ -250,10 +249,10 @@ class HuntBarbarians(Task):
             level_to_go = level - int(string[1])
             if level_to_go > 0:
                 word = "Increasing"
-                x, y = self.adb.find_img(target='plus_button')
+                x, y = self.find_img(target='plus_button')
             else:
                 word = "Decreasing"
-                x, y = self.adb.find_img(target='minus_button')
+                x, y = self.find_img(target='minus_button')
             self.print(f'{word} the level by : {abs(level_to_go)}')
             # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
             for _ in range(abs(level_to_go)):
@@ -266,17 +265,17 @@ class HuntBarbarians(Task):
     @get_name
     def check_ap_box(self) -> bool:
         self.print(f'Check if AP pop-op box is detected')
-        if self.adb.find_img(target="ap_bottle"):
-            co = self.adb.find_img(target="daily_ap_claim")
+        if self.find_img(target="ap_bottle"):
+            co = self.find_img(target="daily_ap_claim")
             if co is None:
-                co = self.adb.find_img(target="close_window")
+                co = self.find_img(target="close_window")
                 self.click(co[0], co[1])
                 self.better_sleep((1.325, 1.795))
             else:
                 x, y = co[0] + uniform(0, 30), co[1] + uniform(0, 20)
                 self.click(x, y)
             self.better_sleep((1.325, 1.795))
-            co = self.adb.find_img(target="close_window")
+            co = self.find_img(target="close_window")
             if co is not None:
                 self.click(co[0], co[1])
                 self.better_sleep((1.325, 1.795))
@@ -288,7 +287,7 @@ class HuntBarbarians(Task):
     @get_name
     def wait_until_kill(self):
         self.print(f"Waiting for the troops to kill the barbarian..")
-        while self.adb.find_img(target="troop_idle") is None or self.adb.find_img(target="troop_walking") is not None:
+        while self.find_img(target="troop_idle") is None or self.find_img(target="troop_walking") is not None:
             self.script_pause()
             self.check_log_back()
             self.check_reconnect()
@@ -308,7 +307,7 @@ class HuntBarbarians(Task):
         breakint = 0
         while nb_to_go > 0:
             print(nb_to_go)
-            co = self.adb.find_img(target="return_button")
+            co = self.find_img(target="return_button")
             while co is None and breakint != 4:
                 print(
                     f'[ {current_time()} ] [ {self.name} ] Return button not found')
@@ -317,7 +316,7 @@ class HuntBarbarians(Task):
                 x2, y2 = x + uniform(-30, 30), y + uniform(-200, -100)
                 self.swipe(x, y, x2, y2)
                 self.better_sleep((2, 3))
-                co = self.adb.find_img(target="return_button")
+                co = self.find_img(target="return_button")
                 breakint += 1
             if co is not None:
                 self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
@@ -353,7 +352,7 @@ class HuntBarbarians(Task):
             self.better_sleep((1, 2))
 
             reduced_level = wanted_level
-            while self.adb.find_img(target="search_button") is not None:
+            while self.find_img(target="search_button") is not None:
                 reduced_level = reduced_level - 1
                 self.set_search_level(reduced_level)
 
@@ -364,7 +363,7 @@ class HuntBarbarians(Task):
             wanted_level = reduced_level
             self.click(1280 // 2 + uniform(-10, 10), 720 // 2 + uniform(-10, 10))  # Selecting the barbarian
             self.better_sleep((1, 1.4))
-            button_attack = self.adb.find_img(target="attack_button")
+            button_attack = self.find_img(target="attack_button")
             if button_attack is None:
                 continue  # Skipping all the code bellow to re-execute the barbarian search
             self.click(button_attack[0] + uniform(0, 170), button_attack[1] + uniform(0, 40))
