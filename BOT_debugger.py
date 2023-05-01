@@ -1,12 +1,13 @@
 from threading import Thread
-
-import customtkinter
+import flet as ft
 
 from Task import Task
 from Task_academy_research import AcademyResearch
 from Task_alliance_donation import AllianceDonation
 from Task_claim_daily_quests import DailyQuests
+from Task_daily_chest2 import DailyChest2
 from Task_daily_vip import DailyVip
+from Task_rss_transfert import RssTransfer
 from Task_runner import TaskRunner
 from Task_upgrade_city import UpgradeCity
 from bot_adb import *
@@ -14,14 +15,21 @@ from OLD_Tasks_lib import *
 #from rkp import *
 #from auto_upgrade import *
 
-with open('user_settings.json') as config_file: data = json.load(config_file)
+data = get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 
 class Frame():
     def __init__(self,sel):
-        self.pause = False
-        self.stop = False
-        self.sel = sel
+        self.started = True
+        self.stopped = False
+        self.number = sel
+
+    def add_text(self,phrase, color="black"):
+        print(phrase)
+
+    def add_status(self, phrase, color="black"):
+        return
+
 
 class Bot():
     def __init__(self,adb):
@@ -31,12 +39,14 @@ class Bot():
         self.main_task.adb = adb
         #self.task = Tasks(self.adb)
         self.main_task.set_sel(str(adb.number))
-        self.task = TaskRunner(self.main_task,self.main_task.frame)
+        self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)
         self.vip = DailyVip(self.main_task)
+        self.chest = DailyChest2(self.main_task)
         self.alliance = AllianceDonation(self.main_task)
+        self.trade = RssTransfer(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -173,25 +183,35 @@ def create_instance(number:int, master):
     bot.adb.connect_to_device()
     bot.task.print = lambda txt: print(txt)
     bot.task.current_profile="1"
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.pause = False
     frame.stop = False
     bot.task.frame = frame
     # bot.task.setup_view()
     # bot.task.better_sleep((0.9, 1.2))
     return bot
-    while 0:
-        while bot.adb.find_img("upgrade_stone") is not None or bot.adb.find_img("upgrade_stone2"):
-            bot.upgrade.run()
-        else:
-            sleep(30)
-            bot.upgrade.help_alliance()
-    bot.task.dynamique_city_upgrade()
-    bot.task.kill_emulator()
 
-def upgrade_instance(number:int, master):
+class FakeText():
+    def __init__(self):
+        self.value = ""
+
+    def update(self):
+        return
+
+class lightTile():
+    def ___init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        with open('user_settings.json') as config_file:
+            data = json.load(config_file)
+
+        self.started = True
+        self.stopped = False
+        self.text_status = FakeText()
+
+def upgrade_instance(number:int):
     adb = Adb(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
@@ -201,46 +221,32 @@ def upgrade_instance(number:int, master):
     bot.main_task.status = lambda txt: print(txt)
     bot.main_task.script_pause = lambda: print("")
 
-    # bot.task.print = lambda txt: print(txt)
-    # bot.task.set_text = lambda txt: print(txt)
-    # bot.task.status = lambda txt: print(txt)
-    # bot.task.script_pause = lambda: print("")
-    #
-    # bot.upgrade.script_pause = lambda: print("")
-    # bot.upgrade.print = lambda txt: print(txt)
-    # bot.upgrade.set_text = lambda txt: print(txt)
-    # bot.upgrade.status = lambda txt: print(txt)
-    # bot.upgrade.script_pause = lambda: print("")
-    #
-    # bot.quests.script_pause = lambda: print("")
-    # bot.quests.print = lambda txt: print(txt)
-    # bot.quests.set_text = lambda txt: print(txt)
-    # bot.quests.status = lambda txt: print(txt)
-    # bot.quests.script_pause = lambda: print("")
 
 
 
     bot.task.current_profile="1"
-    # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master, fg_color="white")
-    frame.end_tasks_button = customtkinter.CTkButton(master)
-    frame.adb = bot.adb
-    frame.pause = False
-    frame.stop = False
-    frame.update_label2 = lambda x,_: print(x)
-    bot.task.frame = frame
-    bot.task.frame.pause = False
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+    frame.get_text = ""
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
     bot.upgrade.setup_view()
     bot.task.better_sleep((0.9, 1.2))
     claim_allaince = randint(4000,6000)
     current_sec = 0
     while 1:
+        bot.task.run_game()
         while bot.upgrade.free_worker():
             bot.upgrade.run()
         else:
             sleep(60)
             current_sec += 60
+            bot.alliance.close_windows()
             if current_sec>claim_allaince:
                 bot.alliance.run()
                 sleep(1)
@@ -250,7 +256,33 @@ def upgrade_instance(number:int, master):
             bot.upgrade.help_build()
             bot.quests.run()
             bot.vip.run()
+            bot.chest.run()
 
+def rss_transfert(number:int, type:str, amount: int):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+
+    bot.main_task.print = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.status = lambda txt: print(txt)
+    bot.main_task.script_pause = lambda: print("")
+
+
+
+
+    bot.task.current_profile="1"
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
+    bot.trade.run(type,amount)
 
 def quest_instance(number:int, master):
     adb = Adb(number)
@@ -276,9 +308,9 @@ def quest_instance(number:int, master):
 
     bot.task.current_profile="1"
     # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
@@ -309,9 +341,9 @@ def research_instance(number:int, master):
     bot.research.script_pause = 5
     bot.task.current_profile="1"
     # master = customtkinter.CTk()
-    frame = customtkinter.CTkFrame(master)
-    frame.pr_tasks_button = customtkinter.CTkButton(master)
-    frame.end_tasks_button = customtkinter.CTkButton(master)
+    frame = object()
+    frame.pr_tasks_button = object()
+    frame.end_tasks_button = object()
     frame.adb = bot.adb
     frame.pause = False
     frame.stop = False
@@ -322,61 +354,110 @@ def research_instance(number:int, master):
     # bot.task.better_sleep((0.9, 1.2))
     bot.research.run()
 
-def stop_start_emulators(master):
-    instances = [
-        create_instance(3, master),
-        # create_instance(4, master),
-        # create_instance(5, master)
-    ]
-    # while True:
-    # for i in instances:
-    threads = []
-    while True:
-        for instance in instances:
-            instance.task.start_emulator()
-            sleep(60)
-            instance.task.run_game()
-            t = Thread(target=lambda: instance.task.dynamique_city_upgrade())
-            t.start()
-            t.join()
-            instance.adb.home_button()
-            sleep(2)
-            instance.task.kill_emulator()
-        sleep(uniform(900, 1200))
+# def stop_start_emulators(master):
+#     instances = [
+#         create_instance(3, master),
+#         # create_instance(4, master),
+#         # create_instance(5, master)
+#     ]
+#     # while True:
+#     # for i in instances:
+#     threads = []
+#     while True:
+#         for instance in instances:
+#             instance.task.start_emulator()
+#             sleep(60)
+#             instance.task.run_game()
+#             t = Thread(target=lambda: instance.task.dynamique_city_upgrade())
+#             t.start()
+#             t.join()
+#             instance.adb.home_button()
+#             sleep(2)
+#             instance.task.kill_emulator()
+#         sleep(uniform(900, 1200))
+
+def main(page:ft.Page):
+    # Thread(target=lambda: upgrade_instance(page,8)).start()
+    Thread(target=lambda: upgrade_instance(page,9)).start()
+    Thread(target=lambda: upgrade_instance(page,10)).start()
+    Thread(target=lambda: upgrade_instance(page,11)).start()
+    # Thread(target=lambda: upgrade_instance(page,12)).start()
+    # Thread(target=lambda: upgrade_instance(page,13)).start()
+
+def get_bot(number):
+    adb = Adb(number)
+    bot = Bot(adb)
+    bot.adb.connect_to_device()
+
+    bot.main_task.print = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.status = lambda txt: print(txt)
+    bot.main_task.script_pause = lambda: print("")
+
+
+
+
+    bot.task.current_profile="1"
+    # Page = customtkinter.CTk()
+    frame = Frame(number)
+    frame.number = number
+    frame.stopped = False
+    frame.started = True
+    frame.add_text = lambda x,_: print(x)
+    frame.set_text = lambda x, _: print(x)
+
+    bot.task.tile = frame
+    bot.task.tile.stopped = False
+    return bot
+def upgrade_all():
+    Thread(target=lambda: upgrade_instance(3)).start()
+    Thread(target=lambda: upgrade_instance(4)).start()
+    Thread(target=lambda: upgrade_instance(5)).start()
+    Thread(target=lambda: upgrade_instance(6)).start()
+    Thread(target=lambda: upgrade_instance(7)).start()
+    Thread(target=lambda: upgrade_instance(8)).start()
+    # Thread(target=lambda: upgrade_instance(9)).start()
+    # Thread(target=lambda: upgrade_instance(10)).start()
+    # Thread(target=lambda: upgrade_instance(11)).start()
+    # Thread(target=lambda: upgrade_instance(12)).start()
+    # Thread(target=lambda: upgrade_instance(13)).start()
 
 
 if __name__ == "__main__":
-    # master = customtkinter.CTk()
-    # adb = Adb(1)
-    # bot = Bot(adb)
-    # bot.adb.connect_to_device()
-    #
-    # bot.main_task.print = lambda txt: print(txt)
-    # bot.main_task.set_text = lambda txt: print(txt)
-    # bot.main_task.status = lambda txt: print(txt)
-    # bot.main_task.script_pause = lambda: print("")
-    # bot.task.current_profile="1"
-    master = customtkinter.CTk()
-    # frame = customtkinter.CTkFrame(master)
-    # frame.pr_tasks_button = customtkinter.CTkButton(master, fg_color="white")
-    # frame.end_tasks_button = customtkinter.CTkButton(master)
-    # frame.adb = bot.adb
-    # frame.pause = False
-    # frame.stop = False
-    # frame.update_label2 = lambda x,_: print(x)
-    # bot.task.frame = frame
-    # bot.task.frame.pause = False
-    #
-    # bot.task.check_reconnect()
+    # upgrade_all()
+    bot = get_bot(0)
+    hwnd = win32gui.FindWindow(None, bot.adb.name)
+    hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+    for _ in range(2):
+        win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+        win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+        sleep(0.20)
+        win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+        win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+        bot.task.better_sleep((1.4, 2))
+    print(bot.upgrade.free_worker())
 
+    # print(bot.task.findNextChar())
+    # bot1 = get_bot(0)
 
-
-
-
-    Thread(target=lambda: upgrade_instance(3,master)).start()
-    Thread(target=lambda: upgrade_instance(4, master)).start()
-    Thread(target=lambda: upgrade_instance(5, master)).start()
-    # Thread(target=lambda: upgrade_instance(6, master)).start()
-    # Thread(target=lambda: upgrade_instance(7, master)).start()
-    master.mainloop()
+    # print(id(bot.adb.images)==id(bot1.adb.images))
+    # while True:
+    #     print("Asking screencap")
+    #     pil_image = bot.adb.get_curr_device_screen_img()
+    #     print("Screencap received")
+    #     source = array(pil_image)
+    #     print("Screencap converted to np array")
+    #     source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
+    #     print("Reading academy.png")
+    #     img_to_find = cv2.imread('resources/academy.png')
+    #     print("Read academy.png")
+    #     result = cv2.matchTemplate(source, img_to_find, cv2.TM_CCOEFF_NORMED)
+    #     print("Template matched")
+    #     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    #     print("MinMaxLoc")
+    # bot.trade.get_capacity()
+    # Thread(target=lambda: rss_transfert(1,"gold",130_000_000)).start()
+    # Thread(target=lambda: rss_transfert(0,"wood",400_000_000)).start()
+    # Thread(target=lambda: upgrade_instance(0)).start()
+    # upgrade_all()
 

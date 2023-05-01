@@ -17,24 +17,22 @@ from pytesseract import pytesseract
 
 from Task import Task, get_name, current_time
 from Task_heal_troop import HealTroop
-from Task_utils import get_class
+from Task_utils import get_class, get_data, get_path
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class BarbFort(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        super().__init__(MainTask.tile)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
+        self.frame = MainTask.tile
         self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -43,29 +41,18 @@ class BarbFort(Task):
     @get_name
     def random_macro(self) -> None:
         try:
-            with open('path.json', encoding="UTF-8") as config_file:
-                path_json = json.load(config_file)
+            path_json = get_path()
             for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg", "com.lilithgames.rok.gp.jp.cfg",
                          "com.lilithgames.rok.gpkr.cfg"]:
                 path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
                 if os.path.isfile(path):
                     break
-            # path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.lilithgame.roc.gp.cfg"
-            # if not os.path.isfile(path):
-            #     path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.rok.gp.vn.cfg"
-            #     if not os.path.isfile(path):
-            #         path = path_json['bluestacks'][
-            #                :-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.lilithgame.rok.gpkr.cfg"
-            #         if not os.path.isfile(path):
-            #             path = path_json['bluestacks'][
-            #                    :-15] + "Engine\\UserData\\InputMapper\\UserFiles\\com.lilithgames.rok.gp.jp.cfg"
             path2 = path.replace("cfg", "json")
             # print(f"{path = }")
             # print(f"{path2 = }")
             shutil.copy(path, path2)
             # print("test")
-            with open(path2, encoding="UTF-8") as config_file:
-                path_json = json.load(config_file)
+            path_json = get_path()
             for element in path_json['ControlSchemes']:
                 if element["Name"] == "Custom":
                     # print(element["Name"])
@@ -86,13 +73,13 @@ class BarbFort(Task):
 
         except Exception as e:
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ","red")
             print(
                 f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
             self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial")
+                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial","red")
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ","red")
 
     @get_name
     def zoom_out_city(self) -> None:
@@ -103,13 +90,13 @@ class BarbFort(Task):
         self.script_pause()
         try:
             self.print("Zooming out..")
-            co = self.adb.find_img(target='gem_search_button')
+            co = self.find_img(target='gem_search_button')
             if co is not None:
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
                 for _ in range(4):
                     self.script_pause()
-                    boolean = self.adb.find_img(target="gem_search_button")
+                    boolean = self.find_img(target="gem_search_button")
                     if boolean is not None:
                         for _ in range(2):
                             self.script_pause()
@@ -150,9 +137,7 @@ class BarbFort(Task):
 
     @get_name
     def enough_action_points(self) -> bool:
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = np.array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         img = Image.fromarray(cv_image)
         print(img.getpixel((33, 73)))
         if (
@@ -202,7 +187,7 @@ class BarbFort(Task):
         :return: True if node is not free
         :return: False if node is free to gather
         """
-        cv_image = array(image)
+        cv_image = self.pil_to_array(image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         try:
             cropped_image = cv_image[y - 40:y + 50, x - 30:x + 50]
@@ -291,9 +276,7 @@ class BarbFort(Task):
         :return: False if node is free to gather
         """
         self.print("Scanning the node..")
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cv_image = self.adb.get_cv2_img()
         cropped_image = cv_image[230:480, 441:814]
         img = Image.fromarray(cropped_image)
         for i in range(img.size[0]):
@@ -344,7 +327,7 @@ class BarbFort(Task):
     @get_name
     def click_on_fort(self) -> bool:
         i = 0
-        while (co := self.adb.find_img(target="fort_rally_button1")) is None:
+        while (co := self.find_img(target="fort_rally_button1")) is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -352,7 +335,7 @@ class BarbFort(Task):
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        # co = self.adb.find_img(target="fort_rally_button1")
+        # co = self.find_img(target="fort_rally_button1")
         if co is not None:
             x, y = co[0], co[1]
             x, y = x + uniform(0, 144), y + uniform(0, 30)
@@ -368,7 +351,7 @@ class BarbFort(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.adb.find_img(target=f'{color}_icon', confidence=0.95) is None and self.adb.find_img(target=
+        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
                                                                                                        "troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
@@ -378,7 +361,7 @@ class BarbFort(Task):
                 while True:
                     self.script_pause()
                     sleep(1)
-            self.click(uniform(1092, 1114), uniform(225, 248))
+            self.click(uniform(1092, 1114), uniform(260, 282))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
             self.print("Switching between line-up..")
@@ -391,23 +374,23 @@ class BarbFort(Task):
         """
         self.data = self.update_data()
         screen = self.adb.get_curr_device_screen_img()
-        info_screen = array(screen)
+        info_screen = self.pil_to_array(screen)
         info_screen = cv2.cvtColor(info_screen, cv2.COLOR_BGR2RGB)
         info_screen = info_screen[470:700, 0:115]
 
-        if self.adb.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
+        if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
             self.zoom_out_city()
             self.better_sleep((2, 3))
             screen = self.adb.get_curr_device_screen_img()
 
-        if self.adb.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
+        if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
             screen = self.adb.get_curr_device_screen_img()
 
-        screen = array(screen)
+        screen = self.pil_to_array(screen)
         screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
 
         if not self.data[self.sel]['schedules'][self.current_profile]["mauraudeurs_forts"]:
@@ -415,10 +398,10 @@ class BarbFort(Task):
                 for first_string in ["up", "mid", "down"]:
                     self.check_if_kill()
                     # f"{screen}fort_icon_day_{first_string}_{second_string}"
-                    co = self.adb.find_img(source=screen, target=f"fort_icon_day_{first_string}_{second_string}", confidence=0.8)
+                    co = self.find_img(source=screen, target=f"fort_icon_day_{first_string}_{second_string}", confidence=0.8)
                     co = self.validate_co(co)
                     if co is None:
-                        co = self.adb.find_img(source=screen, target=f"fort_icon_night_{first_string}_{second_string}", confidence=0.8)
+                        co = self.find_img(source=screen, target=f"fort_icon_night_{first_string}_{second_string}", confidence=0.8)
                         co = self.validate_co(co)
                     if co is not None:
                         self.print(f"Fort Found - x: {co[0]} y:{co[1]}")
@@ -446,7 +429,7 @@ class BarbFort(Task):
                             else:
 
                                 self.better_sleep((1, 1.5))
-                                co = self.adb.find_img(target="fort_rally_button2")
+                                co = self.find_img(target="fort_rally_button2")
                                 if co is not None:
                                     fivemins = (uniform(800, 925), uniform(188, 213))
                                     tenmins = (uniform(960, 1088), uniform(188, 213))
@@ -465,30 +448,32 @@ class BarbFort(Task):
                                     self.better_sleep((1.1, 1.5))
                                     self.select_lineup_color(color='red')
                                     self.better_sleep((0.7, 1.2))
-                                    if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                            'rally_type') == 'inf':
-                                        # self.click(uniform(982,998),uniform(280,298))
-                                        # self.better_sleep((0.7, 1.2))
-                                        self.click(uniform(657, 680), uniform(96, 117))
-                                        self.better_sleep((0.7, 1.2))
-                                    if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                            'rally_type') == 'cav':
-                                        # self.click(uniform(982,998),uniform(390,405))
-                                        # self.better_sleep((0.7, 1.2))
-                                        self.click(uniform(770, 795), uniform(96, 117))
-                                        self.better_sleep((0.7, 1.2))
-                                    if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                            'rally_type') == 'archers':
-                                        # self.click(uniform(982,998),uniform(330,350))
-                                        # self.better_sleep((0.7, 1.2))
-                                        self.click(uniform(886, 906), uniform(96, 117))
-                                        self.better_sleep((0.7, 1.2))
+                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
+                                    #         'rally_type') == 'inf':
+                                    #     # self.click(uniform(982,998),uniform(280,298))
+                                    #     # self.better_sleep((0.7, 1.2))
+                                    #     self.click(uniform(657, 680), uniform(96, 117))
+                                    #     self.better_sleep((0.7, 1.2))
+                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
+                                    #         'rally_type') == 'cav':
+                                    #     # self.click(uniform(982,998),uniform(390,405))
+                                    #     # self.better_sleep((0.7, 1.2))
+                                    #     self.click(uniform(770, 795), uniform(96, 117))
+                                    #     self.better_sleep((0.7, 1.2))
+                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
+                                    #         'rally_type') == 'archers':
+                                    #     # self.click(uniform(982,998),uniform(330,350))
+                                    #     # self.better_sleep((0.7, 1.2))
+                                    #     self.click(uniform(886, 906), uniform(96, 117))
+                                    #     self.better_sleep((0.7, 1.2))
+                                    self.click(uniform(657, 680), uniform(96, 117))
+                                    self.better_sleep((0.7, 1.2))
                                     self.click(uniform(1092, 1112), uniform(330, 350))
-                                    self.better_sleep((0.5, 1))
+                                    self.better_sleep((2,3))
                                     pil_image = self.adb.get_curr_device_screen_img()
-                                    cv_image = array(pil_image)
+                                    cv_image =self.pil_to_array(pil_image)
                                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-                                    x, y = self.adb.find_img(source=cv_image, target="troops_march_button", confidence=0.8)
+                                    x, y = self.find_img(target="troops_march_button", confidence=0.8)
                                     cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
                                     # cv2.imwrite("timer.png", cropped_image)
                                     string = pytesseract.image_to_string(cropped_image,
@@ -500,9 +485,9 @@ class BarbFort(Task):
                                     print(datetime_object)
                                     self.print("Starting the rally..")
                                     self.click(x, y)
-                                    self.better_sleep((0.5, 1))
+                                    self.better_sleep((2,3))
                                     self.go_city()
-                                    self.better_sleep((0.5, 1))
+                                    self.better_sleep((2,3))
                                     self.print(
                                         f"You selected {self.data[str(self.sel)]['schedules'][self.current_profile].get('rally_time')} minutes")
                                     self.print(f"Rally leader marching time is {datetime.strptime(string, '%H:%M:%S').strftime('%S')}")
@@ -522,7 +507,7 @@ class BarbFort(Task):
                                     return True
         else:
             self.check_if_kill()
-            co = self.adb.find_img(source=screen, target="maraudeurs_forts_icon", confidence=0.8)
+            co = self.find_img(source=screen, target="maraudeurs_forts_icon", confidence=0.8)
             co = self.validate_co(co)
             if co is not None:
                 self.print(f"Fort Found - x: {co[0]} y:{co[1]}")
@@ -550,7 +535,7 @@ class BarbFort(Task):
                     else:
 
                         self.better_sleep((1, 1.5))
-                        co = self.adb.find_img(target="fort_rally_button2")
+                        co = self.find_img(target="fort_rally_button2")
                         if co is not None:
                             fivemins = (uniform(800, 925), uniform(188, 213))
                             tenmins = (uniform(960, 1088), uniform(188, 213))
@@ -585,9 +570,9 @@ class BarbFort(Task):
                             self.click(uniform(1092, 1112), uniform(330, 350))
                             self.better_sleep((0.5, 1))
                             pil_image = self.adb.get_curr_device_screen_img()
-                            cv_image = array(pil_image)
+                            cv_image =self.pil_to_array(pil_image)
                             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-                            x, y = self.adb.find_img(source=cv_image, target="troops_march_button", confidence=0.8)
+                            x, y = self.find_img(source=cv_image, target="troops_march_button", confidence=0.8)
                             cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
                             # cv2.imwrite("timer.png", cropped_image)
                             string = pytesseract.image_to_string(cropped_image,
@@ -733,10 +718,10 @@ class BarbFort(Task):
             self.print(
                 f"time to beat : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {time_to_beat > time()}")
             pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = np.array(pil_image)
+            cv_image =self.pil_to_array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[0:100, :800]
-            if self.adb.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
+            if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
                 return
             self.check_if_kill()
             if self.scan_fort(): return

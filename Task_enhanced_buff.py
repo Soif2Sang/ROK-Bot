@@ -7,24 +7,22 @@ import cv2
 from pytesseract import pytesseract
 
 from Task import Task
-from Task_utils import get_class, get_name
+from Task_utils import get_class, get_name, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class UseEnhancedBuff(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.frame)
-        with open('user_settings.json') as config_file:
-            self.data = json.load(config_file)
+        super().__init__(MainTask.tile)
+        self.data = get_data()
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.frame
+        self.frame = MainTask.tile
         self.adb = MainTask.adb
         self.ppid = MainTask.ppid
         self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
-        self.resource_type = MainTask.resource_type
         self.sel = MainTask.sel
 
     def task_name(self):
@@ -34,12 +32,12 @@ class UseEnhancedBuff(Task):
     def get_remaining_buffs(self):
         buffs_to_do = []
         pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = array(pil_image)
+        cv_image = self.pil_to_array(pil_image)
         image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         image = image[0:110, 0:680]
         here = False
         for buffs_string in ['purple', 'blue']:
-            co = self.adb.find_img(source=image, target=f'buffs\\enhanced_gathering_{buffs_string}', confidence=0.8)
+            co = self.find_img(source=image, target=f'buffs\\enhanced_gathering_{buffs_string}', confidence=0.8)
             if co is not None:
                 here = True
                 break
@@ -48,7 +46,7 @@ class UseEnhancedBuff(Task):
         for rss_type in ['food', 'wood', 'stone', 'gold']:
             here = False
             for buff_type in ['blue', 'green']:
-                co = self.adb.find_img(source=image, target=f'buffs\\enhanced_{rss_type}_{buff_type}', confidence=0.8)
+                co = self.find_img(source=image, target=f'buffs\\enhanced_{rss_type}_{buff_type}', confidence=0.8)
                 if co is not None:
                     here = True
                     break
@@ -63,7 +61,7 @@ class UseEnhancedBuff(Task):
 
         self.print(f"Buffs : {buffs_to_do}")
         if buffs_to_do:
-            if self.adb.find_img(target='menu_opened') is None:
+            if self.find_img(target='menu_opened') is None:
                 x, y = uniform(1200, 1250), uniform(650, 690)
                 # else:
                 #     # x, y = temp3[0] + uniform(0, 20), temp3[1] + uniform(0, 15)
@@ -82,14 +80,16 @@ class UseEnhancedBuff(Task):
             scrolled = False
             for element in buffs_to_do:
                 # print(element)
-                co = self.adb.find_img(target="no")
+                self.print(f"Trying to enable {element} boost")
+                co = self.find_img(target="no")
                 if co is not None:
+                    self.print(f"{element} is already enabled","red")
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(1, 15))
                     self.better_sleep((1.9, 3))
                 if element == "speed":
-                    co = self.adb.find_img(target='items\\enhanced_gathering_purple')
+                    co = self.find_img(target='items\\enhanced_gathering_purple')
                     if co is None:
-                        co = self.adb.find_img(target='items\\enhanced_gathering_blue')
+                        co = self.find_img(target='items\\enhanced_gathering_blue')
                     if co is not None:
                         x, y = co[0] + uniform(10, 60), co[1] + uniform(10, 60)
                         self.click(x, y)
@@ -104,9 +104,9 @@ class UseEnhancedBuff(Task):
                     self.swipe(x1, y1, x2, y2)
                     self.better_sleep((1.195, 2))
                 if element != "speed":
-                    co = self.adb.find_img(target=f'items\\enhanced_{element}_blue')
+                    co = self.find_img(target=f'items\\enhanced_{element}_blue')
                     if co is None:
-                        co = self.adb.find_img(target=f'items\\enhanced_{element}_green')
+                        co = self.find_img(target=f'items\\enhanced_{element}_green')
                     if co is not None:
                         x, y = co[0] + uniform(10, 60), co[1] + uniform(10, 60)
                         self.click(x, y)
@@ -115,12 +115,12 @@ class UseEnhancedBuff(Task):
                         self.click(x, y)
                         self.better_sleep((1.195, 2))
 
-            co = self.adb.find_img(target="no")
+            co = self.find_img(target="no")
             if co is not None:
                 self.click(co[0] + uniform(0, 30), co[1] + uniform(1, 15))
                 self.better_sleep((1.9, 3))
             self.better_sleep((1, 2))
-            co = self.adb.find_img(target="cross")
+            co = self.find_img(target="cross")
             if co is not None:
                 # print("Cross found")
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(0, 50))
