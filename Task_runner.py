@@ -6,7 +6,7 @@ import traceback
 from datetime import datetime, timedelta
 from random import uniform, randint, shuffle
 from time import time, sleep
-
+import discord_bot
 import win32gui
 
 from Flet_time_allower import is_in_frametime, random_time_in_frametime
@@ -206,8 +206,8 @@ class TaskRunner(Task):
         shuffle(lib_tasks)
         tasks_name = [task.task_name() for task in lib_tasks]
 
-        if "hunt_barbarians" in tasks_name and "GatherRss" in tasks_name:
-            a = tasks_name.index("hunt_barbarians")
+        if "HuntBarbarians" in tasks_name and "GatherRss" in tasks_name:
+            a = tasks_name.index("HuntBarbarians")
             b = tasks_name.index("GatherRss")
             if a > b:
                 lib_tasks[a], lib_tasks[b] = lib_tasks[b], lib_tasks[a]
@@ -263,6 +263,7 @@ class TaskRunner(Task):
             if trigger_stop > 4:
                 self.print("Error in character switch. Bot is now stopped")
                 self.set_status("Error.")
+                self.send_discord_message("Error in character switch, human interaction required.")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -544,12 +545,11 @@ class TaskRunner(Task):
         self.adb.connect_to_device()
         self.data = self.update_data()
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
-
         starting_time = time()
         for i in range(loop_task):
             loop_time = time()
             self.set_status("Starting..")
-            self.print(" Script is starting ! ".center(20, "-"), "green")
+            self.print("Script is starting ! ".center(20, "-"), "green")
             #self.print("")
             self.data = self.update_data()
 
@@ -583,7 +583,7 @@ class TaskRunner(Task):
                         print(f"Profile {profile} no rules set")
                     # nb_profile += 1
                     self.current_profile = profile
-                    self.print(f" Profile n°{profile} enabled ! ","blue")
+                    self.print(f"Profile n°{profile} enabled ! ","blue")
                     #self.print("")
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character"):
                         self.print(f"Character n°1", "blue")

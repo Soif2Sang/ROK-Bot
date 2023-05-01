@@ -10,11 +10,12 @@ from time import sleep
 
 import flet as ft
 from pyautogui import getAllWindows
+from pyprotector.utils.windows import kill_process_by_name
 
 import Flet_main_interface
 from Flet_Path import find_file_in_all_drives
 from Task_utils import get_data, get_path, write_data
-from keyauth import api
+from auth import selfApi
 from pathlib import Path
 
 
@@ -40,7 +41,7 @@ def find_window(window_title):
 class LoginButton(ft.FilledButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.keyauthapp:api | None= None
+        self.keyauthapp:selfApi | None= None
 
     def is_str_valid(self, username, password):
         for element in ['#', "$", "&", "|", "\0",
@@ -55,14 +56,13 @@ class LoginButton(ft.FilledButton):
         return True
 
     def login_schedule(self, username, password):
-        self.keyauthapp = api(
+        self.keyauthapp = selfApi(
             name="Rokbd",
             ownerid="7oofxdj8uH",
             secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
             version="1.0",
             hash_to_check=getchecksum()
         )
-        print("Login schedule...")
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
             main(self.page)
@@ -85,7 +85,7 @@ class LoginButton(ft.FilledButton):
                 main(self.page)
                 for element in self.page.tile_manager.tiles.values():
                     element.started = False
-                    element.stopped = False
+                    element.stopped = True
                 self.page.update()
         except:
             try:
@@ -104,7 +104,7 @@ class LoginButton(ft.FilledButton):
         #     self.page.update()
 
     def login(self, e=None, username=None, password=None):
-        self.keyauthapp = api(
+        self.keyauthapp = selfApi(
             name="Rokbd",
             ownerid="7oofxdj8uH",
             secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
@@ -178,10 +178,13 @@ def main(page: ft.Page):
                 json.dump(path, f, indent=2)
 
     data = get_data()
+    if "discord" not in data:
+        data["discord"] = {"user_id":0, "enabled":False}
+        write_data(data)
     for i in range(5):
         ready = False
         try:
-            keyauthapp = api(
+            keyauthapp = selfApi(
                 name="Rokbd",
                 ownerid="7oofxdj8uH",
                 secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
@@ -215,6 +218,40 @@ def main(page: ft.Page):
             # Flet_main_interface.Main(page, 100)
             login_button.login(None, data['user']["username"], data['user']["password"])
 
+from pathlib import Path
+from threading import Thread
+
+from pyprotector import PythonProtector
+
+# -- Define Constants
+LOGGING_PATH = (
+    Path.home() / "AppData/Roaming/PythonProtector/logs/[Security].log"
+)  # -- This can be any path
+
+# -- Construct Class
+security = PythonProtector(
+    debug=True,
+    modules=[
+        "AntiProcess",
+        "AntiVM",
+        "Miscellaneous",
+        "AntiDLL",
+        "AntiAnalysis",
+        "AntiDump"],
+    logs_path=LOGGING_PATH,
+    webhook_url="",
+    on_detect=[
+        "Report",
+        "Exit",
+        "Screenshot"],
+)
+
+# -- Main Code
+
 
 if __name__ == "__main__":
+    SecurityThread = Thread(
+        name="Python Protector", target=security.start
+    )  # -- Start Before Any Other Code Is Run
+    SecurityThread.start()
     ft.app(target=main)

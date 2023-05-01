@@ -7,7 +7,8 @@ from uuid import uuid4
 import requests
 from Crypto.Hash import SHA256
 
-from keyauth import api, encryption
+from auth import encryption, selfApi
+
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -17,7 +18,7 @@ def getchecksum():
     return digest
 
 if __name__ == "__main__":
-    keyauthapp = api(
+    keyauthapp = selfApi(
         name = "Rokbd",
         ownerid = "7oofxdj8uH",
         secret = "a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",

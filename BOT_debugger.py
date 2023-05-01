@@ -1,6 +1,11 @@
+from random import randint
 from threading import Thread
 import flet as ft
+import win32api
+import win32con
+import win32gui
 
+from COD_Task_gather_rss import CodGatherRss
 from Task import Task
 from Task_academy_research import AcademyResearch
 from Task_alliance_donation import AllianceDonation
@@ -11,7 +16,6 @@ from Task_rss_transfert import RssTransfer
 from Task_runner import TaskRunner
 from Task_upgrade_city import UpgradeCity
 from bot_adb import *
-from OLD_Tasks_lib import *
 #from rkp import *
 #from auto_upgrade import *
 
@@ -47,6 +51,7 @@ class Bot():
         self.chest = DailyChest2(self.main_task)
         self.alliance = AllianceDonation(self.main_task)
         self.trade = RssTransfer(self.main_task)
+        self.cod_rss = CodGatherRss(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -426,16 +431,17 @@ def upgrade_all():
 if __name__ == "__main__":
     # upgrade_all()
     bot = get_bot(0)
-    hwnd = win32gui.FindWindow(None, bot.adb.name)
-    hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-    for _ in range(2):
-        win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-        win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-        sleep(0.20)
-        win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-        win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-        bot.task.better_sleep((1.4, 2))
-    print(bot.upgrade.free_worker())
+    bot.cod_rss.set_search_level(6)
+    # hwnd = win32gui.FindWindow(None, bot.adb.name)
+    # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+    # for _ in range(2):
+    #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+    #     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+    #     sleep(0.20)
+    #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+    #     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+    #     bot.task.better_sleep((1.4, 2))
+    # print(bot.upgrade.free_worker())
 
     # print(bot.task.findNextChar())
     # bot1 = get_bot(0)

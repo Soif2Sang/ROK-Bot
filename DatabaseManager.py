@@ -3,10 +3,10 @@ import flet as ft
 import requests
 
 from auth_tests import getchecksum
-from keyauth import api
+from auth import selfApi
 
 print("creating the Api")
-keyauthapp = api(
+keyauthapp = selfApi(
     name = "Rokbd",
     ownerid = "7oofxdj8uH",
     secret = "a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
