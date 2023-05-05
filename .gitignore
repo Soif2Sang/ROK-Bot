@@ -27,3 +27,5 @@ auth compiled/
 /main.dist/
 /main.onefile-build/
 /.vscode/
+/__pycache__/
+__pycache__/
