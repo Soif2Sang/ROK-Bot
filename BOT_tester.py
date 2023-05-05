@@ -1,16 +1,12 @@
-
-from threading import Thread
-
-
-from Task import Task
-from Task_academy_research import AcademyResearch
-from Task_alliance_donation import AllianceDonation
-from Task_claim_daily_quests import DailyQuests
-from Task_daily_vip import DailyVip
-from Task_rss_transfert import RssTransfer
-from Task_runner import TaskRunner
-from Task_upgrade_city import UpgradeCity
-from bot_adb import *
+from tasks.Task import Task
+from tasks.Task_academy_research import AcademyResearch
+from tasks.Task_alliance_donation import AllianceDonation
+from tasks.Task_claim_daily_quests import DailyQuests
+from tasks.Task_daily_vip import DailyVip
+from tasks.Task_rss_transfert import RssTransfer
+from tasks.Task_runner import TaskRunner
+from tasks.Task_upgrade_city import UpgradeCity
+from utils.bot_adb import *
 from OLD_Tasks_lib import *
 #from rkp import *
 #from auto_upgrade import *

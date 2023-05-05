@@ -17,8 +17,7 @@ from utils.Task_utils import current_time, get_data, get_path, write
 
 Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
-from utils.resources import *
-
+from utils.resources import ImageSingleton
 class Adb:
     def __init__(self, number, host='127.0.0.1', port=5037):
         data = get_data()

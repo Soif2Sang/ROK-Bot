@@ -1,13 +1,10 @@
 import hashlib
 import sys
 from datetime import datetime, date
-from time import sleep
-from uuid import uuid4
 
 import requests
-from Crypto.Hash import SHA256
 
-from auth import encryption, selfApi
+from utils.auth import selfApi
 
 
 def getchecksum():

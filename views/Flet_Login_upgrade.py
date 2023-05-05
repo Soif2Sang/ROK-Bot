@@ -1,21 +1,18 @@
 import hashlib
-import json
 import os
 import subprocess
 import sys
 import threading
+import traceback
 from datetime import date, datetime
 from time import sleep
 
 import flet as ft
 from pyautogui import getAllWindows
 
-import views.Flet_main_interface
-from views import Flet_main_interface
-from views.Flet_Path import find_file_in_all_drives
+import Flet_secret_interface
 from utils.Task_utils import get_data, get_path, write_data
 from utils.auth import selfApi
-
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -32,6 +29,7 @@ def update_user_info(password, username):
     data["user"] = {'username': username, 'password': password}
     write_data(data)
 
+
 def find_window(window_title):
     return any(window_title in element.title for element in getAllWindows())
 
@@ -39,7 +37,7 @@ def find_window(window_title):
 class LoginButton(ft.FilledButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.keyauthapp:selfApi | None= None
+        self.keyauthapp:api = None
 
     def is_str_valid(self, username, password):
         for element in ['#', "$", "&", "|", "\0",
@@ -61,19 +59,20 @@ class LoginButton(ft.FilledButton):
             version="1.0",
             hash_to_check=getchecksum()
         )
+        print("Login schedule...")
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
             main(self.page)
-            try:
-                os._exit(1)
-            except:
-                sys.exit(1)
+            sys.exit()
+            return False
         try:
-            if self.keyauthapp.login(user=username, password=password,page=self.page):
+            if self.keyauthapp.login(username, password,page=self.page):
                 date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
+                print(date_brut)
                 heures = date_brut.split('-')
                 future = date(int(heures[0]), int(heures[1]), int(heures[2]))
                 diff = future - date.today()
+                print(diff)
                 self.page.title = f"Rok Bot - {diff.days} Days left"
                 self.page.update()
                 sleep(24 * 3600)
@@ -83,32 +82,21 @@ class LoginButton(ft.FilledButton):
                 main(self.page)
                 for element in self.page.tile_manager.tiles.values():
                     element.started = False
-                    element.stopped = True
+                    element.stopped = False
                 self.page.update()
-        except:
-            try:
-                os._exit(1)
-            except:
-                sys.exit(1)
-
-        #     traceback.print_exc()
-        #     self.pop_banner("Problem occurred, please try again")
-        #     print("Problem occurred during the connection")
-        #     self.page.clean()
-        #     main(self.page)
-        #     for element in self.page.tile_manager.tiles.values():
-        #         element.started = False
-        #         element.stopped = False
-        #     self.page.update()
+        except Exception as e:
+            # print(e)
+            # traceback.print_exc()
+            self.pop_banner("Problem occurred, please try again")
+            print("Problem occurred while trying to connect")
+            self.page.clean()
+            main(self.page)
+            for element in self.page.tile_manager.tiles.values():
+                element.started = False
+                element.stopped = False
+            self.page.update()
 
     def login(self, e=None, username=None, password=None):
-        self.keyauthapp = selfApi(
-            name="Rokbd",
-            ownerid="7oofxdj8uH",
-            secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
-            version="1.0",
-            hash_to_check=getchecksum()
-        )
         print("Trying to login...")
         if username is None and password is None:
             username = self.page.controls[0].value
@@ -116,28 +104,26 @@ class LoginButton(ft.FilledButton):
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
             return False
-        # try:
-        if self.keyauthapp.login(username, password,page=self.page):
-            print("Login successful")
-            data = get_data()
-            if 'user' not in data:
-                data['user'] = {'username':username,'password':password}
-                write_data(data)
-            date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-            heures = date_brut.split('-')
-            future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-            diff = future - date.today()
-            self.page.clean()
-            self.page.window_width = 400
-            self.page.window_height = 700
-            Flet_main_interface.Main(self.page, diff.days)
-            threading.Thread(self.login_schedule(username, password))
-        # except Exception as e:
-        #     print(e)
-        #     self.pop_banner("Problem occurred, please try again")
-        #     print("Problem occurred during the connection")
-        #     self.page.window_close()
-        #     sys.exit(1)
+        try:
+            print(f"{username =} {password =}")
+            if self.keyauthapp.login(username, password,page=self.page):
+                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
+                heures = date_brut.split('-')
+                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
+                diff = future - date.today()
+                print(diff)
+                print("Login successful")
+                self.page.clean()
+                self.page.window_width = 400
+                self.page.window_height = 700
+                Flet_secret_interface.Main(self.page, diff.days)
+                threading.Thread(self.login_schedule(username, password))
+        except Exception as e:
+            traceback.print_exc()
+            self.pop_banner("Problem occurred, please try again")
+            print("Problem occurred while trying to connect")
+            self.page.window_close()
+            sys.exit(1)
 
     def close_banner(self, e):
         self.page.banner.open = False
@@ -158,27 +144,14 @@ class LoginButton(ft.FilledButton):
         self.page.update()
 
 def main(page: ft.Page):
+    os.environ["FLET_APP_LIFETIME_MINUTES"] = "1"
     try:
-        if not os.path.exists("./user_settings.json"):
+        if not os.path.exists("../user_settings.json"):
             write_data({})
             print("User settings created")
     except:
         pass
-    path = get_path()
-    if not os.path.exists(path['bluestacks']) or not os.path.exists(path['HD-Player']):
-        if result:=find_file_in_all_drives('bluestacks\.conf'):
-            path['bluestacks\.conf'.split("\\")[0]] = result
-            with open('../path.json', 'w', encoding="UTF-8") as f:
-                json.dump(path, f, indent=2)
-        if result := find_file_in_all_drives('HD-Player\.exe'):
-            path['HD-Player\.exe'.split("\\")[0]] = result
-            with open('../path.json', 'w', encoding="UTF-8") as f:
-                json.dump(path, f, indent=2)
-
     data = get_data()
-    if "discord" not in data:
-        data["discord"] = {"user_id":0, "enabled":False}
-        write_data(data)
     for i in range(5):
         ready = False
         try:
@@ -216,40 +189,6 @@ def main(page: ft.Page):
             # Flet_main_interface.Main(page, 100)
             login_button.login(None, data['user']["username"], data['user']["password"])
 
-from pathlib import Path
-from threading import Thread
-
-from pyprotector import PythonProtector
-
-# -- Define Constants
-LOGGING_PATH = (
-    Path.home() / "AppData/Roaming/PythonProtector/logs/[Security].log"
-)  # -- This can be any path
-
-# -- Construct Class
-security = PythonProtector(
-    debug=True,
-    modules=[
-        "AntiProcess",
-        "AntiVM",
-        "Miscellaneous",
-        "AntiDLL",
-        "AntiAnalysis",
-        "AntiDump"],
-    logs_path=LOGGING_PATH,
-    webhook_url="",
-    on_detect=[
-        "Report",
-        "Exit",
-        "Screenshot"],
-)
-
-# -- Main Code
-
 
 if __name__ == "__main__":
-    SecurityThread = Thread(
-        name="Python Protector", target=security.start
-    )  # -- Start Before Any Other Code Is Run
-    # SecurityThread.start()
     ft.app(target=main)
