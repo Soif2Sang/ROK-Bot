@@ -1,19 +1,15 @@
-import json
 import os
 import sys
-import traceback
 from datetime import date
 from random import uniform, randint
 from time import sleep
-from psutil import pid_exists
-import cv2
-from PIL import Image, ImageFile
+from PIL import ImageFile
 from numpy import array, ndarray
 
-import discord_bot
-from Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write, string_to_co
+from utils import discord_bot
+from utils.Task_utils import get_window_pid, get_name, current_time, get_data
 from COD_bot_adb import Adb
-from twocaptcha import TwoCaptcha
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
@@ -69,7 +65,7 @@ class Task:
     @get_name
     def send_discord_message(self, message):
         if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
-            return discord_bot.send_message(self.data["discord"]["user_id"],f"[{current_time()}] {message}")
+            return discord_bot.send_message(self.data["discord"]["user_id"], f"[{current_time()}] {message}")
 
     @get_name
     def click(self, x, y):

@@ -2,17 +2,15 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime, date
+from datetime import date
 from tkinter import *
-import OLD_UI_Main
 import requests
 from getmac import get_mac_address as gma
 import customtkinter
-import win32gui
 from pyautogui import getAllWindows
 from urllib3 import Retry, PoolManager
 
-from Task_utils import get_data, write_data
+from utils.Task_utils import get_data, write_data
 
 customtkinter.set_appearance_mode("light")
 if not os.path.exists("user_settings.json"):
