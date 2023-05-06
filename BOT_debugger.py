@@ -2,7 +2,7 @@ from random import randint
 from threading import Thread
 import flet as ft
 
-from COD_Task_gather_rss import CodGatherRss
+from taskscod.COD_Task_gather_rss import CodGatherRss
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation

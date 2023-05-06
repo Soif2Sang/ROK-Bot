@@ -131,8 +131,6 @@ class selfApi:
 
         if json["success"]:
             self.__load_user_data(json["info"])
-
-            print("successfully logged in")
             return True
         else:
             if self.page is not None:

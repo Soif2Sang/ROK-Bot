@@ -3,7 +3,7 @@ import traceback
 from random import uniform
 from pytesseract import pytesseract
 
-from Task import Task, get_name
+from tasks.Task import Task, get_name
 from utils.Task_utils import get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'

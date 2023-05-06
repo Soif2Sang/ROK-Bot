@@ -8,7 +8,7 @@ from numpy import array, ndarray
 
 from utils import discord_bot
 from utils.Task_utils import get_window_pid, get_name, current_time, get_data
-from COD_bot_adb import Adb
+from utils.COD_bot_adb import Adb
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 

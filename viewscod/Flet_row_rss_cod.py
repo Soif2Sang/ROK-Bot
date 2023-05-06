@@ -21,10 +21,10 @@ class FletRowRss(ft.Row):
                         height=70,
                         label="Node Type",
                         options=[
-                            ft.dropdown.Option("food"),
+                            ft.dropdown.Option("gold"),
                             ft.dropdown.Option("wood"),
                             ft.dropdown.Option("stone"),
-                            ft.dropdown.Option("gold"),
+                            ft.dropdown.Option("mana"),
                             ft.dropdown.Option('nothing')
                         ],
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}"],
@@ -42,9 +42,6 @@ class FletRowRss(ft.Row):
                             ft.dropdown.Option("4"),
                             ft.dropdown.Option("5"),
                             ft.dropdown.Option("6"),
-                            ft.dropdown.Option("7"),
-                            ft.dropdown.Option("8"),
-                            ft.dropdown.Option("9"),
                         ],
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                             f"{key}_level"],
