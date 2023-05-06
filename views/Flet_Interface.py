@@ -178,7 +178,6 @@ class TileManager(ft.Column):
         instances = self.get_all_vms_running()
         for i in range(len(self.controls) - 1):
             self.controls.pop()
-        print(f"{self.controls = }")
         for instance in instances:
             if instance[0] in self.tiles:
                 self.controls.append(self.tiles[instance[0]])
@@ -255,12 +254,9 @@ class SettingContainer(ft.Container):
 
     def page_gems(self):
         self.data = get_data()
-        print("ici")
         self.clean()
-        print("ici")
         self.tabs.expand=True
         self.content = ft.ListView(height=500, expand=0, padding=1, )
-        print("ici")
         self.content.controls.append(
             ft.Row(
                 controls=[

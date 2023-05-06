@@ -8,18 +8,20 @@ import pyautogui
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from views.Flet_Tile import Tile
-from utils.Task_utils import get_path, get_data, write_data
+from utils.Task_utils import get_path, get_data, write_data, get_default_config
 
 
 class NavigationBar(ft.Row):
     def __init__(self, tile_manager, **kwargs):
         super().__init__(**kwargs)
         self.tileManager = tile_manager
-        self.button_refresh = ft.OutlinedButton(text="Refresh", icon=ft.icons.REFRESH_ROUNDED,on_click=lambda _: self.tileManager.refresh(),style = ButtonStyle(shape={
-                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-                })
+        self.button_refresh = ft.OutlinedButton(text="Refresh", icon=ft.icons.REFRESH_ROUNDED,
+                                                on_click=lambda _: self.tileManager.refresh(), style=ButtonStyle(shape={
+                ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
+            })
                                                 )
         self.controls.append(self.button_refresh)
+
 
 class TileManager(ft.ListView):
     def __init__(self, page, **kwargs):
@@ -27,8 +29,8 @@ class TileManager(ft.ListView):
         self.page = page
         self.height = 250
         self.expand = 0
-        self.tiles:dict[str,Tile] = {}
-        self.navigation_bar:NavigationBar = NavigationBar(self)
+        self.tiles: dict[str, Tile] = {}
+        self.navigation_bar: NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
 
     def add_tile(self, number: str):
@@ -147,7 +149,7 @@ class TileManager(ft.ListView):
 
     def refresh(self):
         data = get_data()
-
+        default_config = get_default_config()
 
         instances = self.get_dic_instances()
 
@@ -165,9 +167,13 @@ class TileManager(ft.ListView):
             'schedules': {}
         }
         default_profile = {
-            'timing' : [],
-            'enable_timing' : False,
+            'timing': [],
+            'enable_timing': False,
             'enabled': False,
+            'kingdom': 0,
+            'city_x': 0,
+            'city_y': 0,
+            'radius': 30,
             "First": "stone",
             "Second": "food",
             "Third": "gold",
@@ -188,21 +194,85 @@ class TileManager(ft.ListView):
             'check_donation': False,
             'use_enhanced_buff': False,
             'gather_rss': False,
+            'buy_merchant': False,
+            'claim_daily_quests': False,
+            'collect_ressource': False,
+            'defeat_barbarians': False,
+            'barbarians_level': 25,
+            'barbarians_preset': {"1":False,
+                                  "2":False,
+                                  "3":False,
+                                  "4":False,
+                                  "5":False,
+                                  "6":False,
+                                  "7":False,
+                                  },
+            'gather_gem': False,
+            'gem_check1': 60,
+            'gem_check2': 120,
+            'gem_experimental': False,
+            'gather_gem_duration1': 60,
+            'gather_gem_duration2': 90,
             'restart_game': False,
             'switch_character': False,
             'leave_game_switch_character': False,
+            "scout_fog": False,
+            "scout_duration1": 60,
+            "scout_duration2": 90,
             "slow_mode": False,
-            "sleep_multiplication": 1,
+            "sleep_multiplicator": 1,
             "auto_log_back": True,
             "log_back1": 5,
             "log_back2": 10,
+            "claim_daily_vip": False,
+            "claim_daily_chest": False,
+            "claim_campaign": False,
+            "start_fort": False,
+            "rally_type": 'cav',
+            "rally_time": 10,
+            "rally_radius": 20,
+            "rally_count": 2,
+            "mauraudeurs_forts": False,
+            "heal_troop": False,
+            "healing_building_x": 980,
+            "healing_building_y": 267,
+            "healing_count": 1500,
+            "material_production": False,
+            "material_choice_1": "leather",
+            "material_choice_2": "leather",
+            "material_choice_3": "leather",
+            "material_choice_4": "leather",
+            "material_choice_5": "leather",
+            "alliance_help": False,
+            "train_troops": False,
+            "infantry_camp": [],
+            "cavalry_camp": [],
+            "archery_camp": [],
+            "siege_camp": [],
+            "hospital": [],
+            "scout_camp": [],
+            "infantry_enable": True,
+            "cavalry_enable": True,
+            "archery_enable": True,
+            "siege_enable": True,
+            "infantry_tier": "t1",
+            "cavalry_tier": "t1",
+            "archery_tier": "t1",
+            "siege_tier": "t1",
+            "city_transfer": [],
+            "transfer_enable": False,
+            "transfer_food": 0,
+            "transfer_wood": 0,
+            "transfer_stone": 0,
+            "transfer_gold": 0
         }
         for i in range(1, 4):
             default_dic['schedules'][i] = default_profile
+
         for instance in instances:
             if str(instance) not in data:
-                data[str(instance)] = default_dic
-                data[str(instance)]['schedules'][1]['enabled'] = True
+                print("Default config set !")
+                data[str(instance)] = default_config
             else:
                 for key in default_dic:
                     if key not in data[str(instance)]:

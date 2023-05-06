@@ -6,7 +6,7 @@ from random import uniform
 import cv2
 from pytesseract import pytesseract
 
-from COD_Task import Task
+from taskscod.COD_Task import Task
 from utils.Task_utils import get_name, current_time, get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'

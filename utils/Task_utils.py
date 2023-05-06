@@ -48,6 +48,13 @@ def write_data(data):
         print(f"{dir}user_settings.json")
         with open(f"{dir}user_settings.json",'w', encoding='utf-8') as config_file:
             config_file.write(json.dumps(data,indent=2))
+
+def get_default_config():
+    with DataLock:
+        with open(f"{dir}default_profile.json", encoding='utf-8') as config_file:
+            data = json.load(config_file)
+    return data
+
 def current_time():
     return datetime.now().strftime("%H:%M:%S")
 
