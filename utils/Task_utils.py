@@ -44,8 +44,6 @@ def get_path():
 
 def write_data(data):
     with DataLock:
-        print(os.path.exists(f"{dir}user_settings.json"))
-        print(f"{dir}user_settings.json")
         with open(f"{dir}user_settings.json",'w', encoding='utf-8') as config_file:
             config_file.write(json.dumps(data,indent=2))
 
