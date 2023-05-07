@@ -1,0 +1,968 @@
+[ 2023-05-06 19:29:46 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.3
+
+[ 2023-05-06 19:29:51 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.9
+
+[ 2023-05-06 19:30:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:30:42 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:31:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:31:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 19:31:30 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:32:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:32:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:32:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:32:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:33:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:33:30 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:33:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 19:34:02 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:34:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:34:42 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:34:55 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:35:13 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:35:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:35:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:36:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:36:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:36:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:36:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:37:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:37:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:38:05 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 19:38:09 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:38:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 19:38:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:38:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 19:39:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:39:28 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:40:00 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:40:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 19:40:21 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:40:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 19:41:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:41:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.6
+
+[ 2023-05-06 19:41:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 19:41:51 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:42:07 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:42:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:42:58 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:43:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:43:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:43:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:43:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:44:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:44:46 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:44:50 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:45:05 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:45:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.5
+
+[ 2023-05-06 19:45:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 19:45:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:46:07 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:46:21 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:46:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:46:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:47:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:47:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:48:02 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:48:06 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:48:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:48:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:49:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 19:49:15 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 19:49:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:49:49 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:50:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:50:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:50:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 19:50:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:51:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 19:51:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:51:42 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:52:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:52:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 19:52:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 19:53:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 19:53:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:53:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:53:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:54:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:54:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:54:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 19:55:10 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:55:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 19:55:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:56:21 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 19:56:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 19:56:58 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:57:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:57:19 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:57:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:57:59 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.5
+
+[ 2023-05-06 19:58:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 19:58:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:59:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:59:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 19:59:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 19:59:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:00:26 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:00:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 20:00:42 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:01:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:01:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:01:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:01:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 20:02:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:02:26 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:02:59 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:03:03 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:03:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:03:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:04:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:04:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:04:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:04:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:05:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:05:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:05:49 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:06:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:06:26 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:06:42 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:07:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:07:15 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:07:30 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:07:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:08:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:08:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:08:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 20:09:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:09:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 20:09:30 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:09:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:10:19 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:10:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:10:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 20:10:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:11:10 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 20:11:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:11:49 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:12:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:12:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:12:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:12:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 20:13:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:13:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:13:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:14:06 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 20:14:09 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:14:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 20:14:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 20:15:13 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:15:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:15:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:15:46 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:16:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 20:16:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 20:16:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:17:09 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:17:13 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:18:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:52:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:52:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:53:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:53:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:53:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:54:15 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:54:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:54:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:54:50 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.6
+
+[ 2023-05-06 20:55:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:55:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:55:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:56:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:56:21 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 20:56:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:57:00 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:57:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:57:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 20:58:03 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:58:07 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:58:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:58:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:59:15 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:59:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 20:59:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 20:59:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:00:11 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:00:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:00:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:01:00 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:01:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:01:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:01:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:02:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:02:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.4
+
+[ 2023-05-06 21:02:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:03:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:03:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:03:59 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:04:02 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:04:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:04:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:05:19 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:05:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:05:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:05:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:06:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:06:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:06:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:07:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:07:28 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:07:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:08:00 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:08:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:08:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:08:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:09:11 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:09:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 21:09:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 21:10:03 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:10:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:10:50 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:10:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:11:11 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:11:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:11:46 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:12:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:12:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:12:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:12:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:13:28 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:13:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:13:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:14:15 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:14:19 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:14:51 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:14:55 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:15:13 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:15:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:15:49 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:16:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:16:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:16:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:16:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:17:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:17:33 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:17:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:17:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:18:33 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:18:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-06 21:18:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:19:26 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:19:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:19:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:20:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:20:21 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:20:33 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:20:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:21:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:21:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:22:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:22:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:22:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:22:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:23:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.9
+
+[ 2023-05-06 21:23:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 21:23:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:23:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:24:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.4
+
+[ 2023-05-06 21:24:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:24:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:24:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:25:10 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:25:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:25:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:25:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:26:09 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:26:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:26:42 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:26:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:27:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:27:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:27:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:29:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.0
+
+[ 2023-05-06 21:29:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.5
+
+[ 2023-05-06 21:30:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:30:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:30:58 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:31:02 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:31:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:31:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:31:55 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:32:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:32:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.4
+
+[ 2023-05-06 21:33:10 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:33:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:33:49 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:33:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:34:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:34:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:34:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:35:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 21:35:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:35:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:36:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:36:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:36:42 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:36:54 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:37:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:37:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:38:10 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:38:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:38:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:39:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:39:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:39:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:39:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:40:03 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:40:19 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.6
+
+[ 2023-05-06 21:40:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:41:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 21:41:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:41:55 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:41:58 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:42:33 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:42:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:42:50 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:43:07 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:43:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:43:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:44:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:44:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 21:44:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:45:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:45:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:45:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:45:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:46:13 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:46:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:46:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:47:00 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:47:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:47:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 21:47:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:48:07 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 21:48:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:48:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:49:18 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 21:49:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:49:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:49:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:50:28 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:50:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 21:50:51 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 21:51:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:51:30 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.6
+
+[ 2023-05-06 21:52:02 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:52:06 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:52:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:52:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:53:05 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:53:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:53:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.4
+
+[ 2023-05-06 21:53:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:54:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.5
+
+[ 2023-05-06 21:54:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:55:14 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:55:19 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:55:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:55:57 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 21:56:13 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:56:46 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 21:56:50 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 21:57:24 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:57:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 21:58:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:58:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:58:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 21:58:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 21:59:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:59:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 21:59:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.4
+
+[ 2023-05-06 21:59:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.6
+
+[ 2023-05-06 22:00:25 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:00:30 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.1
+
+[ 2023-05-06 22:00:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:00:59 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 22:01:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:01:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:01:51 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:02:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:02:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:02:59 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.5
+
+[ 2023-05-06 22:03:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 22:03:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 22:03:53 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 22:04:10 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 22:04:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:04:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:05:03 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 22:05:16 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-06 22:05:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 22:06:03 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:06:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 22:06:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:06:49 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:07:05 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 22:07:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 22:07:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.4
+
+[ 2023-05-06 22:07:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-06 22:08:28 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 22:08:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 22:09:03 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:09:07 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:09:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 22:09:55 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 22:09:59 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:10:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.5
+
+[ 2023-05-06 22:10:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-06 22:10:55 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-06 22:11:07 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 22:11:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:11:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-06 22:12:20 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 22:12:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:12:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-06 22:13:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.2
+
+[ 2023-05-06 22:13:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 22:13:29 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-06 22:14:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-07 10:16:39 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.6
+
+[ 2023-05-07 10:16:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.2
+
+[ 2023-05-07 10:17:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:17:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:17:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-07 10:18:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:18:26 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-07 10:19:02 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:19:05 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:19:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-07 10:19:40 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:19:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:20:31 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:20:35 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:20:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-07 10:21:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-07 10:21:37 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-07 10:21:41 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:21:58 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-07 10:22:32 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.5
+
+[ 2023-05-07 10:22:36 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:23:09 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.2
+
+[ 2023-05-07 10:23:13 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-07 10:23:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:23:52 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-07 10:24:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-07 10:24:30 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-07 10:24:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:25:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-07 10:25:21 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-07 10:25:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
+[ 2023-05-07 10:25:48 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-07 10:26:23 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:26:27 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-07 10:27:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-07 10:27:05 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.3
+
+[ 2023-05-07 10:27:22 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.7
+
+[ 2023-05-07 10:27:58 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-07 10:28:02 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.4
+
+[ 2023-05-07 10:28:34 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:28:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-07 10:28:51 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.5
+
+[ 2023-05-07 10:29:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-07 10:29:17 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:29:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.0
+
+[ 2023-05-07 10:29:51 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.6
+
+[ 2023-05-07 10:30:08 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.8
+
+[ 2023-05-07 10:30:43 ] [ BlueStacks App Player 16 ] INFO : Verification made in 2.9
+
+[ 2023-05-07 10:30:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
+
