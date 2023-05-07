@@ -2,7 +2,7 @@
 from random import uniform, shuffle, choice
 from pytesseract import pytesseract
 
-from tasks.Task import Task
+from taskscod.COD_Task import Task
 from utils.Task_utils import filter_coordinate, get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'

@@ -5,29 +5,17 @@ from random import uniform, randint, shuffle
 from time import time, sleep
 import win32gui
 
-from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
-from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
-from tasks.Task_barb_fort import BarbFort
-from tasks.Task_buy_merchant import BuyMerchant
-from tasks.Task_claim_campaign import ClaimCampaign
-from tasks.Task_claim_daily_quests import DailyQuests
-from tasks.Task_clear_fog import ClearFog
-from tasks.Task_collect_resource import CollectResource
-from tasks.Task_daily_chest import DailyChest
-from tasks.Task_daily_vip import DailyVip
-from tasks.Task_enhanced_buff import UseEnhancedBuff
-from tasks.Task_gather_gem import GatherGem
-from tasks.Task_gather_rss import GatherRss
-from tasks.Task_heal_troop import HealTroop
-from tasks.Task_hunt_barbarians import HuntBarbarians
-from tasks.Task_produce_materials import ProduceMaterials
+from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
+from taskscod.COD_Task_claim_campaign import ClaimCampaign
+from taskscod.COD_Task_claim_daily_quests import DailyQuests
+from taskscod.COD_Task_collect_resource import CollectResource
+from taskscod.COD_Task_daily_chest import DailyChest
+from taskscod.COD_Task_daily_vip import DailyVip
+from taskscod.COD_Task_gather_rss import GatherRss
 from pytesseract import pytesseract
 
-from tasks.Task import Task
-from tasks.Task_rss_transfert import RssTransfer
-from tasks.Task_training import TroopTraining
-from tasks.Task_upgrade_city import UpgradeCity
+from taskscod.COD_Task import Task
 from utils.Task_utils import get_name, current_time, get_window_pid, get_path, get_data
 from utils.bot_adb import Adb
 
@@ -105,7 +93,6 @@ class TaskRunner(Task):
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         current_task = 1
-        self.check_captcha()
         for func in lib_tasks:
             self.run_game()
             screen = self.adb.get_cv2_img()
@@ -135,8 +122,6 @@ class TaskRunner(Task):
                     else:
                         self.print("Bot detected that you got restricted","red")
                 else:
-                    if func.task_name() in ["GatherRss", "GatherGem"]:
-                        self.check_captcha()
                     func.run()
                 self.better_sleep((1, 2))
             except Exception as e:
@@ -152,7 +137,6 @@ class TaskRunner(Task):
             #     self.check_captcha()
             #     self.better_sleep((0.795, 1.2))
             # self.check_reconnect()
-        self.check_captcha()
     def get_available_task(self, profile:str =None):
         self.data = self.update_data()
         if profile is None:
@@ -165,38 +149,38 @@ class TaskRunner(Task):
             lib_tasks.append(ClaimCampaign(self))
         if profile.get('collect_ressource', False):
             lib_tasks.append(CollectResource(self))
-        if profile.get('buy_merchant', False):
-            lib_tasks.append(BuyMerchant(self))
+        # if profile.get('buy_merchant', False):
+        #     lib_tasks.append(BuyMerchant(self))
         if profile.get('gather_rss', False):
             lib_tasks.append(GatherRss(self))
-        if profile.get('use_enhanced_buff', False):
-            lib_tasks.append(UseEnhancedBuff(self))
-        if profile.get('check_donation', False):
-            lib_tasks.append(AllianceDonation(self))
-        if profile.get('defeat_barbarians', False):
-            lib_tasks.append(HuntBarbarians(self))
-        if profile.get('gather_gem', False):
-            lib_tasks.append(GatherGem(self))
-        if profile.get('scout_fog', False):
-            lib_tasks.append(ClearFog(self))
+        # if profile.get('use_enhanced_buff', False):
+        #     lib_tasks.append(UseEnhancedBuff(self))
+        # if profile.get('check_donation', False):
+        #     lib_tasks.append(AllianceDonation(self))
+        # if profile.get('defeat_barbarians', False):
+        #     lib_tasks.append(HuntBarbarians(self))
+        # if profile.get('gather_gem', False):
+        #     lib_tasks.append(GatherGem(self))
+        # if profile.get('scout_fog', False):
+        #     lib_tasks.append(ClearFog(self))
         if profile.get('claim_daily_vip', False):
             lib_tasks.append(DailyVip(self))
-        if profile.get('start_fort', False):
-            lib_tasks.append(BarbFort(self))
-        if profile.get('heal_troop', False):
-            lib_tasks.append(HealTroop(self))
-        if profile.get('material_production', False):
-            lib_tasks.append(ProduceMaterials(self))
+        # if profile.get('start_fort', False):
+            # lib_tasks.append(BarbFort(self))
+        # if profile.get('heal_troop', False):
+        #     lib_tasks.append(HealTroop(self))
+        # if profile.get('material_production', False):
+        #     lib_tasks.append(ProduceMaterials(self))
         if profile.get('claim_daily_chest', False):
             lib_tasks.append(DailyChest(self))
         if profile.get('claim_daily_quests',False):
             lib_tasks.append(DailyQuests(self))
-        if profile.get('auto_upgrade', False):
-            lib_tasks.append(UpgradeCity(self))
-        if profile.get('train_troops', False):
-            lib_tasks.append(TroopTraining(self))
-        if profile.get('transfer_enable',False):
-            lib_tasks.append(RssTransfer(self))
+        # if profile.get('auto_upgrade', False):
+            # lib_tasks.append(UpgradeCity(self))
+        # if profile.get('train_troops', False):
+        #     lib_tasks.append(TroopTraining(self))
+        # if profile.get('transfer_enable',False):
+        #     lib_tasks.append(RssTransfer(self))
         shuffle(lib_tasks)
         tasks_name = [task.task_name() for task in lib_tasks]
 
@@ -246,7 +230,6 @@ class TaskRunner(Task):
         self.better_sleep((4, 5.795))
         trigger_stop = 0
         while self.find_img(target="logged_icon") is None:
-            self.check_captcha()
             print(
                 f'[ {current_time()} ] [ {self.name} ] while get_first_character')
             y, x = uniform(290, 480), uniform(460, 560)
@@ -355,7 +338,6 @@ class TaskRunner(Task):
                 if not trigger_stop:
                     self.run_game()
                     self.print(f"Error in character switch. Restarting the character switch..")
-                    self.check_captcha()
                     return self.change_character_param(co_first, nb_chars, trigger_stop = True)
                 while trigger_stop:
                     self.print(f"Error in character switch. Bot is now stopped","red")
@@ -363,7 +345,6 @@ class TaskRunner(Task):
                     self.script_pause()
                     sleep(1)
                 return
-            self.check_captcha()
             y1, x1 = uniform(290, 480), uniform(460, 560)
             x2, y2 = x1 + uniform(-30, 30), y1 + uniform(-100, -50)
             self.swipe(x1, y1, x2, y2)
@@ -457,18 +438,13 @@ class TaskRunner(Task):
                     self.check_reconnect()
                     self.leave_kd_buff()
                     self.check_mge()
-                    self.check_captcha()
                     # First character
                     self.current_profile = "1"
                     self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
                     self.better_sleep((2.2, 4))
                     self.go_city()
-                    city_upgrade = UpgradeCity(self)
-                    city_upgrade.setup_view()
 
                     sleep(5)
-
-                    city_upgrade.run()
 
 
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
@@ -485,19 +461,16 @@ class TaskRunner(Task):
                         while boolean:
                             self.print(f"---- Character n°{nb_characters} ----".center(60))
                             self.run_game()
-                            self.check_captcha()
                             self.check_mge()
 
                             self.execute_tasks(self.get_available_task(self.current_profile))
                             self.better_sleep((2.2, 4))
 
                             self.go_city()
-                            city_upgrade = UpgradeCity(self)
-                            city_upgrade.setup_view()
 
                             sleep(5)
 
-                            city_upgrade.run()
+                            # city_upgrade.run()
                             nb_characters += 1
                             boolean = self.change_character_param(co_first, nb_characters)
                             self.wait_until_connected()
@@ -586,7 +559,6 @@ class TaskRunner(Task):
                     self.check_log_back()
                     self.check_reconnect()
                     self.check_mge()
-                    self.check_captcha()
                     self.leave_kd_buff()
                     # First character
                     self.execute_tasks(self.get_available_task(profile),profile)
@@ -606,7 +578,6 @@ class TaskRunner(Task):
 
                             self.check_log_back()
                             self.check_reconnect()
-                            self.check_captcha()
                             self.check_mge()
                             self.leave_kd_buff()
 
@@ -673,19 +644,12 @@ class TaskRunner(Task):
                 self.check_reconnect()
                 self.leave_kd_buff()
                 self.check_mge()
-                self.check_captcha()
                 # First character
                 self.current_profile = "1"
                 self.print("Reminder : only the first profile is available")
                 self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
                 self.better_sleep((2.2, 4))
                 self.go_city()
-                city_upgrade = UpgradeCity(self)
-                city_upgrade.setup_view()
-
-                for i in range(2):
-                    sleep(5)
-                    city_upgrade.run()
 
 
                 if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
@@ -706,18 +670,15 @@ class TaskRunner(Task):
                         self.check_reconnect()
                         self.leave_kd_buff()
                         self.check_mge()
-                        self.check_captcha()
 
                         self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
                         self.better_sleep((2.2, 4))
 
                         self.go_city()
-                        city_upgrade = UpgradeCity(self)
-                        city_upgrade.setup_view()
 
-                        for i in range(2):
-                            sleep(5)
-                            city_upgrade.run()
+                        # for i in range(2):
+                        #     sleep(5)
+                        #     city_upgrade.run()
 
                         nb_characters += 1
                         boolean = self.change_character_param(co_first, nb_characters)

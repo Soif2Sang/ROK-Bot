@@ -11,7 +11,7 @@ from utils.Task_utils import get_name, current_time, get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
-class CodGatherRss(Task):
+class GatherRss(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.data = get_data()
