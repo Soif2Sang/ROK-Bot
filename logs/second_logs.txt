@@ -648,3 +648,114 @@
 
 [ 2023-05-07 13:16:12 ] [ second ] INFO : Verification made in 4.9
 
+[ 2023-05-07 14:53:52 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:53:52 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:53:54 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:53:54 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:53:56 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:53:56 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:53:58 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:53:58 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:59:01 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:59:01 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:59:03 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:59:03 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:59:05 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:59:05 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:59:06 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:59:06 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:59:08 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:59:08 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:59:10 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:59:10 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 14:59:42 ] [ second ] Error occured when using find_image
+[ 2023-05-07 14:59:42 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 15:00:36 ] [ second ] Error occured when using find_image
+[ 2023-05-07 15:00:36 ] [ second ] OpenCV(4.7.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:1164: error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type() && _img.dims() <= 2 in function 'cv::matchTemplate'
+
+[ 2023-05-07 15:16:19 ] [ second ] INFO : Device is None, trying to reconnect..
+[ 2023-05-07 17:05:58 ] [ second ] INFO : Verification made in 6.5
+
+[ 2023-05-07 17:06:06 ] [ second ] INFO : Verification made in 5.9
+
+[ 2023-05-07 17:06:18 ] [ second ] INFO : Verification made in 5.4
+
+[ 2023-05-07 17:06:43 ] [ second ] INFO : Verification made in 6.0
+
+[ 2023-05-07 17:06:52 ] [ second ] INFO : Verification made in 6.6
+
+[ 2023-05-07 17:08:04 ] [ second ] INFO : Verification made in 6.4
+
+[ 2023-05-07 17:08:58 ] [ second ] INFO : Verification made in 6.2
+
+[ 2023-05-07 17:09:50 ] [ second ] INFO : Verification made in 6.1
+
+[ 2023-05-07 17:10:47 ] [ second ] INFO : Verification made in 6.9
+
+[ 2023-05-07 17:11:42 ] [ second ] INFO : Verification made in 5.4
+
+[ 2023-05-07 17:12:48 ] [ second ] INFO : Verification made in 6.2
+
+[ 2023-05-07 17:12:53 ] [ second ] INFO : Verification made in 6.0
+
+[ 2023-05-07 17:13:50 ] [ second ] INFO : Verification made in 5.4
+
+[ 2023-05-07 17:14:49 ] [ second ] INFO : Verification made in 6.2
+
+[ 2023-05-07 17:15:57 ] [ second ] INFO : Verification made in 5.7
+
+[ 2023-05-07 17:16:03 ] [ second ] INFO : Verification made in 6.2
+
+[ 2023-05-07 17:17:00 ] [ second ] INFO : Verification made in 5.7
+
+[ 2023-05-07 17:17:54 ] [ second ] INFO : Verification made in 6.1
+
+[ 2023-05-07 17:19:02 ] [ second ] INFO : Verification made in 5.6
+
+[ 2023-05-07 17:19:09 ] [ second ] INFO : Verification made in 7.2
+
+[ 2023-05-07 17:20:37 ] [ second ] INFO : Verification made in 6.5
+
+[ 2023-05-07 17:20:54 ] [ second ] INFO : Verification made in 3.9
+
+[ 2023-05-07 17:21:02 ] [ second ] INFO : Verification made in 3.9
+
+[ 2023-05-07 17:21:09 ] [ second ] INFO : Verification made in 3.9
+
+[ 2023-05-07 17:21:16 ] [ second ] INFO : Verification made in 4.2
+
+[ 2023-05-07 17:21:25 ] [ second ] INFO : Verification made in 5.2
+
+[ 2023-05-07 18:50:08 ] [ second ] INFO : Verification made in 4.9
+
+[ 2023-05-07 18:50:16 ] [ second ] INFO : Verification made in 6.2
+
+[ 2023-05-07 18:51:49 ] [ second ] INFO : Verification made in 5.0
+
+[ 2023-05-07 18:52:55 ] [ second ] INFO : Verification made in 5.5
+
+[ 2023-05-07 18:53:01 ] [ second ] INFO : Verification made in 5.7
+
+[ 2023-05-07 18:54:07 ] [ second ] INFO : Verification made in 5.9
+
+[ 2023-05-07 18:54:16 ] [ second ] INFO : Verification made in 6.5
+
+[ 2023-05-07 18:56:19 ] [ second ] INFO : Verification made in 6.0
+
+[ 2023-05-07 18:57:12 ] [ second ] INFO : Verification made in 5.4
+
+[ 2023-05-07 18:58:11 ] [ second ] INFO : Verification made in 6.3
+
+[ 2023-05-07 18:59:09 ] [ second ] INFO : Verification made in 5.8
+

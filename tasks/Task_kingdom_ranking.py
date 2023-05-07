@@ -1,16 +1,16 @@
 import argparse
 import csv
 import os
+import re
 import sys
 import time
 from datetime import datetime
-from random import uniform
 from time import sleep
-import re
+import clipboard
 from PIL import ImageEnhance, ImageOps, Image
 from pytesseract import pytesseract
 
-from tasks.Task import Task, get_name
+from tasks.Task import Task
 from utils.Task_utils import get_class, get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -85,6 +85,8 @@ RSS_CROP_RANGE = (1053, 680, 1303, 710)
 tool = None
 
 current_rank: int = 0
+
+
 class KingdomRanking(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
@@ -104,9 +106,8 @@ class KingdomRanking(Task):
 
     @get_class
     def run(self):
-    # ランキングタップ位置（X軸）
+        # ランキングタップ位置（X軸）
         global adb, template_dir_path, dir_path, img_dir_path, log_dir_path
-
 
         parser = argparse.ArgumentParser()
         parser.add_argument(
@@ -118,8 +119,8 @@ class KingdomRanking(Task):
 
         print(f"\n===== {args.start_rank}位から{args.end_rank}位までキャプチャします。 =====\n")
 
-        template_dir_path = "templates/"
-        dir_path = "data/" + args.dir + "/"
+        template_dir_path = ""
+        dir_path = "./"
         img_dir_path = dir_path + "screenshots/"
         log_dir_path = dir_path + "logs/autocap/"
 
@@ -132,9 +133,25 @@ class KingdomRanking(Task):
 
         print("\n===== Done! =====")
 
-    def auto_capture(self,start: int, end: int):
+    def auto_capture(self, start: int, end: int):
         global current_rank
-
+        self.writeCsv([
+            'Rank',
+            'ID',
+            'Name',
+            'Alliance',
+            'Power',
+            'Hpower',
+            'Kills_1',
+            'Kills_2',
+            'Kills_3',
+            'Kills_4',
+            'Kills_5',
+            'Ranged',
+            'Dead',
+            'Rss'
+        ]
+        )
         for i in range(start, end):
             current_rank = i + 1
 
@@ -142,21 +159,21 @@ class KingdomRanking(Task):
 
             # 総督情報表示
             if current_rank <= 3:
-                adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[i])
+                self.adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[i])
             elif current_rank == 999:
-                adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[4])
+                self.adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[4])
             elif current_rank == 1000:
-                adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[5])
+                self.adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[5])
             else:
-                adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[3])
+                self.adb.click(RANKING_TAP_POS_X, RANKING_TAP_POS_Y[3])
             sleep(0.5)
 
             try:
-                self.checkImg(template_dir_path + "player.png")
+                self.checkImg(template_dir_path + "player")
             except TimeoutError:
-                self.err(f"{current_rank}位: 総督情報の表示に失敗しました。キャプチャをスキップします。 -> {current_rank}.png")
-                if adb.find_img(template_dir_path + "ranking.png"):
-                    adb.swipe_arg(
+                self.err(f"{current_rank}位: 総督情報の表示に失敗しました。キャプチャをスキップします。 -> {current_rank}")
+                if self.find_img(template_dir_path + "ranking"):
+                    self.adb.swipe_arg(
                         RANKING_TAP_POS_X,
                         RANKING_TAP_POS_Y[3],
                         RANKING_TAP_POS_X,
@@ -165,34 +182,27 @@ class KingdomRanking(Task):
                     )
                     continue
                 else:
-                    self.err(f"ランキングの表示に失敗しました。処理を中止します。 -> {current_rank}.png")
+                    self.err(f"ランキングの表示に失敗しました。処理を中止します。 -> {current_rank}")
                     sys.exit(1)
 
             # 撃破詳細表示・キャプチャ
-            adb.click(KILL_DETAIL_TAP_POS[0], KILL_DETAIL_TAP_POS[1])
+            self.click(KILL_DETAIL_TAP_POS[0], KILL_DETAIL_TAP_POS[1])
             sleep(0.5)
 
             try:
-                self.checkImg(template_dir_path + "kill.png")
+                self.checkImg(template_dir_path + "kill")
             except TimeoutError:
-                self.err(f"{current_rank}位: 撃破詳細の表示に失敗しました。キャプチャをスキップします。 -> {current_rank}.png")
+                self.err(f"{current_rank}位: 撃破詳細の表示に失敗しました。キャプチャをスキップします。 -> {current_rank}")
                 self.returnToRankingScreen()
                 continue
 
-            adb.save_screen(img_dir_path + str(current_rank) + "a.png")
+            self.adb.save_screen(img_dir_path + str(current_rank) + "a")
 
             # 詳細情報表示・キャプチャ
-            adb.click(PLAYER_DETAIL_TAP_POS[0], PLAYER_DETAIL_TAP_POS[1])
+            self.click(PLAYER_DETAIL_TAP_POS[0], PLAYER_DETAIL_TAP_POS[1])
             sleep(0.5)
 
-            try:
-                self.checkImg(template_dir_path + "detail.png")
-            except TimeoutError:
-                self.err(f"{current_rank}位: 詳細情報の表示に失敗しました。キャプチャをスキップします。 -> {current_rank}.png")
-                self.returnToRankingScreen()
-                continue
-
-            adb.save_screen(img_dir_path + str(current_rank) + "b.png")
+            self.adb.save_screen(img_dir_path + str(current_rank) + "b")
 
             # 総督名保存
             with open(
@@ -202,11 +212,12 @@ class KingdomRanking(Task):
                     newline=""
             ) as fh:
                 fh.seek(0)
-                co = adb.find_img(template_dir_path + "copy.png")
-                adb.click(co[0], co[1])
+                co = self.find_img(template_dir_path + "copy")
+                self.click(co[0], co[1])
                 sleep(0.1)
                 names = list(csv.reader(fh, delimiter="\t"))
-                names.append([str(current_rank), "pyperclip.paste()"])
+                current_name = clipboard.paste()
+                names.append([str(current_rank), current_name])
                 fh.truncate(0)
                 fh.seek(0)
                 csv.writer(fh, delimiter="\t").writerows(
@@ -215,11 +226,13 @@ class KingdomRanking(Task):
 
             # ランキングまで戻る
             self.returnToRankingScreen()
+            self.writeCsv(self.ocr_images(str(current_rank), current_name))
 
     def checkImg(self, img_path: str):
         timer = 0
         while True:
-            if adb.find_img(img_path):
+            print(self.find_img(img_path))
+            if self.find_img(img_path):
                 break
             elif timer >= 4:
                 raise TimeoutError
@@ -230,25 +243,24 @@ class KingdomRanking(Task):
     def returnToRankingScreen(self):
         timer = 0
         while True:
-            if adb.find_img(template_dir_path + "ranking.png"):
+            if self.find_img(template_dir_path + "ranking"):
                 break
             elif timer >= 4:
-                self.err(f"ランキングの表示に失敗しました。処理を中止します。 -> {current_rank}.png")
+                self.err(f"ランキングの表示に失敗しました。処理を中止します。 -> {current_rank}")
                 sys.exit(1)
             else:
-                co = adb.find_img(template_dir_path + "close.png")
-                adb.click(co[0], co[1])
+                co = self.find_img(template_dir_path + "close")
+                self.click(co[0], co[1])
                 timer += 1
                 sleep(1)
 
-    def err(self,message: str):
+    def err(self, message: str, fzelp):
         print(message)
         with open(
                 log_dir_path + "error.log", "a", encoding="utf_8"
         ) as fh:
             fh.write(message + "\n")
-        adb.save_screen(log_dir_path + str(current_rank) + ".png")
-
+        self.adb.save_screen(log_dir_path + str(current_rank) + "")
 
     def mainocr(self):
         startTime = time.time()
@@ -259,9 +271,6 @@ class KingdomRanking(Task):
         parser.add_argument("dir", type=str)
         parser.add_argument("-j", "--jobs", type=int, default=-2)
         args = parser.parse_args()
-        dir_path = "data/" + args.dir + "/"
-        img_dir_path = dir_path + "screenshots/"
-        log_dir_path = dir_path + "logs/ocr/"
 
         data = []
 
@@ -293,7 +302,7 @@ class KingdomRanking(Task):
         endTime = time.time()
         print(f"\n処理時間：{endTime - startTime}")
 
-    def ocr_images(self,rank: str, name: str):
+    def ocr_images(self, rank: str, name: str):
         img_a = Image.open(img_dir_path + rank + "a.png")
         if img_a.mode == "RGBA":
             img_a = img_a.convert("RGB")
@@ -308,8 +317,8 @@ class KingdomRanking(Task):
         id = re.sub("\)$", "", id)
         if id == "":
             self.err(
-                f"{rank}位 - {name}: 「ID」の読み取りに失敗しました。 -> {rank}-id.png",
-                [(f"{rank}-id.png", id_img)],
+                f"{rank}位 - {name}: 「ID」の読み取りに失敗しました。 -> {rank}-id",
+                [(f"{rank}-id", id_img)],
             )
 
         # 同盟タグ
@@ -318,7 +327,7 @@ class KingdomRanking(Task):
         )
         alliance = self.ocr_image(
             alliance_img,
-            whitelist=f"[]0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`~!@#&-_=+;:'\",<>/",
+            whitelist=f"[]0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
         )
         alliance = re.match(r"^\[(.{3,4})\]", alliance)
         if alliance is None:
@@ -357,8 +366,8 @@ class KingdomRanking(Task):
             kill = kill.replace(",", "")
             kill_p = kill_p.replace(",", "")
 
-            kill_img_file_name = rank + "-t" + str(i + 1) + "-kill.png"
-            kill_p_img_file_name = rank + "-t" + str(i + 1) + "-kill-point.png"
+            kill_img_file_name = rank + "-t" + str(i + 1) + "-kill"
+            kill_p_img_file_name = rank + "-t" + str(i + 1) + "-kill-point"
 
             if kill == "":
                 self.err(
@@ -386,8 +395,8 @@ class KingdomRanking(Task):
         ranged = ranged.replace(",", "")
         if ranged == "":
             self.err(
-                f"{rank}位 - {name}: 「遠隔ポイント」の読み取りに失敗しました。 -> {rank}-ranged.png",
-                [(f"{rank}-ranged.png", ranged_img)],
+                f"{rank}位 - {name}: 「遠隔ポイント」の読み取りに失敗しました。 -> {rank}-ranged",
+                [(f"{rank}-ranged", ranged_img)],
             )
 
         # 戦力
@@ -398,54 +407,54 @@ class KingdomRanking(Task):
         power = power.replace(",", "")
         if power == "":
             self.err(
-                f"{rank}位 - {name}: 「戦力」の読み取りに失敗しました。 -> {rank}-power.png",
-                [(f"{rank}-power.png", power_img)],
+                f"{rank}位 - {name}: 「戦力」の読み取りに失敗しました。 -> {rank}-power",
+                [(f"{rank}-power", power_img)],
             )
 
         # 過去最大戦力
-        hpower_img = self.zcorrect_image(
+        hpower_img = self.correct_image(
             img_b, HIGHEST_POWER_CROP_RANGE, brightness=1.3, contrast=1.8
         )
         hpower = self.ocr_image(hpower_img)
         hpower = hpower.replace(",", "")
         if hpower == "":
             self.err(
-                f"{rank}位 - {name}: 「過去最大戦力」の読み取りに失敗しました。 -> {rank}-hpower.png",
-                [(f"{rank}-dead.png", hpower_img)],
+                f"{rank}位 - {name}: 「過去最大戦力」の読み取りに失敗しました。 -> {rank}-hpower",
+                [(f"{rank}-dead", hpower_img)],
             )
 
         # 戦力チェック
         if power != "" and hpower != "" and int(power) > int(hpower):
             self.err(
-                f"{rank}位 - {name}: 「戦力」または「過去最大戦力」を正しく読み取りできなかった可能性があります。OCRの結果は戦力「{power}」、過去最大戦力「{hpower}」です。 -> {rank}-power.png, {rank}-hpower.png",
-                [(f"{rank}-power.png", power_img), (f"{rank}-hpower.png", hpower_img)],
+                f"{rank}位 - {name}: 「戦力」または「過去最大戦力」を正しく読み取りできなかった可能性があります。OCRの結果は戦力「{power}」、過去最大戦力「{hpower}」です。 -> {rank}-power, {rank}-hpower",
+                [(f"{rank}-power", power_img), (f"{rank}-hpower", hpower_img)],
             )
 
         # 戦死
-        dead_img = self.zcorrect_image(img_b, DEAD_CROP_RANGE, brightness=1.3, contrast=1.8)
+        dead_img = self.correct_image(img_b, DEAD_CROP_RANGE, brightness=1.3, contrast=1.8)
         dead = self.ocr_image(dead_img)
         dead = dead.replace(",", "")
         if dead == "":
             self.err(
-                f"{rank}位 - {name}: 「戦死数」の読み取りに失敗しました。 -> {rank}-dead.png",
-                [(f"{rank}-dead.png", dead_img)],
+                f"{rank}位 - {name}: 「戦死数」の読み取りに失敗しました。 -> {rank}-dead",
+                [(f"{rank}-dead", dead_img)],
             )
 
         # 資源援助
-        rss_img = self.zcorrect_image(img_b, RSS_CROP_RANGE, brightness=1.3, contrast=1.8)
+        rss_img = self.correct_image(img_b, RSS_CROP_RANGE, brightness=1.3, contrast=1.8)
         rss = self.ocr_image(rss_img)
         rss = rss.replace(",", "")
         if rss == "":
             self.err(
-                f"{rank}位 - {name}: 「資源援助数」の読み取りに失敗しました。 -> {rank}-rss.png",
-                [(f"{rank}-rss.png", rss_img)],
+                f"{rank}位 - {name}: 「資源援助数」の読み取りに失敗しました。 -> {rank}-rss",
+                [(f"{rank}-rss", rss_img)],
             )
 
         print(
             f"{rank} {id} {name} {alliance} {power} {hpower} {kills[0]} {kills[1]} {kills[2]} {kills[3]} {kills[4]} {ranged} {dead} {rss}"
         )
 
-        return (
+        return [
             rank,
             id,
             name,
@@ -460,18 +469,27 @@ class KingdomRanking(Task):
             ranged,
             dead,
             rss,
-        )
+        ]
+
+    def writeCsv(self, array):
+        import csv
+
+        with open('rankings.csv', mode='a+', encoding='utf-8', newline='') as ranking_file:
+            rankings = csv.writer(ranking_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            print(array)
+            rankings.writerow(array)
+
 
     def correct_image(self,
-            img: Image.Image,
-            crop_range: tuple,
-            threshold: int = 0,
-            threshold_max: int = -1,
-            invert: bool = True,
-            scale: float = 1,
-            contrast: float = 1,
-            brightness: float = 1,
-    ) -> Image.Image:
+                      img: Image.Image,
+                      crop_range: tuple,
+                      threshold: int = 0,
+                      threshold_max: int = -1,
+                      invert: bool = True,
+                      scale: float = 1,
+                      contrast: float = 1,
+                      brightness: float = 1,
+                      ) -> Image.Image:
         tmp = img.crop(crop_range)
         tmp = ImageOps.invert(tmp) if invert else tmp
         tmp = tmp.convert("L")
@@ -490,6 +508,6 @@ class KingdomRanking(Task):
             tmp = tmp.point(lambda x: 0 if x < threshold else threshold_max)
         return tmp
 
-    def ocr_image(self,img: Image, whitelist: str = "0123456789,") -> str:
-        return pytesseract.image_to_string(img, lang="eng",config=fr'--oem 1 --psm 6 -c tessedit_char_whitelist={whitelist}')
-
+    def ocr_image(self, img: Image, whitelist: str = "0123456789,") -> str:
+        print(fr'--oem 1 --psm 6 -c tessedit_char_whitelist={whitelist}')
+        return pytesseract.image_to_string(img, config=fr'--oem 1 --psm 6 -c tessedit_char_whitelist={whitelist} ')
