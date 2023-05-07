@@ -1,0 +1,544 @@
+[ 2023-05-05 22:08:44 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-05 22:08:51 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-05 22:08:55 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-05 22:11:10 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-05 22:11:16 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-05 22:11:45 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-05 22:13:27 ] [ third ] INFO : Verification made in 58.3
+
+[ 2023-05-05 22:17:31 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-05 22:18:11 ] [ third ] INFO : Verification made in 5.2
+
+[ 2023-05-05 22:18:33 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-05 22:18:44 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-05 22:18:51 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-05 22:20:07 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-05 22:22:04 ] [ third ] INFO : Verification made in 77.8
+
+[ 2023-05-05 22:24:15 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-05 22:24:56 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-05 22:25:20 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-05 22:25:30 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-05 22:25:36 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-05 22:27:26 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-05 22:28:37 ] [ third ] INFO : Verification made in 29.6
+
+[ 2023-05-05 22:30:11 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-05 22:31:04 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-05 22:31:29 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-06 00:44:24 ] [ third ] INFO : Verification made in 43.1
+
+[ 2023-05-06 00:44:31 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 00:46:28 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-06 00:47:11 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 00:47:14 ] [ third ] INFO : Verification made in 3.2
+
+[ 2023-05-06 00:47:56 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-06 00:47:59 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 00:48:38 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 00:48:41 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-06 00:49:22 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-06 00:49:25 ] [ third ] INFO : Verification made in 3.1
+
+[ 2023-05-06 00:50:22 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 00:51:04 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 00:51:26 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-06 00:51:36 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 00:51:42 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 00:53:34 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-06 00:54:49 ] [ third ] INFO : Verification made in 29.6
+
+[ 2023-05-06 00:57:22 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 00:58:07 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 00:58:29 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 00:58:38 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-06 00:58:44 ] [ third ] INFO : Verification made in 4.0
+
+[ 2023-05-06 01:00:56 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 01:02:16 ] [ third ] INFO : Verification made in 40.6
+
+[ 2023-05-06 01:03:26 ] [ third ] INFO : Verification made in 5.1
+
+[ 2023-05-06 01:04:16 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-06 01:04:39 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 10:18:10 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 10:18:16 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 10:18:23 ] [ third ] INFO : Verification made in 4.0
+
+[ 2023-05-06 10:20:10 ] [ third ] INFO : Verification made in 68.2
+
+[ 2023-05-06 10:25:24 ] [ third ] INFO : Verification made in 3.9
+
+[ 2023-05-06 10:26:03 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-06 10:26:29 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-06 10:26:39 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 10:26:45 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 10:29:02 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-06 10:30:35 ] [ third ] INFO : Verification made in 49.6
+
+[ 2023-05-06 10:32:09 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 10:32:52 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 10:33:16 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 10:33:26 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 10:33:34 ] [ third ] INFO : Verification made in 5.6
+
+[ 2023-05-06 10:36:06 ] [ third ] INFO : Verification made in 5.5
+
+[ 2023-05-06 10:37:38 ] [ third ] INFO : Verification made in 50.0
+
+[ 2023-05-06 10:39:26 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 10:40:20 ] [ third ] INFO : Verification made in 5.0
+
+[ 2023-05-06 10:40:43 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 15:50:49 ] [ third ] INFO : Verification made in 69.2
+
+[ 2023-05-06 15:50:56 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-06 15:51:36 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-06 15:52:18 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 15:52:21 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 15:53:01 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 15:53:04 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 15:53:44 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 15:53:48 ] [ third ] INFO : Verification made in 3.3
+
+[ 2023-05-06 15:54:29 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 15:54:33 ] [ third ] INFO : Verification made in 3.5
+
+[ 2023-05-06 15:55:02 ] [ third ] INFO : Verification made in 3.8
+
+[ 2023-05-06 15:55:41 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 15:55:44 ] [ third ] INFO : Verification made in 3.2
+
+[ 2023-05-06 15:57:45 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-06 15:58:25 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 15:58:53 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-06 15:59:03 ] [ third ] INFO : Verification made in 5.5
+
+[ 2023-05-06 15:59:10 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-06 15:59:54 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-06 16:01:07 ] [ third ] INFO : Verification made in 31.1
+
+[ 2023-05-06 16:05:22 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 16:06:04 ] [ third ] INFO : Verification made in 5.3
+
+[ 2023-05-06 16:06:26 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-06 16:06:37 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-06 16:06:44 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 16:08:45 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 16:10:25 ] [ third ] INFO : Verification made in 58.5
+
+[ 2023-05-06 16:11:05 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 16:11:56 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 16:12:21 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-06 18:21:50 ] [ third ] INFO : Verification made in 39.5
+
+[ 2023-05-06 18:21:55 ] [ third ] INFO : Verification made in 4.0
+
+[ 2023-05-06 18:24:29 ] [ third ] INFO : Verification made in 3.8
+
+[ 2023-05-06 18:25:16 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 18:25:19 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 18:25:47 ] [ third ] INFO : Verification made in 3.1
+
+[ 2023-05-06 18:26:23 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 18:26:26 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 18:27:07 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 18:27:10 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 18:27:50 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 18:27:53 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 18:28:19 ] [ third ] INFO : Verification made in 3.1
+
+[ 2023-05-06 18:28:59 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 18:29:02 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 18:29:14 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 18:29:50 ] [ third ] INFO : Verification made in 3.9
+
+[ 2023-05-06 18:30:11 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 18:30:20 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-06 18:30:26 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 18:32:15 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 18:33:24 ] [ third ] INFO : Verification made in 29.6
+
+[ 2023-05-06 18:35:09 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-06 18:35:47 ] [ third ] INFO : Verification made in 3.6
+
+[ 2023-05-06 18:36:11 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-06 18:36:19 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-06 18:36:26 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 18:37:22 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 18:38:45 ] [ third ] INFO : Verification made in 46.9
+
+[ 2023-05-06 18:41:38 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-06 18:42:28 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-06 18:42:50 ] [ third ] INFO : Verification made in 3.8
+
+[ 2023-05-06 20:47:24 ] [ third ] INFO : Verification made in 34.0
+
+[ 2023-05-06 20:47:31 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 20:48:03 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 20:48:45 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:48:48 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:49:13 ] [ third ] INFO : Verification made in 3.1
+
+[ 2023-05-06 20:49:59 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:50:02 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:50:40 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:50:43 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-06 20:51:25 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 20:51:28 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 20:51:52 ] [ third ] INFO : Verification made in 3.2
+
+[ 2023-05-06 20:52:35 ] [ third ] INFO : Verification made in 3.7
+
+[ 2023-05-06 20:52:38 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-06 20:54:39 ] [ third ] INFO : Verification made in 6.0
+
+[ 2023-05-06 20:55:26 ] [ third ] INFO : Verification made in 5.7
+
+[ 2023-05-06 20:55:54 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-06 20:56:05 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 20:56:14 ] [ third ] INFO : Verification made in 5.1
+
+[ 2023-05-06 20:57:53 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 20:59:08 ] [ third ] INFO : Verification made in 31.9
+
+[ 2023-05-06 21:00:12 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 21:00:50 ] [ third ] INFO : Verification made in 3.5
+
+[ 2023-05-06 21:01:16 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-06 21:01:25 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 21:01:31 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 21:02:04 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-06 21:02:54 ] [ third ] INFO : Verification made in 5.9
+
+[ 2023-05-06 21:02:59 ] [ third ] INFO : Verification made in 5.3
+
+[ 2023-05-06 21:05:42 ] [ third ] INFO : Verification made in 30.7
+
+[ 2023-05-06 21:06:33 ] [ third ] INFO : Verification made in 5.9
+
+[ 2023-05-06 21:06:59 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 23:28:02 ] [ third ] INFO : Verification made in 38.7
+
+[ 2023-05-06 23:28:08 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 23:29:36 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-06 23:30:17 ] [ third ] INFO : Verification made in 3.1
+
+[ 2023-05-06 23:30:20 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 23:30:47 ] [ third ] INFO : Verification made in 3.3
+
+[ 2023-05-06 23:31:29 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 23:31:32 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 23:32:13 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 23:32:16 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-06 23:32:55 ] [ third ] INFO : Verification made in 2.6
+
+[ 2023-05-06 23:32:57 ] [ third ] INFO : Verification made in 2.6
+
+[ 2023-05-06 23:33:23 ] [ third ] INFO : Verification made in 3.1
+
+[ 2023-05-06 23:33:50 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 23:34:17 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 23:34:59 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-06 23:35:01 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-06 23:36:03 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-06 23:36:42 ] [ third ] INFO : Verification made in 5.4
+
+[ 2023-05-06 23:37:05 ] [ third ] INFO : Verification made in 4.0
+
+[ 2023-05-06 23:37:13 ] [ third ] INFO : Verification made in 4.0
+
+[ 2023-05-06 23:37:20 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-06 23:37:29 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-07 09:26:51 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-07 09:26:57 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-07 09:29:57 ] [ third ] INFO : Verification made in 5.3
+
+[ 2023-05-07 09:31:14 ] [ third ] INFO : Verification made in 34.4
+
+[ 2023-05-07 09:36:00 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-07 09:36:41 ] [ third ] INFO : Verification made in 5.0
+
+[ 2023-05-07 09:37:06 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-07 09:37:16 ] [ third ] INFO : Verification made in 5.1
+
+[ 2023-05-07 09:37:23 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-07 09:37:32 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-07 09:39:28 ] [ third ] INFO : Verification made in 70.9
+
+[ 2023-05-07 09:43:21 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-07 09:44:08 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-07 09:44:34 ] [ third ] INFO : Verification made in 6.1
+
+[ 2023-05-07 09:44:45 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-07 09:44:54 ] [ third ] INFO : Verification made in 5.4
+
+[ 2023-05-07 09:48:15 ] [ third ] INFO : Verification made in 5.1
+
+[ 2023-05-07 09:50:17 ] [ third ] INFO : Verification made in 75.7
+
+[ 2023-05-07 09:52:30 ] [ third ] INFO : Verification made in 5.3
+
+[ 2023-05-07 09:53:26 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-07 09:53:57 ] [ third ] INFO : Verification made in 5.9
+
+[ 2023-05-07 12:09:48 ] [ third ] INFO : Verification made in 39.4
+
+[ 2023-05-07 12:09:54 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-07 12:11:52 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-07 12:12:36 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-07 12:12:38 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-07 12:13:14 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-07 12:13:17 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-07 12:13:55 ] [ third ] INFO : Verification made in 2.6
+
+[ 2023-05-07 12:13:58 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-07 12:14:39 ] [ third ] INFO : Verification made in 2.6
+
+[ 2023-05-07 12:14:41 ] [ third ] INFO : Verification made in 2.6
+
+[ 2023-05-07 12:15:08 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-07 12:15:47 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-07 12:15:50 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-07 12:16:44 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-07 12:17:24 ] [ third ] INFO : Verification made in 4.9
+
+[ 2023-05-07 12:17:47 ] [ third ] INFO : Verification made in 5.2
+
+[ 2023-05-07 12:17:56 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-07 12:18:03 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-07 12:19:49 ] [ third ] INFO : Verification made in 5.8
+
+[ 2023-05-07 12:21:07 ] [ third ] INFO : Verification made in 38.7
+
+[ 2023-05-07 12:22:21 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-07 12:23:00 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-07 12:23:23 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-07 12:23:32 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-07 12:23:38 ] [ third ] INFO : Verification made in 4.0
+
+[ 2023-05-07 12:25:34 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-07 12:26:47 ] [ third ] INFO : Verification made in 29.2
+
+[ 2023-05-07 12:27:49 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-07 12:28:41 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-07 12:29:02 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-07 14:34:49 ] [ third ] INFO : Verification made in 36.2
+
+[ 2023-05-07 14:34:54 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-07 14:35:50 ] [ third ] INFO : Verification made in 4.6
+
+[ 2023-05-07 14:36:32 ] [ third ] INFO : Verification made in 2.6
+
+[ 2023-05-07 14:36:34 ] [ third ] INFO : Verification made in 2.6
+
+[ 2023-05-07 14:37:14 ] [ third ] INFO : Verification made in 3.0
+
+[ 2023-05-07 14:37:17 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-07 14:37:55 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-07 14:37:58 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-07 14:38:37 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-07 14:38:40 ] [ third ] INFO : Verification made in 2.8
+
+[ 2023-05-07 14:39:05 ] [ third ] INFO : Verification made in 2.9
+
+[ 2023-05-07 14:39:45 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-07 14:39:48 ] [ third ] INFO : Verification made in 2.7
+
+[ 2023-05-07 14:41:14 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-07 14:41:53 ] [ third ] INFO : Verification made in 4.5
+
+[ 2023-05-07 14:42:14 ] [ third ] INFO : Verification made in 3.9
+
+[ 2023-05-07 14:42:24 ] [ third ] INFO : Verification made in 4.7
+
+[ 2023-05-07 14:42:30 ] [ third ] INFO : Verification made in 4.4
+
+[ 2023-05-07 14:43:41 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-07 14:44:51 ] [ third ] INFO : Verification made in 28.8
+
+[ 2023-05-07 14:46:12 ] [ third ] INFO : Verification made in 4.8
+
+[ 2023-05-07 14:46:53 ] [ third ] INFO : Verification made in 4.3
+
+[ 2023-05-07 14:47:16 ] [ third ] INFO : Verification made in 3.9
+
+[ 2023-05-07 14:47:24 ] [ third ] INFO : Verification made in 4.1
+
+[ 2023-05-07 14:47:30 ] [ third ] INFO : Verification made in 4.0
+
+[ 2023-05-07 14:48:08 ] [ third ] INFO : Verification made in 4.2
+
+[ 2023-05-07 14:49:31 ] [ third ] INFO : Verification made in 44.4
+
