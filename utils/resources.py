@@ -830,6 +830,7 @@ class ImageSingleton:
         if file_name == "yellow_icon1":
             return self.yellow_icon1
         else:
-            return imread(f'{dir}\\{file_name}.png')
+            # print(f'{dir}\\{file_name}.png')
+            return imread(f'resources\\{file_name}.png')
 
 ImageSingleton()

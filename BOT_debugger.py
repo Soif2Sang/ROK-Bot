@@ -2,7 +2,8 @@ from random import randint
 from threading import Thread
 import flet as ft
 
-from taskscod.COD_Task_gather_rss import CodGatherRss
+from tasks.Task_kingdom_ranking import KingdomRanking
+from taskscod.COD_Task_gather_rss import GatherRss
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
@@ -48,7 +49,8 @@ class Bot():
         self.chest = DailyChest2(self.main_task)
         self.alliance = AllianceDonation(self.main_task)
         self.trade = RssTransfer(self.main_task)
-        self.cod_rss = CodGatherRss(self.main_task)
+        self.cod_rss = GatherRss(self.main_task)
+        self.ranks = KingdomRanking(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -427,9 +429,9 @@ def upgrade_all():
 
 if __name__ == "__main__":
     # upgrade_all()
-    bot = get_bot(0)
+    bot = get_bot(1)
     # bot.cod_rss.set_search_level(6)
-    bot.cod_rss.run()
+    bot.ranks.run()
     # print(bot.cod_rss.in_city())
     # hwnd = win32gui.FindWindow(None, bot.adb.name)
     # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
