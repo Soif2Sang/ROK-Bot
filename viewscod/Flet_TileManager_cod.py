@@ -197,6 +197,7 @@ class TileManager(ft.ListView):
             "claim_campaign": False,
             'claim_daily_quests':False,
             "alliance_help": False,
+            "check_donation": False,
             "train_troops": False,
             "infantry_camp": [],
             "cavalry_camp": [],

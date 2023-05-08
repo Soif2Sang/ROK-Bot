@@ -40,7 +40,7 @@ class SettingContainer(ft.Container):
         # self.create_normal_switch("collect_ressource", "Collect city rss")
         # self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
         # self.create_normal_switch("buy_merchant", "Buy merchant")
-        # self.create_normal_switch("check_donation", "Alliance donation")
+        self.create_normal_switch("check_donation", "Alliance donation")
         # self.create_advanced_switch("material_production", "Material Production", self.page_materials)
         self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
