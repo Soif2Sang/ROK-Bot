@@ -391,10 +391,7 @@ class Task:
             # print(f'{co}')
         co = self.find_img(source=cv_image, target="already_connected", confidence=0.9)
         if co is not None:
-            if cv_image is None:
-                co = self.find_img(target="reconnect")
-            else:
-                co = self.find_img(source=cv_image, target="reconnect", confidence=0.9)
+            co = self.find_img(source=cv_image, target="reconnect", confidence=0.9)
         if co is not None:
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_log_back', False):
 

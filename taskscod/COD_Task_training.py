@@ -42,7 +42,7 @@ class TroopTraining(Task):
                 for i in range(2):
                     self.click(position[0]+uniform(-8,8),position[1]+uniform(-8,8))
                     self.better_sleep((1.2,3))
-                if (co:=self.find_img(target=f"{name}_badge",confidence=0.75)) is None:
+                if (co:=self.find_img(target=f"cod_{name}_badge",confidence=0.75)) is None:
                     self.print(f"Unable to locate {name}")
                     continue
                 if self.find_img(target=f"cod_training_speed",confidence=0.8) is not None:
