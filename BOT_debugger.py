@@ -5,6 +5,7 @@ import flet as ft
 
 import taskscod.COD_Task_daily_vip
 from tasks.Task_kingdom_ranking import KingdomRanking
+from taskscod import COD_Task_alliance_donation
 from taskscod.COD_Task_daily_chest import DailyChest
 from taskscod.COD_Task_gather_rss import GatherRss
 from tasks.Task import Task
@@ -56,6 +57,7 @@ class Bot():
         self.ranks = KingdomRanking(self.main_task)
         self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
         self.cod_chest = DailyChest(self.main_task)
+        self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -436,7 +438,7 @@ if __name__ == "__main__":
     # upgrade_all()
     bot = get_bot(0)
     # bot.cod_rss.set_search_level(6)
-    bot.cod_chest.run()
+    bot.code_alliance.run()
     # print(bot.cod_rss.in_city())
     # hwnd = win32gui.FindWindow(None, bot.adb.name)
     # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
