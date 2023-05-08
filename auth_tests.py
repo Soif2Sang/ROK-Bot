@@ -1,76 +1,40 @@
-import hashlib
-import sys
-from datetime import datetime, date
-
-import requests
-
-from utils.auth import selfApi
-
-
-def getchecksum():
-    md5_hash = hashlib.md5()
-    file = open(''.join(sys.argv[0]), "rb")
-    md5_hash.update(file.read())
-    digest = md5_hash.hexdigest()
-    return digest
-
-if __name__ == "__main__":
-    keyauthapp = selfApi(
-        name = "Rokbd",
-        ownerid = "7oofxdj8uH",
-        secret = "a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
-        version = "1.0",
-        hash_to_check = getchecksum()
+from PIL import Image, ImageOps, ImageEnhance
+from pytesseract import pytesseract
+pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+import cv2
+def correct_image(
+                  img: Image.Image,
+                  threshold: int = 0,
+                  threshold_max: int = -1,
+                  invert: bool = True,
+                  scale: float = 1,
+                  contrast: float = 1,
+                  brightness: float = 1,
+                  ) -> Image.Image:
+    tmp = img
+    tmp = ImageOps.invert(tmp) if invert else tmp
+    tmp = tmp.convert("L")
+    tmp = (
+        tmp.resize((round(tmp.width * scale), round(tmp.height * scale)))
+        if scale != 1
+        else tmp
     )
+    tmp = ImageEnhance.Contrast(tmp).enhance(contrast) if contrast != 1 else tmp
+    tmp = ImageEnhance.Brightness(tmp).enhance(brightness) if brightness != 1 else tmp
+    if threshold == 0:
+        pass
+    elif threshold_max == -1:
+        tmp = tmp.point(lambda x: 0 if x < threshold else x)
+    else:
+        tmp = tmp.point(lambda x: 0 if x < threshold else threshold_max)
+    return tmp
 
+def ocr_image( img: Image, whitelist: str = "0123456789,") -> str:
+    print(fr'--oem 1 --psm 6 -c tessedit_char_whitelist={whitelist}')
+    return pytesseract.image_to_string(img,config=fr'--oem 1 --psm 6 -c tessedit_char_whitelist=0123456789')
 
-    # "f6386c16787e0eb51b24d168205267e6"
-    keyauthapp.login("maxence","fe")
-    print(f"""
-    App data:
-    Number of users: {keyauthapp.app_data.numUsers}
-    Number of online users: {keyauthapp.app_data.onlineUsers}
-    Number of keys: {keyauthapp.app_data.numKeys}
-    Application Version: {keyauthapp.app_data.app_ver}
-    Customer panel link: {keyauthapp.app_data.customer_panel}
-    """)
-
-    print(f"Current Session Validation Status: {keyauthapp.check()}")
-
-    print("\nUser data: ")
-    print("Username: " + keyauthapp.user_data.username)
-    print("IP address: " + keyauthapp.user_data.ip)
-
-    subs = keyauthapp.user_data.subscriptions  # Get all Subscription names, expiry, and timeleft
-    for i in range(len(subs)):
-        sub = subs[i]["subscription"]  # Subscription from every Sub
-        expiry = datetime.utcfromtimestamp(int(subs[i]["expiry"])).strftime(
-            '%Y-%m-%d %H:%M:%S')  # Expiry date from every Sub
-        timeleft = subs[i]["timeleft"]  # Timeleft from every Sub
-
-        print(f"[{i + 1} / {len(subs)}] | Subscription: {sub} - Expiry: {expiry} - Timeleft: {timeleft}")
-    print("Created at: " + datetime.utcfromtimestamp(int(keyauthapp.user_data.createdate)).strftime('%Y-%m-%d %H:%M:%S'))
-    print("Last login at: " + datetime.utcfromtimestamp(int(keyauthapp.user_data.lastlogin)).strftime('%Y-%m-%d %H:%M:%S'))
-    print("Expires at: " + datetime.utcfromtimestamp(int(keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S'))
-    print(f"Current Session Validation Status: {keyauthapp.check()}")
-
-    today = date.today()
-    date_brut = datetime.utcfromtimestamp(int(keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-    heures = date_brut.split('-')
-    future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-    diff = future - today
-    print(diff)
-    url2 = f"https://keyauth.win/api/seller/?sellerkey=f6386c16787e0eb51b24d168205267e6&type=adduser&user={'test'}&pass={'test'}&sub=default&expiry={1}"
-
-    headers = {
-        'content-type': "application/json",
-        'cache-control': "no-cache"
-    }
-    reponse = requests.request("GET", url2, headers=headers).json()
-
-    print(reponse)
-
-    # while True:
-    #     keyauthapp.login("maxence","fe")
-    #     print(f"Current Session Validation Status: {keyauthapp.check()}")
-    #     sleep(10)
+# img = Image.open('resources/test_read.png')
+# img_a = img.convert("RGB")
+# img = correct_image(img)
+img = cv2.imread('resources\\test_read.png')
+print(ocr_image(img))
