@@ -29,23 +29,26 @@ class DailyChest(Task):
 
     @get_name
     def close_chest_popup(self):
+        return
         for i in range(2):
             co = self.find_img(target=f"popup{i}",confidence=0.8)
             if co is not None:
                 self.click(uniform(1102, 1030), uniform(92, 118))
                 self.better_sleep((2, 4))
     @get_name
-    def claim_legendary_chest(self):
+    def claim_artifact_chest(self):
         try:
-            co = self.find_img(target='legendary_chest')
+            co = self.find_img(target='cod_chest_1')
 
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))
                 self.better_sleep((1.7, 3))
-                if (chest := self.find_img(target="open_chest")) is not None:
+                if (chest := self.find_img(target="cod_open_chest")) is not None:
                     self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
                     self.better_sleep((3, 5))
-                    while confirm := self.find_img(target="confirm_tavern"):
+                    self.click(720 //2 + uniform(-10, 10), 1280 //2 + uniform(-10, 10))
+                    self.better_sleep((3, 5))
+                    while confirm := self.find_img(target="cod_confirm_chest"):
                         self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
                 self.click(uniform(25, 55), uniform(20, 56))
@@ -56,10 +59,10 @@ class DailyChest(Task):
 
     @get_class
     def run(self):
-        self.claim_legendary_chest()
+        self.claim_artifact_chest()
         self.better_sleep((1.7, 3))
         cv_image = self.adb.get_cv2_img()
-        chests = ['material_chest', 'golden_chest', 'silver_chest']
+        chests = ['cod_chest_2', 'cod_chest_3']
         entered = False
         for chest in chests:
             if entered:
@@ -68,12 +71,12 @@ class DailyChest(Task):
                 entered = True
                 self.click(co[0] + uniform(0, 35), co[1] + uniform(0, 35))
                 self.better_sleep((1.7, 3))
-                open_chests = self.adb.find_multiple_img("open_chest")
+                open_chests = self.adb.find_multiple_img("cod_open_chest")
                 for open in open_chests:
                     self.print("Opening a chest..")
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
                     self.better_sleep((5, 8))
-                    while confirm := self.find_img(target="confirm_tavern"):
+                    while confirm := self.find_img(target="cod_confirm_chest"):
                         self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
                 self.better_sleep((1.7, 3))

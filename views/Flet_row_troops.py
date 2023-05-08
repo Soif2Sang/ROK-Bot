@@ -14,7 +14,8 @@ class FletRowTraining(ft.Row):
                     ft.Switch(
                         label=f"Train {key}",
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}_enable"],
-                        on_change=lambda e: self.submit(e, f"{key}_enable", bool)
+                        on_change=lambda e: self.submit(e, f"{key}_enable", bool),
+                        width = 140
                     ),
                     ft.Dropdown(
                         width=140,

@@ -27,7 +27,7 @@ class DailyVip(Task):
 
     @get_class
     def run(self):
-        if not (co:=self.find_img("cod_faily_vip")):
+        if not (co:=self.find_img("cod_daily_vip")):
             return
 
         self.click(co[0] + uniform(0,6),co[1] + uniform(0,6))

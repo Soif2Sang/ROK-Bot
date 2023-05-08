@@ -1912,3 +1912,9 @@
 
 [ 2023-05-08 15:54:26 ] [ main ] INFO : Verification made in 2.7
 
+[ 2023-05-08 15:55:52 ] [ main ] INFO : Verification made in 5.0
+
+[ 2023-05-08 15:56:42 ] [ main ] INFO : Verification made in 2.7
+
+[ 2023-05-08 15:56:45 ] [ main ] INFO : Verification made in 2.6
+
