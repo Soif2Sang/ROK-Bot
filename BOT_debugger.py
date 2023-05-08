@@ -436,9 +436,9 @@ def upgrade_all():
 
 if __name__ == "__main__":
     # upgrade_all()
-    bot = get_bot(0)
+    bot = get_bot(1)
     # bot.cod_rss.set_search_level(6)
-    bot.code_alliance.run()
+    bot.cod_chest.run()
     # print(bot.cod_rss.in_city())
     # hwnd = win32gui.FindWindow(None, bot.adb.name)
     # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)

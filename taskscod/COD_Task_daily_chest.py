@@ -60,7 +60,6 @@ class DailyChest(Task):
     @get_class
     def run(self):
         self.claim_artifact_chest()
-        self.better_sleep((1.7, 3))
         cv_image = self.adb.get_cv2_img()
         chests = ['cod_chest_2', 'cod_chest_3']
         entered = False
