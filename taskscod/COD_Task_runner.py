@@ -6,6 +6,8 @@ from time import time, sleep
 import win32gui
 
 from tasks.Task_alliance_help import AllianceHelp
+from taskscod.COD_Task_alliance_donation import AllianceDonation
+from taskscod.COD_Task_training import TroopTraining
 from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
 from taskscod.COD_Task_claim_campaign import ClaimCampaign
 from taskscod.COD_Task_claim_daily_quests import DailyQuests
@@ -147,16 +149,16 @@ class TaskRunner(Task):
         lib_tasks = []
         if profile.get('claim_campaign', False):
             lib_tasks.append(ClaimCampaign(self))
-        if profile.get('collect_ressource', False):
-            lib_tasks.append(CollectResource(self))
+        # if profile.get('collect_ressource', False):
+        #     lib_tasks.append(CollectResource(self))
         # if profile.get('buy_merchant', False):
         #     lib_tasks.append(BuyMerchant(self))
         if profile.get('gather_rss', False):
             lib_tasks.append(GatherRss(self))
         # if profile.get('use_enhanced_buff', False):
         #     lib_tasks.append(UseEnhancedBuff(self))
-        # if profile.get('check_donation', False):
-        #     lib_tasks.append(AllianceDonation(self))
+        if profile.get('check_donation', False):
+            lib_tasks.append(AllianceDonation(self))
         # if profile.get('defeat_barbarians', False):
         #     lib_tasks.append(HuntBarbarians(self))
         # if profile.get('gather_gem', False):
@@ -173,12 +175,12 @@ class TaskRunner(Task):
         #     lib_tasks.append(ProduceMaterials(self))
         if profile.get('claim_daily_chest', False):
             lib_tasks.append(DailyChest(self))
-        if profile.get('claim_daily_quests',False):
-            lib_tasks.append(DailyQuests(self))
+        # if profile.get('claim_daily_quests',False):
+        #     lib_tasks.append(DailyQuests(self))
         # if profile.get('auto_upgrade', False):
             # lib_tasks.append(UpgradeCity(self))
-        # if profile.get('train_troops', False):
-        #     lib_tasks.append(TroopTraining(self))
+        if profile.get('train_troops', False):
+            lib_tasks.append(TroopTraining(self))
         # if profile.get('transfer_enable',False):
         #     lib_tasks.append(RssTransfer(self))
         shuffle(lib_tasks)
