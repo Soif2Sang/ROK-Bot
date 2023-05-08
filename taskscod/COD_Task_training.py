@@ -2,7 +2,7 @@ from random import uniform, shuffle
 
 from pytesseract import pytesseract
 
-from tasks.Task import Task
+from taskscod.COD_Task import Task
 from utils.Task_utils import get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -35,10 +35,13 @@ class TroopTraining(Task):
         }
         shuffle(names)
         for name in names:
+            print(name)
             if self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"{name}_enable"]:
                 position = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"{name}_camp"]
+                print(position)
                 if position is None or len(list(position))<2:
                     continue
+                print("here")
                 for i in range(2):
                     self.click(position[0]+uniform(-8,8),position[1]+uniform(-8,8))
                     self.better_sleep((1.2,3))

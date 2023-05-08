@@ -116,7 +116,7 @@ def get_name(func):
         # write(self.name, f"FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
         #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
-        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         func_output = func(self, *args, **kwargs)
         return func_output
 

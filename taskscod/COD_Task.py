@@ -163,7 +163,7 @@ class Task:
         # self.print(f"Loading {target}")
         print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
         result = self.adb.find_img(target=target,source=source,confidence=confidence)
-        # self.print(f"Successfully loaded {target}")
+        print(f"Successfully loaded {target}")
         # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Successfully loaded {target}")
 
         return result 

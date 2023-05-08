@@ -48,7 +48,8 @@ def main(page:ft.Page):
 
     def on_tap_update(e:ft.ControlEvent):
         print(e.local_x*2, e.local_y*2)
-
+        data = get_data()
+        print(data[str(sel)]['schedules'][str(profile)][page.current_build])
         try:
             print(data[str(sel)]['schedules'][str(profile)])
             data[str(sel)]['schedules'][str(profile)][page.current_build] = (int(e.local_x*2), int(e.local_y*2))
@@ -57,6 +58,8 @@ def main(page:ft.Page):
             traceback.print_exc()
             return
         write_data(data)
+        data = get_data()
+        print(data[str(sel)]['schedules'][str(profile)][page.current_build])
 
     c = ft.Container(bgcolor=ft.colors.RED,left=0, top=0, image_src="city.png",height=720/2,width=1280/2)
 
@@ -88,9 +91,10 @@ def main(page:ft.Page):
     page.update()
 
 def start(sel_param="1",profile_param="1"):
-    global sel,profile
+    global sel,profile,data
     sel = sel_param
     profile = profile_param
+    data = get_data()
     ft.app(target=main)
 
 if __name__ == "__main__":

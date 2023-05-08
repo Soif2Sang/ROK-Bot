@@ -38,7 +38,7 @@ class DailyChest(Task):
     @get_name
     def claim_artifact_chest(self):
         try:
-            co = self.find_img(target='cod_chest_1')
+            co = self.find_img(target='cod_chest_1',confidence=0.8)
 
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))
