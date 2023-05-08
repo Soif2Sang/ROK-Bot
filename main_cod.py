@@ -55,9 +55,9 @@ class LoginButton(ft.FilledButton):
 
     def login_schedule(self, username, password):
         self.keyauthapp = selfApi(
-            name="Rokbd",
+            name="codbd",
             ownerid="7oofxdj8uH",
-            secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+            secret="ef165ddde4ded2ef707095b80ebad353e026381ff1408616b640506049aa5a49",
             version="1.0",
             hash_to_check=getchecksum()
         )
@@ -103,9 +103,9 @@ class LoginButton(ft.FilledButton):
 
     def login(self, e=None, username=None, password=None):
         self.keyauthapp = selfApi(
-            name="Rokbd",
+            name="codbd",
             ownerid="7oofxdj8uH",
-            secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+            secret="ef165ddde4ded2ef707095b80ebad353e026381ff1408616b640506049aa5a49",
             version="1.0",
             hash_to_check=getchecksum()
         )
@@ -183,9 +183,9 @@ def main(page: ft.Page):
         ready = False
         try:
             keyauthapp = selfApi(
-                name="Rokbd",
+                name="codbd",
                 ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+                secret="ef165ddde4ded2ef707095b80ebad353e026381ff1408616b640506049aa5a49",
                 version="1.0",
                 hash_to_check=getchecksum()
             )
