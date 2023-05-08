@@ -10,7 +10,7 @@ from views.Flet_row_presets import FletRowPresets
 from viewscod.Flet_row_rss_cod import FletRowRss
 from views.Flet_col_transfer import FletColumnRss
 from views.Flet_row_troops import FletRowTraining
-from views.Flet_city_layout import start
+from viewscod.Flet_city_layout_cod import start
 from utils.Task_utils import get_data, write_data
 
 color_bank = {
@@ -40,11 +40,11 @@ class SettingContainer(ft.Container):
         # self.create_normal_switch("collect_ressource", "Collect city rss")
         # self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
         # self.create_normal_switch("buy_merchant", "Buy merchant")
-        # self.create_normal_switch("check_donation", "Alliance donation")
+        self.create_normal_switch("check_donation", "Alliance donation")
         # self.create_advanced_switch("material_production", "Material Production", self.page_materials)
-        # self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
-        # self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
-        # self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
+        self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
+        self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
+        self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
         # self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
         # self.create_normal_switch("claim_campaign", "Claim Campaign Rewards")
         # self.create_normal_switch("alliance_help", "Alliance Help")
@@ -220,9 +220,8 @@ class SettingContainer(ft.Container):
         ]
         for key in keys:
             self.content.controls.append(FletRowTraining(key = key, instance_index = self.instance_index, profile_index= self.profile_index))
-            self.content.controls.append(ft.Divider())
-        # self.content.controls.append(ft.Divider())
-        self.content.controls.append(ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Scout camp position",
+        self.content.controls.append(ft.Divider())
+        self.content.controls.append(ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set training camps position",
                               on_click=lambda _: self.show_cords_page()))
         self.update()
 
