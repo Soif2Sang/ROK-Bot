@@ -623,14 +623,12 @@ class TaskRunner(Task):
             if self.data.get(self.sel).get("loop_task"):
                 ttw1, ttw2 = self.data.get(self.sel).get("time_to_wait_loop1", 60), self.data.get(self.sel).get(
                     "time_to_wait_loop2", 90)
-                #self.print("")
                 heures, minutes = divmod((int(time()) - loop_time), 60)
                 minutes,secondes = divmod(int(minutes), 60)
                 self.print(f"Run nb°{i} took {int(heures):02d}:{int(minutes):02d}:{int(secondes):02d} to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                #self.print("")
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes","#f5b400")
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
 
