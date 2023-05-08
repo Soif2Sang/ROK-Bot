@@ -197,6 +197,19 @@ class TileManager(ft.ListView):
             "claim_campaign": False,
             'claim_daily_quests':False,
             "alliance_help": False,
+            "train_troops": False,
+            "infantry_camp": [],
+            "cavalry_camp": [],
+            "archery_camp": [],
+            "siege_camp": [],
+            "infantry_enable": False,
+            "cavalry_enable": False,
+            "archery_enable": False,
+            "siege_enable": False,
+            "infantry_tier": "t1",
+            "cavalry_tier": "t1",
+            "archery_tier": "t1",
+            "siege_tier": "t1",
         }
         for i in range(1, 4):
             default_dic['schedules'][i] = default_profile
