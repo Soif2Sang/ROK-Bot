@@ -290,7 +290,7 @@ class GatherGem(Task):
         :return: True if there's a empty queue
         :return: False if queues are occupied
         """
-
+        print("here")
         pil_image = self.adb.get_curr_device_screen_img()
         cv_image  =self.pil_to_array(pil_image)
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
@@ -298,6 +298,8 @@ class GatherGem(Task):
         cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
         text = pytesseract.image_to_string(cv_image)
         text = text.replace("\n", "")
+        print("after")
+        print(text)
         if len(text) == 3:
             if text[0] < text[2]:
                 self.print("Empty queue found")
@@ -363,8 +365,8 @@ class GatherGem(Task):
                 self.click(uniform(700, 800), uniform(300, 500))
                 self.better_sleep((1.325, 1.795))
                 return False
-            self.check_if_kill()
             co = self.find_img(target="new_troops_button")
+            print(co)
             if co is not None:
                 # print("Home button found")
                 x, y = co[0], co[1]
@@ -375,7 +377,6 @@ class GatherGem(Task):
                 self.better_sleep((1.225, 1.795))
                 self.select_lineup_color(color=color)
                 for i in range(7):  # change if you have 6-7 troops
-                    self.check_if_kill()
                     x_click, y_click = uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54)
                     self.click(x_click, y_click)
                     self.better_sleep((1, 2))
