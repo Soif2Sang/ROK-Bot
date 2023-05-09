@@ -33,8 +33,9 @@ def ocr_image( img: Image, whitelist: str = "0123456789,") -> str:
     print(fr'--oem 1 --psm 6 -c tessedit_char_whitelist={whitelist}')
     return pytesseract.image_to_string(img,config=fr'--oem 1 --psm 6 -c tessedit_char_whitelist=0123456789')
 
-# img = Image.open('resources/test_read.png')
+img = Image.open('resources/test_read.png')
 # img_a = img.convert("RGB")
 # img = correct_image(img)
-img = cv2.imread('resources\\test_read.png')
-print(ocr_image(img))
+# img = cv2.imread('resources\\test_read.png')
+# print(ocr_image(img))
+

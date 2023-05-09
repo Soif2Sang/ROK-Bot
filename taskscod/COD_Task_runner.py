@@ -97,16 +97,16 @@ class TaskRunner(Task):
         current_task = 1
         for func in lib_tasks:
             self.run_game()
-            screen = self.adb.get_cv2_img()
-            screen = self.check_download_page(screen)
-            screen = self.leave_kd_buff(screen)
+            # screen = self.adb.get_cv2_img()
+            # screen = self.check_download_page(screen)
+            # screen = self.leave_kd_buff(screen)
             #self.print("")
             self.print(f"Task {current_task}/{len(lib_tasks)}","blue")
             self.print(f"Currently executing : {self.get_current_task(func.task_name())}","blue")
             #self.print("")
             self.set_current_task(func.task_name())
-            self.check_log_back(screen)
-            self.check_reconnect()
+            # self.check_log_back(screen)
+            # self.check_reconnect()
             # self.set_status()
             if self.data[self.sel]['schedules'][profile].get('alliance_help', False):
                 AllianceHelp(self).run()
@@ -558,10 +558,10 @@ class TaskRunner(Task):
                         self.print(f"Character n°1", "blue")
                         #self.print("")
                     self.run_game()
-                    self.check_log_back()
-                    self.check_reconnect()
-                    self.check_mge()
-                    self.leave_kd_buff()
+                    # self.check_log_back()
+                    # self.check_reconnect()
+                    # self.check_mge()
+                    # self.leave_kd_buff()
                     # First character
                     self.execute_tasks(self.get_available_task(profile),profile)
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",False):
