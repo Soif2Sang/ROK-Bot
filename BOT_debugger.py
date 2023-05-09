@@ -437,17 +437,10 @@ def upgrade_all():
 
 if __name__ == "__main__":
     # upgrade_all()
-    bot = get_bot(1)
+    bot = get_bot(0)
     # bot.cod_rss.set_search_level(6)
     print("here")
-    bot.cod_rss.free_troop()
-    co = bot.task.find_img(target="cod_donate_button")
-    screen = bot.adb.get_cv2_img()
-    screen = screen[co[1]-20:co[1],co[0]:co[0]+90]
-    from pytesseract import pytesseract
-
-    pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    print(pytesseract.image_to_string(screen,config=fr'--oem 1 --psm 6 -c'))
+    bot.code_alliance.donate_to_alliance()
 
     # print(bot.cod_rss.in_city())
     # hwnd = win32gui.FindWindow(None, bot.adb.name)

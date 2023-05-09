@@ -46,6 +46,24 @@ class AllianceDonation(Task):
         self.click(x, y)
         self.better_sleep((1.725, 2.295))
 
+    def can_donate(self):
+        co = self.find_img(target="cod_donate_button")
+        screen = self.adb.get_cv2_img()
+        screen = screen[co[1] - 30:co[1] - 8, co[0]:co[0] + 120]
+        result = pytesseract.image_to_string(screen, config=fr'--oem 1 --psm 6')
+        print(result)
+        result = result.replace("\n","")
+        try:
+            tmp = result[-5:]
+            print(tmp)
+            tmp = tmp.split("/")
+            print(tmp)
+            if int(tmp[0]) != 0 and (int(tmp[0]) < int(tmp[1])):
+                return True
+            else:
+                return False
+        except:
+            return False
     @get_name
     def donate_to_alliance(self):
         self.click(760 + uniform(-5,5), 537 + uniform(-5,5))
@@ -53,7 +71,8 @@ class AllianceDonation(Task):
         talked = False
         limit = 7
         current = 0
-        while (co:=self.find_img(target="cod_donate_button")):
+
+        while (co:=self.find_img(target="cod_donate_button")) and self.can_donate() :
             if not talked:
                 self.print("Donating to the alliance")
                 talked = True
