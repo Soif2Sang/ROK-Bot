@@ -179,11 +179,12 @@ class Adb:
         else:
             return
 
-    def find_multiple_img(self, target, confidence=0.9):
-        pil_image = self.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cvtColor(cv_image, COLOR_BGR2RGB)
-        # print(cv_image)
+    def find_multiple_img(self, target,source=None, confidence=0.9):
+        if source is None:
+            pil_image = self.get_curr_device_screen_img()
+            cv_image = array(pil_image)
+            source = cvtColor(cv_image, COLOR_BGR2RGB)
+        cv_image = source
 
         img_to_find = self.images.get_file_name(target)
         if target == "back_icon":
