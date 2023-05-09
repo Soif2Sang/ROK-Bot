@@ -28,11 +28,11 @@ class AllianceDonation(Task):
     def collect_alliance_resources(self) -> None:
         self.print("Collecting the alliance resources")
         self.click(927 + uniform(0, 20), 375 + uniform(0, 10))
-        self.better_sleep((1.0, 1.395))
+        self.better_sleep((1.7, 2.395))
         self.click(1100 + uniform(-5,5), 227 + uniform(-5,5))
         self.better_sleep((0.78, 1.095))
         self.click(25 + uniform(-2,2), 34 + uniform(-2,2))
-        self.better_sleep((1.0, 1.395))
+        self.better_sleep((1.7, 2.395))
 
     @get_name
     def open_alliance_menu(self):
@@ -49,8 +49,10 @@ class AllianceDonation(Task):
     @get_name
     def donate_to_alliance(self):
         self.click(760 + uniform(-5,5), 537 + uniform(-5,5))
-        self.better_sleep((1, 1.425))
+        self.better_sleep((1.725, 2.295))
         talked = False
+        limit = 7
+        current = 0
         while (co:=self.find_img(target="cod_donate_button")):
             if not talked:
                 self.print("Donating to the alliance")
@@ -58,10 +60,9 @@ class AllianceDonation(Task):
             x, y, arg = co[0] + uniform(0, 20), co[1] + uniform(0, 10), randint(2500, 3475)
             self.swipe_arg(x, y, x, y, arg)
             self.better_sleep((0.7, 1.3))
-        # Check if the resources pop-up comes
-        if self.find_img(target="get_more_rss") is not None:
-            self.click(uniform(1000, 1020), uniform(129, 148))
-            self.better_sleep((1, 1.425))
+            current += 1
+            if current == limit:
+                break
         self.click(uniform(1080, 1100), uniform(70, 90))
         self.better_sleep((1, 1.425))
 

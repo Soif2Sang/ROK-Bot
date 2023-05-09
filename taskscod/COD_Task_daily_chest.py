@@ -42,11 +42,11 @@ class DailyChest(Task):
 
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))
-                self.better_sleep((1.7, 3))
+                self.better_sleep((3, 5))
                 if (chest := self.find_img(target="cod_open_chest")) is not None:
                     self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
-                    self.better_sleep((3, 5))
-                    self.click(720 //2 + uniform(-10, 10), 1280 //2 + uniform(-10, 10))
+                    self.better_sleep((5,7))
+                    self.click(1280 //2 + uniform(-10, 10),720 //2 + uniform(-10, 10))
                     self.better_sleep((3, 5))
                     while confirm := self.find_img(target="cod_confirm_chest"):
                         self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
@@ -66,7 +66,7 @@ class DailyChest(Task):
         for chest in chests:
             if entered:
                 break
-            if co := self.find_img(source=cv_image, target=chest, confidence=0.85):
+            if co := self.find_img(source=cv_image, target=chest, confidence=0.75):
                 entered = True
                 self.click(co[0] + uniform(0, 35), co[1] + uniform(0, 35))
                 self.better_sleep((1.7, 3))
@@ -74,9 +74,9 @@ class DailyChest(Task):
                 for open in open_chests:
                     self.print("Opening a chest..")
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
-                    self.better_sleep((5, 8))
-                    while confirm := self.find_img(target="cod_confirm_chest"):
-                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                    self.better_sleep((7, 8))
+                    while (confirm := self.find_img(target="cod_confirm_chest")):
+                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(0, 20))
                         self.better_sleep((1.7, 3))
                 self.better_sleep((1.7, 3))
 
