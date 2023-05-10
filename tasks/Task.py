@@ -737,12 +737,12 @@ class Task:
             self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
             self.better_sleep((1.3,2.8))
             image = self.adb.get_cv2_img()[0:322, 0:1280]
-        while (cos :=self.find_img(target="close_window2",source=image, confidence=0.83)):
+        while (cos :=self.adb.find_multiple_img(target="close_window2",source=image, confidence=0.83)):
             co = cos[-1]
             self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
             self.better_sleep((1.3,2.8))
             image = self.adb.get_cv2_img()[0:322, 0:1280]
-        while (cos:=self.find_img(target="close_chat", confidence=0.83)):
+        while (cos:=self.adb.find_multiple_img(target="close_chat", confidence=0.83)):
             co = cos[-1]
             self.adb.click(co[0]+uniform(3,9),co[1]+uniform(3,9))
             self.better_sleep((1.3,2.8))

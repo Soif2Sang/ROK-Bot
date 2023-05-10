@@ -31,3 +31,4 @@ auth compiled/
 __pycache__/
 screenshots/
 rankings.csv
+logs/*
