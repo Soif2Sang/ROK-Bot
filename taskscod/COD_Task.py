@@ -170,12 +170,11 @@ class Task:
     
     @get_name
     def run_game(self, count=0) -> None:
-        return
         if (co := self.find_img(target="codicon", confidence=0.8)):
             self.print(f"Looks like game is not running")
             self.click(co[0] + 10, co[1] + 10)
             sleep(3)
-        return
+        return self.wait_until_connected()
         print(self.adb.is_game_alive())
         a = self.adb.is_game_alive()
         if not a:
