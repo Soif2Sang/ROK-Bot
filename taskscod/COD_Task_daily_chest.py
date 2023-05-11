@@ -70,7 +70,9 @@ class DailyChest(Task):
                 entered = True
                 self.click(co[0] + uniform(0, 35), co[1] + uniform(0, 35))
                 self.better_sleep((1.7, 3))
-                open_chests = self.adb.find_multiple_img("cod_open_chest")
+                open_chests = self.adb.find_multiple_img("cod_open_chest",confidence=0.90)
+                if len(open_chests)>2:
+                    open_chests = open_chests[:2]
                 for open in open_chests:
                     self.print("Opening a chest..")
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
