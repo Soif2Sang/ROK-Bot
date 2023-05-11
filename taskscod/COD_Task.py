@@ -174,7 +174,8 @@ class Task:
             self.print(f"Looks like game is not running")
             self.click(co[0] + 10, co[1] + 10)
             sleep(3)
-        return self.wait_until_connected()
+            return self.wait_until_connected()
+        return
         print(self.adb.is_game_alive())
         a = self.adb.is_game_alive()
         if not a:
@@ -316,8 +317,6 @@ class Task:
             if self.find_img(target="cod_toolbar_button", confidence=0.8):
                 condition = False
             self.better_sleep((10, 15))
-            self.check_reconnect()
-            self.check_log_back()
             self.close_windows()
 
     @get_name
