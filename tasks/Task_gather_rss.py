@@ -297,7 +297,7 @@ class GatherRss(Task):
                 self.click(x_click, y_click)
                 self.better_sleep((1, 2))
                 if color != 'red':
-                    cos = self.adb.find_multiple_img("choose_right", 0.8)
+                    cos = self.adb.find_multiple_img(target="choose_right",confidence= 0.7)
                     # for co in cos:
                     #     if co[0] > 1060 and co[1] > 200:
                     #         final.append(co)
@@ -363,7 +363,7 @@ class GatherRss(Task):
         """
         i = 0
         self.print("Clicking on the node..")
-        while self.find_img(target="resource_gather_button") is None:
+        while self.find_img(target="resource_gather_button",confidence=0.7) is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.995,1.4))

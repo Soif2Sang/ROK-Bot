@@ -440,9 +440,9 @@ if __name__ == "__main__":
     bot = get_bot(0)
     # bot.cod_rss.set_search_level(6)
     print("here")
-    bot.code_alliance.donate_to_alliance()
-
-    # print(bot.cod_rss.in_city())
+    # bot.code_alliance.donate_to_alliance()
+    print(bot.adb.find_multiple_img(target="merchant_buy_with_food",confidence= 0.8)
+    , bot.adb.find_multiple_img(target="merchant_buy_with_wood", confidence=0.8)  )  # print(bot.cod_rss.in_city())
     # hwnd = win32gui.FindWindow(None, bot.adb.name)
     # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
     # for _ in range(2):

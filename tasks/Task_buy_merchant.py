@@ -41,8 +41,8 @@ class BuyMerchant(Task):
         for y in range(2):
             for i in range(4):
                 self.better_sleep((1.8, 2.2))
-                food = self.adb.find_multiple_img("merchant_buy_with_food", 0.8)
-                wood = self.adb.find_multiple_img("merchant_buy_with_wood", 0.8)
+                food = self.adb.find_multiple_img(target="merchant_buy_with_food", confidence=0.8)
+                wood = self.adb.find_multiple_img(target="merchant_buy_with_wood", confidence=0.8)
                 food.extend(wood)
                 shuffle(food)
                 for element in food:
