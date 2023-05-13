@@ -65,7 +65,7 @@ class HealTroop(Task):
             tier_icons = []
             tiers = [1, 2, 3, 4, 5]
             for tier in tiers:
-                cos = self.adb.find_multiple_img(f"t{tier}_badge", 0.65)
+                cos = self.adb.find_multiple_img(target=f"t{tier}_badge",confidence= 0.65)
                 cos = list(filter(filter_coordinate, cos))
                 tier_icons.extend(cos)
             if tier_icons is not None and len(tier_icons) != 0:

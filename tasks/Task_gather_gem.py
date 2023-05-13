@@ -381,7 +381,7 @@ class GatherGem(Task):
                     self.click(x_click, y_click)
                     self.better_sleep((1, 2))
                     if color != 'red':
-                        cos = self.adb.find_multiple_img("choose_right", 0.8)
+                        cos = self.adb.find_multiple_img(target="choose_right",confidence= 0.8)
                         # for co in cos:
                         #     if co[0] > 1060 and co[1] > 200:
                         #         final.append(co)
