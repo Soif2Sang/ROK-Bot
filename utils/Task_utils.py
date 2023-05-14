@@ -31,9 +31,12 @@ def write(name,text:str):
         return
 
 def get_data():
-    with DataLock:
-        with open(f"{dir}user_settings.json", encoding='utf-8') as config_file:
-            data = json.load(config_file)
+    try:
+        with DataLock:
+            with open(f"{dir}user_settings.json", encoding='utf-8') as config_file:
+                data = json.load(config_file)
+    except:
+        return get_data()
     return data
 
 def get_path():

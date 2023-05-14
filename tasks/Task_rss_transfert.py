@@ -14,7 +14,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class RssTransfer(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -104,7 +104,6 @@ class RssTransfer(Task):
 
     @get_class
     def run(self,type = None,quantity = None):
-        self.data = get_data()
         if self.data[self.sel]['API_KEY'] =="":
             return self.print("This feature require a custom ApiKey")
         self.check_captcha()

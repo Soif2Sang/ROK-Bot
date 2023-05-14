@@ -240,7 +240,6 @@ class Task:
 
     @get_name
     def better_sleep(self, limits: tuple[float, float]):
-        self.data = self.update_data()
         a = limits[0]
         b = limits[1]
         if self.data[str(self.sel)]['schedules'][self.current_profile]["slow_mode"]:
@@ -251,12 +250,11 @@ class Task:
 
     @get_name
     def solve(self,path, sel, defaultApiKey=True):
-        data = self.update_data()
         # print(sel, type(sel))
         if defaultApiKey:
             api_key = '4805a29997857b110ef26530c7f39db1'
         else:
-            api_key = data[sel]['API_KEY']
+            api_key = self.data[sel]['API_KEY']
             if api_key == "":
                 return self.print("This feature require a custom ApiKey")
 
@@ -288,18 +286,16 @@ class Task:
                 self.script_pause()
                 sleep(1)
         try:
-            data = self.update_data()
-
             if defaultApiKey:
                 api_key = '4805a29997857b110ef26530c7f39db1'
             else:
-                api_key = data[self.sel]['API_KEY']
+                api_key = self.data[self.sel]['API_KEY']
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
 
             self.print("Trying to resolve the captcha")
 
-            captcha = self.save_captcha(compteur)
+            captcha = self.save_captcha()
             solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
 
             result = solver.coordinates(f"captcha{self.sel}.jpg", lang='en')
@@ -384,7 +380,7 @@ class Task:
 
     @get_name
     def check_log_back(self, cv_image=None):
-        self.data = self.update_data()
+        # self.data = self.update_data()
         # print(f'{self.data.get(self.sel).get("auto_log_back"] =}')
         if cv_image is None:
             cv_image = self.adb.get_cv2_img()
@@ -435,8 +431,6 @@ class Task:
         """
         Check and reconnect
         """
-        self.data = self.update_data()
-
         if cv_image is None:
             co = self.find_img(target="reconnect")
         else:
@@ -578,10 +572,7 @@ class Task:
         """
         Check and resolve verification
         """
-        self.data = self.update_data()
         self.print(f"Scanning the screen for verification..")
-
-
         if chest:
             self.check_chest()
             sleep(1)
@@ -615,12 +606,10 @@ class Task:
             self.print("Verification detected")
             self.set_status("Resolving captcha")
 
-            data = self.update_data()
-
             if DefaultApiKey:
                 api_key = '4805a29997857b110ef26530c7f39db1'
             else:
-                api_key = data[self.sel]['API_KEY']
+                api_key = self.data[self.sel]['API_KEY']
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
             if data[self.sel]['API_KEY'] != "":

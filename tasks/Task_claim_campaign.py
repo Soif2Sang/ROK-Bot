@@ -11,7 +11,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class ClaimCampaign(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -52,6 +52,7 @@ class ClaimCampaign(Task):
                 self.better_sleep((1.3, 2.2))
                 co = self.find_img(target="chest_confirm_button")
                 if co is not None:
+                    self.print("Claiming the daily rewards from the expedition.")
                     self.click(co[0] + uniform(0, 149), co[1] + uniform(0, 20))
                     self.better_sleep((1.3, 2.2))
                 for _ in range(2):

@@ -11,7 +11,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class DailyQuests(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -50,12 +50,16 @@ class DailyQuests(Task):
     @get_name
     def claim_all(self):
         said = False
+        total = 0
         while (co:=self.find_img("claim_quest")) is not None:
             if not said:
                 self.print("Claiming the quests rewards")
                 said = True
             self.click(co[0] + uniform(0,30), co[1]+ uniform(0,10))
             self.better_sleep((1.725, 1.995))
+            total += 1
+        if total:
+            self.print(f"Claimed a total of {total} quests")
 
     @get_class
     def run(self):

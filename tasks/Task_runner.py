@@ -154,7 +154,7 @@ class TaskRunner(Task):
             # self.check_reconnect()
         self.check_captcha()
     def get_available_task(self, profile:str =None):
-        self.data = self.update_data()
+        # self.data = self.update_data()
         if profile is None:
             profile = self.data.get(self.sel)
         else:
@@ -544,9 +544,7 @@ class TaskRunner(Task):
             loop_time = time()
             self.set_status("Starting..")
             self.print("Script is starting ! ".center(20, "-"), "green")
-            #self.print("")
             self.data = self.update_data()
-
             # first_profile_first_instance = True
             #
             # co_first = []

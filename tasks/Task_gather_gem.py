@@ -24,7 +24,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class GatherGem(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -569,7 +569,6 @@ class GatherGem(Task):
         Scan device screenshot to find gem node,          not 100% working need improvement
         :return: None
         """
-        self.data = self.update_data()
         self.restart_if_game_crashed()
         screen = self.adb.get_cv2_img()
 
