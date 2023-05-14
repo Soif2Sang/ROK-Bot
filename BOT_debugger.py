@@ -5,7 +5,7 @@ import flet as ft
 
 import taskscod.COD_Task_daily_vip
 from tasks.Task_kingdom_ranking import KingdomRanking
-from taskscod import COD_Task_alliance_donation, COD_Task_training
+from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 from taskscod.COD_Task_daily_chest import DailyChest
 from taskscod.COD_Task_gather_rss import GatherRss
 from tasks.Task import Task
@@ -59,6 +59,7 @@ class Bot():
         self.cod_chest = DailyChest(self.main_task)
         self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
         self.code_training = COD_Task_training.TroopTraining(self.main_task)
+        self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -437,12 +438,8 @@ def upgrade_all():
 
 if __name__ == "__main__":
     # upgrade_all()
-    bot = get_bot(0)
-    # bot.cod_rss.set_search_level(6)
-    print("here")
-    # bot.code_alliance.donate_to_alliance()
-    print(bot.adb.find_multiple_img(target="merchant_buy_with_food",confidence= 0.8)
-    , bot.adb.find_multiple_img(target="merchant_buy_with_wood", confidence=0.8)  )  # print(bot.cod_rss.in_city())
+    bot = get_bot(7)
+    bot.cod_scout.run()
     # hwnd = win32gui.FindWindow(None, bot.adb.name)
     # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
     # for _ in range(2):

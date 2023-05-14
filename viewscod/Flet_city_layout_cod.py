@@ -17,9 +17,9 @@ def main(page:ft.Page):
         "cavalry_camp":1,
         "archery_camp":2,
         "siege_camp":3,
-        "hospital":4,
-        "scout_camp":5,
-        "city_transfer":6,
+        # "hospital":4,
+        "scout_camp":4,
+        # "city_transfer":6,
     }
     def setCurrentBuild(param:str):
         page.current_build = param
@@ -83,7 +83,7 @@ def main(page:ft.Page):
     ,ft.ElevatedButton(text="Set Archer camp", on_click=lambda _: setCurrentBuild("archery_camp"))
     ,ft.ElevatedButton(text="Set Siege camp", on_click=lambda _: setCurrentBuild("siege_camp"))
     # ,ft.ElevatedButton(text="Set Hospital", on_click=lambda _: setCurrentBuild("hospital"))
-    # , ft.ElevatedButton(text="Set Scout camp", on_click=lambda _: setCurrentBuild("scout_camp"))
+    , ft.ElevatedButton(text="Set Scout camp", on_click=lambda _: setCurrentBuild("scout_camp"))
     # , ft.ElevatedButton(text="Set City to transfer", on_click=lambda _: setCurrentBuild("city_transfer"))
     ]
     )

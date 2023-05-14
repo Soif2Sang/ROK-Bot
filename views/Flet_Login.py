@@ -64,6 +64,7 @@ class LoginButton(ft.FilledButton):
             self.pop_banner("Illegal characters..")
             main(self.page)
             try:
+                os.system("taskkill /f /im flet.exe >nul 2>&1")
                 os._exit(1)
             except:
                 sys.exit(1)
@@ -86,6 +87,7 @@ class LoginButton(ft.FilledButton):
                 self.page.update()
         except:
             try:
+                os.system("taskkill /f /im flet.exe >nul 2>&1")
                 os._exit(1)
             except:
                 sys.exit(1)
