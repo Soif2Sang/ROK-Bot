@@ -11,8 +11,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class BuyMerchant(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
-
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -38,6 +37,7 @@ class BuyMerchant(Task):
 
     @get_name
     def buy_from_shop(self):
+        total = 0
         for y in range(2):
             for i in range(4):
                 self.better_sleep((1.8, 2.2))
@@ -48,6 +48,7 @@ class BuyMerchant(Task):
                 for element in food:
                     self.click(element[0] + uniform(0, 30), element[1] + uniform(-2, 8))
                     self.better_sleep((0.45, 0.7))
+                    total += 1
                 x1, y1 = uniform(586, 870), uniform(457, 487)
                 x2, y2 = x1 + uniform(-10, 10), y1 - uniform(120, 150)
                 if i!=3:
@@ -60,15 +61,17 @@ class BuyMerchant(Task):
             self.print("Refreshing the merchant")
             x, y = co[0] + uniform(0, 50), co[1] + uniform(0, 20)
             self.click(x, y)
+        if total:
+            self.print(f"Bought {total} items.")
     @get_class
     def run(self):
         self.manage_artefact_shop()
         co = self.find_img(target="merchant_icon", confidence=0.7)
         if co is None:
-            return
+            return self.print("Merchant is not here.")
         if not filter_coordinate(co):
-            return
-        self.print("Buying things from the shop")
+            return self.print("Merchant seems inaccessible.")
+        self.print("Robbing the shop.","green")
         self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
         self.buy_from_shop()
         self.click(uniform(1077, 1100), uniform(64, 95))

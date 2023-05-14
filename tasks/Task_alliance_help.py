@@ -7,7 +7,7 @@ from utils.Task_utils import get_class, filter_coordinate, get_data
 class AllianceHelp(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -28,4 +28,5 @@ class AllianceHelp(Task):
                     cond = filter_coordinate(co)
                     if cond:
                         self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
+                        self.print("Successfully helped alliance members !","green")
                         self.better_sleep((1,2))

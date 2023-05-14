@@ -14,7 +14,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class GatherRss(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -171,7 +171,7 @@ class GatherRss(Task):
 
     @get_name
     def minable(self) -> bool:
-        if self.find_img(target="search_button") is None:
+        if self.find_img(target="cod_search_button") is None:
             return True
         # self.print("Unable to gather this node")
         return False

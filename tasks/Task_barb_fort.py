@@ -23,7 +23,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class BarbFort(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -372,7 +372,6 @@ class BarbFort(Task):
         Scan device screenshot to find gem node,          not 100% working need improvement
         :return: None
         """
-        self.data = self.update_data()
         screen = self.adb.get_curr_device_screen_img()
         info_screen = self.pil_to_array(screen)
         info_screen = cv2.cvtColor(info_screen, cv2.COLOR_BGR2RGB)

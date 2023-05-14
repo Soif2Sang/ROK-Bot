@@ -200,6 +200,8 @@ class TileManager(ft.ListView):
             "check_donation": False,
             "train_troops": False,
             "scout_fog":False,
+            "scout_duration1": 30,
+            "scout_duration2": 90,
             "infantry_camp": [],
             "cavalry_camp": [],
             "archery_camp": [],

@@ -194,7 +194,6 @@ class Task:
 
     @get_name
     def better_sleep(self, limits: tuple[float, float]):
-        self.data = self.update_data()
         a = limits[0]
         b = limits[1]
         if self.data[str(self.sel)]['schedules'][self.current_profile]["slow_mode"]:
@@ -226,7 +225,6 @@ class Task:
     @get_name
     def check_log_back(self, cv_image=None):
         return False
-        self.data = self.update_data()
         # print(f'{self.data.get(self.sel).get("auto_log_back"] =}')
         if cv_image is None:
             cv_image = self.adb.get_cv2_img()
@@ -281,7 +279,6 @@ class Task:
         """
         Check and reconnect
         """
-        self.data = self.update_data()
 
         if cv_image is None:
             co = self.find_img(target="reconnect")

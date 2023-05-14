@@ -8,7 +8,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 class ProduceMaterials(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = get_data()
+        self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.frame = MainTask.tile
         self.adb = MainTask.adb
@@ -23,7 +23,6 @@ class ProduceMaterials(Task):
 
     @get_class
     def run(self):
-        self.data = self.update_data()
         # co = self.find_img("forge_icon")
         # if co is not None:
         #     self.click(co[0] + uniform(0, 24), co[1] + uniform(80, 100))

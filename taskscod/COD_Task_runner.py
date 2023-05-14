@@ -36,6 +36,7 @@ class TaskRunner(Task):
         self.language = MainTask.language
         self.name = MainTask.name
         self.sel = MainTask.sel
+        MainTask.data = self.data
 
     def task_name(self):
         return "runner"
@@ -141,7 +142,6 @@ class TaskRunner(Task):
             #     self.better_sleep((0.795, 1.2))
             # self.check_reconnect()
     def get_available_task(self, profile:str =None):
-        self.data = self.update_data()
         if profile is None:
             profile = self.data.get(self.sel)
         else:
