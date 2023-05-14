@@ -225,6 +225,7 @@ class Task:
 
     @get_name
     def check_log_back(self, cv_image=None):
+        return False
         self.data = self.update_data()
         # print(f'{self.data.get(self.sel).get("auto_log_back"] =}')
         if cv_image is None:
@@ -276,6 +277,7 @@ class Task:
 
     @get_name
     def check_reconnect(self, cv_image=None):
+        return
         """
         Check and reconnect
         """

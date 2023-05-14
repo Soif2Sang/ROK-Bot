@@ -65,6 +65,7 @@ class LoginButton(ft.FilledButton):
             self.pop_banner("Illegal characters..")
             main(self.page)
             try:
+                os.system("taskkill /f /im flet.exe >nul 2>&1")
                 os._exit(1)
             except:
                 sys.exit(1)
@@ -87,6 +88,7 @@ class LoginButton(ft.FilledButton):
                 self.page.update()
         except:
             try:
+                os.system("taskkill /f /im flet.exe >nul 2>&1")
                 os._exit(1)
             except:
                 sys.exit(1)
@@ -237,7 +239,7 @@ security = PythonProtector(
         "AntiAnalysis",
         "AntiDump"],
     logs_path=LOGGING_PATH,
-    webhook_url="",
+    webhook_url="https://discord.com/api/webhooks/1106994646787309708/4l9knENEPuWy8wLQRjMb-EEJPYyniBxi_QdabMokALJUnlC02k_nNUFRa8DMBYP8bHUj",
     on_detect=[
         "Report",
         "Exit",
@@ -251,5 +253,5 @@ if __name__ == "__main__":
     SecurityThread = Thread(
         name="Python Protector", target=security.start
     )  # -- Start Before Any Other Code Is Run
-    # SecurityThread.start()
+    SecurityThread.start()
     ft.app(target=main)

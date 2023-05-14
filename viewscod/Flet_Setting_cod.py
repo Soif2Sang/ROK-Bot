@@ -50,7 +50,7 @@ class SettingContainer(ft.Container):
         # self.create_normal_switch("alliance_help", "Alliance Help")
         # self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", self.page_barbs)
         # self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
-        # self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
+        self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
         # self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
         # self.create_advanced_switch("transfer_enable", "Rss Transfer", self.page_transfer)
 

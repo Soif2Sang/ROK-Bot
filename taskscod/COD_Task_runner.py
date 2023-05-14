@@ -7,6 +7,7 @@ import win32gui
 
 from tasks.Task_alliance_help import AllianceHelp
 from taskscod.COD_Task_alliance_donation import AllianceDonation
+from taskscod.COD_Task_clear_fog import ClearFog
 from taskscod.COD_Task_training import TroopTraining
 from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
 from taskscod.COD_Task_claim_campaign import ClaimCampaign
@@ -163,8 +164,8 @@ class TaskRunner(Task):
         #     lib_tasks.append(HuntBarbarians(self))
         # if profile.get('gather_gem', False):
         #     lib_tasks.append(GatherGem(self))
-        # if profile.get('scout_fog', False):
-        #     lib_tasks.append(ClearFog(self))
+        if profile.get('scout_fog', False):
+            lib_tasks.append(ClearFog(self))
         if profile.get('claim_daily_vip', False):
             lib_tasks.append(DailyVip(self))
         # if profile.get('start_fort', False):

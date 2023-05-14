@@ -18,6 +18,7 @@ try:  # Connection check
     s.get('https://google.com')
 except requests.exceptions.RequestException as e:
     print(e)
+    os.system("taskkill /f /im flet.exe >nul 2>&1")
     time.sleep(3)
     os._exit(1)
 
@@ -45,6 +46,7 @@ class selfApi:
 
         if self.sessionid != "":
             print("You've already initialized!")
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             time.sleep(2)
             os._exit(1)
         init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
@@ -65,6 +67,7 @@ class selfApi:
 
         if response == "KeyAuth_Invalid":
             print("The application doesn't exist")
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             os._exit(1)
 
         response = encryption.decrypt(response, self.secret, init_iv)
@@ -75,13 +78,16 @@ class selfApi:
                 print("New Version Available")
                 download_link = json["download"]
                 os.system(f"start {download_link}")
+                os.system("taskkill /f /im flet.exe >nul 2>&1")
                 os._exit(1)
             else:
                 print("Invalid Version, Contact owner to add download link to latest app version")
+                os.system("taskkill /f /im flet.exe >nul 2>&1")
                 os._exit(1)
 
         if not json["success"]:
             print(json["message"])
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             os._exit(1)
 
         self.sessionid = json["sessionid"]
@@ -175,6 +181,7 @@ class selfApi:
             return json["message"]
         else:
             print(json["message"])
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             time.sleep(5)
             os._exit(1)
 
@@ -246,6 +253,7 @@ class selfApi:
             return json["message"]
         else:
             print(json["message"])
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             time.sleep(5)
             os._exit(1)
 
@@ -314,6 +322,7 @@ class selfApi:
     def checkinit(self):
         if not self.initialized:
             print("Initialize first, in order to use the functions")
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             time.sleep(2)
             os._exit(1)
 
@@ -412,6 +421,7 @@ class encryption:
             return encryption.encrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
         except:
             print("Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             os._exit(1)
 
     @staticmethod
@@ -424,4 +434,5 @@ class encryption:
             return encryption.decrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
         except:
             print("Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
             os._exit(1)
