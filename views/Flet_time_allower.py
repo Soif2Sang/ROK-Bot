@@ -138,6 +138,7 @@ class ManagerTimezone(ft.ListView):
         self.data[str(self.instance)]['schedules'][str(index)][keyword] = not \
             self.data[str(self.instance)]['schedules'][str(index)][keyword]
         write_data(self.data)
+
     def init(self):
         print(self.instance,self.profile)
 

@@ -26,7 +26,7 @@ with open(file, 'w') as f:
     f.write("if os.path.isdir('../resources'):\n")
     f.write("    dir = '../resources'\n")
     f.write("else:\n")
-    f.write("    dir = '..\\resources'\n")
+    f.write("    dir = './resources'\n")
     f.write("\n")
     f.write("class ImageSingleton:\n")
     f.write("    __instance = None")
@@ -43,7 +43,7 @@ with open(file, 'w') as f:
     for file in glob.glob(dir_path, recursive=True):
         # f.write(file.split("\\")[1])
         a = "\\"
-        f.write(f'       self.{file.split(a)[1].split(".")[0]}' "= imread(f'{dir}\\\\"f"{file.split(a)[1].split('.')[0]}.png')\n")
+        f.write(f'       self.{file.split(a)[1].split(".")[0]}' "= imread(f'{dir}/"f"{file.split(a)[1].split('.')[0]}.png')\n")
     f.write("\n")
     f.write("    def get_file_name(self,file_name):\n")
 
@@ -56,4 +56,4 @@ with open(file, 'w') as f:
         # if file_name == "gem_icon_day_up_left":
         #     return gem_icon_day_up_left
     f.write("        else:\n")
-    f.write("            return imread(f'{dir}\\\\{file_name}.png')\n")
+    f.write("            return imread(f'{dir}/{file_name}.png')\n")

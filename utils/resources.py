@@ -1,9 +1,9 @@
 from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode,         IMREAD_COLOR, COLOR_BGR2HSV, inRange
 import os
 if os.path.isdir('../resources'):
-    dir = '..\\resources'
+    dir = '../resources'
 else:
-    dir = '.\\resources'
+    dir = './resources'
 
 class ImageSingleton:
     __instance = None
@@ -14,277 +14,303 @@ class ImageSingleton:
        return cls.__instance
 
     def load_images(self):
-       self.academy= imread(f'{dir}\\academy.png')
-       self.academy_tech= imread(f'{dir}\\academy_tech.png')
-       self.alliance_flag1= imread(f'{dir}\\alliance_flag1.png')
-       self.alliance_flag2= imread(f'{dir}\\alliance_flag2.png')
-       self.alliance_gifts_claim_button= imread(f'{dir}\\alliance_gifts_claim_button.png')
-       self.alliance_tech= imread(f'{dir}\\alliance_tech.png')
-       self.alliance_tech_donate= imread(f'{dir}\\alliance_tech_donate.png')
-       self.alliance_tech_recommend= imread(f'{dir}\\alliance_tech_recommend.png')
-       self.already_connected= imread(f'{dir}\\already_connected.png')
-       self.ap_bottle= imread(f'{dir}\\ap_bottle.png')
-       self.archery_badge= imread(f'{dir}\\archery_badge.png')
-       self.archery_range_button= imread(f'{dir}\\archery_range_button.png')
-       self.artefact_shop= imread(f'{dir}\\artefact_shop.png')
-       self.assist_button= imread(f'{dir}\\assist_button.png')
-       self.attack_button= imread(f'{dir}\\attack_button.png')
-       self.back_icon1= imread(f'{dir}\\back_icon1.png')
-       self.back_icon2= imread(f'{dir}\\back_icon2.png')
-       self.back_icon3= imread(f'{dir}\\back_icon3.png')
-       self.back_normal_view= imread(f'{dir}\\back_normal_view.png')
-       self.barracks_button= imread(f'{dir}\\barracks_button.png')
-       self.block_icon= imread(f'{dir}\\block_icon.png')
-       self.bones_icon= imread(f'{dir}\\bones_icon.png')
-       self.build= imread(f'{dir}\\build.png')
-       self.builder= imread(f'{dir}\\builder.png')
-       self.building_info_button= imread(f'{dir}\\building_info_button.png')
-       self.building_info_button_2= imread(f'{dir}\\building_info_button_2.png')
-       self.building_speedups= imread(f'{dir}\\building_speedups.png')
-       self.building_title_left= imread(f'{dir}\\building_title_left.png')
-       self.button_level= imread(f'{dir}\\button_level.png')
-       self.buy_arrow= imread(f'{dir}\\buy_arrow.png')
-       self.cavalry_badge= imread(f'{dir}\\cavalry_badge.png')
-       self.character_login_confirm= imread(f'{dir}\\character_login_confirm.png')
-       self.character_start= imread(f'{dir}\\character_start.png')
-       self.chest_confirm_button= imread(f'{dir}\\chest_confirm_button.png')
-       self.chest_open_button= imread(f'{dir}\\chest_open_button.png')
-       self.choose_right= imread(f'{dir}\\choose_right.png')
-       self.choose_right1= imread(f'{dir}\\choose_right1.png')
-       self.claim_daily= imread(f'{dir}\\claim_daily.png')
-       self.claim_quest= imread(f'{dir}\\claim_quest.png')
-       self.close_chat= imread(f'{dir}\\close_chat.png')
-       self.close_refresh_ok= imread(f'{dir}\\close_refresh_ok.png')
-       self.close_window= imread(f'{dir}\\close_window.png')
-       self.close_window2= imread(f'{dir}\\close_window2.png')
-       self.codicon= imread(f'{dir}\\codicon.png')
-       self.cod_city_hammer= imread(f'{dir}\\cod_city_hammer.png')
-       self.cod_close_window= imread(f'{dir}\\cod_close_window.png')
-       self.cod_create_legion= imread(f'{dir}\\cod_create_legion.png')
-       self.cod_gather_button= imread(f'{dir}\\cod_gather_button.png')
-       self.cod_level_slider= imread(f'{dir}\\cod_level_slider.png')
-       self.cod_march_button= imread(f'{dir}\\cod_march_button.png')
-       self.cod_search_button= imread(f'{dir}\\cod_search_button.png')
-       self.cod_search_loop= imread(f'{dir}\\cod_search_loop.png')
-       self.cod_search_minus_button= imread(f'{dir}\\cod_search_minus_button.png')
-       self.cod_search_plus_button= imread(f'{dir}\\cod_search_plus_button.png')
-       self.cod_toolbar= imread(f'{dir}\\cod_toolbar.png')
-       self.cod_toolbar_button= imread(f'{dir}\\cod_toolbar_button.png')
-       self.Commander_icon_type_Archer= imread(f'{dir}\\Commander_icon_type_Archer.png')
-       self.Commander_icon_type_Cavalry= imread(f'{dir}\\Commander_icon_type_Cavalry.png')
-       self.Commander_icon_type_Infantry= imread(f'{dir}\\Commander_icon_type_Infantry.png')
-       self.confirm_tavern= imread(f'{dir}\\confirm_tavern.png')
-       self.cross= imread(f'{dir}\\cross.png')
-       self.daily_ap_claim= imread(f'{dir}\\daily_ap_claim.png')
-       self.decreasing_button= imread(f'{dir}\\decreasing_button.png')
-       self.defeat_mail= imread(f'{dir}\\defeat_mail.png')
-       self.deploy_march_button= imread(f'{dir}\\deploy_march_button.png')
-       self.donate_button= imread(f'{dir}\\donate_button.png')
-       self.download_icon= imread(f'{dir}\\download_icon.png')
-       self.download_page= imread(f'{dir}\\download_page.png')
-       self.ebony_icon= imread(f'{dir}\\ebony_icon.png')
-       self.explore_button= imread(f'{dir}\\explore_button.png')
-       self.explore_button2= imread(f'{dir}\\explore_button2.png')
-       self.explore_button_fog= imread(f'{dir}\\explore_button_fog.png')
-       self.explore_button_scout= imread(f'{dir}\\explore_button_scout.png')
-       self.food_max= imread(f'{dir}\\food_max.png')
-       self.food_min= imread(f'{dir}\\food_min.png')
-       self.forge_1= imread(f'{dir}\\forge_1.png')
-       self.forge_2= imread(f'{dir}\\forge_2.png')
-       self.forge_3= imread(f'{dir}\\forge_3.png')
-       self.forge_4= imread(f'{dir}\\forge_4.png')
-       self.forge_5= imread(f'{dir}\\forge_5.png')
-       self.forge_button= imread(f'{dir}\\forge_button.png')
-       self.forge_icon= imread(f'{dir}\\forge_icon.png')
-       self.fort= imread(f'{dir}\\fort.png')
-       self.fort2= imread(f'{dir}\\fort2.png')
-       self.fort_icon_day_down_left= imread(f'{dir}\\fort_icon_day_down_left.png')
-       self.fort_icon_day_down_mid= imread(f'{dir}\\fort_icon_day_down_mid.png')
-       self.fort_icon_day_down_right= imread(f'{dir}\\fort_icon_day_down_right.png')
-       self.fort_icon_day_mid_left= imread(f'{dir}\\fort_icon_day_mid_left.png')
-       self.fort_icon_day_mid_mid= imread(f'{dir}\\fort_icon_day_mid_mid.png')
-       self.fort_icon_day_mid_right= imread(f'{dir}\\fort_icon_day_mid_right.png')
-       self.fort_icon_day_up_left= imread(f'{dir}\\fort_icon_day_up_left.png')
-       self.fort_icon_day_up_mid= imread(f'{dir}\\fort_icon_day_up_mid.png')
-       self.fort_icon_day_up_right= imread(f'{dir}\\fort_icon_day_up_right.png')
-       self.fort_icon_night_down_left= imread(f'{dir}\\fort_icon_night_down_left.png')
-       self.fort_icon_night_down_mid= imread(f'{dir}\\fort_icon_night_down_mid.png')
-       self.fort_icon_night_down_right= imread(f'{dir}\\fort_icon_night_down_right.png')
-       self.fort_icon_night_mid_left= imread(f'{dir}\\fort_icon_night_mid_left.png')
-       self.fort_icon_night_mid_mid= imread(f'{dir}\\fort_icon_night_mid_mid.png')
-       self.fort_icon_night_mid_right= imread(f'{dir}\\fort_icon_night_mid_right.png')
-       self.fort_icon_night_up_left= imread(f'{dir}\\fort_icon_night_up_left.png')
-       self.fort_icon_night_up_mid= imread(f'{dir}\\fort_icon_night_up_mid.png')
-       self.fort_icon_night_up_right= imread(f'{dir}\\fort_icon_night_up_right.png')
-       self.fort_rally_button1= imread(f'{dir}\\fort_rally_button1.png')
-       self.fort_rally_button2= imread(f'{dir}\\fort_rally_button2.png')
-       self.free= imread(f'{dir}\\free.png')
-       self.gem_icon_day_down_= imread(f'{dir}\\gem_icon_day_down_.png')
-       self.gem_icon_day_down_left= imread(f'{dir}\\gem_icon_day_down_left.png')
-       self.gem_icon_day_down_mid= imread(f'{dir}\\gem_icon_day_down_mid.png')
-       self.gem_icon_day_down_right= imread(f'{dir}\\gem_icon_day_down_right.png')
-       self.gem_icon_day_mid_left= imread(f'{dir}\\gem_icon_day_mid_left.png')
-       self.gem_icon_day_mid_mid= imread(f'{dir}\\gem_icon_day_mid_mid.png')
-       self.gem_icon_day_mid_right= imread(f'{dir}\\gem_icon_day_mid_right.png')
-       self.gem_icon_day_up_left= imread(f'{dir}\\gem_icon_day_up_left.png')
-       self.gem_icon_day_up_mid= imread(f'{dir}\\gem_icon_day_up_mid.png')
-       self.gem_icon_day_up_right= imread(f'{dir}\\gem_icon_day_up_right.png')
-       self.gem_icon_down_mid= imread(f'{dir}\\gem_icon_down_mid.png')
-       self.gem_icon_night_down_left= imread(f'{dir}\\gem_icon_night_down_left.png')
-       self.gem_icon_night_down_mid= imread(f'{dir}\\gem_icon_night_down_mid.png')
-       self.gem_icon_night_down_right= imread(f'{dir}\\gem_icon_night_down_right.png')
-       self.gem_icon_night_mid_left= imread(f'{dir}\\gem_icon_night_mid_left.png')
-       self.gem_icon_night_mid_mid= imread(f'{dir}\\gem_icon_night_mid_mid.png')
-       self.gem_icon_night_mid_right= imread(f'{dir}\\gem_icon_night_mid_right.png')
-       self.gem_icon_night_up_left= imread(f'{dir}\\gem_icon_night_up_left.png')
-       self.gem_icon_night_up_mid= imread(f'{dir}\\gem_icon_night_up_mid.png')
-       self.gem_icon_night_up_right= imread(f'{dir}\\gem_icon_night_up_right.png')
-       self.gem_search_button= imread(f'{dir}\\gem_search_button.png')
-       self.get_more_rss= imread(f'{dir}\\get_more_rss.png')
-       self.golden_chest= imread(f'{dir}\\golden_chest.png')
-       self.golden_chest_tiny= imread(f'{dir}\\golden_chest_tiny.png')
-       self.gold_max= imread(f'{dir}\\gold_max.png')
-       self.gold_min= imread(f'{dir}\\gold_min.png')
-       self.great_button= imread(f'{dir}\\great_button.png')
-       self.green_home_button= imread(f'{dir}\\green_home_button.png')
-       self.hammer= imread(f'{dir}\\hammer.png')
-       self.healing_scroll= imread(f'{dir}\\healing_scroll.png')
-       self.heal_button= imread(f'{dir}\\heal_button.png')
-       self.heal_icon= imread(f'{dir}\\heal_icon.png')
-       self.help1= imread(f'{dir}\\help1.png')
-       self.help2= imread(f'{dir}\\help2.png')
-       self.help3= imread(f'{dir}\\help3.png')
-       self.help_alliance= imread(f'{dir}\\help_alliance.png')
-       self.help_build= imread(f'{dir}\\help_build.png')
-       self.help_build2= imread(f'{dir}\\help_build2.png')
-       self.hide_quests= imread(f'{dir}\\hide_quests.png')
-       self.hire_constructor= imread(f'{dir}\\hire_constructor.png')
-       self.hire_constructor2= imread(f'{dir}\\hire_constructor2.png')
-       self.hold_icon= imread(f'{dir}\\hold_icon.png')
-       self.hold_icon_small= imread(f'{dir}\\hold_icon_small.png')
-       self.hold_posistion_checked= imread(f'{dir}\\hold_posistion_checked.png')
-       self.hold_position_unchecked= imread(f'{dir}\\hold_position_unchecked.png')
-       self.home_button= imread(f'{dir}\\home_button.png')
-       self.home_button_0= imread(f'{dir}\\home_button_0.png')
-       self.hut_hammer= imread(f'{dir}\\hut_hammer.png')
-       self.inbox= imread(f'{dir}\\inbox.png')
-       self.increasing_button= imread(f'{dir}\\increasing_button.png')
-       self.infantry_badge= imread(f'{dir}\\infantry_badge.png')
-       self.investigate_button= imread(f'{dir}\\investigate_button.png')
-       self.kingdom_buff= imread(f'{dir}\\kingdom_buff.png')
-       self.leather_icon= imread(f'{dir}\\leather_icon.png')
-       self.legendary_chest= imread(f'{dir}\\legendary_chest.png')
-       self.legendary_chest_tiny= imread(f'{dir}\\legendary_chest_tiny.png')
-       self.lock_button= imread(f'{dir}\\lock_button.png')
-       self.logged_icon= imread(f'{dir}\\logged_icon.png')
-       self.mail_exploration_report= imread(f'{dir}\\mail_exploration_report.png')
-       self.mail_scout_button= imread(f'{dir}\\mail_scout_button.png')
-       self.map_button= imread(f'{dir}\\map_button.png')
-       self.map_button_0= imread(f'{dir}\\map_button_0.png')
-       self.map_icon= imread(f'{dir}\\map_icon.png')
-       self.maraudeurs_forts_icon= imread(f'{dir}\\maraudeurs_forts_icon.png')
-       self.maraudeur_icon= imread(f'{dir}\\maraudeur_icon.png')
-       self.marching_logo= imread(f'{dir}\\marching_logo.png')
-       self.march_bar= imread(f'{dir}\\march_bar.png')
-       self.materials_production_button= imread(f'{dir}\\materials_production_button.png')
-       self.material_chest= imread(f'{dir}\\material_chest.png')
-       self.menu_button= imread(f'{dir}\\menu_button.png')
-       self.menu_opened= imread(f'{dir}\\menu_opened.png')
-       self.merchant_buy_with_food= imread(f'{dir}\\merchant_buy_with_food.png')
-       self.merchant_buy_with_wood= imread(f'{dir}\\merchant_buy_with_wood.png')
-       self.merchant_free_btn= imread(f'{dir}\\merchant_free_btn.png')
-       self.merchant_icon= imread(f'{dir}\\merchant_icon.png')
-       self.mightiest_gov= imread(f'{dir}\\mightiest_gov.png')
-       self.minus_button= imread(f'{dir}\\minus_button.png')
-       self.new_troops_button= imread(f'{dir}\\new_troops_button.png')
-       self.no= imread(f'{dir}\\no.png')
-       self.ok= imread(f'{dir}\\ok.png')
-       self.open_chest= imread(f'{dir}\\open_chest.png')
-       self.picture2= imread(f'{dir}\\picture2.png')
-       self.plus_button= imread(f'{dir}\\plus_button.png')
-       self.popup0= imread(f'{dir}\\popup0.png')
-       self.popup1= imread(f'{dir}\\popup1.png')
-       self.preset_1= imread(f'{dir}\\preset_1.png')
-       self.preset_2= imread(f'{dir}\\preset_2.png')
-       self.preset_3= imread(f'{dir}\\preset_3.png')
-       self.preset_4= imread(f'{dir}\\preset_4.png')
-       self.preset_5= imread(f'{dir}\\preset_5.png')
-       self.rally_radius= imread(f'{dir}\\rally_radius.png')
-       self.reconnect= imread(f'{dir}\\reconnect.png')
-       self.red_icon= imread(f'{dir}\\red_icon.png')
-       self.red_icon1= imread(f'{dir}\\red_icon1.png')
-       self.refresh_resolve= imread(f'{dir}\\refresh_resolve.png')
-       self.resource_gather_button= imread(f'{dir}\\resource_gather_button.png')
-       self.return_button= imread(f'{dir}\\return_button.png')
-       self.rokicon= imread(f'{dir}\\rokicon.png')
-       self.scout_button= imread(f'{dir}\\scout_button.png')
-       self.scout_button2= imread(f'{dir}\\scout_button2.png')
-       self.scout_idle_icon= imread(f'{dir}\\scout_idle_icon.png')
-       self.scout_management= imread(f'{dir}\\scout_management.png')
-       self.scout_send_button= imread(f'{dir}\\scout_send_button.png')
-       self.scout_zz_icon= imread(f'{dir}\\scout_zz_icon.png')
-       self.search_button= imread(f'{dir}\\search_button.png')
-       self.selected_icon= imread(f'{dir}\\selected_icon.png')
-       self.selected_save_blue_one= imread(f'{dir}\\selected_save_blue_one.png')
-       self.send_button_scout= imread(f'{dir}\\send_button_scout.png')
-       self.siege_badge= imread(f'{dir}\\siege_badge.png')
-       self.siege_workshop_button= imread(f'{dir}\\siege_workshop_button.png')
-       self.silver_chest= imread(f'{dir}\\silver_chest.png')
-       self.silver_chest_tiny= imread(f'{dir}\\silver_chest_tiny.png')
-       self.speedup_healing= imread(f'{dir}\\speedup_healing.png')
-       self.speed_up_button= imread(f'{dir}\\speed_up_button.png')
-       self.stable_button= imread(f'{dir}\\stable_button.png')
-       self.standby_icon= imread(f'{dir}\\standby_icon.png')
-       self.star= imread(f'{dir}\\star.png')
-       self.stone_icon= imread(f'{dir}\\stone_icon.png')
-       self.stone_max= imread(f'{dir}\\stone_max.png')
-       self.stone_min= imread(f'{dir}\\stone_min.png')
-       self.switch_save= imread(f'{dir}\\switch_save.png')
-       self.t1_badge= imread(f'{dir}\\t1_badge.png')
-       self.t2_badge= imread(f'{dir}\\t2_badge.png')
-       self.t3_badge= imread(f'{dir}\\t3_badge.png')
-       self.t4_badge= imread(f'{dir}\\t4_badge.png')
-       self.t5_badge= imread(f'{dir}\\t5_badge.png')
-       self.tavern_button= imread(f'{dir}\\tavern_button.png')
-       self.tech= imread(f'{dir}\\tech.png')
-       self.tech2= imread(f'{dir}\\tech2.png')
-       self.tech_2= imread(f'{dir}\\tech_2.png')
-       self.tech_speedup= imread(f'{dir}\\tech_speedup.png')
-       self.training_upgrade_button= imread(f'{dir}\\training_upgrade_button.png')
-       self.train_button= imread(f'{dir}\\train_button.png')
-       self.troops_march_button= imread(f'{dir}\\troops_march_button.png')
-       self.troops_march_button2= imread(f'{dir}\\troops_march_button2.png')
-       self.troop_idle= imread(f'{dir}\\troop_idle.png')
-       self.troop_walking= imread(f'{dir}\\troop_walking.png')
-       self.unselect_save_blue_one= imread(f'{dir}\\unselect_save_blue_one.png')
-       self.upgrade= imread(f'{dir}\\upgrade.png')
-       self.upgrade_age= imread(f'{dir}\\upgrade_age.png')
-       self.upgrade_build= imread(f'{dir}\\upgrade_build.png')
-       self.upgrade_button= imread(f'{dir}\\upgrade_button.png')
-       self.upgrade_go= imread(f'{dir}\\upgrade_go.png')
-       self.upgrade_popup_0= imread(f'{dir}\\upgrade_popup_0.png')
-       self.upgrade_popup_1= imread(f'{dir}\\upgrade_popup_1.png')
-       self.upgrade_popup_2= imread(f'{dir}\\upgrade_popup_2.png')
-       self.upgrade_stone= imread(f'{dir}\\upgrade_stone.png')
-       self.upgrade_stone2= imread(f'{dir}\\upgrade_stone2.png')
-       self.upgrade_stone3= imread(f'{dir}\\upgrade_stone3.png')
-       self.use_ap= imread(f'{dir}\\use_ap.png')
-       self.validate_build= imread(f'{dir}\\validate_build.png')
-       self.validate_building= imread(f'{dir}\\validate_building.png')
-       self.verification_button= imread(f'{dir}\\verification_button.png')
-       self.verification_chest1= imread(f'{dir}\\verification_chest1.png')
-       self.verification_chest2= imread(f'{dir}\\verification_chest2.png')
-       self.verification_chest3= imread(f'{dir}\\verification_chest3.png')
-       self.verification_ok= imread(f'{dir}\\verification_ok.png')
-       self.verification_verify_title= imread(f'{dir}\\verification_verify_title.png')
-       self.victory_mail= imread(f'{dir}\\victory_mail.png')
-       self.window= imread(f'{dir}\\window.png')
-       self.window_title= imread(f'{dir}\\window_title.png')
-       self.window_title_mark= imread(f'{dir}\\window_title_mark.png')
-       self.wood_max= imread(f'{dir}\\wood_max.png')
-       self.wood_min= imread(f'{dir}\\wood_min.png')
-       self.yellow_icon= imread(f'{dir}\\yellow_icon.png')
-       self.yellow_icon1= imread(f'{dir}\\yellow_icon1.png')
+       self.academy= imread(f'{dir}/academy.png')
+       self.academy_tech= imread(f'{dir}/academy_tech.png')
+       self.alliance_flag1= imread(f'{dir}/alliance_flag1.png')
+       self.alliance_flag2= imread(f'{dir}/alliance_flag2.png')
+       self.alliance_gifts_claim_button= imread(f'{dir}/alliance_gifts_claim_button.png')
+       self.alliance_tech= imread(f'{dir}/alliance_tech.png')
+       self.alliance_tech_donate= imread(f'{dir}/alliance_tech_donate.png')
+       self.alliance_tech_recommend= imread(f'{dir}/alliance_tech_recommend.png')
+       self.already_connected= imread(f'{dir}/already_connected.png')
+       self.ap_bottle= imread(f'{dir}/ap_bottle.png')
+       self.archery_badge= imread(f'{dir}/archery_badge.png')
+       self.archery_range_button= imread(f'{dir}/archery_range_button.png')
+       self.artefact_shop= imread(f'{dir}/artefact_shop.png')
+       self.assist_button= imread(f'{dir}/assist_button.png')
+       self.attack_button= imread(f'{dir}/attack_button.png')
+       self.back_icon1= imread(f'{dir}/back_icon1.png')
+       self.back_icon2= imread(f'{dir}/back_icon2.png')
+       self.back_icon3= imread(f'{dir}/back_icon3.png')
+       self.back_normal_view= imread(f'{dir}/back_normal_view.png')
+       self.barracks_button= imread(f'{dir}/barracks_button.png')
+       self.block_icon= imread(f'{dir}/block_icon.png')
+       self.bones_icon= imread(f'{dir}/bones_icon.png')
+       self.build= imread(f'{dir}/build.png')
+       self.builder= imread(f'{dir}/builder.png')
+       self.building_info_button= imread(f'{dir}/building_info_button.png')
+       self.building_info_button_2= imread(f'{dir}/building_info_button_2.png')
+       self.building_speedups= imread(f'{dir}/building_speedups.png')
+       self.building_title_left= imread(f'{dir}/building_title_left.png')
+       self.button_level= imread(f'{dir}/button_level.png')
+       self.buy_arrow= imread(f'{dir}/buy_arrow.png')
+       self.cavalry_badge= imread(f'{dir}/cavalry_badge.png')
+       self.character_login_confirm= imread(f'{dir}/character_login_confirm.png')
+       self.character_start= imread(f'{dir}/character_start.png')
+       self.chest_confirm_button= imread(f'{dir}/chest_confirm_button.png')
+       self.chest_open_button= imread(f'{dir}/chest_open_button.png')
+       self.choose_right= imread(f'{dir}/choose_right.png')
+       self.choose_right1= imread(f'{dir}/choose_right1.png')
+       self.claim_daily= imread(f'{dir}/claim_daily.png')
+       self.claim_quest= imread(f'{dir}/claim_quest.png')
+       self.close= imread(f'{dir}/close.png')
+       self.close_chat= imread(f'{dir}/close_chat.png')
+       self.close_refresh_ok= imread(f'{dir}/close_refresh_ok.png')
+       self.close_window= imread(f'{dir}/close_window.png')
+       self.close_window2= imread(f'{dir}/close_window2.png')
+       self.codicon= imread(f'{dir}/codicon.png')
+       self.cod_archery_badge= imread(f'{dir}/cod_archery_badge.png')
+       self.cod_cavalry_badge= imread(f'{dir}/cod_cavalry_badge.png')
+       self.cod_chest_1= imread(f'{dir}/cod_chest_1.png')
+       self.cod_chest_2= imread(f'{dir}/cod_chest_2.png')
+       self.cod_chest_3= imread(f'{dir}/cod_chest_3.png')
+       self.cod_city_hammer= imread(f'{dir}/cod_city_hammer.png')
+       self.cod_claim= imread(f'{dir}/cod_claim.png')
+       self.cod_claim_daily_vip= imread(f'{dir}/cod_claim_daily_vip.png')
+       self.cod_close_window= imread(f'{dir}/cod_close_window.png')
+       self.cod_close_window_2= imread(f'{dir}/cod_close_window_2.png')
+       self.cod_confirm_chest= imread(f'{dir}/cod_confirm_chest.png')
+       self.cod_create_legion= imread(f'{dir}/cod_create_legion.png')
+       self.cod_daily_vip= imread(f'{dir}/cod_daily_vip.png')
+       self.cod_donate_button= imread(f'{dir}/cod_donate_button.png')
+       self.cod_gather_button= imread(f'{dir}/cod_gather_button.png')
+       self.cod_infantry_badge= imread(f'{dir}/cod_infantry_badge.png')
+       self.cod_level_slider= imread(f'{dir}/cod_level_slider.png')
+       self.cod_march_button= imread(f'{dir}/cod_march_button.png')
+       self.cod_march_button_out= imread(f'{dir}/cod_march_button_out.png')
+       self.cod_open_chest= imread(f'{dir}/cod_open_chest.png')
+       self.cod_scout_camp_icon= imread(f'{dir}/cod_scout_camp_icon.png')
+       self.cod_scout_explore_button_in= imread(f'{dir}/cod_scout_explore_button_in.png')
+       self.cod_scout_explore_button_out= imread(f'{dir}/cod_scout_explore_button_out.png')
+       self.cod_search_button= imread(f'{dir}/cod_search_button.png')
+       self.cod_search_loop= imread(f'{dir}/cod_search_loop.png')
+       self.cod_search_minus_button= imread(f'{dir}/cod_search_minus_button.png')
+       self.cod_search_plus_button= imread(f'{dir}/cod_search_plus_button.png')
+       self.cod_siege_badge= imread(f'{dir}/cod_siege_badge.png')
+       self.cod_toolbar= imread(f'{dir}/cod_toolbar.png')
+       self.cod_toolbar_button= imread(f'{dir}/cod_toolbar_button.png')
+       self.cod_training_speed= imread(f'{dir}/cod_training_speed.png')
+       self.Commander_icon_type_Archer= imread(f'{dir}/Commander_icon_type_Archer.png')
+       self.Commander_icon_type_Cavalry= imread(f'{dir}/Commander_icon_type_Cavalry.png')
+       self.Commander_icon_type_Infantry= imread(f'{dir}/Commander_icon_type_Infantry.png')
+       self.confirm_tavern= imread(f'{dir}/confirm_tavern.png')
+       self.copy= imread(f'{dir}/copy.png')
+       self.cross= imread(f'{dir}/cross.png')
+       self.daily_ap_claim= imread(f'{dir}/daily_ap_claim.png')
+       self.decreasing_button= imread(f'{dir}/decreasing_button.png')
+       self.defeat_mail= imread(f'{dir}/defeat_mail.png')
+       self.deploy_march_button= imread(f'{dir}/deploy_march_button.png')
+       self.detail= imread(f'{dir}/detail.png')
+       self.donate_button= imread(f'{dir}/donate_button.png')
+       self.download_icon= imread(f'{dir}/download_icon.png')
+       self.download_page= imread(f'{dir}/download_page.png')
+       self.ebony_icon= imread(f'{dir}/ebony_icon.png')
+       self.explore_button= imread(f'{dir}/explore_button.png')
+       self.explore_button2= imread(f'{dir}/explore_button2.png')
+       self.explore_button_fog= imread(f'{dir}/explore_button_fog.png')
+       self.explore_button_scout= imread(f'{dir}/explore_button_scout.png')
+       self.food_max= imread(f'{dir}/food_max.png')
+       self.food_min= imread(f'{dir}/food_min.png')
+       self.forge_1= imread(f'{dir}/forge_1.png')
+       self.forge_2= imread(f'{dir}/forge_2.png')
+       self.forge_3= imread(f'{dir}/forge_3.png')
+       self.forge_4= imread(f'{dir}/forge_4.png')
+       self.forge_5= imread(f'{dir}/forge_5.png')
+       self.forge_button= imread(f'{dir}/forge_button.png')
+       self.forge_icon= imread(f'{dir}/forge_icon.png')
+       self.fort= imread(f'{dir}/fort.png')
+       self.fort2= imread(f'{dir}/fort2.png')
+       self.fort_icon_day_down_left= imread(f'{dir}/fort_icon_day_down_left.png')
+       self.fort_icon_day_down_mid= imread(f'{dir}/fort_icon_day_down_mid.png')
+       self.fort_icon_day_down_right= imread(f'{dir}/fort_icon_day_down_right.png')
+       self.fort_icon_day_mid_left= imread(f'{dir}/fort_icon_day_mid_left.png')
+       self.fort_icon_day_mid_mid= imread(f'{dir}/fort_icon_day_mid_mid.png')
+       self.fort_icon_day_mid_right= imread(f'{dir}/fort_icon_day_mid_right.png')
+       self.fort_icon_day_up_left= imread(f'{dir}/fort_icon_day_up_left.png')
+       self.fort_icon_day_up_mid= imread(f'{dir}/fort_icon_day_up_mid.png')
+       self.fort_icon_day_up_right= imread(f'{dir}/fort_icon_day_up_right.png')
+       self.fort_icon_night_down_left= imread(f'{dir}/fort_icon_night_down_left.png')
+       self.fort_icon_night_down_mid= imread(f'{dir}/fort_icon_night_down_mid.png')
+       self.fort_icon_night_down_right= imread(f'{dir}/fort_icon_night_down_right.png')
+       self.fort_icon_night_mid_left= imread(f'{dir}/fort_icon_night_mid_left.png')
+       self.fort_icon_night_mid_mid= imread(f'{dir}/fort_icon_night_mid_mid.png')
+       self.fort_icon_night_mid_right= imread(f'{dir}/fort_icon_night_mid_right.png')
+       self.fort_icon_night_up_left= imread(f'{dir}/fort_icon_night_up_left.png')
+       self.fort_icon_night_up_mid= imread(f'{dir}/fort_icon_night_up_mid.png')
+       self.fort_icon_night_up_right= imread(f'{dir}/fort_icon_night_up_right.png')
+       self.fort_rally_button1= imread(f'{dir}/fort_rally_button1.png')
+       self.fort_rally_button2= imread(f'{dir}/fort_rally_button2.png')
+       self.free= imread(f'{dir}/free.png')
+       self.gem_icon_day_down_= imread(f'{dir}/gem_icon_day_down_.png')
+       self.gem_icon_day_down_left= imread(f'{dir}/gem_icon_day_down_left.png')
+       self.gem_icon_day_down_mid= imread(f'{dir}/gem_icon_day_down_mid.png')
+       self.gem_icon_day_down_right= imread(f'{dir}/gem_icon_day_down_right.png')
+       self.gem_icon_day_mid_left= imread(f'{dir}/gem_icon_day_mid_left.png')
+       self.gem_icon_day_mid_mid= imread(f'{dir}/gem_icon_day_mid_mid.png')
+       self.gem_icon_day_mid_right= imread(f'{dir}/gem_icon_day_mid_right.png')
+       self.gem_icon_day_up_left= imread(f'{dir}/gem_icon_day_up_left.png')
+       self.gem_icon_day_up_mid= imread(f'{dir}/gem_icon_day_up_mid.png')
+       self.gem_icon_day_up_right= imread(f'{dir}/gem_icon_day_up_right.png')
+       self.gem_icon_down_mid= imread(f'{dir}/gem_icon_down_mid.png')
+       self.gem_icon_night_down_left= imread(f'{dir}/gem_icon_night_down_left.png')
+       self.gem_icon_night_down_mid= imread(f'{dir}/gem_icon_night_down_mid.png')
+       self.gem_icon_night_down_right= imread(f'{dir}/gem_icon_night_down_right.png')
+       self.gem_icon_night_mid_left= imread(f'{dir}/gem_icon_night_mid_left.png')
+       self.gem_icon_night_mid_mid= imread(f'{dir}/gem_icon_night_mid_mid.png')
+       self.gem_icon_night_mid_right= imread(f'{dir}/gem_icon_night_mid_right.png')
+       self.gem_icon_night_up_left= imread(f'{dir}/gem_icon_night_up_left.png')
+       self.gem_icon_night_up_mid= imread(f'{dir}/gem_icon_night_up_mid.png')
+       self.gem_icon_night_up_right= imread(f'{dir}/gem_icon_night_up_right.png')
+       self.gem_search_button= imread(f'{dir}/gem_search_button.png')
+       self.get_more_rss= imread(f'{dir}/get_more_rss.png')
+       self.golden_chest= imread(f'{dir}/golden_chest.png')
+       self.golden_chest_tiny= imread(f'{dir}/golden_chest_tiny.png')
+       self.gold_max= imread(f'{dir}/gold_max.png')
+       self.gold_min= imread(f'{dir}/gold_min.png')
+       self.great_button= imread(f'{dir}/great_button.png')
+       self.green_home_button= imread(f'{dir}/green_home_button.png')
+       self.hammer= imread(f'{dir}/hammer.png')
+       self.healing_scroll= imread(f'{dir}/healing_scroll.png')
+       self.heal_button= imread(f'{dir}/heal_button.png')
+       self.heal_icon= imread(f'{dir}/heal_icon.png')
+       self.help1= imread(f'{dir}/help1.png')
+       self.help2= imread(f'{dir}/help2.png')
+       self.help3= imread(f'{dir}/help3.png')
+       self.help_alliance= imread(f'{dir}/help_alliance.png')
+       self.help_build= imread(f'{dir}/help_build.png')
+       self.help_build2= imread(f'{dir}/help_build2.png')
+       self.hide_quests= imread(f'{dir}/hide_quests.png')
+       self.hire_constructor= imread(f'{dir}/hire_constructor.png')
+       self.hire_constructor2= imread(f'{dir}/hire_constructor2.png')
+       self.hold_icon= imread(f'{dir}/hold_icon.png')
+       self.hold_icon_small= imread(f'{dir}/hold_icon_small.png')
+       self.hold_posistion_checked= imread(f'{dir}/hold_posistion_checked.png')
+       self.hold_position_unchecked= imread(f'{dir}/hold_position_unchecked.png')
+       self.home_button= imread(f'{dir}/home_button.png')
+       self.home_button_0= imread(f'{dir}/home_button_0.png')
+       self.hut_hammer= imread(f'{dir}/hut_hammer.png')
+       self.inbox= imread(f'{dir}/inbox.png')
+       self.increasing_button= imread(f'{dir}/increasing_button.png')
+       self.infantry_badge= imread(f'{dir}/infantry_badge.png')
+       self.investigate_button= imread(f'{dir}/investigate_button.png')
+       self.kill= imread(f'{dir}/kill.png')
+       self.kingdom_buff= imread(f'{dir}/kingdom_buff.png')
+       self.leather_icon= imread(f'{dir}/leather_icon.png')
+       self.legendary_chest= imread(f'{dir}/legendary_chest.png')
+       self.legendary_chest_tiny= imread(f'{dir}/legendary_chest_tiny.png')
+       self.lock_button= imread(f'{dir}/lock_button.png')
+       self.logged_icon= imread(f'{dir}/logged_icon.png')
+       self.mail_exploration_report= imread(f'{dir}/mail_exploration_report.png')
+       self.mail_scout_button= imread(f'{dir}/mail_scout_button.png')
+       self.map_button= imread(f'{dir}/map_button.png')
+       self.map_button_0= imread(f'{dir}/map_button_0.png')
+       self.map_icon= imread(f'{dir}/map_icon.png')
+       self.maraudeurs_forts_icon= imread(f'{dir}/maraudeurs_forts_icon.png')
+       self.maraudeur_icon= imread(f'{dir}/maraudeur_icon.png')
+       self.marching_logo= imread(f'{dir}/marching_logo.png')
+       self.march_bar= imread(f'{dir}/march_bar.png')
+       self.materials_production_button= imread(f'{dir}/materials_production_button.png')
+       self.material_chest= imread(f'{dir}/material_chest.png')
+       self.menu_button= imread(f'{dir}/menu_button.png')
+       self.menu_opened= imread(f'{dir}/menu_opened.png')
+       self.merchant_buy_with_food= imread(f'{dir}/merchant_buy_with_food.png')
+       self.merchant_buy_with_wood= imread(f'{dir}/merchant_buy_with_wood.png')
+       self.merchant_free_btn= imread(f'{dir}/merchant_free_btn.png')
+       self.merchant_icon= imread(f'{dir}/merchant_icon.png')
+       self.mightiest_gov= imread(f'{dir}/mightiest_gov.png')
+       self.minus_button= imread(f'{dir}/minus_button.png')
+       self.new_troops_button= imread(f'{dir}/new_troops_button.png')
+       self.no= imread(f'{dir}/no.png')
+       self.ok= imread(f'{dir}/ok.png')
+       self.open_chest= imread(f'{dir}/open_chest.png')
+       self.picture2= imread(f'{dir}/picture2.png')
+       self.player= imread(f'{dir}/player.png')
+       self.plus_button= imread(f'{dir}/plus_button.png')
+       self.popup0= imread(f'{dir}/popup0.png')
+       self.popup1= imread(f'{dir}/popup1.png')
+       self.preset_1= imread(f'{dir}/preset_1.png')
+       self.preset_2= imread(f'{dir}/preset_2.png')
+       self.preset_3= imread(f'{dir}/preset_3.png')
+       self.preset_4= imread(f'{dir}/preset_4.png')
+       self.preset_5= imread(f'{dir}/preset_5.png')
+       self.rally_radius= imread(f'{dir}/rally_radius.png')
+       self.ranking= imread(f'{dir}/ranking.png')
+       self.reconnect= imread(f'{dir}/reconnect.png')
+       self.red_icon= imread(f'{dir}/red_icon.png')
+       self.red_icon1= imread(f'{dir}/red_icon1.png')
+       self.refresh_resolve= imread(f'{dir}/refresh_resolve.png')
+       self.resource_gather_button= imread(f'{dir}/resource_gather_button.png')
+       self.return_button= imread(f'{dir}/return_button.png')
+       self.rokicon= imread(f'{dir}/rokicon.png')
+       self.scout_button= imread(f'{dir}/scout_button.png')
+       self.scout_button2= imread(f'{dir}/scout_button2.png')
+       self.scout_idle_icon= imread(f'{dir}/scout_idle_icon.png')
+       self.scout_management= imread(f'{dir}/scout_management.png')
+       self.scout_send_button= imread(f'{dir}/scout_send_button.png')
+       self.scout_zz_icon= imread(f'{dir}/scout_zz_icon.png')
+       self.search_button= imread(f'{dir}/search_button.png')
+       self.selected_icon= imread(f'{dir}/selected_icon.png')
+       self.selected_save_blue_one= imread(f'{dir}/selected_save_blue_one.png')
+       self.send_button_scout= imread(f'{dir}/send_button_scout.png')
+       self.siege_badge= imread(f'{dir}/siege_badge.png')
+       self.siege_workshop_button= imread(f'{dir}/siege_workshop_button.png')
+       self.silver_chest= imread(f'{dir}/silver_chest.png')
+       self.silver_chest_tiny= imread(f'{dir}/silver_chest_tiny.png')
+       self.speedup_healing= imread(f'{dir}/speedup_healing.png')
+       self.speed_up_button= imread(f'{dir}/speed_up_button.png')
+       self.stable_button= imread(f'{dir}/stable_button.png')
+       self.standby_icon= imread(f'{dir}/standby_icon.png')
+       self.star= imread(f'{dir}/star.png')
+       self.stone_icon= imread(f'{dir}/stone_icon.png')
+       self.stone_max= imread(f'{dir}/stone_max.png')
+       self.stone_min= imread(f'{dir}/stone_min.png')
+       self.switch_save= imread(f'{dir}/switch_save.png')
+       self.t1_badge= imread(f'{dir}/t1_badge.png')
+       self.t2_badge= imread(f'{dir}/t2_badge.png')
+       self.t3_badge= imread(f'{dir}/t3_badge.png')
+       self.t4_badge= imread(f'{dir}/t4_badge.png')
+       self.t5_badge= imread(f'{dir}/t5_badge.png')
+       self.tavern_button= imread(f'{dir}/tavern_button.png')
+       self.tech= imread(f'{dir}/tech.png')
+       self.tech2= imread(f'{dir}/tech2.png')
+       self.tech_2= imread(f'{dir}/tech_2.png')
+       self.tech_speedup= imread(f'{dir}/tech_speedup.png')
+       self.test_read= imread(f'{dir}/test_read.png')
+       self.training_upgrade_button= imread(f'{dir}/training_upgrade_button.png')
+       self.train_button= imread(f'{dir}/train_button.png')
+       self.troops_march_button= imread(f'{dir}/troops_march_button.png')
+       self.troops_march_button2= imread(f'{dir}/troops_march_button2.png')
+       self.troop_idle= imread(f'{dir}/troop_idle.png')
+       self.troop_walking= imread(f'{dir}/troop_walking.png')
+       self.unselect_save_blue_one= imread(f'{dir}/unselect_save_blue_one.png')
+       self.upgrade= imread(f'{dir}/upgrade.png')
+       self.upgrade_age= imread(f'{dir}/upgrade_age.png')
+       self.upgrade_build= imread(f'{dir}/upgrade_build.png')
+       self.upgrade_button= imread(f'{dir}/upgrade_button.png')
+       self.upgrade_go= imread(f'{dir}/upgrade_go.png')
+       self.upgrade_popup_0= imread(f'{dir}/upgrade_popup_0.png')
+       self.upgrade_popup_1= imread(f'{dir}/upgrade_popup_1.png')
+       self.upgrade_popup_2= imread(f'{dir}/upgrade_popup_2.png')
+       self.upgrade_stone= imread(f'{dir}/upgrade_stone.png')
+       self.upgrade_stone2= imread(f'{dir}/upgrade_stone2.png')
+       self.upgrade_stone3= imread(f'{dir}/upgrade_stone3.png')
+       self.use_ap= imread(f'{dir}/use_ap.png')
+       self.validate_build= imread(f'{dir}/validate_build.png')
+       self.validate_building= imread(f'{dir}/validate_building.png')
+       self.verification_button= imread(f'{dir}/verification_button.png')
+       self.verification_chest1= imread(f'{dir}/verification_chest1.png')
+       self.verification_chest2= imread(f'{dir}/verification_chest2.png')
+       self.verification_chest3= imread(f'{dir}/verification_chest3.png')
+       self.verification_ok= imread(f'{dir}/verification_ok.png')
+       self.verification_verify_title= imread(f'{dir}/verification_verify_title.png')
+       self.victory_mail= imread(f'{dir}/victory_mail.png')
+       self.window= imread(f'{dir}/window.png')
+       self.window_title= imread(f'{dir}/window_title.png')
+       self.window_title_mark= imread(f'{dir}/window_title_mark.png')
+       self.wood_max= imread(f'{dir}/wood_max.png')
+       self.wood_min= imread(f'{dir}/wood_min.png')
+       self.yellow_icon= imread(f'{dir}/yellow_icon.png')
+       self.yellow_icon1= imread(f'{dir}/yellow_icon1.png')
 
     def get_file_name(self,file_name):
         if file_name == "academy":
@@ -365,6 +391,8 @@ class ImageSingleton:
             return self.claim_daily
         if file_name == "claim_quest":
             return self.claim_quest
+        if file_name == "close":
+            return self.close
         if file_name == "close_chat":
             return self.close_chat
         if file_name == "close_refresh_ok":
@@ -375,18 +403,52 @@ class ImageSingleton:
             return self.close_window2
         if file_name == "codicon":
             return self.codicon
+        if file_name == "cod_archery_badge":
+            return self.cod_archery_badge
+        if file_name == "cod_cavalry_badge":
+            return self.cod_cavalry_badge
+        if file_name == "cod_chest_1":
+            return self.cod_chest_1
+        if file_name == "cod_chest_2":
+            return self.cod_chest_2
+        if file_name == "cod_chest_3":
+            return self.cod_chest_3
         if file_name == "cod_city_hammer":
             return self.cod_city_hammer
+        if file_name == "cod_claim":
+            return self.cod_claim
+        if file_name == "cod_claim_daily_vip":
+            return self.cod_claim_daily_vip
         if file_name == "cod_close_window":
             return self.cod_close_window
+        if file_name == "cod_close_window_2":
+            return self.cod_close_window_2
+        if file_name == "cod_confirm_chest":
+            return self.cod_confirm_chest
         if file_name == "cod_create_legion":
             return self.cod_create_legion
+        if file_name == "cod_daily_vip":
+            return self.cod_daily_vip
+        if file_name == "cod_donate_button":
+            return self.cod_donate_button
         if file_name == "cod_gather_button":
             return self.cod_gather_button
+        if file_name == "cod_infantry_badge":
+            return self.cod_infantry_badge
         if file_name == "cod_level_slider":
             return self.cod_level_slider
         if file_name == "cod_march_button":
             return self.cod_march_button
+        if file_name == "cod_march_button_out":
+            return self.cod_march_button_out
+        if file_name == "cod_open_chest":
+            return self.cod_open_chest
+        if file_name == "cod_scout_camp_icon":
+            return self.cod_scout_camp_icon
+        if file_name == "cod_scout_explore_button_in":
+            return self.cod_scout_explore_button_in
+        if file_name == "cod_scout_explore_button_out":
+            return self.cod_scout_explore_button_out
         if file_name == "cod_search_button":
             return self.cod_search_button
         if file_name == "cod_search_loop":
@@ -395,10 +457,14 @@ class ImageSingleton:
             return self.cod_search_minus_button
         if file_name == "cod_search_plus_button":
             return self.cod_search_plus_button
+        if file_name == "cod_siege_badge":
+            return self.cod_siege_badge
         if file_name == "cod_toolbar":
             return self.cod_toolbar
         if file_name == "cod_toolbar_button":
             return self.cod_toolbar_button
+        if file_name == "cod_training_speed":
+            return self.cod_training_speed
         if file_name == "Commander_icon_type_Archer":
             return self.Commander_icon_type_Archer
         if file_name == "Commander_icon_type_Cavalry":
@@ -407,6 +473,8 @@ class ImageSingleton:
             return self.Commander_icon_type_Infantry
         if file_name == "confirm_tavern":
             return self.confirm_tavern
+        if file_name == "copy":
+            return self.copy
         if file_name == "cross":
             return self.cross
         if file_name == "daily_ap_claim":
@@ -417,6 +485,8 @@ class ImageSingleton:
             return self.defeat_mail
         if file_name == "deploy_march_button":
             return self.deploy_march_button
+        if file_name == "detail":
+            return self.detail
         if file_name == "donate_button":
             return self.donate_button
         if file_name == "download_icon":
@@ -601,6 +671,8 @@ class ImageSingleton:
             return self.infantry_badge
         if file_name == "investigate_button":
             return self.investigate_button
+        if file_name == "kill":
+            return self.kill
         if file_name == "kingdom_buff":
             return self.kingdom_buff
         if file_name == "leather_icon":
@@ -661,6 +733,8 @@ class ImageSingleton:
             return self.open_chest
         if file_name == "picture2":
             return self.picture2
+        if file_name == "player":
+            return self.player
         if file_name == "plus_button":
             return self.plus_button
         if file_name == "popup0":
@@ -679,6 +753,8 @@ class ImageSingleton:
             return self.preset_5
         if file_name == "rally_radius":
             return self.rally_radius
+        if file_name == "ranking":
+            return self.ranking
         if file_name == "reconnect":
             return self.reconnect
         if file_name == "red_icon":
@@ -759,6 +835,8 @@ class ImageSingleton:
             return self.tech_2
         if file_name == "tech_speedup":
             return self.tech_speedup
+        if file_name == "test_read":
+            return self.test_read
         if file_name == "training_upgrade_button":
             return self.training_upgrade_button
         if file_name == "train_button":
@@ -830,7 +908,4 @@ class ImageSingleton:
         if file_name == "yellow_icon1":
             return self.yellow_icon1
         else:
-            # print(f'{dir}\\{file_name}.png')
-            return imread(f'resources\\{file_name}.png')
-
-ImageSingleton()
+            return imread(f'{dir}/{file_name}.png')

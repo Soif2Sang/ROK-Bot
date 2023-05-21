@@ -1,7 +1,8 @@
 import flet as ft
+from flet_route import path, Routing
 
-from Flet_Logger import LoggerUpgrade
-from Flet_TileManager_upgrade import TileManagerUpgrade
+from views.Flet_Logger import LoggerUpgrade
+from views.Flet_TileManager_upgrade import TileManagerUpgrade
 
 color_bank ={
     1:"#3b8ed0",
@@ -9,6 +10,8 @@ color_bank ={
     3:"#dec433"
 }
 
+def index(page: ft.Page, params, basket):
+    return  ft.View("/", controls=page.controls,)
 
 def Main(page: ft.Page, days=950):
     page.title = f"Rok Bot - {days} Days left"
@@ -25,6 +28,19 @@ def Main(page: ft.Page, days=950):
     page.logger = LoggerUpgrade(page)
     page.add(page.logger)
     page.update()
+
+    page.app_routes = [path(
+        url="/",
+        clear=True,
+        view=index
+    )]
+
+    page.routing = Routing(
+        page=page,  # Here you have to pass the page. Which will be found as a parameter in all your views
+        app_routes=page.app_routes,
+        # Here a list has to be passed in which we have defined app routing like app_routes
+    )
+
 
 if __name__ == "__main__":
     ft.app(target=Main, view=ft.FLET_APP)

@@ -65,7 +65,7 @@ class TileManager(ft.ListView):
                     tile.button_start.update()
                     tile.button_stop.update()
                     tile.set_text("")
-            sleep(1)
+            sleep(0.1)
 
     def update_tiles(self):
         is_alive = threading.Thread(target=self.process_is_alive)
@@ -264,7 +264,8 @@ class TileManager(ft.ListView):
             "transfer_food": 0,
             "transfer_wood": 0,
             "transfer_stone": 0,
-            "transfer_gold": 0
+            "transfer_gold": 0,
+            "upgrade_city":False
         }
         for i in range(1, 4):
             default_dic['schedules'][i] = default_profile

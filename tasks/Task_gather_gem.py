@@ -266,7 +266,7 @@ class GatherGem(Task):
         """
         i = 0
         self.print("Clicking on the node..")
-        while self.find_img(target="resource_gather_button") is None:
+        while self.find_img(target="resource_gather_button",confidence=0.70) is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -274,7 +274,7 @@ class GatherGem(Task):
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        co = self.find_img(target="resource_gather_button")
+        co = self.find_img(target="resource_gather_button",confidence=0.70)
         if co is not None:
             x, y = co[0], co[1]
             self.click(x + uniform(0, 150), y + uniform(0, 30))
@@ -365,7 +365,7 @@ class GatherGem(Task):
                 self.click(uniform(700, 800), uniform(300, 500))
                 self.better_sleep((1.325, 1.795))
                 return False
-            co = self.find_img(target="new_troops_button")
+            co = self.find_img(target="new_troops_button",confidence=0.70)
             print(co)
             if co is not None:
                 # print("Home button found")
@@ -654,7 +654,7 @@ class GatherGem(Task):
                             break
                         self.print("Trying to send the nearest troop..")
                         if self.send_nearest_troop_gem():
-                            if self.find_img(target="new_troops_button"):
+                            if self.find_img(target="new_troops_button",confidence=0.70):
                                 self.send_new_troop()
                                 self.check_if_kill()
                             self.check_if_kill()

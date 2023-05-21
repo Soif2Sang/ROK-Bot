@@ -2,6 +2,7 @@ import multiprocessing
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+from flet_route import path, Routing
 
 import views.Flet_time_allower
 from views import Flet_time_allower
@@ -10,7 +11,7 @@ from views.Flet_row_presets import FletRowPresets
 from viewscod.Flet_row_rss_cod import FletRowRss
 from views.Flet_col_transfer import FletColumnRss
 from views.Flet_row_troops import FletRowTraining
-from viewscod.Flet_city_layout_cod import start
+from viewscod.Flet_city_layout_cod import start, main2, CityPlacement
 from utils.Task_utils import get_data, write_data
 
 color_bank = {
@@ -32,6 +33,30 @@ class SettingContainer(ft.Container):
         self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300,spacing=2)
         self.init()
 
+    def nextView(self, page, params, basket):
+        self.page.window_width = 900
+        self.page.window_height = 500
+        return ft.View(
+            f"/citylayout/{self.instance_index}/{self.profile_index}",
+            controls=[
+                ft.Container(bgcolor="#ecf0f1",
+                             content=ft.Row(controls=[
+                                 ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
+                                 ft.Text(value="Go back")
+                             ]
+                             )
+                             ),
+                ft.Text(
+                    value="Click on the building button you wanna set, then click in the center of the building."),
+                CityPlacement(self.instance_index, self.profile_index)
+            ]
+        )
+
+    def returnHome(self):
+        self.page.window_width = 400
+        self.page.window_height = 700
+        self.page.go("/")
+
 
 
     def init(self):
@@ -43,6 +68,7 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("check_donation", "Alliance donation")
         # self.create_advanced_switch("material_production", "Material Production", self.page_materials)
         self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
+        self.create_advanced_switch("academy_research", "Academy Research", self.show_cords_page)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
         self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
         # self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
@@ -301,7 +327,7 @@ class SettingContainer(ft.Container):
 
     def show_cords_page(self):
         self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
-        multiprocessing.Process(target=start, args=(self.instance_index, self.profile_index)).start()
+        self.page.go(f"/citylayout/{self.instance_index}/{self.profile_index}")
 
 
     def page_heal(self):

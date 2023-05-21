@@ -109,7 +109,8 @@ class Tile(ft.Row):
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        self.text_status.update()
+        if self.page.route == "/" :
+            self.text_status.update()
 
     def get_text(self):
         return self.text_status.value
