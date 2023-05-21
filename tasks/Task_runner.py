@@ -101,23 +101,24 @@ class TaskRunner(Task):
         return names.get(name,name)
 
     def execute_tasks(self, lib_tasks, profile):
-        co = self.find_img(target="hide_quests")
+        self.run_game()
+        screen = self.adb.get_cv2_img()
+        co = self.find_img(target="hide_quests",source=screen)
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         current_task = 1
         self.check_captcha()
         for func in lib_tasks:
+            self.print(f"Task {current_task}/{len(lib_tasks)}", "blue")
+            self.print(f"Currently executing : {self.get_current_task(func.task_name())}", "blue")
+
             self.run_game()
-            screen = self.adb.get_cv2_img()
+            screen = self.check_mge(screen)
             screen = self.check_download_page(screen)
             screen = self.leave_kd_buff(screen)
-            #self.print("")
-            self.print(f"Task {current_task}/{len(lib_tasks)}","blue")
-            self.print(f"Currently executing : {self.get_current_task(func.task_name())}","blue")
-            #self.print("")
-            self.set_current_task(func.task_name())
             self.check_log_back(screen)
             self.check_reconnect()
+            self.set_current_task(func.task_name())
             # self.set_status()
             if self.data[self.sel]['schedules'][profile].get('alliance_help', False):
                 AllianceHelp(self).run()
@@ -197,6 +198,8 @@ class TaskRunner(Task):
             lib_tasks.append(TroopTraining(self))
         if profile.get('transfer_enable',False):
             lib_tasks.append(RssTransfer(self))
+        if profile.get('upgrade_city', False):
+            lib_tasks.append(UpgradeCity(self))
         shuffle(lib_tasks)
         tasks_name = [task.task_name() for task in lib_tasks]
 
@@ -551,6 +554,9 @@ class TaskRunner(Task):
             # nb_profile = 0
             can_go = None
             when_go = None
+            if not (self.data[self.sel]['schedules']["1"]['enabled'] and self.data[self.sel]['schedules']["2"]['enabled'] and self.data[self.sel]['schedules']["3"]['enabled']):
+                self.print("There is no profile enabled.","red")
+
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
                     print(f"Profile {profile} enabled")
@@ -573,54 +579,34 @@ class TaskRunner(Task):
                             self.set_timer(when_go)
                     else:
                         print(f"Profile {profile} no rules set")
-                    # nb_profile += 1
                     self.current_profile = profile
                     self.print(f"Profile n°{profile} enabled ! ","blue")
-                    #self.print("")
+
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character"):
                         self.print(f"Character n°1", "blue")
-                        #self.print("")
-                    self.run_game()
-                    self.check_log_back()
-                    self.check_reconnect()
-                    self.check_mge()
-                    self.check_captcha()
-                    self.leave_kd_buff()
                     # First character
                     self.execute_tasks(self.get_available_task(profile),profile)
-                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",False):
-                        self.close_windows()
-                        co_first = self.get_first_character()
-                        boolean = True
-                        self.wait_until_connected()
 
-                        self.run_game()
+                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",False):
+                        co_first = self.get_first_character()
+                        self.wait_until_connected()
                         # Characters remaining
+                        boolean = True
                         nb_characters = 2
                         while boolean:
                             self.print(f"Character n°{nb_characters}","blue")
-                            #self.print("")
-                            self.run_game()
-
-                            self.check_log_back()
-                            self.check_reconnect()
-                            self.check_captcha()
-                            self.check_mge()
-                            self.leave_kd_buff()
-
-                            self.execute_tasks(self.get_available_task(profile),profile)
-                            self.better_sleep((2.2, 4))
-
                             nb_characters += 1
-                            self.close_windows()
+                            self.execute_tasks(self.get_available_task(profile),profile)
+                            self.better_sleep((1.2, 4))
+
                             boolean = self.change_character_param(co_first, nb_characters)
                             self.wait_until_connected()
                     if not self.data[self.sel]['scheduler']:
                         break
 
             if self.data.get(self.sel).get("loop_task"):
-                ttw1, ttw2 = self.data.get(self.sel).get("time_to_wait_loop1", 60), self.data.get(self.sel).get(
-                    "time_to_wait_loop2", 90)
+                ttw1 = self.data.get(self.sel).get("time_to_wait_loop1", 60)
+                ttw2 = self.data.get(self.sel).get("time_to_wait_loop2", 90)
                 heures, minutes = divmod((int(time()) - loop_time), 60)
                 minutes,secondes = divmod(int(minutes), 60)
                 self.print(f"Run nb°{i} took {int(heures):02d}:{int(minutes):02d}:{int(secondes):02d} to complete.")
@@ -628,7 +614,6 @@ class TaskRunner(Task):
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes","#f5b400")
-                # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
 
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     if time_before_redo_tasks < 600:
@@ -637,7 +622,7 @@ class TaskRunner(Task):
                         self.leave_game(force=False)
 
                 self.set_timer(time_before_redo_tasks)
-        #self.print("")
+
         self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.","green")
         return
 
@@ -706,14 +691,6 @@ class TaskRunner(Task):
 
                         self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
                         self.better_sleep((2.2, 4))
-
-                        self.go_city()
-                        city_upgrade = UpgradeCity(self)
-                        city_upgrade.setup_view()
-
-                        for i in range(2):
-                            sleep(5)
-                            city_upgrade.run()
 
                         nb_characters += 1
                         boolean = self.change_character_param(co_first, nb_characters)

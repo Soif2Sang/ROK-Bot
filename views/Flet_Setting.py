@@ -1,7 +1,9 @@
 import multiprocessing
+from time import sleep
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+from flet_route import path, Routing
 
 import views.Flet_time_allower
 from views import Flet_time_allower
@@ -10,7 +12,7 @@ from views.Flet_row_presets import FletRowPresets
 from views.Flet_row_rss import FletRowRss
 from views.Flet_col_transfer import FletColumnRss
 from views.Flet_row_troops import FletRowTraining
-from views.Flet_city_layout import start
+from views.Flet_city_layout import start, main2, CityPlacement
 from utils.Task_utils import get_data, write_data
 
 color_bank = {
@@ -31,9 +33,34 @@ class SettingContainer(ft.Container):
         self.color_choice = color_bank[self.profile_index]
         self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300,spacing=2)
         self.init()
+        # print(f"{self.instance_index = } {self.profile_index =}")
 
+        self.page.app_routes.append(path(url=f"/citylayout/{self.instance_index}/{self.profile_index}", clear=True, view=self.nextView))
 
+    def nextView(self,page, params, basket):
+        self.page.window_width = 900
+        self.page.window_height = 500
+        self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
 
+        return ft.View(
+                f"/citylayout/{self.instance_index}/{self.profile_index}",
+                controls=[
+                    ft.Container(bgcolor="#ecf0f1",
+                        content = ft.Row(controls=[
+                                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
+                                    ft.Text(value="Go back")
+                                        ]
+                                    )
+                                 ),
+                    ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
+                    CityPlacement(self.instance_index, self.profile_index)
+                ]
+            )
+
+    def returnHome(self):
+        self.page.window_width = 400
+        self.page.window_height = 700
+        self.page.go("/")
     def init(self):
         self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
@@ -51,6 +78,7 @@ class SettingContainer(ft.Container):
         self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", self.page_barbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
         self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
+        self.create_normal_switch("upgrade_city", "Upgrade City")
         self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
         self.create_advanced_switch("transfer_enable", "Rss Transfer", self.page_transfer)
 
@@ -71,6 +99,10 @@ class SettingContainer(ft.Container):
         self.content.clean()
         self.init()
         self.page.update()
+
+    def show_cords_page(self):
+        self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
+        self.page.go(f"/citylayout/{self.instance_index}/{self.profile_index}")
 
     def submit(self, e, keyword, method):
         self.data = get_data()
@@ -308,11 +340,6 @@ class SettingContainer(ft.Container):
         ]
         )
         self.update()
-
-    def show_cords_page(self):
-        self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
-        multiprocessing.Process(target=start, args=(self.instance_index, self.profile_index)).start()
-
 
     def page_heal(self):
         self.data = get_data()
@@ -804,9 +831,8 @@ class SettingContainer(ft.Container):
                     on_change=lambda _: self.reverse_keyword("slow_mode")
                 ),
                 ft.Dropdown(
-                    width=140,
-                    height=70,
-                    label="Multiplicator",
+                    width=125,
+                    label="Factor",
                     options=[
                         ft.dropdown.Option("1.0x"),
                         ft.dropdown.Option("1.25x"),

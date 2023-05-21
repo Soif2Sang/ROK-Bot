@@ -420,11 +420,15 @@ class Task:
             return False
 
     @get_name
-    def check_mge(self):
-        co = self.find_img(target="mightiest_gov")
+    def check_mge(self, cv_image = None):
+        if cv_image is None:
+            cv_image = self.adb.get_cv2_img()
+        co = self.find_img(target="mightiest_gov",source=cv_image)
         if co is not None:
             self.click(co[0] + uniform(10, 30), co[1] + uniform(10, 30))
             self.better_sleep((1.3, 2))
+            cv_image = self.adb.get_cv2_img()
+        return cv_image
 
     @get_name
     def check_reconnect(self, cv_image=None):
@@ -432,9 +436,8 @@ class Task:
         Check and reconnect
         """
         if cv_image is None:
-            co = self.find_img(target="reconnect")
-        else:
-            co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
+            cv_image = self.adb.get_cv2_img()
+        co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
 
         if co is not None:
 
@@ -457,6 +460,8 @@ class Task:
                 while True:
                     self.script_pause()
                     sleep(1)
+        else:
+            return cv_image
 
     @get_name
     def wait_until_connected(self) -> None:
@@ -612,8 +617,8 @@ class Task:
                 api_key = self.data[self.sel]['API_KEY']
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
-            if data[self.sel]['API_KEY'] != "":
-                api_key = data[self.sel]['API_KEY']
+            if self.data[self.sel]['API_KEY'] != "":
+                api_key = self.data[self.sel]['API_KEY']
             self.print("Trying to resolve the captcha")
 
             captcha = self.save_captcha()

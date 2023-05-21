@@ -25,6 +25,7 @@ class Adb:
         self.host = host
         self.port = port
         self.number = number
+        # print(data)
         self.name = data[str(self.number)]['name']
         self.images = ImageSingleton()
 
@@ -127,7 +128,7 @@ class Adb:
 
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
-        image.save(file_name + '.png')
+        image.save(f".//{file_name}.png")
         return True
 
     def find_img_cv(self, img_to_find, confidence=0.9):

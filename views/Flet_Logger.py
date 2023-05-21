@@ -20,7 +20,7 @@ class Logger(ft.ListView):
         else:
             text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)
         self.controls.append(text)
-        if self.parent == self.page.controls[-1]:
+        if self.parent == self.page.controls[-1] :
             self.update()
 
 

@@ -966,3 +966,26 @@
 
 [ 2023-05-07 10:30:47 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.1
 
+[ 2023-05-18 12:31:34 ] [ BlueStacks App Player 16 ] INFO : Device is None, trying to reconnect..
+[ 2023-05-18 12:31:44 ] [ BlueStacks App Player 16 ] INFO : Verification made in 5.0
+
+[ 2023-05-18 12:31:50 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.8
+
+[ 2023-05-18 12:32:01 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.3
+
+[ 2023-05-18 12:32:38 ] [ BlueStacks App Player 16 ] INFO : Verification made in 5.6
+
+[ 2023-05-18 12:32:45 ] [ BlueStacks App Player 16 ] INFO : Verification made in 5.5
+
+[ 2023-05-18 12:33:19 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.4
+
+[ 2023-05-18 12:33:50 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.3
+
+[ 2023-05-18 12:33:56 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.7
+
+[ 2023-05-18 12:35:06 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.1
+
+[ 2023-05-18 12:35:12 ] [ BlueStacks App Player 16 ] INFO : Verification made in 4.3
+
+[ 2023-05-18 12:36:04 ] [ BlueStacks App Player 16 ] INFO : Verification made in 3.6
+

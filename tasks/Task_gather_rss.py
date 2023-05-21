@@ -33,9 +33,7 @@ class GatherRss(Task):
         -Enter and leave city if not in city
         -Leave city if in city
         """
-        print(f'[ {current_time()} ] [ {self.name} ] leave_city_simple call')
         if self.in_city():
-            print(f'[ {current_time()} ] [ {self.name} ] quiting city')
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 3))
         return True
@@ -371,7 +369,7 @@ class GatherRss(Task):
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        co = self.find_img(target="resource_gather_button")
+        co = self.find_img(target="resource_gather_button",confidence=0.7)
         if co is not None:
             x, y = co[0], co[1]
             self.click(x + uniform(0, 150), y + uniform(0, 30))
@@ -389,7 +387,7 @@ class GatherRss(Task):
             self.send_new_troop()
             self.better_sleep((0.7, 1.1))
         else:
-            co = self.find_img(target="new_troops_button")
+            co = self.find_img(target="new_troops_button",confidence=0.7)
             if co is None:
                 return False
             x, y = co[0], co[1]

@@ -96,7 +96,8 @@ class Tile(ft.Row):
             # is_alive.deamon = True
             # is_alive.start()
         else:
-            print("Task is running")
+            self.add_text("Task is froze for an unknown reason, you may want to restart the bot..")
+            print("Task is froze for an unknown reason, you may want to restart the bot..")
 
     def stop(self):
         self.started = False

@@ -60,7 +60,7 @@ class Frame(ft.Tabs):
         
         data = get_data()
         for profile in data[str(number)]['schedules']:
-            print(self.settings.selected_index)
+            # print(self.settings.selected_index)
             if data[str(number)]['schedules'][profile]['enabled']:
                 self.settings.selected_index=int(profile)-1
                 break
@@ -87,7 +87,7 @@ class FrameUpgrade(ft.Tabs):
         
         data = get_data()
         for profile in data[str(number)]['schedules']:
-            print(self.settings.selected_index)
+            # print(self.settings.selected_index)
             if data[str(number)]['schedules'][profile]['enabled']:
                 self.settings.selected_index=int(profile)-1
                 break

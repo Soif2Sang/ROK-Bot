@@ -53,7 +53,7 @@ class Tile(ft.Row):
             self.page.update()
 
     def start(self):
-        print(self.number)
+        # print(self.number)
         self.started = not self.started
         if self.started:
             self.button_start.icon = ft.icons.PAUSE

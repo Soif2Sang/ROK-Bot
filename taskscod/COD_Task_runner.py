@@ -6,6 +6,7 @@ from time import time, sleep
 import win32gui
 
 from tasks.Task_alliance_help import AllianceHelp
+from taskscod.COD_Task_academy_research import AcademyResearch
 from taskscod.COD_Task_alliance_donation import AllianceDonation
 from taskscod.COD_Task_clear_fog import ClearFog
 from taskscod.COD_Task_training import TroopTraining
@@ -168,8 +169,8 @@ class TaskRunner(Task):
             lib_tasks.append(ClearFog(self))
         if profile.get('claim_daily_vip', False):
             lib_tasks.append(DailyVip(self))
-        # if profile.get('start_fort', False):
-            # lib_tasks.append(BarbFort(self))
+        if profile.get('academy_research', False):
+            lib_tasks.append(AcademyResearch(self))
         # if profile.get('heal_troop', False):
         #     lib_tasks.append(HealTroop(self))
         # if profile.get('material_production', False):

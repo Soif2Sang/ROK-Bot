@@ -1,4 +1,4 @@
-from Flet_Frame import FrameUpgrade
+from views.Flet_Frame import FrameUpgrade
 import flet as ft
 
 from utils.Task_utils import get_data

@@ -68,7 +68,12 @@ class RssTransfer(Task):
         if deadstop ==3:
             raise ValueError()
 
-        city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
+        # city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
+        # print(city)
+        if int(self.sel) == 0:
+            city = [430,140]
+        else:
+            city = [220,350]
         self.click(city[0]+uniform(-10,10),city[1]+uniform(-10,10))
         self.better_sleep((1,2))
         co = self.find_img(target="assist_button")

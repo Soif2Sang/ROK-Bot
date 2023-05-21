@@ -79,7 +79,7 @@ class UpgradeCity(Task):
 
     @get_name
     def recursive_upgrade(self):
-        co = self.find_img(target="upgrade_build")
+        co = self.find_img(target="upgrade_build",confidence=0.7)
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
@@ -182,14 +182,18 @@ class UpgradeCity(Task):
 
     @get_class
     def run(self):
-        if (upgrades_final:=self.free_worker()):
-            current_build = upgrades_final[0]
-            self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
-            self.better_sleep((0.9, 1.2))
-            self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
-            self.better_sleep((0.9, 1.2))
-            self.recursive_upgrade()
-            self.better_sleep((0.9, 1.2))
-        self.better_sleep((10, 15))
-        self.help_alliance()
-        self.better_sleep((0.9, 1.2))
+        self.setup_view()
+        for i in range(2):
+            if (upgrades_final:=self.free_worker()):
+                current_build = upgrades_final[0]
+                self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
+                self.better_sleep((0.9, 1.2))
+                self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
+                self.better_sleep((0.9, 1.2))
+                self.recursive_upgrade()
+                self.better_sleep((0.9, 1.2))
+                self.better_sleep((10, 15))
+                self.help_alliance()
+                self.better_sleep((0.9, 1.2))
+        self.leave_city()
+        self.go_city()

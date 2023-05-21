@@ -207,6 +207,8 @@ class TileManager(ft.ListView):
             "archery_camp": [],
             "siege_camp": [],
             "scout_camp": [],
+            "research_center":[],
+            "academy_research":False,
             "infantry_enable": False,
             "cavalry_enable": False,
             "archery_enable": False,

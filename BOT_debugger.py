@@ -1,9 +1,10 @@
 import json
-from random import randint
+from random import randint, uniform
 from threading import Thread
 import flet as ft
 
 import taskscod.COD_Task_daily_vip
+from tasks import Task_gather_rss
 from tasks.Task_kingdom_ranking import KingdomRanking
 from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 from taskscod.COD_Task_daily_chest import DailyChest
@@ -33,6 +34,11 @@ class Frame():
     def add_text(self,phrase, color="black"):
         print(phrase)
 
+    def set_text(self,phrase, color="black"):
+        print(phrase)
+
+    def get_text(self):
+        return  ""
     def add_status(self, phrase, color="black"):
         return
 
@@ -47,6 +53,7 @@ class Bot():
         self.main_task.set_sel(str(adb.number))
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
+        self.rss  =  Task_gather_rss.GatherRss(self.main_task)
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)
         self.vip = DailyVip(self.main_task)
@@ -438,8 +445,19 @@ def upgrade_all():
 
 if __name__ == "__main__":
     # upgrade_all()
-    bot = get_bot(7)
-    bot.cod_scout.run()
+    for i in range(2):
+        bot = get_bot(i)
+        bot.trade.current_profile = "3"
+        Thread(target=bot.trade.run).start()
+    # if not (co := bot.task.find_img("cod_research_top", confidence=0.8)):
+    #     bot.task.close_windows()
+    # bot.task.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
+    # bot.task.better_sleep((1.2, 1.7))
+    # if not (co := bot.task.find_img("cod_research_button")):
+    #     bot.task.close_windows()
+    # bot.task.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
+    # bot.task.better_sleep((1.2, 1.7))
+    # bot.task.close_windows()
     # hwnd = win32gui.FindWindow(None, bot.adb.name)
     # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
     # for _ in range(2):

@@ -4,8 +4,8 @@ from os.path import exists
 
 import flet as ft
 
-from Flet_TileManager import NavigationBar
-from Flet_Tile_upgrade import TileUpgrade
+from views.Flet_TileManager import NavigationBar
+from views.Flet_Tile_upgrade import TileUpgrade
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from utils.Task_utils import get_path, get_data, write_data
@@ -26,6 +26,7 @@ class TileManagerUpgrade(ft.ListView):
 
     def add_tile(self, number: str):
         self.tiles[number] = TileUpgrade(self.page, number)
+        self.tiles[number].runner = self.start_bar.runner
         self.controls.append(self.tiles[number])
 
         # self.update()

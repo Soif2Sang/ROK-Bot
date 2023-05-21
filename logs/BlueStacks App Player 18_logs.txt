@@ -953,3 +953,4 @@
 
 [ 2023-05-07 10:30:45 ] [ BlueStacks App Player 18 ] INFO : Verification made in 3.0
 
+[ 2023-05-18 12:00:11 ] [ BlueStacks App Player 18 ] INFO : Device is None, trying to reconnect..
