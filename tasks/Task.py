@@ -12,6 +12,7 @@ from numpy import array, ndarray
 from utils import discord_bot
 from utils.Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write, string_to_co
 from utils.bot_adb import Adb
+from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -43,7 +44,9 @@ class Task:
             hours, mins = divmod(seconds, 3600)
             mins, secs = divmod(mins, 60)
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
-            sleep(1)
+            for i in range(10):
+                self.script_pause()
+                sleep(0.1)
             seconds -= 1
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
 
@@ -56,6 +59,43 @@ class Task:
         self.data = self.update_data()
         self.sel = sel
         self.name = self.data.get(self.sel).get('name', "Name not found")
+
+    @get_name
+    def get_city_position(self):
+        image = self.adb.get_cv2_img()
+        image = image[5:33,260:430]
+        return self.extract_text(image,'#XxYy:123456789')
+    @get_name
+    def extract_text(self, img, allowlist=None):
+        reader = Reader()
+        native_text, _ = reader.extract_text(img=img, allowlist=allowlist)
+        if native_text:
+            return native_text[0]
+        return ''
+        # reader_script_path = r'.\utils\easyOcr.py'
+        #
+        # # Paramètres pour la méthode extract_text
+        # allowlist = None  # Liste des caractères autorisés (facultatif)
+        # show_text = False  # Afficher le texte sur l'image (True ou False)
+        # show_confidence = False  # Afficher la confiance de détection sur l'image (True ou False)
+        # use_cuda = False  # Utiliser CUDA (GPU) pour EasyOCR (True ou False)
+        #
+        # # Construire la commande à exécuter
+        # command = ['py', '-3.11', reader_script_path, img]
+        # if allowlist:
+        #     command.extend(['--allowlist'] + allowlist)
+        # if show_text:
+        #     command.append('--show_text')
+        # if show_confidence:
+        #     command.append('--show_confidence')
+        # if use_cuda:
+        #     command.append('--cuda')
+        #
+        # # Exécuter la commande et récupérer le résultat
+        # output = subprocess.check_output(command, universal_newlines=True)
+        #
+        # # Afficher le résultat
+        # print(output)
 
     @get_name
     def print(self, text: str, color=None) -> None:
@@ -82,6 +122,106 @@ class Task:
     def swipe_arg(self, x, y, x2, y2, arg):
         # return self.click(x,y)
         self.adb.swipe_arg(x, y, x2, y2, arg)
+
+    @get_name
+    def free_troop_selection(self) -> bool:
+        """
+        :return: True if there's a empty queue
+        :return: False if queues are occupied
+        """
+
+        cv_image = self.adb.get_cv2_img()
+        cropped_image = cv_image[13:35, 1225:1254]
+        text = self.extract_text(cropped_image, allowlist="01234567/")
+        if len(text) == 3:
+            if text[0] < text[2]:
+                self.print("Empty queue found")
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    @get_name
+    def free_troop_commander_list(self) -> bool:
+        """
+        :return: True if there's a empty queue
+        :return: False if queues are occupied
+        """
+        cropped_image = self.adb.get_cv2_img()[162:179, 1210:1242]
+
+        native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
+
+        print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
+        if "/" in native_text:
+            # list_text = text0.split("/")
+            enhanced_text = native_text.split("/")[0] + native_text.split("/")[1]
+        else:
+            enhanced_text = native_text
+        enhanced_text = enhanced_text.replace("\n", "")
+        print(f"[ {current_time()} ] [ {self.name} ] {enhanced_text =}")
+        if len(enhanced_text) < 2:
+            return True
+        if len(enhanced_text) == 2:
+            return enhanced_text[0] < enhanced_text[1]
+
+    @get_name
+    def click_loop(self) -> None:
+        if not self.find_img(target="gem_search_button"):
+            self.print(f'Loop icon not found, leaving the city')
+            self.leave_city()
+            self.better_sleep((2, 3))
+        x = uniform(33, 76)
+        y = uniform(517, 560)
+        # print(x,y)
+        self.click(x, y)
+        self.better_sleep((0.3, 0.5))
+
+    @get_name
+    def set_search_level(self, level: int = 10) -> None:
+        cv_image = self.adb.get_cv2_img()
+        co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
+        if co is None:
+            self.print(f'Cannot find the button_level')
+            # self.set_text(f"[{current_time()}] Cannot find the level button")
+            self.click_loop()
+            self.better_sleep((1, 1.7))
+        else:
+            # x,y = uniform(225,285) , uniform(607,667)
+            # self.click(x,y)
+            cv_image = cv_image[co[1] - 30:co[1], co[0] - 60:co[0] + 60]
+            # cv2.imwrite("level.png", cv_image)
+            # string = pytesseract.image_to_string(cv_image,
+            #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
+
+            string = self.extract_text(img=cv_image, allowlist="level:1234567890")
+            print(f"[ {self.name} ] {string =}")
+            string = string.replace("\n", "")
+            string = string.split(":")
+            self.print(f'Current level : {string[1]}')
+            # self.set_text(f"[{current_time()}] Current level : {string[1]}")
+            try:
+                level_to_go = level - int(string[1])
+            except:
+                x, y = self.find_img(target='minus_button')
+                for i in range(6):
+                    self.click(x+ uniform(0, 20),y +uniform(0, 20))
+                    self.better_sleep((0.450, 1))
+                level_to_go = level
+            if level_to_go > 0:
+                word = "Increasing"
+                x, y = self.find_img(target='plus_button')
+            else:
+                word = "Decreasing"
+                x, y = self.find_img(target='minus_button')
+            self.print(f'{word} the level by : {abs(level_to_go)}')
+            # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
+            for _ in range(abs(level_to_go)):
+                x2 = x + uniform(0, 30)
+                y2 = y + uniform(0, 27)
+                self.click(x2, y2)
+                self.better_sleep((0.450,1))
+            return
 
     def swipe_right(self) -> None:
         """
@@ -721,7 +861,7 @@ class Task:
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='gem_search_button',confidence=0.93) is None
+        return self.find_img(target='gem_search_button',confidence=0.95) is None
 
     @get_name
     def close_windows(self):

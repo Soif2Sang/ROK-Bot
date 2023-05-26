@@ -3,13 +3,9 @@ from time import sleep
 from random import uniform
 
 import cv2
-from pytesseract import pytesseract
 
 from tasks.Task import Task
 from utils.Task_utils import get_name, get_class, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
-
 
 class RssTransfer(Task):
     def __init__(self, MainTask: Task):
@@ -33,18 +29,12 @@ class RssTransfer(Task):
                 :return: True if there's a empty queue
                 :return: False if queues are occupied
                 """
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = self.pil_to_array(pil_image)
-        transport_capacity = cv_image[558:590, 285:435]
-        transport_capacity = cv2.cvtColor(transport_capacity, cv2.COLOR_BGR2HSV)
-        transport_capacity = pytesseract.image_to_string(transport_capacity,
-                                                  config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789/,')
+        default_image = self.adb.get_cv2_img()
+        transport_capacity = default_image[558:590, 285:435]
+        tax_rate = default_image[450:480, 374:420]
 
-        cv_image = self.pil_to_array(pil_image)
-        tax_rate = cv_image[450:480, 374:420]
-        tax_rate = cv2.cvtColor(tax_rate, cv2.COLOR_BGR2HSV)
-        tax_rate = pytesseract.image_to_string(tax_rate,
-                                                  config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789%,')
+        transport_capacity = self.extract_text(transport_capacity,  allowlist="0123456789/")
+        tax_rate = self.extract_text(tax_rate, allowlist="0123456789%,")
         print(tax_rate)
         return int(transport_capacity.split("/")[1].replace(",","")) + (int(transport_capacity.split("/")[1].replace(",",""))*int(tax_rate.replace("%","")) /100)
 
@@ -68,12 +58,7 @@ class RssTransfer(Task):
         if deadstop ==3:
             raise ValueError()
 
-        # city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
-        # print(city)
-        if int(self.sel) == 0:
-            city = [430,140]
-        else:
-            city = [220,350]
+        city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
         self.click(city[0]+uniform(-10,10),city[1]+uniform(-10,10))
         self.better_sleep((1,2))
         co = self.find_img(target="assist_button")

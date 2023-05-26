@@ -12,13 +12,10 @@ from PIL import Image
 from random import uniform, randint, random
 
 import cv2
-from pytesseract import pytesseract
-
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
 from utils.Task_utils import get_name, get_class, current_time, get_data, get_path
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+from utils.easyOcr import Reader
 
 
 class GatherGem(Task):
@@ -165,20 +162,19 @@ class GatherGem(Task):
         :return: True if node is not free
         :return: False if node is free to gather
         """
-        cv_image =self.pil_to_array(image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        try:
-            cropped_image = cv_image[y - 40:y + 50, x - 30:x + 50]
-            # cv2.imwrite("gem_node.png", cropped_image)
-            return self.find_cross_source(cropped_image)
-        except Exception:
-            if x < 50:
-                x = 0
-            if y < 30:
-                y = 0
-            cropped_image = cv_image[y:y + 50, x:x + 50]
-            # cv2.imwrite("gem_node.png", cropped_image)
-            return self.find_cross_source(cropped_image)
+        if not image:
+            cv_image = self.adb.get_cv2_img()
+        else:
+            cv_image = image
+        x_min = max(0, x - 30)
+        x_max = min(cv_image.shape[1] - 1, x + 50)
+        y_min = max(0, y - 40)
+        y_max = min(cv_image.shape[0] - 1, y + 50)
+
+        cropped_image = cv_image[y_min:y_max, x_min:x_max]
+
+        # cv2.imwrite("gem_node.png", cropped_image)
+        return self.find_cross_source(cropped_image)
 
     @get_name
     def find_cross(self) -> bool:
@@ -284,31 +280,6 @@ class GatherGem(Task):
             self.print("Unable to click on the node, leaving the node !")
             return False
 
-    @get_name
-    def free_troop_gem(self) -> bool:
-        """
-        :return: True if there's a empty queue
-        :return: False if queues are occupied
-        """
-        print("here")
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image  =self.pil_to_array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        cropped_image = cv_image[13:35, 1225:1254]
-        cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
-        text = pytesseract.image_to_string(cv_image)
-        text = text.replace("\n", "")
-        print("after")
-        print(text)
-        if len(text) == 3:
-            if text[0] < text[2]:
-                self.print("Empty queue found")
-                return True
-            else:
-                return False
-        else:
-            return False
-        # return text[0] < text[2] if len(text) == 3 else False
 
     @get_name
     def select_lineup_color(self, color: str) -> None:
@@ -326,7 +297,7 @@ class GatherGem(Task):
                 self.send_discord_message("Error in line-up selection, human interaction required.")
                 while True:
                     self.script_pause()
-                    sleep(1)
+                    sleep(0.1)
             self.click(uniform(1092, 1114), uniform(225, 248))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
@@ -414,7 +385,7 @@ class GatherGem(Task):
                 self.print("New Troop sent !","green")
                 return True
             co = self.find_img(target="march_bar")
-            if co is not None and self.free_troop_gem():
+            if co is not None and self.free_troop_selection():
                 x, y = uniform(1177, 1250), uniform(80, 116)
                 self.check_if_kill()
                 self.better_sleep((0.5, 0.7))
@@ -459,9 +430,12 @@ class GatherGem(Task):
                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                     cropped_image = cv_image[y + 30:y + 50, x:x + 120]
                     # cv2.imwrite("timer.png", cropped_image)
-                    string = pytesseract.image_to_string(cropped_image,
-                                                         config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
+                    # string = pytesseract.image_to_string(cropped_image,
+                    #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
+
+                    string = self.extract_text(img=cropped_image, allowlist="1234567890:")
                     string = string.replace("\n", "")
+
                     # print(string)
                     datetime_object = datetime.strptime(string, '%H:%M:%S').time()
                     timer.append(
@@ -642,7 +616,7 @@ class GatherGem(Task):
                         if not self.click_on_node():
                             return self.adjusted_leave_city(x_click, y_click)
 
-                        if self.free_troop_gem():
+                        if self.free_troop_selection():
                             self.click(uniform(1172, 1222), uniform(77, 112))
                             # self.better_sleep((0.6, 1))
                             self.check_if_kill()
@@ -694,7 +668,7 @@ class GatherGem(Task):
                                     if self.find_img(target="back_normal_view", source=back_image, confidence=0.9) is not None:
                                         self.print("Bot detected a troop is going back to the city, now bypassing the sleep time..")
                                         break
-                                    if self.free_troop():
+                                    if self.free_troop_commander_list():
                                         self.print("Bot detected a troop is free, now bypassing the sleep time..")
                                         break
                                 if self.data[str(self.sel)]['schedules'][self.current_profile].get('alliance_help'):
@@ -828,54 +802,6 @@ class GatherGem(Task):
 
         self.better_sleep((0.5,0.7))
         return scan()
-
-    @get_name
-    def free_troop(self) -> bool:
-        """
-        :return: True if there's a empty queue
-        :return: False if queues are occupied
-        """
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image =self.pil_to_array(pil_image)
-        cropped_image3 = cv_image[162:179, 1210:1242]
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-        # cropped_image1 = cv_image[162:179, 1212:1224]
-        # cropped_image2 = cv_image[162:178, 1228:1241]
-        # cropped_image3 = cv_image[162:179, 1210:1242]
-        # cv_image1 = cv2.cvtColor(cropped_image1, cv2.COLOR_BGR2GRAY)
-        # cv_image2 = cv2.cvtColor(cropped_image2, cv2.COLOR_BGR2GRAY)
-        # cv2.imwrite("test1.png", cropped_image1)
-        # cv2.imwrite("test2.png", cropped_image2)
-        # cv2.imwrite("test3.png", cropped_image3)
-        native_text = pytesseract.image_to_string(cropped_image3,
-                                                  config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
-        # text1 = pytesseract.image_to_string(cropped_image1,
-        #                                     config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
-        # text2 = pytesseract.image_to_string(cropped_image2,
-        #                                     config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
-        # print(text0)
-        # text1 = text1.replace("\n", "")
-        # text2 = text2.replace("\n", "")
-        # print(f"Text 1 : {text1} , Text 2 : {text2}")
-        # self.set_text(f'[{current_time()}] Text 1 : {text1} , Text 2 : {text2}')
-        # print(len(text1), len(text2))
-        # logging.info(f"[{self.name}] Text 1 : {text1} , Text 2 : {text2}")
-        # logging.info(f"[{self.name}] len(text1) : {len(text1)}, len(text2) : {len(text2)}")
-        # if text1 == "" or text2 == "":
-        #     return True
-        print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
-        if "/" in native_text:
-            # list_text = text0.split("/")
-            enhanced_text = native_text.split("/")[0] + native_text.split("/")[1]
-        else:
-            enhanced_text = native_text
-        enhanced_text = enhanced_text.replace("\n", "")
-        print(f"[ {current_time()} ] [ {self.name} ] {enhanced_text =}")
-        if len(enhanced_text) < 2:
-            return True
-        if len(enhanced_text) == 2:
-            return enhanced_text[0] < enhanced_text[1]
-        # return text1 < text2 if len(text1) == 1 and len(text2) == 1 else False
 
     @get_class
     def run(self, end_time = None ):

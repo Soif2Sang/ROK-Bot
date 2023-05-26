@@ -4,12 +4,10 @@ from PIL import Image
 from random import uniform
 
 import cv2
-from pytesseract import pytesseract
 
 from tasks.Task import Task
 from utils.Task_utils import get_name, current_time, get_class, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+from utils.easyOcr import Reader
 
 class GatherRss(Task):
     def __init__(self, MainTask: Task):
@@ -39,54 +37,6 @@ class GatherRss(Task):
         return True
 
     @get_name
-    def free_troop(self) -> bool:
-        """
-        :return: True if there's a empty queue
-        :return: False if queues are occupied
-        """
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image =self.pil_to_array(pil_image)
-        cropped_image3 = cv_image[162:179, 1210:1242]
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-        # cropped_image1 = cv_image[162:179, 1212:1224]
-        # cropped_image2 = cv_image[162:178, 1228:1241]
-        # cropped_image3 = cv_image[162:179, 1210:1242]
-        # cv_image1 = cv2.cvtColor(cropped_image1, cv2.COLOR_BGR2GRAY)
-        # cv_image2 = cv2.cvtColor(cropped_image2, cv2.COLOR_BGR2GRAY)
-        # cv2.imwrite("test1.png", cropped_image1)
-        # cv2.imwrite("test2.png", cropped_image2)
-        # cv2.imwrite("test3.png", cropped_image3)
-        native_text = pytesseract.image_to_string(cropped_image3,
-                                                  config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
-        # text1 = pytesseract.image_to_string(cropped_image1,
-        #                                     config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
-        # text2 = pytesseract.image_to_string(cropped_image2,
-        #                                     config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=12345670/')
-        # print(text0)
-        # text1 = text1.replace("\n", "")
-        # text2 = text2.replace("\n", "")
-        # print(f"Text 1 : {text1} , Text 2 : {text2}")
-        # self.set_text(f'[{current_time()}] Text 1 : {text1} , Text 2 : {text2}')
-        # print(len(text1), len(text2))
-        # logging.info(f"[{self.name}] Text 1 : {text1} , Text 2 : {text2}")
-        # logging.info(f"[{self.name}] len(text1) : {len(text1)}, len(text2) : {len(text2)}")
-        # if text1 == "" or text2 == "":
-        #     return True
-        print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
-        if "/" in native_text:
-            # list_text = text0.split("/")
-            enhanced_text = native_text.split("/")[0] + native_text.split("/")[1]
-        else:
-            enhanced_text = native_text
-        enhanced_text = enhanced_text.replace("\n", "")
-        print(f"[ {current_time()} ] [ {self.name} ] {enhanced_text =}")
-        if len(enhanced_text) < 2:
-            return True
-        if len(enhanced_text) == 2:
-            return enhanced_text[0] < enhanced_text[1]
-        # return text1 < text2 if len(text1) == 1 and len(text2) == 1 else False
-
-    @get_name
     def click_loop(self) -> None:
         if not self.find_img(target="gem_search_button"):
             self.leave_city()
@@ -113,49 +63,6 @@ class GatherRss(Task):
             x, y = uniform(gold_icon[0][0], gold_icon[0][1]), uniform(gold_icon[1][0], gold_icon[1][1])
         # print(f'[ {current_time()} ] [ {self.name} ] chance rss type call')
         return x, y
-
-    @get_name
-    def set_search_level(self, level: int = 10) -> None:
-        cv_image = self.adb.get_cv2_img()
-        co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
-        if co is None:
-            self.print(f'Cannot find the button_level')
-            # self.set_text(f"[{current_time()}] Cannot find the level button")
-            self.click_loop()
-            self.better_sleep((1, 1.7))
-        else:
-            # x,y = uniform(225,285) , uniform(607,667)
-            # self.click(x,y)
-            cv_image = cv_image[co[1] - 30:co[1], co[0] - 40:co[0] + 40]
-            # cv2.imwrite("level.png", cv_image)
-            string = pytesseract.image_to_string(cv_image,
-                                                 config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
-            string = string.replace("\n", "")
-            string = string.split(":")
-            self.print(f'Current level : {string[1]}')
-            # self.set_text(f"[{current_time()}] Current level : {string[1]}")
-            try:
-                level_to_go = level - int(string[1])
-            except:
-                x, y = self.find_img(target='minus_button')
-                for i in range(6):
-                    self.click(x+ uniform(0, 20),y +uniform(0, 20))
-                    self.better_sleep((0.450, 1))
-                level_to_go = level
-            if level_to_go > 0:
-                word = "Increasing"
-                x, y = self.find_img(target='plus_button')
-            else:
-                word = "Decreasing"
-                x, y = self.find_img(target='minus_button')
-            self.print(f'{word} the level by : {abs(level_to_go)}')
-            # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
-            for _ in range(abs(level_to_go)):
-                x2 = x + uniform(0, 30)
-                y2 = y + uniform(0, 27)
-                self.click(x2, y2)
-                self.better_sleep((0.450,1))
-            return
 
     @get_name
     def node_found(self) -> bool:
@@ -258,7 +165,7 @@ class GatherRss(Task):
                 self.send_discord_message("Error in line-up selection, human interaction required.")
                 while True:
                     self.script_pause()
-                    sleep(1)
+                    sleep(0.1)
             self.click(uniform(1092, 1114), uniform(225, 248))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
@@ -320,37 +227,13 @@ class GatherRss(Task):
             self.print("New Troop sent !","green")
             return True
         co = self.find_img(target="march_bar")
-        if co is not None and self.free_troop_gem():
+        if co is not None and self.free_troop_selection():
             x, y = uniform(1177, 1250), uniform(80, 116)
             self.check_if_kill()
             self.better_sleep((0.5, 0.7))
             return self.send_new_troop(deadstop=deadstop + 1)
         self.print("Unable to send a new troop","red")
         return False
-
-    @get_name
-    def free_troop_gem(self) -> bool:
-        """
-        :return: True if there's a empty queue
-        :return: False if queues are occupied
-        """
-
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image =self.pil_to_array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        cropped_image = cv_image[13:35, 1225:1254]
-        cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
-        text = pytesseract.image_to_string(cv_image)
-        text = text.replace("\n", "")
-        if len(text) == 3:
-            if text[0] < text[2]:
-                self.print("Empty queue found")
-                return True
-            else:
-                return False
-        else:
-            return False
-        # return text[0] < text[2] if len(text) == 3 else False
 
     @get_name
     def click_on_node(self) -> bool:
@@ -441,7 +324,7 @@ class GatherRss(Task):
         # self.better_sleep((2, 4))
         # Vérifie si y'a une troupe
         level_verified = False
-        while self.free_troop():
+        while self.free_troop_commander_list():
             self.check_log_back()
             self.check_reconnect()
             self.click_loop()
@@ -538,7 +421,7 @@ class GatherRss(Task):
         self.leave_city_simple()
         # self.better_sleep((2, 4))
         # Vérifie si y'a une troupe
-        if self.free_troop():
+        if self.free_troop_commander_list():
             self.check_log_back()
             self.check_reconnect()
             self.click_loop()

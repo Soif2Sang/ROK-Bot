@@ -11,13 +11,10 @@ from PIL import Image
 from random import uniform, randint
 
 import cv2
-from pytesseract import pytesseract
 
 from tasks.Task import Task, get_name, current_time
 from tasks.Task_heal_troop import HealTroop
 from utils.Task_utils import get_class, get_data, get_path
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class BarbFort(Task):
@@ -185,20 +182,19 @@ class BarbFort(Task):
         :return: True if node is not free
         :return: False if node is free to gather
         """
-        cv_image = self.pil_to_array(image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        try:
-            cropped_image = cv_image[y - 40:y + 50, x - 30:x + 50]
-            # cv2.imwrite("gem_node.png", cropped_image)
-            return self.find_cross_source(cropped_image)
-        except Exception:
-            if x < 50:
-                x = 0
-            if y < 30:
-                y = 0
-            cropped_image = cv_image[y:y + 50, x:x + 50]
-            # cv2.imwrite("gem_node.png", cropped_image)
-            return self.find_cross_source(cropped_image)
+        if not image:
+            cv_image = self.adb.get_cv2_img()
+        else:
+            cv_image = image
+        x_min = max(0, x - 30)
+        x_max = min(cv_image.shape[1] - 1, x + 50)
+        y_min = max(0, y - 40)
+        y_max = min(cv_image.shape[0] - 1, y + 50)
+
+        cropped_image = cv_image[y_min:y_max, x_min:x_max]
+
+        # cv2.imwrite("gem_node.png", cropped_image)
+        return self.find_cross_source(cropped_image)
 
     @get_name
     def find_cross_source(self, source) -> bool:
@@ -474,10 +470,7 @@ class BarbFort(Task):
                                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)
                                     cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
-                                    # cv2.imwrite("timer.png", cropped_image)
-                                    string = pytesseract.image_to_string(cropped_image,
-                                                                         config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
-                                    string = string.replace("\n", "")
+                                    string = self.extract_text(cropped_image,allowlist="1234567890:")
                                     # print(string)
                                     print(f"{string = }")
                                     datetime_object = datetime.strptime(string, '%H:%M:%S').time()
@@ -499,9 +492,9 @@ class BarbFort(Task):
                                         datetime.strptime(string, '%H:%M:%S').strftime('%S')) * 2
                                     self.print(
                                         f"Bot will wait around {time_to_wait2 / 60} minutes to complete the task, the bot will now sleep for this time")
-                                    for _ in range(time_to_wait2):
+                                    for _ in range(time_to_wait2 * 10):
                                         self.script_pause()
-                                        sleep(1)
+                                        sleep(0.1)
                                     HealTroop(self).run()
                                     return True
         else:
@@ -568,16 +561,11 @@ class BarbFort(Task):
                                 self.better_sleep((0.7, 1.2))
                             self.click(uniform(1092, 1112), uniform(330, 350))
                             self.better_sleep((0.5, 1))
-                            pil_image = self.adb.get_curr_device_screen_img()
-                            cv_image =self.pil_to_array(pil_image)
-                            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+                            cv_image = self.adb.get_cv2_img()
                             x, y = self.find_img(source=cv_image, target="troops_march_button", confidence=0.8)
                             cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
-                            # cv2.imwrite("timer.png", cropped_image)
-                            string = pytesseract.image_to_string(cropped_image,
-                                                                 config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
-                            string = string.replace("\n", "")
-                            # print(string)
+
+                            string = self.extract_text(cropped_image,allowlist="1234567890:")
                             print(f"{string = }")
                             datetime_object = datetime.strptime(string, '%H:%M:%S').time()
                             print(datetime_object)
@@ -634,22 +622,6 @@ class BarbFort(Task):
             2: (x + int((radius * (4 / 3))) + randint(-8, -2), y - int((radius * (4 / 3))) + randint(2, 8)),
             3: (x - int((radius * (4 / 3))) + randint(2, 8), y - int((radius * (4 / 3))) + randint(2, 8))
         }
-        # if randomization == 0:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the top left corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the top left corner.')
-        #     x2, y2 = x - int((radius * (4 / 3))) + randint(2, 8), y + int((radius * (4 / 3))) + randint(-8, -2)
-        # elif randomization == 1:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the top right corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the top right corner.')
-        #     x2, y2 = x + int((radius * (4 / 3))) + randint(-8, -2), y + int((radius * (4 / 3))) + randint(-8, -2)
-        # elif randomization == 2:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the bottom right corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the bottom right corner.')
-        #     x2, y2 = x + int((radius * (4 / 3))) + randint(-8, -2), y - int((radius * (4 / 3))) + randint(2, 8)
-        # else:# if randomization == 3:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the bottom left corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the bottom left corner.')
-        #     x2, y2 = x - int((radius * (4 / 3))) + randint(2, 8), y - int((radius * (4 / 3))) + randint(2, 8)
 
         x2, y2 = coordinates[randomization][0], coordinates[randomization][1]
         x3, y3 = uniform(290, 400), uniform(15, 26)

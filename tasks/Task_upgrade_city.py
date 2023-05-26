@@ -4,11 +4,8 @@ from time import sleep
 import win32api
 import win32con
 import win32gui
-from pytesseract import pytesseract
 from tasks.Task import Task
 from utils.Task_utils import get_class, get_name, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class UpgradeCity(Task):
