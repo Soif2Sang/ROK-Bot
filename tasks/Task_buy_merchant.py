@@ -1,11 +1,6 @@
 from random import uniform, shuffle
-
-from pytesseract import pytesseract
-
 from tasks.Task import Task
 from utils.Task_utils import get_class, filter_coordinate, get_data, get_name
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class BuyMerchant(Task):

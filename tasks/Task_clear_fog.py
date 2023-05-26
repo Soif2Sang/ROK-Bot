@@ -1,13 +1,8 @@
 from time import sleep, time
 
 from random import uniform, randint
-
-from pytesseract import pytesseract
-
 from tasks.Task import Task
 from utils.Task_utils import get_class, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class ClearFog(Task):
     def __init__(self, MainTask: Task):
@@ -97,6 +92,6 @@ class ClearFog(Task):
                 time_to_sleep = randint(5, 10)
                 self.print(f"All scout seems occupied, waiting for {time_to_sleep:0.1f} seconds")
                 count = True
-                for _ in range(time_to_sleep):
+                for _ in range(time_to_sleep*10):
                     self.script_pause()
-                    sleep(1)
+                    sleep(0.1)

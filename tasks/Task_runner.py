@@ -22,7 +22,6 @@ from tasks.Task_gather_rss import GatherRss
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
 from tasks.Task_produce_materials import ProduceMaterials
-from pytesseract import pytesseract
 
 from tasks.Task import Task
 from tasks.Task_rss_transfert import RssTransfer
@@ -30,8 +29,6 @@ from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.Task_utils import get_name, current_time, get_window_pid, get_path, get_data
 from utils.bot_adb import Adb
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
@@ -263,7 +260,7 @@ class TaskRunner(Task):
                 self.send_discord_message("Error in character switch, human interaction required.")
                 while True:
                     self.script_pause()
-                    sleep(1)
+                    sleep(0.1)
         x, y = self.find_img(target="logged_icon")
         co = self.find_img(target="logged_icon")
         self.print("Current character detected.")
@@ -364,7 +361,7 @@ class TaskRunner(Task):
                     self.print(f"Error in character switch. Bot is now stopped","red")
                     self.set_status("Error.")
                     self.script_pause()
-                    sleep(1)
+                    sleep(0.1)
                 return
             self.check_captcha()
             y1, x1 = uniform(290, 480), uniform(460, 560)

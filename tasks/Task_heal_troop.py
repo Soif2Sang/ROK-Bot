@@ -1,13 +1,11 @@
 from random import uniform, shuffle
 
 import cv2
-from pytesseract import pytesseract
 
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
 from utils.Task_utils import get_name, get_class, filter_coordinate, write, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+from utils.easyOcr import Reader
 
 
 class HealTroop(Task):
@@ -36,8 +34,11 @@ class HealTroop(Task):
             # cv2.imwrite("timer.png", cropped_image)
             for button in buttons:
                 cropped_image = cv_image[button[1]:button[1] + 25, 950:1020]
-                string = pytesseract.image_to_string(cropped_image,
-                                                     config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
+                # string = pytesseract.image_to_string(cropped_image,
+                #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
+
+                string = self.extract_text(img=cropped_image, allowlist="1234567890:")
+
                 string = string.replace("\n", "")
                 if string not in ["0", ""]:
                     self.click(uniform(950, 1020), uniform(button[1] + 5, button[1] + 20))
@@ -69,11 +70,9 @@ class HealTroop(Task):
                 cos = list(filter(filter_coordinate, cos))
                 tier_icons.extend(cos)
             if tier_icons is not None and len(tier_icons) != 0:
-                print(tier_icons)
                 shuffle(tier_icons)
                 self.click(tier_icons[0][0] + uniform(-5, 20), tier_icons[0][1] + uniform(-15, 10))
                 self.better_sleep((1, 1.8))
-            write(self.name,"après les tier_icons")
             # print(f"{self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') =}")
             healing_hut =  self.data[str(self.sel)]['schedules'][self.current_profile]['hospital']
             write(self.name,f"Healing building placement (randomised) : {healing_hut}")
@@ -91,21 +90,11 @@ class HealTroop(Task):
             self.print(f"{co =}")
             self.click(co[0] + uniform(0, 60), co[1] + uniform(0, 60))
 
-            # print(f'[ {current_time()} ] [ {self.name} ] Bot will now look for the healing icon..')
-            # logging.info(f"[{self.name}] Bot will now look for the healing icon..")
-            # while self.find_img("heal_icon") is None:
-            #     sleep(uniform(30,40))
-            # print(f'[ {current_time()} ] [ {self.name} ] Healing icon found')
-            # logging.info(f"[{self.name}] Healing icon found")
-            # x,y = self.find_img("heal_icon")
-            # self.click(x,y)
             self.better_sleep((1.5, 2.4))
             cv_image = self.adb.get_cv2_img()
             cropped_image = cv_image[541:568, 265:434]
             # cv2.imwrite("timer.png", cropped_image)
-            string = pytesseract.image_to_string(cropped_image,
-                                                 config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890/,')
-            string = string.replace("\n", "")
+            string = self.extract_text(cropped_image, allowlist="1234567890/,")
             for i in range(4):
                 string = string.replace(",", "")
             nb_heal = string.split("/")

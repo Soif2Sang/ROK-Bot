@@ -4,12 +4,9 @@ from PIL import Image
 from random import uniform, choice, randint
 
 import cv2
-from pytesseract import pytesseract
 
 from tasks.Task import Task
 from utils.Task_utils import get_name, get_class, current_time, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class HuntBarbarians(Task):
@@ -50,29 +47,6 @@ class HuntBarbarians(Task):
             deadstop = deadstop + 1
             self.print("Switching between line-up..")
 
-    @get_name
-    def free_troop_gem(self) -> bool:
-        """
-        :return: True if there's a empty queue
-        :return: False if queues are occupied
-        """
-
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image = self.pil_to_array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        cropped_image = cv_image[13:35, 1225:1254]
-        cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
-        text = pytesseract.image_to_string(cv_image)
-        text = text.replace("\n", "")
-        if len(text) == 3:
-            if text[0] < text[2]:
-                self.print("Empty queue found")
-                return True
-            else:
-                return False
-        else:
-            return False
-        # return text[0] < text[2] if len(text) == 3 else False
 
     @get_name
     def send_new_troop(self, deadstop: int = 0, preset: str = "1") -> bool:
@@ -117,7 +91,7 @@ class HuntBarbarians(Task):
             self.print("New Troop sent !")
             return True
         co = self.find_img(target="march_bar")
-        if co is not None and self.free_troop_gem():
+        if co is not None and self.free_troop_selection():
             self.close_windows()
             self.better_sleep((0.5, 0.7))
             return self.send_new_troop(deadstop=deadstop + 1,preset=preset)
@@ -231,59 +205,6 @@ class HuntBarbarians(Task):
                     said = True
                     self.print("Waiting for the troop to come back..")
                 sleep(10)
-
-    @get_name
-    def click_loop(self) -> None:
-        if not self.find_img(target="gem_search_button"):
-            self.print(f'Loop icon not found, leaving the city')
-            self.leave_city()
-            self.better_sleep((2, 3))
-        x = uniform(33, 76)
-        y = uniform(517, 560)
-        # print(x,y)
-        self.click(x, y)
-        self.better_sleep((0.3, 0.5))
-
-    @get_name
-    def set_search_level(self, level: int = 10) -> None:
-        level = int(level)
-        cv_image = self.adb.get_cv2_img()
-        co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
-        if co is None:
-            self.print(f'Cannot find the button_level')
-            self.click_loop()
-            self.better_sleep((1, 1.7))
-        else:
-
-            cv_image = cv_image[co[1] - 30:co[1], co[0] - 40:co[0] + 40]
-            string = pytesseract.image_to_string(cv_image,
-                                                 config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
-            string = string.replace("\n", "")
-            string = string.split(":")
-            self.print(f'Current level : {string[1]}')
-            # self.set_text(f"[{current_time()}] Current level : {string[1]}")
-            try:
-                level_to_go = level - int(string[1])
-            except:
-                x, y = self.find_img(target='minus_button')
-                for i in range(6):
-                    self.click(x+ uniform(0, 20),y +uniform(0, 20))
-                    self.better_sleep((0.450, 1))
-                level_to_go = level
-            if level_to_go > 0:
-                word = "Increasing"
-                x, y = self.find_img(target='plus_button')
-            else:
-                word = "Decreasing"
-                x, y = self.find_img(target='minus_button')
-            self.print(f'{word} the level by : {abs(level_to_go)}')
-            # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
-            for _ in range(abs(level_to_go)):
-                x2 = x + uniform(0, 30)
-                y2 = y + uniform(0, 27)
-                self.click(x2, y2)
-                self.better_sleep((0.450,1))
-            return
 
     @get_name
     def check_ap_box(self) -> bool:

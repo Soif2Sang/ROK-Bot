@@ -8,12 +8,9 @@ from datetime import datetime
 from time import sleep
 import clipboard
 from PIL import ImageEnhance, ImageOps, Image
-from pytesseract import pytesseract
 
 from tasks.Task import Task
 from utils.Task_utils import get_class, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 RANKING_TAP_POS_X = 760
 # ランキングタップ位置（Y軸、[1位,2位,3位,4位-998位,999位,1000位]）
@@ -508,5 +505,4 @@ class KingdomRanking(Task):
         return tmp
 
     def ocr_image(self, img: Image, whitelist: str = "0123456789,") -> str:
-        print(fr'--oem 1 --psm 6 -c tessedit_char_whitelist={whitelist}')
-        return pytesseract.image_to_string(img, config=fr'--oem 1 --psm 6 -c tessedit_char_whitelist={whitelist} ')
+        return self.extract_text(img, allowlist=whitelist)

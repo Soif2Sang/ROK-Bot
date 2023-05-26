@@ -1,13 +1,8 @@
 from random import uniform, shuffle
 
 import cv2
-from pytesseract import pytesseract
-
 from tasks.Task import Task
 from utils.Task_utils import get_class, get_name, get_data
-
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
-
 
 class UseEnhancedBuff(Task):
     def __init__(self, MainTask: Task):
