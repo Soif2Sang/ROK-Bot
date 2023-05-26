@@ -1,6 +1,7 @@
 import json
 import math
 import os
+import re
 import shutil
 import traceback
 from datetime import datetime
@@ -18,6 +19,7 @@ from pytesseract import pytesseract
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
 from utils.Task_utils import get_name, get_class, current_time, get_data, get_path
+from utils.easyocr import Reader
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
@@ -40,7 +42,7 @@ class Maraudeurs(Task):
         self.hunter_selection = False
 
     def task_name(self):
-        return "GatherGem"
+        return "Maraudeurs"
 
     # @get_name
     # def run_game(self, count=0) -> None:
@@ -175,7 +177,7 @@ class Maraudeurs(Task):
                 self.send_discord_message("Error in line-up selection, please fix the game")
                 while True:
                     self.script_pause()
-                    sleep(1)
+                    sleep(0.1)
             self.click(uniform(1092, 1114), uniform(225, 248))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
@@ -325,15 +327,17 @@ class Maraudeurs(Task):
             return False
 
     @get_name
-    def recall(self, nb_troop: int, wait=True) -> bool:
+    def recall(self, nb_troop: int=-1, wait=True) -> bool:
         self.print('Recalling troops')
         # print(nb_troop)
         x, y = uniform(1170, 1183), uniform(160, 175)
         self.click(x, y)
         self.better_sleep((1.595, 2))
         nb_to_go = nb_troop
+        if nb_troop == -1:
+            nb_troop = self.nb_hunter
         breakint = 0
-        while nb_to_go > 0:
+        while nb_to_go > 0 and breakint!=4 :
             co = self.adb.find_multiple_img(target="return_button")
             # print(co)
             while (co is None and co != []) and breakint != 4:
@@ -364,17 +368,27 @@ class Maraudeurs(Task):
                     self.print("Waiting for the troop to come back..")
                 sleep(10)
 
+    def distance(self,point1, point2):
+        """Calculates the Euclidean distance between two points."""
+        x1, y1 = point1
+        x2, y2 = point2
+        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
     @get_name
     def nearest_point(self,points):
-        dist_min = points[0]
-        plus_proche_point = None
+        """Finds the closest point to the center of the grid."""
+        center = (640, 360)
+        closest_point = points[0]
+        min_distance = 999999  # Initialize with a very large value
+
         for point in points:
-            dist = math.sqrt((point[0] - 200) ** 2 + (point[1] - 200) ** 2)
-            if dist < dist_min:
-                dist_min = dist
-                plus_proche_point = point
-        return plus_proche_point
-    
+            dist = self.distance(center, point)
+            if dist < min_distance:
+                min_distance = dist
+                closest_point = point
+
+        return closest_point
+
     @get_name
     def check_ap_box(self) -> bool:
         self.print(f'Check if AP pop-op box is detected')
@@ -387,6 +401,16 @@ class Maraudeurs(Task):
                 self.better_sleep((1.325, 1.795))
                 self.close_windows()
                 if (co := self.find_img('march_bar')):
+                    self.click(co[0] + uniform(0, 30), co[1] + uniform(0, 10))
+                    self.better_sleep((2, 3))
+                return False
+            if self.find_img('ap_use'):
+                self.click(975,260)
+                self.better_sleep((1.325, 1.795))
+                self.click(800,260)
+                self.better_sleep((1.325, 1.795))
+                self.close_windows()
+                while(co:= self.find_img('march_bar')):
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(0, 10))
                     self.better_sleep((2, 3))
                 return False
@@ -420,17 +444,31 @@ class Maraudeurs(Task):
         :return: None
         """
         cos = self.adb.find_multiple_img(target=f"maraudeur_icon", confidence=0.82)
-        cos = filter(self.validate_co, cos)
-        if not cos:
+        final = []
+        for element in cos:
+            if self.validate_co(element):
+                final.append(element)
+        print(f"{list(cos)  =}")
+        if not final:
             return
-        co = self.nearest_point(cos)
+        co = self.nearest_point(list(cos))
+        print(co)
         default = co
         self.print(f"Maraudeur Found - x: {co[0]} y:{co[1]}")
 
         self.click(co[0], co[1])
-        self.better_sleep((1.3, 2.5))
+        self.better_sleep((3,4))
 
-        self.click(1280 // 2 + uniform(-10, 10), 720 // 2 + uniform(-10, 10))  # Selecting the barbarian
+        cos = self.adb.find_multiple_img(target=f"maraudeur_icon_zoom", confidence=0.75)
+        final = []
+        for element in cos:
+            if self.validate_co(element):
+                final.append(element)
+        print(f"{list(cos)  =}")
+        if not final:
+            return
+        co = self.nearest_point(list(cos))
+        self.click(co[0], co[1])  # Selecting the barbarian
         self.better_sleep((1, 1.4))
 
         button_attack = self.find_img(target="attack_button")
@@ -441,9 +479,9 @@ class Maraudeurs(Task):
 
         self.select_troops()
 
-        co = self.find_img('march_bar')
-        self.click(co[0] + uniform(0, 30), co[1] + uniform(0, 10))
-        self.better_sleep((2, 3))
+        while(co:= self.find_img('march_bar')):
+            self.click(co[0] + uniform(0, 30), co[1] + uniform(0, 10))
+            self.better_sleep((2, 3))
 
         self.print(f'Check if AP pop-op box is detected')
         if self.check_ap_box():
@@ -451,9 +489,11 @@ class Maraudeurs(Task):
             self.recall()
             self.block = True
             self.end_time = 0
-
+        self.wait_until_kill()
         self.better_sleep((1, 1.895))
-        self.check_captcha()
+        self.zoom_out_city()
+        if self.adb.find_multiple_img(target=f"maraudeur_icon", confidence=0.82):
+            return self.scan_maraudeur()
         return self.adjusted_leave_city(default[0], default[1])
 
     def select_troops(self):
@@ -655,18 +695,193 @@ class Maraudeurs(Task):
             return enhanced_text[0] < enhanced_text[1]
         # return text1 < text2 if len(text1) == 1 and len(text2) == 1 else False
 
+    @get_name
+    def select_lineup_color(self, color: str) -> None:
+        """
+        Change the line-up until the yellow line-up is selected.
+        """
+        deadstop = 0
+        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
+                                                                                               "troops_march_button") is not None:
+            if deadstop == 5:
+                self.click(uniform(700, 800), uniform(271, 300))
+                self.better_sleep((0.557, 0.796))
+                self.print("Error in line-up selection")
+                self.set_text("Error in line-up selection")
+                self.send_discord_message("Error in line-up selection, please fix the game")
+                while True:
+                    self.script_pause()
+                    sleep(0.1)
+            self.click(uniform(1092, 1114), uniform(225, 248))
+            self.better_sleep((0.557, 0.796))
+            deadstop = deadstop + 1
+            self.print("Switching between line-up..")
+
+    @get_name
+    def free_troop_gem(self) -> bool:
+        """
+        :return: True if there's a empty queue
+        :return: False if queues are occupied
+        """
+
+        pil_image = self.adb.get_curr_device_screen_img()
+        cv_image = self.pil_to_array(pil_image)
+        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+        cropped_image = cv_image[13:35, 1225:1254]
+        cv_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
+        text = pytesseract.image_to_string(cv_image)
+        text = text.replace("\n", "")
+        if len(text) == 3:
+            if text[0] < text[2]:
+                self.print("Empty queue found")
+                return True
+            else:
+                return False
+        else:
+            return False
+        # return text[0] < text[2] if len(text) == 3 else False
+
+    @get_name
+    def send_new_troop(self, deadstop: int = 0, preset: str = "1") -> bool:
+        """
+        Send a new troop to gather the gem node
+        :return: True is successfully
+        :return: False is not successfully
+        """
+
+        self.print(f"Trying to send new troop.. {preset=}")
+        if deadstop != 0:
+            self.print(f"Send new troop count : {deadstop}")
+        if deadstop == 5:
+            self.click(uniform(700, 800), uniform(300, 500))
+            self.better_sleep((1.325, 1.795))
+            return False
+        co = self.find_img(target="new_troops_button")
+        if co is not None:
+            self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
+            self.better_sleep((1.825, 2.495))
+            self.select_lineup_color(color="red")
+            presets = {
+                "1": 290,
+                "2": 346,
+                "3": 402,
+                "4": 458,
+                "5": 517,
+                "6": 570,
+                "7": 626
+            }
+            self.click(uniform(1096, 1118), presets[preset])
+            self.better_sleep((0.5, 1))
+            co = self.find_img(target="troops_march_button")
+            if co is None:
+                return self.send_new_troop(deadstop=deadstop + 1, preset=preset)
+            self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
+            self.better_sleep((0.5, 0.7))
+            if self.find_img(target="troops_march_button"):
+                self.print("Unable to send a new troop")
+                self.close_windows()
+                return False
+            self.print("New Troop sent !")
+            return True
+        co = self.find_img(target="march_bar")
+        if co is not None and self.free_troop_gem():
+            self.close_windows()
+            self.better_sleep((0.5, 0.7))
+            return self.send_new_troop(deadstop=deadstop + 1, preset=preset)
+        self.print("Unable to send a new troop")
+        return False
+
+    @get_name
+    def deploy_hunter(self):
+        full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if
+                     not (795 > i > 490 and 210 < y < 490)]
+        hunters = 0
+        breakloop = False
+        for preset in self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"]:
+            if not self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"][preset]:
+                continue
+            sent = False
+            if breakloop:
+                break
+            while not sent:
+                self.print(f"{hunters =}, {preset =}")
+                if not full_area:
+                    breakloop = True
+                    break
+                co = choice(full_area)
+                self.print(f"Choice {co}")
+                for i in range(-65, 80, 5):
+                    for y in range(-65, 70, 5):
+                        if (co[0] + i, co[1] + y) in full_area:
+                            full_area.remove((co[0] + i, co[1] + y))
+                self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
+                self.better_sleep((1.325, 1.795))
+                co = self.find_img(target="deploy_march_button")
+                if co is not None:
+                    self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
+                    self.better_sleep((1.325, 1.795))
+                    if self.find_img(target="new_troops_button"):
+                        if not self.send_new_troop(preset=preset):
+                            breakloop = True
+                            break
+                        else:
+                            sent = True
+                            hunters += 1
+                    else:
+                        self.click(uniform(150, 500), uniform(150, 500))
+                    self.better_sleep((1.325, 1.795))
+
+                if self.find_img(target="new_troops_button"):
+                    self.close_windows()
+        return hunters
+
+
+    def recenter(self):
+        image = self.adb.get_cv2_img()
+        if (co:=self.find_img(source=image,target="green_home_button")):
+            reader = Reader()
+            words, _ = reader.readtext(image)
+            for word in words:
+                if re.findall(r'\d+KM',word):
+                    if int(word.replace("KM","")) > 65:
+                        if co[0] < 720 and co[1] < 360:
+                            self.swipe(760,530,330,160)
+                            return self.better_sleep((1,2))
+                        if co[0] < 720 and co[1] > 360:
+                            self.swipe(330,160,760,530,)
+                            return self.better_sleep((1,2))
+                        if co[0] > 720 and co[1] > 360:
+                            self.swipe(760,530,330,160)
+                            return self.better_sleep((1,2))
+                        if co[0] > 720 and co[1] < 360:
+                            self.swipe(330,530,980,160)
+                            return self.better_sleep((1,2))
+                        if co[0] < 720:
+                            self.swipe_right()
+                            return self.better_sleep((1,2))
+                        if co[0] > 720:
+                            self.swipe_left()
+                            return self.better_sleep((1,2))
+                        if co[1] > 360:
+                            self.swipe_up()
+                            return self.better_sleep((1,2))
+                        if co[1] < 360:
+                            self.swipe_down()
+                            return self.better_sleep((1,2))
+
     @get_class
     def run(self, end_time = None ):
         """
-                   Gather gems
-                   """
+       Gather gems
+       """
         self.random_macro()
         self.run_game()
         self.check_captcha()
         self.leave_city()
         # print("premier leave city")
         self.better_sleep((1.5, 2))
-        self.nb_hunter = self.deploy_hunter()
+        if  end_time is None:
+            self.nb_hunter = self.deploy_hunter()
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
         self.better_sleep((1.5, 2))
@@ -676,8 +891,8 @@ class Maraudeurs(Task):
                                    self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
         # print(f"{randomization = }")
         radius = (self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 50) // 10)
-        width = radius + 1
-        height = radius + 1
+        width = radius
+        height = radius
         starting_time = time()
         time_restart = time()
         # print(self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'))
@@ -690,12 +905,7 @@ class Maraudeurs(Task):
 
 
         if self.end_time is None:
-            self.end_time = starting_time + (
-                    randint(
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'),
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration2')
-                    ) * 60
-            )
+            self.end_time = starting_time + (300 * 60)
 
         # print(f'starting_time : {datetime.fromtimestamp(starting_time).strftime("%H:%M:%S")} , time to beat : {datetime.fromtimestamp(end_time).strftime("%H:%M:%S")} , {starting_time>end_time = }')
         self.print(f"Killing marauders till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
@@ -716,6 +926,7 @@ class Maraudeurs(Task):
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_right)
 
+                    self.recenter()
                     self.swipe_scan(self.scan_maraudeur, self.swipe_down)
                     self.check_captcha(False)
                     self.leave_kd_buff()
@@ -727,7 +938,7 @@ class Maraudeurs(Task):
 
                     self.check_captcha(False)
                     self.leave_kd_buff()
-
+                    self.recenter()
                     if y != (width - 2):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
@@ -744,7 +955,7 @@ class Maraudeurs(Task):
                     self.swipe_scan(self.scan_maraudeur, self.swipe_up)
                     self.check_captcha(False)
                     self.leave_kd_buff()
-
+                    self.recenter()
                     for i in range(width):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
@@ -752,7 +963,7 @@ class Maraudeurs(Task):
 
                     self.check_captcha(False)
                     self.leave_kd_buff()
-
+                    self.recenter()
                     if y != (width - 2):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
@@ -769,6 +980,7 @@ class Maraudeurs(Task):
                     self.swipe_scan(self.scan_maraudeur, self.swipe_left)
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    self.recenter()
                     if self.end_time < time():return self.recall()
 
                     for i in range(height):
@@ -778,7 +990,7 @@ class Maraudeurs(Task):
 
                     self.check_captcha(False)
                     self.leave_kd_buff()
-
+                    self.recenter()
                     if y != (height - 2):
                         self.swipe_scan(self.scan_maraudeur, self.swipe_left)
 
@@ -788,7 +1000,7 @@ class Maraudeurs(Task):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_up)
-
+                    self.recenter()
                     self.swipe_scan(self.scan_maraudeur, self.swipe_right)
                     if self.end_time < time(): return self.recall()
                     self.check_captcha(False)
@@ -798,6 +1010,7 @@ class Maraudeurs(Task):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_down)
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
                     if y != (height - 2):
@@ -806,6 +1019,7 @@ class Maraudeurs(Task):
             self.better_sleep((1.525, 2.795))
             # self.leave_city()
             # print("second leave cit")
+            self.click(700,400)
             randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
                                        self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500),
                                        randomization)
@@ -813,4 +1027,5 @@ class Maraudeurs(Task):
             self.better_sleep((0.525, 0.795))
             self.zoom_out_city()
             # self.better_sleep((0.525, 0.795))
+        self.recall(self.nb_hunter)
         self.print("Maraudeurs time elapsed !")
