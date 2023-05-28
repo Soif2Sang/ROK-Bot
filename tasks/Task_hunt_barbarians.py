@@ -1,12 +1,10 @@
+from random import uniform, choice, randint
 from time import sleep
 
 from PIL import Image
-from random import uniform, choice, randint
-
-import cv2
 
 from tasks.Task import Task
-from utils.Task_utils import get_name, get_class, current_time, get_data
+from utils.Task_utils import get_name, get_class, current_time
 
 
 class HuntBarbarians(Task):

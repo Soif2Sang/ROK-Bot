@@ -3,9 +3,10 @@ import subprocess
 import traceback
 from random import uniform, randint, shuffle
 from time import time, sleep
+
 import win32gui
 
-from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
+from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
 from tasks.Task_barb_fort import BarbFort
@@ -21,14 +22,15 @@ from tasks.Task_gather_gem import GatherGem
 from tasks.Task_gather_rss import GatherRss
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
+from tasks.Task_maraudeurs import Maraudeurs
 from tasks.Task_produce_materials import ProduceMaterials
-
-from tasks.Task import Task
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.Task_utils import get_name, current_time, get_window_pid, get_path, get_data
 from utils.bot_adb import Adb
+from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
+
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
@@ -197,6 +199,8 @@ class TaskRunner(Task):
             lib_tasks.append(RssTransfer(self))
         if profile.get('upgrade_city', False):
             lib_tasks.append(UpgradeCity(self))
+        if profile.get('kill_marauders', False):
+            lib_tasks.append(Maraudeurs(self))
         shuffle(lib_tasks)
         tasks_name = [task.task_name() for task in lib_tasks]
 
@@ -551,7 +555,7 @@ class TaskRunner(Task):
             # nb_profile = 0
             can_go = None
             when_go = None
-            if not (self.data[self.sel]['schedules']["1"]['enabled'] and self.data[self.sel]['schedules']["2"]['enabled'] and self.data[self.sel]['schedules']["3"]['enabled']):
+            if not (self.data[self.sel]['schedules']["1"]['enabled'] or self.data[self.sel]['schedules']["2"]['enabled'] or self.data[self.sel]['schedules']["3"]['enabled']):
                 self.print("There is no profile enabled.","red")
 
             for profile in self.data[self.sel]['schedules']:

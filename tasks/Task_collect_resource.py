@@ -1,6 +1,7 @@
 from random import uniform, shuffle, choice
+
 from tasks.Task import Task
-from utils.Task_utils import filter_coordinate, get_class, get_data
+from utils.Task_utils import filter_coordinate, get_class
 
 
 class CollectResource(Task):

@@ -1,11 +1,11 @@
-from time import sleep
-
 from random import uniform
+from time import sleep
 
 import cv2
 
 from tasks.Task import Task
-from utils.Task_utils import get_name, get_class, get_data
+from utils.Task_utils import get_name, get_class
+
 
 class RssTransfer(Task):
     def __init__(self, MainTask: Task):
@@ -30,13 +30,28 @@ class RssTransfer(Task):
                 :return: False if queues are occupied
                 """
         default_image = self.adb.get_cv2_img()
+        default_image = cv2.cvtColor(default_image, cv2.COLOR_BGR2GRAY)
         transport_capacity = default_image[558:590, 285:435]
         tax_rate = default_image[450:480, 374:420]
 
-        transport_capacity = self.extract_text(transport_capacity,  allowlist="0123456789/")
-        tax_rate = self.extract_text(tax_rate, allowlist="0123456789%,")
+        cv2.imwrite("transport.png",transport_capacity)
+        cv2.imwrite("tax.png",tax_rate)
+        transport_capacity = self.extract_text(transport_capacity,  allowlist="0123456789/,")
+        transport_capacity = int(transport_capacity.split("/")[1].replace(",",""))
+
+        tax_rate = self.extract_text(tax_rate, allowlist="0123456789%")
         print(tax_rate)
-        return int(transport_capacity.split("/")[1].replace(",","")) + (int(transport_capacity.split("/")[1].replace(",",""))*int(tax_rate.replace("%","")) /100)
+
+        tax_rate = tax_rate.replace("%","")
+        if  len(tax_rate)  == 2 and tax_rate[0] == "8":
+            tax_rate = tax_rate[:-1]
+        if len(tax_rate) == 3:
+            tax_rate  = tax_rate[:-1]
+        tax_rate = int(tax_rate)
+
+        print(transport_capacity)
+        print(tax_rate)
+        return transport_capacity * (1 + tax_rate / 100)
 
     # @get_name
     # def get_capacity(self):

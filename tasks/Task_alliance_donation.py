@@ -1,6 +1,8 @@
-from random import uniform,randint
+from random import uniform, randint
+
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_name, get_data
+from utils.Task_utils import get_class, get_name
+
 
 class AllianceDonation(Task):
     def __init__(self, MainTask: Task):

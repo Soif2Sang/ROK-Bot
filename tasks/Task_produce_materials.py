@@ -1,6 +1,8 @@
 from random import uniform
+
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_data
+from utils.Task_utils import get_class
+
 
 class ProduceMaterials(Task):
     def __init__(self, MainTask: Task):

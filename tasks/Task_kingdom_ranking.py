@@ -6,11 +6,12 @@ import sys
 import time
 from datetime import datetime
 from time import sleep
+
 import clipboard
 from PIL import ImageEnhance, ImageOps, Image
 
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_data
+from utils.Task_utils import get_class
 
 RANKING_TAP_POS_X = 760
 # ランキングタップ位置（Y軸、[1位,2位,3位,4位-998位,999位,1000位]）

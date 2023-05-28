@@ -1,9 +1,12 @@
 from random import uniform
 
 import cv2
+
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_data
-from utils.easyOcr import Reader
+from utils.Task_utils import get_class
+
+
+# from utils.easyOcr import Reader
 
 
 class ClaimCampaign(Task):

@@ -1,21 +1,19 @@
-import json
-import os
-import shutil
+import re
+import re
 import traceback
 from datetime import datetime
+from random import uniform, randint, random
 from time import sleep, time
 
-import win32api
-import win32con
-import win32gui
-from PIL import Image
-from random import uniform, randint, random
-
 import cv2
+from PIL import Image
+
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
-from utils.Task_utils import get_name, get_class, current_time, get_data, get_path
-from utils.easyOcr import Reader
+from utils.Task_utils import get_name, get_class
+
+
+# from utils.easyOcr import Reader
 
 
 class GatherGem(Task):
@@ -35,83 +33,6 @@ class GatherGem(Task):
 
     def task_name(self):
         return "GatherGem"
-
-    # @get_name
-    # def run_game(self, count=0) -> None:
-    #     if not self.adb.is_game_alive():
-    #         super().run_game()
-    @get_name
-    def random_macro(self) -> None:
-        try:
-            path_json = get_path()
-            for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg", "com.lilithgames.rok.gp.jp.cfg",
-                         "com.lilithgames.rok.gpkr.cfg"]:
-                path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
-                if os.path.isfile(path):
-                    break
-
-            path2 = path.replace("cfg", "json")
-            shutil.copy(path, path2)
-
-            with open(path2,encoding='utf-8') as config_file:
-                macro_json = json.load(config_file)
-            for element in macro_json['ControlSchemes']:
-                if element["Selected"]:
-                    # print(element["Name"])
-                    for macro in element["GameControls"]:
-                        # print(macro)
-                        if macro["KeyOut"] == "F6":
-                            # print("True")
-                            x1 = randint(22, 30)
-                            x2 = randint(22, 30)
-                            y = randint(25, 30)
-                            macro["X1"] = x1
-                            macro["X2"] = x1
-                            macro["Y1"] = y + 0.64
-                            macro["Y2"] = y + 43.42
-            with open(path2, 'w', encoding="UTF-8") as outfile:
-                json.dump(macro_json, outfile, ensure_ascii=False)
-            shutil.copy(path2, path)
-
-        except Exception as e:
-            for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
-            print(
-                f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
-            self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial")
-            for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
-
-    @get_name
-    def zoom_out_city(self) -> None:
-        """
-        Leave the city by sending 'F5' key signal to the emulator
-        """
-
-        self.script_pause()
-        try:
-            self.print("Zooming out..")
-            co = self.find_img(target='gem_search_button')
-            if co is not None:
-                hwnd = win32gui.FindWindow(None, self.adb.name)
-                hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-                for _ in range(4):
-                    self.script_pause()
-                    boolean = self.find_img(target="gem_search_button")
-                    if boolean is not None:
-                        for _ in range(2):
-                            self.script_pause()
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                            sleep(0.20)
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                            self.better_sleep((1.4, 2))
-                    else:
-                        break
-        except Exception as e:
-            print(e)
 
     @get_name
     def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
@@ -154,7 +75,7 @@ class GatherGem(Task):
         return co
 
     @get_name
-    def already_mining(self, x, y, image) -> bool:
+    def already_mining(self, x, y, image = None) -> bool:
         """
         :param: x -> int - x location of the node
         :param: y -> int - y location of the node
@@ -162,7 +83,7 @@ class GatherGem(Task):
         :return: True if node is not free
         :return: False if node is free to gather
         """
-        if not image:
+        if image is None:
             cv_image = self.adb.get_cv2_img()
         else:
             cv_image = image
@@ -337,7 +258,6 @@ class GatherGem(Task):
                 self.better_sleep((1.325, 1.795))
                 return False
             co = self.find_img(target="new_troops_button",confidence=0.70)
-            print(co)
             if co is not None:
                 # print("Home button found")
                 x, y = co[0], co[1]
@@ -406,16 +326,10 @@ class GatherGem(Task):
         try:
             for i in range(1, 4):
                 points = self.adb.find_multiple_img(target=f"back_icon{i}", confidence=0.85)
-                if points != []:
+                if points:
                     break
-            if points == []:
+            if not points:
                 return False
-            # if not points:
-            #     points = self.adb.find_multiple_img("back_icon2")
-            #     if not points:
-            #         points = self.adb.find_multiple_img("back_icon3")
-            #         if not points:
-            #             return False
             timer = []
             for i in range(len(points)):
                 self.click(points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0))
@@ -426,17 +340,36 @@ class GatherGem(Task):
                 co = self.find_img(source=cv_image, target="march_bar", confidence=0.8)
                 if co is not None:
                     x, y = co[0], co[1]
-                    cv_image =self.pil_to_array(pil_image)
-                    cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-                    cropped_image = cv_image[y + 30:y + 50, x:x + 120]
-                    # cv2.imwrite("timer.png", cropped_image)
-                    # string = pytesseract.image_to_string(cropped_image,
-                    #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
+                    # start_point = (990, 0)
+                    # end_point = (996, 719)
+                    # color = (169,169,169)  # Valeur de couleur pour le noir
+                    # thickness = 5
+                    # cv_image = cv2.line(cv_image, start_point, end_point, color, thickness)
+                    # start_point = (1021, 0)
+                    # end_point = (1025, 719)
+                    # thickness = 5
+                    # cv_image = cv2.line(cv_image, start_point, end_point, color, thickness)
 
+                    cropped_image = cv_image[y + 27:y + 55, 956:1061]
+                    cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
+                    # 991 996 1021 1027
+
+                    # cv2.imwrite("test.png",cropped_image)
                     string = self.extract_text(img=cropped_image, allowlist="1234567890:")
-                    string = string.replace("\n", "")
+                    # string = string.replace(":","")
+                    print(string)
+                    #
+                    # hours = string[:2]
+                    # minutes = string[2:4]
+                    # seconds = string[4:]
+                    #
+                    # # Formatter les heures, les minutes et les secondes dans le format "00:00:00"
+                    # formatted_time = f"{hours}:{minutes}:{seconds}"
+                    # print(formatted_time)
+                    pattern = r'\d\d:\d\d:\d\d'  # Regular expression pattern
 
-                    # print(string)
+                    if not re.fullmatch(pattern, string):
+                        string = '23:23:23'
                     datetime_object = datetime.strptime(string, '%H:%M:%S').time()
                     timer.append(
                         [datetime_object, (points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0)), (x, y)])
@@ -536,6 +469,46 @@ class GatherGem(Task):
                     self.print("Node occupied")
                     return True
         return False
+    def get_neighboring_image(self,image,center_point, grid_width = 1280, grid_height = 720, up=50, left=20, right=60, down=85):
+        """Gets the neighboring points around a center point on the grid."""
+        x, y = center_point[0], center_point[1]
+        print(x,y)
+        min_x = max(0, x - left)
+        max_x = min(grid_width - 1, x + right)
+        min_y = max(0, y - up)
+        max_y = min(grid_height - 1, y + down)
+
+        return image[min_y:max_y,min_x:max_x]
+
+
+    def recenter(self):
+        image = self.adb.get_cv2_img()
+        if (co:=self.find_img(source=image,target="green_home_button")):
+            # reader = Reader()
+            image = self.get_neighboring_image(image = image,center_point = co)
+            words = self.extract_all_text(image)
+            for word in words:
+                if re.findall(r'\d+KM',word):
+                    print(word)
+                    if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius',40)) * 1.5:
+                        if co[0] < 500 and co[1] < 220:
+                            self.swipe(330, 160, 760, 530)
+                        elif co[0] < 500 and co[1] > 550:
+                            self.swipe(330, 530, 760, 160)
+                        elif co[0] > 800 and co[1] > 550:
+                            self.swipe(980, 530,330 , 160)
+                        elif co[0] > 800 and co[1] < 220:
+                            self.swipe(760, 160, 330, 530)
+                        elif co[0] < 500:
+                            self.swipe_left()
+                        elif co[0] > 800:
+                            self.swipe_right()
+                        elif co[1] > 360:
+                            self.swipe_down()
+                        elif co[1] < 360:
+                            self.swipe_up()
+                        self.better_sleep((1, 2))
+                        return self.recenter()
 
     @get_name
     def scan_gem(self):
@@ -586,7 +559,6 @@ class GatherGem(Task):
                     co = self.validate_co(self.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}", confidence=0.82))
                 if co is not None:
                     self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
-                    self.check_if_kill()
                     if self.already_mining(co[0], co[1], screen):
                         self.print(f"Already mining this gem node")
                         continue
@@ -595,7 +567,6 @@ class GatherGem(Task):
                     x_click = co[0]
                     y_click = co[1]
                     self.better_sleep((2, 2.5))
-                    self.check_if_kill()
                     self.check_captcha()
                     while True:
                         self.check_download_page()
@@ -619,24 +590,19 @@ class GatherGem(Task):
                         if self.free_troop_selection():
                             self.click(uniform(1172, 1222), uniform(77, 112))
                             # self.better_sleep((0.6, 1))
-                            self.check_if_kill()
 
                         self.better_sleep((1.3, 2))
 
                         if self.send_new_troop():
-                            self.check_if_kill()
                             break
                         self.print("Trying to send the nearest troop..")
                         if self.send_nearest_troop_gem():
                             if self.find_img(target="new_troops_button",confidence=0.70):
                                 self.send_new_troop()
-                                self.check_if_kill()
-                            self.check_if_kill()
                             break
                         else:
                             self.print("All queues are occupied")
 
-                        self.check_if_kill()
                         self.click(uniform(400, 700), uniform(300, 400))
                         self.better_sleep((1.8, 3))
                         self.check_captcha()
@@ -700,22 +666,6 @@ class GatherGem(Task):
             2: (x + int((radius * (4 / 3))) + randint(-8, -2), y - int((radius * (4 / 3))) + randint(2, 8)),
             3: (x - int((radius * (4 / 3))) + randint(2, 8), y - int((radius * (4 / 3))) + randint(2, 8))
         }
-        # if randomization == 0:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the top left corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the top left corner.')
-        #     x2, y2 = x - int((radius * (4 / 3))) + randint(2, 8), y + int((radius * (4 / 3))) + randint(-8, -2)
-        # elif randomization == 1:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the top right corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the top right corner.')
-        #     x2, y2 = x + int((radius * (4 / 3))) + randint(-8, -2), y + int((radius * (4 / 3))) + randint(-8, -2)
-        # elif randomization == 2:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the bottom right corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the bottom right corner.')
-        #     x2, y2 = x + int((radius * (4 / 3))) + randint(-8, -2), y - int((radius * (4 / 3))) + randint(2, 8)
-        # else:# if randomization == 3:
-        #     print(f"[ {current_time()} ] [ {self.name} ] The bot will now go in the bottom left corner")
-        #     self.set_text(f'[{current_time()}] The bot will now go in the bottom left corner.')
-        #     x2, y2 = x - int((radius * (4 / 3))) + randint(2, 8), y - int((radius * (4 / 3))) + randint(2, 8)
 
         x2, y2 = coordinates[randomization][0], coordinates[randomization][1]
         x3, y3 = uniform(290, 400), uniform(15, 26)
@@ -850,12 +800,6 @@ class GatherGem(Task):
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
         while self.end_time > time():
             self.run_game()
-            # print(
-            #     f'time to beat : {datetime.fromtimestamp(self.end_time).strftime("%H:%M:%S")}\nCurrent time : {current_time()}\nTime to beat > current time : {self.end_time > time()}')
-            # logging.info(
-            #     f"[{self.name}]time to beat : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {self.end_time > time()}")
-            # self.set_text(
-            #     f"[{current_time()}] time to beat : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {self.end_time > time()}")
             if self.data[str(self.sel)]['schedules'][self.current_profile].get("restart_game", True):
                 random_time = uniform(4000, 5800)
                 if time() > time_restart + random_time:
@@ -895,51 +839,49 @@ class GatherGem(Task):
             # print("test")
             if randomization == 0:
                 for y in range(width - 1):
-                    self.check_if_kill()
-
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_right)
 
-                    self.swipe_scan(self.scan_gem, self.swipe_down)
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.check_if_kill()
+                    self.swipe_scan(self.scan_gem, self.swipe_down)
 
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_left)
 
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.check_if_kill()
 
                     if y != (width - 2):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_down)
+                        self.recenter()
 
             if randomization == 2:
                 for y in range(width - 1):
-                    self.check_if_kill()
-
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_left)
 
-                    self.swipe_scan(self.scan_gem, self.swipe_up)
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.check_if_kill()
+                    self.swipe_scan(self.scan_gem, self.swipe_up)
 
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_right)
 
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
 
@@ -947,56 +889,58 @@ class GatherGem(Task):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_up)
+                        self.recenter()
 
             if randomization == 1:
                 for y in range(height - 1):
-                    self.check_if_kill()
-
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_down)
 
-                    self.swipe_scan(self.scan_gem, self.swipe_left)
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.check_if_kill()
-                    if self.end_time < time():return
+                    self.swipe_scan(self.scan_gem, self.swipe_left)
+
 
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_up)
 
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.check_if_kill()
+
                     if y != (height - 2):
                         self.swipe_scan(self.scan_gem, self.swipe_left)
+                        self.recenter()
 
             if randomization == 3:
                 for y in range(height - 1):
-                    self.check_if_kill()
-
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_up)
 
-                    self.swipe_scan(self.scan_gem, self.swipe_right)
-                    if self.end_time < time(): return
-                    self.check_if_kill()
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    self.swipe_scan(self.scan_gem, self.swipe_right)
 
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
                         self.swipe_scan(self.scan_gem, self.swipe_down)
+
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+
                     if y != (height - 2):
                         self.swipe_scan(self.scan_gem, self.swipe_right)
+                        self.recenter()
 
             self.better_sleep((1.525, 2.795))
             # self.leave_city()
@@ -1005,7 +949,5 @@ class GatherGem(Task):
                                        self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500),
                                        randomization)
             self.print(f"Current path n°{randomization}")
-            self.better_sleep((0.525, 0.795))
             self.zoom_out_city()
-            # self.better_sleep((0.525, 0.795))
         self.print("Gathering gem time elapsed !")

@@ -1,13 +1,13 @@
+from random import uniform
 from time import sleep
 
 from PIL import Image
-from random import uniform
-
-import cv2
 
 from tasks.Task import Task
-from utils.Task_utils import get_name, current_time, get_class, get_data
-from utils.easyOcr import Reader
+from utils.Task_utils import get_name, current_time, get_class
+
+
+# from utils.easyOcr import Reader
 
 class GatherRss(Task):
     def __init__(self, MainTask: Task):
@@ -35,17 +35,6 @@ class GatherRss(Task):
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 3))
         return True
-
-    @get_name
-    def click_loop(self) -> None:
-        if not self.find_img(target="gem_search_button"):
-            self.leave_city()
-            self.better_sleep((2, 3))
-        x = uniform(33, 76)
-        y = uniform(517, 560)
-        # print(x,y)
-        self.click(x, y)
-        self.better_sleep((2, 4))
 
     @get_name
     def select_resource_type(self, place: str) -> tuple[float, float]:

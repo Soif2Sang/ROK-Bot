@@ -1,7 +1,6 @@
 from random import uniform, shuffle
 
 from tasks.Task import Task
-from utils.Task_utils import get_data
 
 
 class TroopTraining(Task):
