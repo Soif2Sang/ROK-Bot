@@ -4,8 +4,10 @@ import cv2
 
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
-from utils.Task_utils import get_name, get_class, filter_coordinate, write, get_data
-from utils.easyOcr import Reader
+from utils.Task_utils import get_name, get_class, filter_coordinate, write
+
+
+# from utils.easyOcr import Reader
 
 
 class HealTroop(Task):

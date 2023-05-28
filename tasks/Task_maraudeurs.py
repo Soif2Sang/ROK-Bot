@@ -1,24 +1,17 @@
-import json
 import math
-import os
+import math
 import re
-import shutil
-import traceback
 from datetime import datetime
+from random import uniform, randint, random, choice
 from time import sleep, time
 
-import win32api
-import win32con
-import win32gui
 from PIL import Image
-from random import uniform, randint, random, choice
-
-import cv2
 
 from tasks.Task import Task
-from tasks.Task_alliance_help import AllianceHelp
-from utils.Task_utils import get_name, get_class, current_time, get_data, get_path
-from utils.easyOcr import Reader
+from utils.Task_utils import get_name, get_class, current_time
+
+
+# from utils.easyOcr import Reader
 
 
 class Maraudeurs(Task):
@@ -41,78 +34,6 @@ class Maraudeurs(Task):
     def task_name(self):
         return "Maraudeurs"
 
-    @get_name
-    def random_macro(self) -> None:
-        try:
-            path_json = get_path()
-            for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg", "com.lilithgames.rok.gp.jp.cfg",
-                         "com.lilithgames.rok.gpkr.cfg"]:
-                path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
-                if os.path.isfile(path):
-                    break
-
-            path2 = path.replace("cfg", "json")
-            shutil.copy(path, path2)
-
-            with open(path2,encoding='utf-8') as config_file:
-                macro_json = json.load(config_file)
-            for element in macro_json['ControlSchemes']:
-                if element["Selected"]:
-                    # print(element["Name"])
-                    for macro in element["GameControls"]:
-                        # print(macro)
-                        if macro["KeyOut"] == "F6":
-                            # print("True")
-                            x1 = randint(22, 30)
-                            x2 = randint(22, 30)
-                            y = randint(25, 30)
-                            macro["X1"] = x1
-                            macro["X2"] = x1
-                            macro["Y1"] = y + 0.64
-                            macro["Y2"] = y + 43.42
-            with open(path2, 'w', encoding="UTF-8") as outfile:
-                json.dump(macro_json, outfile, ensure_ascii=False)
-            shutil.copy(path2, path)
-
-        except Exception as e:
-            for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
-            print(
-                f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
-            self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial")
-            for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
-
-    @get_name
-    def zoom_out_city(self) -> None:
-        """
-        Leave the city by sending 'F5' key signal to the emulator
-        """
-
-        self.script_pause()
-        try:
-            self.print("Zooming out..")
-            co = self.find_img(target='gem_search_button')
-            if co is not None:
-                hwnd = win32gui.FindWindow(None, self.adb.name)
-                hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-                for _ in range(4):
-                    self.script_pause()
-                    boolean = self.find_img(target="gem_search_button")
-                    if boolean is not None:
-                        for _ in range(2):
-                            self.script_pause()
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                            sleep(0.20)
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                            self.better_sleep((1.4, 2))
-                    else:
-                        break
-        except Exception as e:
-            print(e)
 
     @get_name
     def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
@@ -629,29 +550,32 @@ class Maraudeurs(Task):
     def recenter(self):
         image = self.adb.get_cv2_img()
         if (co:=self.find_img(source=image,target="green_home_button")):
-            reader = Reader()
+            # reader = Reader()
             image = self.get_neighboring_image(image = image,center_point = co)
-            words, _ = reader.extract_text(img=image, allowlist=None)
+            # words, _ = reader.extract_text(img=image, allowlist=None)
+            words = self.extract_all_text()
             for word in words:
                 if re.findall(r'\d+KM',word):
+                    print(word)
                     if word.replace("KM","").isnumeric() and int(word.replace("KM","")) > 65:
-                        if co[0] < 720 and co[1] < 360:
-                            self.swipe(760, 530, 330, 160)
-                        elif co[0] < 720 and co[1] > 360:
+                        if co[0] < 720 and co[1] < 220:
                             self.swipe(330, 160, 760, 530)
-                        elif co[0] > 720 and co[1] > 360:
+                        elif co[0] < 720 and co[1] > 600:
                             self.swipe(760, 530, 330, 160)
-                        elif co[0] > 720 and co[1] < 360:
+                        elif co[0] > 720 and co[1] > 600:
                             self.swipe(330, 530, 980, 160)
+                        elif co[0] > 720 and co[1] < 220:
+                            self.swipe(760, 530, 330, 160)
                         elif co[0] < 720:
-                            self.swipe_right()
-                        elif co[0] > 720:
                             self.swipe_left()
+                        elif co[0] > 720:
+                            self.swipe_right()
                         elif co[1] > 360:
-                            self.swipe_up()
-                        elif co[1] < 360:
                             self.swipe_down()
-                        return self.better_sleep((1, 2))
+                        elif co[1] < 360:
+                            self.swipe_up()
+                        self.better_sleep((1, 2))
+                        return self.recenter()
 
     @get_class
     def run(self, end_time = None ):
@@ -711,22 +635,24 @@ class Maraudeurs(Task):
                         self.swipe_scan(self.scan_maraudeur, self.swipe_right)
 
                     self.recenter()
-                    self.swipe_scan(self.scan_maraudeur, self.swipe_down)
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    self.swipe_scan(self.scan_maraudeur, self.swipe_down)
 
                     for i in range(width):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_left)
 
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.recenter()
+
                     if y != (width - 2):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_down)
+                        self.recenter()
 
             if randomization == 2:
                 for y in range(width - 1):
@@ -736,22 +662,26 @@ class Maraudeurs(Task):
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_left)
 
-                    self.swipe_scan(self.scan_maraudeur, self.swipe_up)
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    self.swipe_scan(self.scan_maraudeur, self.swipe_up)
                     self.recenter()
+
                     for i in range(width):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_right)
 
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.recenter()
+
                     if y != (width - 2):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_up)
+                        self.recenter()
 
             if randomization == 1:
                 for y in range(height - 1):
@@ -761,10 +691,12 @@ class Maraudeurs(Task):
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_down)
 
-                    self.swipe_scan(self.scan_maraudeur, self.swipe_left)
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    self.swipe_scan(self.scan_maraudeur, self.swipe_left)
                     self.recenter()
+
                     if self.end_time < time():return self.recall()
 
                     for i in range(height):
@@ -772,11 +704,15 @@ class Maraudeurs(Task):
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_up)
 
+                    self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
-                    self.recenter()
+
                     if y != (height - 2):
+                        if self.end_time < time(): return self.recall()
+                        if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_left)
+                        self.recenter()
 
             if randomization == 3:
                 for y in range(height - 1):
@@ -784,21 +720,24 @@ class Maraudeurs(Task):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_up)
+
                     self.recenter()
-                    self.swipe_scan(self.scan_maraudeur, self.swipe_right)
-                    if self.end_time < time(): return self.recall()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    self.swipe_scan(self.scan_maraudeur, self.swipe_right)
 
                     for i in range(height):
                         if self.end_time < time(): return self.recall()
                         if self.block: return self.recall()
                         self.swipe_scan(self.scan_maraudeur, self.swipe_down)
+
                     self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+
                     if y != (height - 2):
                         self.swipe_scan(self.scan_maraudeur, self.swipe_right)
+                        self.recenter()
 
             self.better_sleep((1.525, 2.795))
             # self.leave_city()

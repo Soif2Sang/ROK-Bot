@@ -1,18 +1,28 @@
+import json
 import os
+import shutil
 import sys
 import traceback
 from datetime import date
 from random import uniform, randint
 from time import sleep
-from psutil import pid_exists
+
 import cv2
+import win32api
+import win32con
+import win32gui
 from PIL import Image, ImageFile
 from numpy import array, ndarray
+from psutil import pid_exists
+from pytesseract import pytesseract
 
-from utils import discord_bot
-from utils.Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write, string_to_co
+# from paddleocr import PaddleOCR
+pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+
+# from utils import discord_bot
+from utils.Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write, string_to_co, get_path
 from utils.bot_adb import Adb
-from utils.easyOcr import Reader
+# from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -65,13 +75,40 @@ class Task:
         image = self.adb.get_cv2_img()
         image = image[5:33,260:430]
         return self.extract_text(image,'#XxYy:123456789')
+
+    @get_name
+    def extract_all_text(self, img, allowlist=None):
+        return  self.extract_text(img, allowlist)
+        # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
+        # result = ocr.ocr(img, cls=False)
+        # returning_values = []
+        # for idx in range(len(result)):
+        #     res = result[idx]
+        #     for line in res:
+        #         returning_values.append(line[-1][0])
+        # return  returning_values
+
     @get_name
     def extract_text(self, img, allowlist=None):
-        reader = Reader()
-        native_text, _ = reader.extract_text(img=img, allowlist=allowlist)
-        if native_text:
-            return native_text[0]
-        return ''
+        if  allowlist is not None:
+            config = fr'--oem 1 --psm 6 -c tessedit_char_whitelist={allowlist}'
+        else:
+            config = r'--oem 1 --psm 6'
+        return pytesseract.image_to_string(img, config=config)
+
+        # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
+        # result = ocr.ocr(img, cls=False)
+        # for idx in range(len(result)):
+        #     res = result[idx]
+        #     for line in res:
+        #         return line[-1][0] if line[-1][0] else ''
+        # return ''
+        # exit()
+        # reader = Reader()
+        # native_text, _ = reader.extract_text(img=img, allowlist=allowlist)
+        # if native_text:
+        #     return native_text[0]
+        # return ''
         # reader_script_path = r'.\utils\easyOcr.py'
         #
         # # Paramètres pour la méthode extract_text
@@ -107,8 +144,9 @@ class Task:
 
     @get_name
     def send_discord_message(self, message):
-        if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
-            return discord_bot.send_message(self.data["discord"]["user_id"], f"[{current_time()}] {message}")
+        return
+        # if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
+        #     return discord_bot.send_message(self.data["discord"]["user_id"], f"[{current_time()}] {message}")
 
     @get_name
     def click(self, x, y):
@@ -133,6 +171,8 @@ class Task:
         cv_image = self.adb.get_cv2_img()
         cropped_image = cv_image[13:35, 1225:1254]
         text = self.extract_text(cropped_image, allowlist="01234567/")
+
+        print(text)
         if len(text) == 3:
             if text[0] < text[2]:
                 self.print("Empty queue found")
@@ -148,8 +188,10 @@ class Task:
         :return: True if there's a empty queue
         :return: False if queues are occupied
         """
-        cropped_image = self.adb.get_cv2_img()[162:179, 1210:1242]
+        cropped_image = self.adb.get_cv2_img()[160:180, 1205:1247]
+        cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2GRAY)
 
+        # imwrite("commander_list.png",cropped_image)
         native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
 
         print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
@@ -165,6 +207,79 @@ class Task:
         if len(enhanced_text) == 2:
             return enhanced_text[0] < enhanced_text[1]
 
+    @get_name
+    def random_macro(self) -> None:
+        try:
+            path_json = get_path()
+            for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg",
+                         "com.lilithgames.rok.gp.jp.cfg",
+                         "com.lilithgames.rok.gpkr.cfg"]:
+                path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
+                if os.path.isfile(path):
+                    break
+
+            path2 = path.replace("cfg", "json")
+            shutil.copy(path, path2)
+
+            with open(path2, encoding='utf-8') as config_file:
+                macro_json = json.load(config_file)
+            for element in macro_json['ControlSchemes']:
+                if element["Selected"]:
+                    # print(element["Name"])
+                    for macro in element["GameControls"]:
+                        # print(macro)
+                        if macro["KeyOut"] == "F6":
+                            # print("True")
+                            x1 = randint(22, 30)
+                            x2 = randint(22, 30)
+                            y = randint(25, 30)
+                            macro["X1"] = x1
+                            macro["X2"] = x1
+                            macro["Y1"] = y + 0.64
+                            macro["Y2"] = y + 43.42
+            with open(path2, 'w', encoding="UTF-8") as outfile:
+                json.dump(macro_json, outfile, ensure_ascii=False)
+            shutil.copy(path2, path)
+
+        except Exception as e:
+            for _ in range(5):
+                self.print("/!\ FIX IT !! /!\ ")
+            print(
+                f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
+            self.print(
+                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial")
+            for _ in range(5):
+                self.print("/!\ FIX IT !! /!\ ")
+
+    @get_name
+    def zoom_out_city(self) -> None:
+        """
+        Leave the city by sending 'F5' key signal to the emulator
+        """
+
+        self.script_pause()
+        try:
+            self.print("Zooming out..")
+            co = self.find_img(target='gem_search_button')
+            if co is not None:
+                hwnd = win32gui.FindWindow(None, self.adb.name)
+                hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+                for _ in range(4):
+                    self.script_pause()
+                    boolean = self.find_img(target="gem_search_button")
+                    if boolean is not None:
+                        for _ in range(2):
+                            self.script_pause()
+                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                            sleep(0.20)
+                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                            self.better_sleep((1.4, 2))
+                    else:
+                        break
+        except Exception as e:
+            print(e)
     @get_name
     def click_loop(self) -> None:
         if not self.find_img(target="gem_search_button"):

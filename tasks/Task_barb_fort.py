@@ -1,20 +1,13 @@
-import json
-import os
-import shutil
 from datetime import datetime
+from random import uniform, randint
 from time import sleep, time
 
-import win32api
-import win32con
-import win32gui
-from PIL import Image
-from random import uniform, randint
-
 import cv2
+from PIL import Image
 
 from tasks.Task import Task, get_name, current_time
 from tasks.Task_heal_troop import HealTroop
-from utils.Task_utils import get_class, get_data, get_path
+from utils.Task_utils import get_class
 
 
 class BarbFort(Task):
@@ -32,79 +25,6 @@ class BarbFort(Task):
 
     def task_name(self):
         return "BarbarianFort"
-
-    @get_name
-    def random_macro(self) -> None:
-        try:
-            path_json = get_path()
-            for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg", "com.lilithgames.rok.gp.jp.cfg",
-                         "com.lilithgames.rok.gpkr.cfg"]:
-                path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
-                if os.path.isfile(path):
-                    break
-            path2 = path.replace("cfg", "json")
-            # print(f"{path = }")
-            # print(f"{path2 = }")
-            shutil.copy(path, path2)
-            # print("test")
-            path_json = get_path()
-            for element in path_json['ControlSchemes']:
-                if element["Name"] == "Custom":
-                    # print(element["Name"])
-                    for macro in element["GameControls"]:
-                        # print(macro)
-                        if macro["KeyOut"] == "F6":
-                            # print("True")
-                            x1 = randint(22, 30)
-                            x2 = randint(22, 30)
-                            y = randint(25, 30)
-                            macro["X1"] = x1
-                            macro["X2"] = x1
-                            macro["Y1"] = y + 0.64
-                            macro["Y2"] = y + 43.42
-            with open(path2, 'w', encoding="UTF-8") as outfile:
-                json.dump(path_json, outfile, ensure_ascii=False)
-            shutil.copy(path2, path)
-
-        except Exception as e:
-            for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ","red")
-            print(
-                f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
-            self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial","red")
-            for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ","red")
-
-    @get_name
-    def zoom_out_city(self) -> None:
-        """
-        Leave the city by sending 'F5' key signal to the emulator
-        """
-
-        self.script_pause()
-        try:
-            self.print("Zooming out..")
-            co = self.find_img(target='gem_search_button')
-            if co is not None:
-                hwnd = win32gui.FindWindow(None, self.adb.name)
-                hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-                for _ in range(4):
-                    self.script_pause()
-                    boolean = self.find_img(target="gem_search_button")
-                    if boolean is not None:
-                        for _ in range(2):
-                            self.script_pause()
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                            sleep(0.20)
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                            self.better_sleep((1.4, 2))
-                    else:
-                        break
-        except Exception as e:
-            print(e)
 
     @get_name
     def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
@@ -174,7 +94,7 @@ class BarbFort(Task):
         return co
 
     @get_name
-    def already_mining(self, x, y, image) -> bool:
+    def already_mining(self, x, y, image= None) -> bool:
         """
         :param: x -> int - x location of the node
         :param: y -> int - y location of the node
@@ -182,7 +102,7 @@ class BarbFort(Task):
         :return: True if node is not free
         :return: False if node is free to gather
         """
-        if not image:
+        if image is None:
             cv_image = self.adb.get_cv2_img()
         else:
             cv_image = image
@@ -468,9 +388,13 @@ class BarbFort(Task):
                                     pil_image = self.adb.get_curr_device_screen_img()
                                     cv_image =self.pil_to_array(pil_image)
                                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)
-                                    cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
-                                    string = self.extract_text(cropped_image,allowlist="1234567890:")
+                                    cropped_image = cv_image[y + 27:y + 55, x:x + 120]
+                                    cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
+
+                                    string = self.extract_text(img=cropped_image, allowlist="1234567890:")
+
                                     # print(string)
                                     print(f"{string = }")
                                     datetime_object = datetime.strptime(string, '%H:%M:%S').time()
@@ -563,7 +487,8 @@ class BarbFort(Task):
                             self.better_sleep((0.5, 1))
                             cv_image = self.adb.get_cv2_img()
                             x, y = self.find_img(source=cv_image, target="troops_march_button", confidence=0.8)
-                            cropped_image = cv_image[y + 30:y + 50, x + 20:x + 110]
+                            cropped_image = cv_image[y + 27:y + 55, x:x + 120]
+                            cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
 
                             string = self.extract_text(cropped_image,allowlist="1234567890:")
                             print(f"{string = }")

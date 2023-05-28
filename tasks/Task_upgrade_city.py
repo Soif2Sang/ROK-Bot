@@ -4,8 +4,9 @@ from time import sleep
 import win32api
 import win32con
 import win32gui
+
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_name, get_data
+from utils.Task_utils import get_class, get_name
 
 
 class UpgradeCity(Task):
