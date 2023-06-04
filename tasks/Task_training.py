@@ -20,9 +20,9 @@ class TroopTraining(Task):
         return "TroopTraining"
 
     def run(self):
-        names = ['infantry','cavalry','archery',"siege"]
+        names = ['infantry', 'cavalry', 'archery', "siege"]
         pos = {
-            "t1":[627,180],
+            "t1": [627, 180],
             "t2": [729, 180],
             "t3": [832, 180],
             "t4": [932, 180],
@@ -32,15 +32,15 @@ class TroopTraining(Task):
         for name in names:
             if self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"{name}_enable"]:
                 position = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"{name}_camp"]
-                if position is None or len(list(position))<2:
+                if position is None or len(list(position)) < 2:
                     continue
                 for i in range(2):
-                    self.click(position[0]+uniform(-8,8),position[1]+uniform(-8,8))
-                    self.better_sleep((1.2,3))
-                if (co:=self.find_img(target=f"{name}_badge",confidence=0.75)) is None:
+                    self.click(position[0] + uniform(-8, 8), position[1] + uniform(-8, 8))
+                    self.better_sleep((1.2, 3))
+                if (co := self.find_img(target=f"{name}_badge", confidence=0.75)) is None:
                     self.print(f"Unable to locate {name}")
                     continue
-                if self.find_img(target=f"building_speedups",confidence=0.8) is not None:
+                if self.find_img(target=f"building_speedups", confidence=0.8) is not None:
                     self.print(f"Already training {name}")
                     continue
                 self.click(co[0] + uniform(-8, 8), co[1] + uniform(-8, 8))
@@ -48,9 +48,9 @@ class TroopTraining(Task):
                 co = pos[self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"{name}_tier"]]
                 self.click(co[0] + uniform(-15, 15), co[1] + uniform(-15, 15))
                 self.better_sleep((1.2, 2.3))
-                self.click(uniform(910,1055),uniform(570,600))
+                self.click(uniform(910, 1055), uniform(570, 600))
                 self.better_sleep((1.2, 2.3))
-                if (co:=self.find_img(target=f"get_more_rss")) is not None:
+                if (co := self.find_img(target=f"get_more_rss")) is not None:
                     self.click(uniform(1000, 1020), uniform(129, 148))
                     self.better_sleep((1, 1.425))
                     self.click(uniform(1080, 1100), uniform(70, 90))

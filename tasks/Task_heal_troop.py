@@ -31,7 +31,7 @@ class HealTroop(Task):
         for i in range(2):
             buttons = self.adb.find_multiple_img("healing_scroll")
             pil_image = self.adb.get_curr_device_screen_img()
-            cv_image =self.pil_to_array(pil_image)
+            cv_image = self.pil_to_array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
             # cv2.imwrite("timer.png", cropped_image)
             for button in buttons:
@@ -61,14 +61,13 @@ class HealTroop(Task):
         self.swipe(uniform(740, 780), uniform(140, 150), uniform(740, 780), uniform(630, 650))
         self.better_sleep((1, 1.5))
 
-
     @get_class
     def run(self):
         if self.data[str(self.sel)]['schedules'][self.current_profile].get('heal_troop'):
             tier_icons = []
             tiers = [1, 2, 3, 4, 5]
             for tier in tiers:
-                cos = self.adb.find_multiple_img(target=f"t{tier}_badge",confidence= 0.65)
+                cos = self.adb.find_multiple_img(target=f"t{tier}_badge", confidence=0.65)
                 cos = list(filter(filter_coordinate, cos))
                 tier_icons.extend(cos)
             if tier_icons is not None and len(tier_icons) != 0:
@@ -76,8 +75,8 @@ class HealTroop(Task):
                 self.click(tier_icons[0][0] + uniform(-5, 20), tier_icons[0][1] + uniform(-15, 10))
                 self.better_sleep((1, 1.8))
             # print(f"{self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') =}")
-            healing_hut =  self.data[str(self.sel)]['schedules'][self.current_profile]['hospital']
-            write(self.name,f"Healing building placement (randomised) : {healing_hut}")
+            healing_hut = self.data[str(self.sel)]['schedules'][self.current_profile]['hospital']
+            write(self.name, f"Healing building placement (randomised) : {healing_hut}")
             self.click(healing_hut[0], healing_hut[1])
             # print("après les healing_hut")
             co = self.find_img(target="heal_icon")

@@ -43,9 +43,9 @@ class BarbFort(Task):
 
     @get_name
     def adjusted_leave_city(self, x_click: int, y_click: int) -> None:
-        self.check_if_kill()
+
         self.zoom_out_city()
-        self.check_if_kill()
+
         self.better_sleep((1, 2))
         self.little_zoom_from_x_y(x_click, y_click)
         return self.better_sleep((0.7, 1.4))
@@ -94,7 +94,7 @@ class BarbFort(Task):
         return co
 
     @get_name
-    def already_mining(self, x, y, image= None) -> bool:
+    def already_mining(self, x, y, image=None) -> bool:
         """
         :param: x -> int - x location of the node
         :param: y -> int - y location of the node
@@ -266,7 +266,7 @@ class BarbFort(Task):
         """
         deadstop = 0
         while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
-                                                                                                       "troops_march_button") is not None:
+                                                                                               "troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
@@ -311,16 +311,18 @@ class BarbFort(Task):
         if not self.data[self.sel]['schedules'][self.current_profile]["mauraudeurs_forts"]:
             for second_string in ["left", "mid", "right"]:
                 for first_string in ["up", "mid", "down"]:
-                    self.check_if_kill()
+
                     # f"{screen}fort_icon_day_{first_string}_{second_string}"
-                    co = self.find_img(source=screen, target=f"fort_icon_day_{first_string}_{second_string}", confidence=0.8)
+                    co = self.find_img(source=screen, target=f"fort_icon_day_{first_string}_{second_string}",
+                                       confidence=0.8)
                     co = self.validate_co(co)
                     if co is None:
-                        co = self.find_img(source=screen, target=f"fort_icon_night_{first_string}_{second_string}", confidence=0.8)
+                        co = self.find_img(source=screen, target=f"fort_icon_night_{first_string}_{second_string}",
+                                           confidence=0.8)
                         co = self.validate_co(co)
                     if co is not None:
                         self.print(f"Fort Found - x: {co[0]} y:{co[1]}")
-                        self.check_if_kill()
+
                         if self.already_mining(co[0], co[1], screen):
                             self.print("Someone is already rallying it")
                             continue
@@ -328,14 +330,14 @@ class BarbFort(Task):
                         x_click = co[0]
                         y_click = co[1]
                         self.better_sleep((2, 2.5))
-                        self.check_if_kill()
+
                         self.check_captcha()
                         self.print("Scanning the fort..")
                         if self.find_cross():
                             self.print("Someone is already rallying it")
                             return self.adjusted_leave_city(x_click, y_click)
                         else:
-                            self.check_if_kill()
+
                             bo1 = self.click_on_fort()
                             if not bo1:
                                 self.print("Unable to click on the fort, leaving the fort !")
@@ -384,9 +386,9 @@ class BarbFort(Task):
                                     self.click(uniform(657, 680), uniform(96, 117))
                                     self.better_sleep((0.7, 1.2))
                                     self.click(uniform(1092, 1112), uniform(330, 350))
-                                    self.better_sleep((2,3))
+                                    self.better_sleep((2, 3))
                                     pil_image = self.adb.get_curr_device_screen_img()
-                                    cv_image =self.pil_to_array(pil_image)
+                                    cv_image = self.pil_to_array(pil_image)
                                     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
 
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)
@@ -401,12 +403,13 @@ class BarbFort(Task):
                                     print(datetime_object)
                                     self.print("Starting the rally..")
                                     self.click(x, y)
-                                    self.better_sleep((2,3))
+                                    self.better_sleep((2, 3))
                                     self.go_city()
-                                    self.better_sleep((2,3))
+                                    self.better_sleep((2, 3))
                                     self.print(
                                         f"You selected {self.data[str(self.sel)]['schedules'][self.current_profile].get('rally_time')} minutes")
-                                    self.print(f"Rally leader marching time is {datetime.strptime(string, '%H:%M:%S').strftime('%S')}")
+                                    self.print(
+                                        f"Rally leader marching time is {datetime.strptime(string, '%H:%M:%S').strftime('%S')}")
                                     self.print("Bot is now paused until the rally leader come back..")
                                     time_to_wait1 = int(self.data[str(self.sel)]['schedules'][self.current_profile].get(
                                         'rally_time')) * 60 + int(
@@ -422,12 +425,12 @@ class BarbFort(Task):
                                     HealTroop(self).run()
                                     return True
         else:
-            self.check_if_kill()
+
             co = self.find_img(source=screen, target="maraudeurs_forts_icon", confidence=0.8)
             co = self.validate_co(co)
             if co is not None:
                 self.print(f"Fort Found - x: {co[0]} y:{co[1]}")
-                self.check_if_kill()
+
                 if self.already_mining(co[0], co[1], screen):
                     self.print("Someone is already rallying it")
                 self.click(co[0], co[1])
@@ -435,14 +438,13 @@ class BarbFort(Task):
                 x_click = co[0]
                 y_click = co[1]
                 self.better_sleep((2, 2.5))
-                self.check_if_kill()
 
                 self.check_captcha()
                 if self.find_cross():
                     self.print(f'Someone is already rallying it..')
                     return self.adjusted_leave_city(x_click, y_click)
                 else:
-                    self.check_if_kill()
+
                     bo1 = self.click_on_fort()
                     if not bo1:
                         self.print(f'Unable to click on the fort, leaving the fort !')
@@ -487,38 +489,32 @@ class BarbFort(Task):
                             self.better_sleep((0.5, 1))
                             cv_image = self.adb.get_cv2_img()
                             x, y = self.find_img(source=cv_image, target="troops_march_button", confidence=0.8)
-                            cropped_image = cv_image[y + 27:y + 55, x:x + 120]
-                            cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
-
-                            string = self.extract_text(cropped_image,allowlist="1234567890:")
-                            print(f"{string = }")
-                            datetime_object = datetime.strptime(string, '%H:%M:%S').time()
-                            print(datetime_object)
                             self.print("Starting the rally..")
                             self.click(x, y)
                             self.better_sleep((0.5, 1))
                             self.go_city()
                             self.better_sleep((0.5, 1))
+                            if self.data[str(self.sel)]['schedules'][self.current_profile]['rally_skip_back']:
+                                self.print("Skipping the commander back")
+                                return True
                             self.print("Bot is now paused until the rally leader come back..")
-                            self.print(f'You selected {self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time")} minutes')
-                            self.print(f"Rally leader marching time is {datetime.strptime(string, '%H:%M:%S').strftime('%S')}")
-                            time_to_wait1 = int(self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                'rally_time')) * 60 + int(
-                                datetime.strptime(string, '%H:%M:%S').strftime('%S'))
-                            time_to_wait2 = int(self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                'rally_time')) * 60 + int(
-                                datetime.strptime(string, '%H:%M:%S').strftime('%S')) * 2
                             self.print(
-                                f"Bot will wait around {time_to_wait2 / 60} minutes to complete the task, the bot will now sleep for this time")
-                            for _ in range(time_to_wait2):
-                                self.script_pause()
-                                sleep(1)
+                                f'You selected {self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time")} minutes')
+                            self.click(1180, 173)
+                            self.better_sleep((1.3, 1.8))
+                            default_image = self.adb.get_cv2_img()
+                            default_color = default_image[231, 383]
+                            while (default_color == self.adb.get_cv2_img()[231, 383]).all():
+                                for i in range(30):
+                                    self.script_pause()
+                                    sleep(0.1)
+                            self.close_windows()
                             # return self.heal_troops()
                             return True
 
     @get_name
     def swipe_scan(self, scan, direction):
-        self.check_if_kill()
+
         self.script_pause()
         # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
         direction()
@@ -588,9 +584,9 @@ class BarbFort(Task):
     @get_class
     def run(self):
         self.random_macro()
-        if not self.enough_action_points():
-            self.print("Bot detected you are low in action point, bot prefers to not start a rally !")
-            return
+        # if not self.enough_action_points():
+        #     self.print("Bot detected you are low in action point, bot prefers to not start a rally !")
+        #     return
         self.run_game()
         self.check_captcha()
         self.leave_city()
@@ -601,7 +597,7 @@ class BarbFort(Task):
         if self.scan_fort(): return
         randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
                                    self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
-        self.check_if_kill()
+
         radius = (self.data[str(self.sel)]['schedules'][self.current_profile].get('rally_radius', 50) // 10)
         width = radius + 1
         height = radius + 1
@@ -614,12 +610,12 @@ class BarbFort(Task):
             self.print(
                 f"time to beat : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {time_to_beat > time()}")
             pil_image = self.adb.get_curr_device_screen_img()
-            cv_image =self.pil_to_array(pil_image)
+            cv_image = self.pil_to_array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[0:100, :800]
             if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
                 return
-            self.check_if_kill()
+
             if self.scan_fort(): return
             self.check_reconnect(cv_image)
             self.check_log_back()
@@ -627,7 +623,7 @@ class BarbFort(Task):
 
             if randomization == 0:
                 for y in range(width - 1):
-                    self.check_if_kill()
+
                     for _ in range(width):
                         if time_to_beat < time(): return
                         if self.swipe_scan(self.scan_fort, self.swipe_right) == True:
@@ -639,7 +635,6 @@ class BarbFort(Task):
                     # self.better_sleep((0.525, 0.795))
                     if time_to_beat < time(): return
                     self.check_captcha(False)
-                    self.check_if_kill()
 
                     for _ in range(width):
                         if time_to_beat < time(): return
@@ -657,7 +652,7 @@ class BarbFort(Task):
             if randomization == 2:
                 for y in range(width - 1):
                     if time_to_beat < time(): return
-                    self.check_if_kill()
+
                     for _ in range(width):
                         if time_to_beat < time(): return
                         if self.swipe_scan(self.scan_fort, self.swipe_left):
@@ -668,7 +663,6 @@ class BarbFort(Task):
                     # self.better_sleep((0.125, 0.195))
                     if time_to_beat < time(): return
                     self.check_captcha(False)
-                    self.check_if_kill()
 
                     for _ in range(width):
                         if time_to_beat < time(): return
@@ -683,7 +677,6 @@ class BarbFort(Task):
             if randomization == 1:
                 for y in range(height - 1):
                     if time_to_beat < time(): return
-                    self.check_if_kill()
 
                     for _ in range(height):
                         if time_to_beat < time(): return
@@ -692,7 +685,7 @@ class BarbFort(Task):
                             return
 
                     self.check_captcha(False)
-                    self.check_if_kill()
+
                     if time_to_beat < time(): return
 
                     if self.swipe_scan(self.scan_fort, self.swipe_left):
@@ -706,7 +699,7 @@ class BarbFort(Task):
                         # self.better_sleep((0.125, 0.195))
 
                     self.check_captcha(False)
-                    self.check_if_kill()
+
                     if y != (height - 2):
                         if self.swipe_scan(self.scan_fort, self.swipe_left):
                             return
@@ -715,7 +708,6 @@ class BarbFort(Task):
             if randomization == 3:
                 for y in range(height - 1):
                     if time_to_beat < time(): return
-                    self.check_if_kill()
 
                     for _ in range(height):
                         if time_to_beat < time(): return
@@ -727,7 +719,7 @@ class BarbFort(Task):
                         return
                     # self.better_sleep((0.125, 0.195))
                     if time_to_beat < time(): return
-                    self.check_if_kill()
+
                     self.check_captcha(False)
 
                     for _ in range(height):

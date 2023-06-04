@@ -22,17 +22,17 @@ class AcademyResearch(Task):
 
     @get_name
     def academy_coordinates(self):
-        return uniform(760,780), uniform(270,280)
+        return uniform(760, 780), uniform(270, 280)
 
     @get_name
     def enter_academy(self):
         for _ in range(2):
-            x,y=self.academy_coordinates()
-            self.click(x,y)
+            x, y = self.academy_coordinates()
+            self.click(x, y)
             self.better_sleep((0.9, 1.5))
         if self.adb.find_img("building_speedups") is None:
-            if co:=self.adb.find_img("academy"):
-                self.click(co[0] + uniform(0,20), co[1] + uniform(0,20))
+            if co := self.adb.find_img("academy"):
+                self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
                 self.better_sleep((0.9, 1.5))
                 return True
             else:
@@ -50,13 +50,11 @@ class AcademyResearch(Task):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
-
-
     @get_name
     def select_tech(self):
         i = 0
-        if (co:=self.adb.find_img("academy_tech")) is not None:
-            self.click(co[0] + uniform(-5,5), co[1] + uniform(-5,5))
+        if (co := self.adb.find_img("academy_tech")) is not None:
+            self.click(co[0] + uniform(-5, 5), co[1] + uniform(-5, 5))
             self.better_sleep((0.9, 1.2))
             self.research_tech()
             self.better_sleep((0.9, 1.2))
@@ -74,5 +72,5 @@ class AcademyResearch(Task):
                 self.select_tech()
                 co = self.adb.find_img("cross")
                 self.click(co[0] + uniform(0, 5), co[1] + uniform(0, 5))
-        self.better_sleep((5,9))
+        self.better_sleep((5, 9))
         self.help_build()

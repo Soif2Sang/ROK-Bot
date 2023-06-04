@@ -1,5 +1,4 @@
 import re
-import re
 import traceback
 from datetime import datetime
 from random import uniform, randint, random
@@ -51,9 +50,7 @@ class GatherGem(Task):
 
     @get_name
     def adjusted_leave_city(self, x_click: int, y_click: int) -> None:
-        self.check_if_kill()
         self.zoom_out_city()
-        self.check_if_kill()
         self.better_sleep((1, 2))
         self.little_zoom_from_x_y(x_click, y_click)
         return self.better_sleep((0.7, 1.4))
@@ -75,7 +72,7 @@ class GatherGem(Task):
         return co
 
     @get_name
-    def already_mining(self, x, y, image = None) -> bool:
+    def already_mining(self, x, y, image=None) -> bool:
         """
         :param: x -> int - x location of the node
         :param: y -> int - y location of the node
@@ -98,47 +95,34 @@ class GatherGem(Task):
         return self.find_cross_source(cropped_image)
 
     @get_name
-    def find_cross(self) -> bool:
+    def find_cross(self, source=None) -> bool:
         """
         :return: True if node is occupied or someone is coming to the node
         :return: False if node is free to gather
         """
         self.print("Scanning the node..")
-        pil_image = self.adb.get_curr_device_screen_img()
-        cv_image =self.pil_to_array(pil_image)
-        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        cropped_image = cv_image[230:480, 441:814]
-        img = Image.fromarray(cropped_image)
+        if source is None:
+            source = self.adb.get_cv2_img()[230:480, 441:814]
+        img = Image.fromarray(source)
+
+        occupied_colors = [
+            (2, 4, 183), (233, 233, 233), (247, 156, 47), (207, 131, 40), (248, 157, 48),
+            (239, 205, 165), (0, 0, 178), (2, 204, 2), (195, 142, 0), (0, 154, 14),
+            (0, 154, 13), (1, 186, 0), (0, 142, 193), (12, 154, 1), (1, 215, 0),
+            (1, 216, 0), (253, 253, 253), (49, 161, 255), (2, 197, 2), (247, 210, 167),
+            (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167)
+        ]
+
         for i in range(img.size[0]):
             for y in range(img.size[1]):
                 if (((img.getpixel((i, y))[0] < 5) and
                      (img.getpixel((i, y))[1] < 5) and
                      (img.getpixel((i, y))[2] > 175) and
                      (img.getpixel((i, y))[2] < 196) and
-                      ((img.getpixel((i, y))[0] != 2) and
+                     ((img.getpixel((i, y))[0] != 2) and
                       (img.getpixel((i, y))[1] != 4) and
-                      (img.getpixel((i, y))[2] != 183)))
-                        or
-                        ((img.getpixel((i, y))[0] == 233) and
-                         (img.getpixel((i, y))[1] == 233) and
-                         (img.getpixel((i, y))[2] == 233))
-                        or
-                        ((img.getpixel((i, y))[0] == 247) and
-                         (img.getpixel((i, y))[1] == 156) and
-                         (img.getpixel((i, y))[2] == 47))
-                        or
-                        ((img.getpixel((i, y))[0] == 207) and
-                         (img.getpixel((i, y))[1] == 131) and
-                         (img.getpixel((i, y))[2] == 40))
-                        or
-                        ((img.getpixel((i, y))[0] == 248) and
-                         (img.getpixel((i, y))[1] == 157) and
-                         (img.getpixel((i, y))[2] == 48))
-                        or
-                        ((img.getpixel((i, y))[0] == 239) and
-                         (img.getpixel((i, y))[1] == 205) and
-                         (img.getpixel((i, y))[2] == 165))
-                        or
+                      (img.getpixel((i, y))[2] != 183))) or
+
                         ((img.getpixel((i, y))[2] < 179) and
                          (img.getpixel((i, y))[2] > 175) and
                          (img.getpixel((i, y))[1] > 116) and
@@ -151,24 +135,7 @@ class GatherGem(Task):
                          (img.getpixel((i, y))[2] < 200) and
                          (img.getpixel((i, y))[2] > 190))
                         or
-                        (img.getpixel((i, y)) == (0, 0, 178)) or
-                        (img.getpixel((i, y)) == (2, 204, 2)) or
-                        (img.getpixel((i, y)) == (195, 142, 0)) or
-                        (img.getpixel((i, y)) == (0, 154, 14)) or
-                        (img.getpixel((i, y)) == (0, 154, 13)) or
-                        (img.getpixel((i, y)) == (1, 186, 0)) or
-                        (img.getpixel((i, y)) == (0, 142, 193)) or
-                        (img.getpixel((i, y)) == (12, 154, 1)) or
-                        (img.getpixel((i, y)) == (1, 215, 0)) or
-                        (img.getpixel((i, y)) == (1, 215, 0)) or
-                        (img.getpixel((i, y)) == (1, 216, 0)) or
-                        (img.getpixel((i, y)) == (253, 253, 253)) or
-                        (img.getpixel((i, y)) == (49, 161, 255)) or
-                        (img.getpixel((i, y)) == (2, 197, 2)) or
-                        (img.getpixel((i, y)) == (247, 210, 167)) or
-                        (img.getpixel((i, y)) == (255, 161, 49)) or
-                        (img.getpixel((i, y)) == (253, 253, 253)) or
-                        img.getpixel((i, y)) in [(167, 121, 28), (28, 121, 167)]):
+                        (img.getpixel((i, y)) in occupied_colors)):
                     self.print(f"{img.getpixel((i, y))}")
                     self.print("Node occupied")
                     return True
@@ -183,7 +150,7 @@ class GatherGem(Task):
         """
         i = 0
         self.print("Clicking on the node..")
-        while self.find_img(target="resource_gather_button",confidence=0.70) is None:
+        while self.find_img(target="resource_gather_button", confidence=0.70) is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -191,7 +158,7 @@ class GatherGem(Task):
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        co = self.find_img(target="resource_gather_button",confidence=0.70)
+        co = self.find_img(target="resource_gather_button", confidence=0.70)
         if co is not None:
             x, y = co[0], co[1]
             self.click(x + uniform(0, 150), y + uniform(0, 30))
@@ -201,15 +168,14 @@ class GatherGem(Task):
             self.print("Unable to click on the node, leaving the node !")
             return False
 
-
     @get_name
     def select_lineup_color(self, color: str) -> None:
         """
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
-                                                                                                       "troops_march_button") is not None:
+        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(
+                target="troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
@@ -257,7 +223,7 @@ class GatherGem(Task):
                 self.click(uniform(700, 800), uniform(300, 500))
                 self.better_sleep((1.325, 1.795))
                 return False
-            co = self.find_img(target="new_troops_button",confidence=0.70)
+            co = self.find_img(target="new_troops_button", confidence=0.70)
             if co is not None:
                 # print("Home button found")
                 x, y = co[0], co[1]
@@ -267,54 +233,39 @@ class GatherGem(Task):
                 x_click, y_click = uniform(1090, 1111), uniform(329, 348)
                 self.better_sleep((1.225, 1.795))
                 self.select_lineup_color(color=color)
+                default_image = self.adb.get_cv2_img()
                 for i in range(7):  # change if you have 6-7 troops
+                    default_color = default_image[282 + i * 54, 1100]
                     x_click, y_click = uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54)
                     self.click(x_click, y_click)
                     self.better_sleep((1, 2))
-                    if color != 'red':
-                        cos = self.adb.find_multiple_img(target="choose_right",confidence= 0.8)
-                        # for co in cos:
-                        #     if co[0] > 1060 and co[1] > 200:
-                        #         final.append(co)
-                        final = list(filter(lambda co: co[0] > 1060 and co[1] > 200, cos))
-                        if final != []:
-                            x, y = self.find_img(target="troops_march_button")
-                            x, y = x + uniform(0, 20), y + uniform(0, 20)
-                            self.check_if_kill()
-                            self.click(x, y)
-                            self.better_sleep((0.5, 0.7))
-                            self.print("New Troop sent !","green")
-                            return True
+                    new_image = self.adb.get_cv2_img()
+                    if (default_color != new_image[282 + i * 54, 1100]).all():
+                        x, y = self.find_img(target="troops_march_button")
+                        x, y = x + uniform(0, 20), y + uniform(0, 20)
 
-                    # if self.find_img(target="choose_right", confidence=0.8):
-                    #     x, y = self.find_img(target="troops_march_button")
-                    #     x, y = x + uniform(0, 20), y + uniform(0, 20)
-                    #     self.check_if_kill()
-                    #     self.click(x, y)
-                    #     self.better_sleep((0.5, 0.7))
-                    #     return True
-                self.check_if_kill()
+                        self.click(x, y)
+                        self.better_sleep((0.5, 0.7))
+                        self.print("New Troop sent !", "green")
+                        return True
                 co = self.find_img(target="troops_march_button")
                 if co is None:
                     return self.send_new_troop(deadstop=deadstop + 1)
                 x, y = co[0], co[1]
                 x, y = x + uniform(0, 20), y + uniform(0, 20)
                 self.click(x, y)
-                self.check_if_kill()
+
                 self.better_sleep((0.5, 0.7))
-                self.print("New Troop sent !","green")
+                self.print("New Troop sent !", "green")
                 return True
             co = self.find_img(target="march_bar")
             if co is not None and self.free_troop_selection():
-                x, y = uniform(1177, 1250), uniform(80, 116)
-                self.check_if_kill()
-                self.better_sleep((0.5, 0.7))
                 return self.send_new_troop(deadstop=deadstop + 1)
-            self.print("Unable to send a new troop","red")
+            self.print("Unable to send a new troop", "red")
             return False
         except Exception as e:
             traceback.print_exc()
-            self.print("Error sending a new march to the gem node !","red")
+            self.print("Error sending a new march to the gem node !", "red")
 
     @get_name
     def send_nearest_troop_gem(self, deadstop=0) -> bool:
@@ -335,7 +286,7 @@ class GatherGem(Task):
                 self.click(points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0))
                 self.better_sleep((1, 1.7))
                 pil_image = self.adb.get_curr_device_screen_img()
-                cv_image =self.pil_to_array(pil_image)
+                cv_image = self.pil_to_array(pil_image)
                 cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
                 co = self.find_img(source=cv_image, target="march_bar", confidence=0.8)
                 if co is not None:
@@ -392,7 +343,7 @@ class GatherGem(Task):
                 self.click(x=uniform(1110, 1127), y=uniform(30, 55))
                 self.better_sleep((0.9, 1.3))
                 return self.send_new_troop()
-            self.print("Nearest troop sent to the node..","green")
+            self.print("Nearest troop sent to the node..", "green")
             return True
         except Exception as e:
             traceback.print_exc()
@@ -410,6 +361,7 @@ class GatherGem(Task):
         :return: True if node is occupied or someone is coming to the node
         :return: False if node is free to gather
         """
+        return self.find_cross(source)
         img = Image.fromarray(source)
         for i in range(img.size[0]):
             for y in range(img.size[1]):
@@ -469,46 +421,64 @@ class GatherGem(Task):
                     self.print("Node occupied")
                     return True
         return False
-    def get_neighboring_image(self,image,center_point, grid_width = 1280, grid_height = 720, up=50, left=20, right=60, down=85):
+
+    def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
+                              down=85):
         """Gets the neighboring points around a center point on the grid."""
         x, y = center_point[0], center_point[1]
-        print(x,y)
         min_x = max(0, x - left)
         max_x = min(grid_width - 1, x + right)
         min_y = max(0, y - up)
         max_y = min(grid_height - 1, y + down)
 
-        return image[min_y:max_y,min_x:max_x]
+        return image[min_y:max_y, min_x:max_x]
 
-
+    @get_name
     def recenter(self):
         image = self.adb.get_cv2_img()
-        if (co:=self.find_img(source=image,target="green_home_button")):
+        if (co := self.find_img(source=image, target="green_home_button")):
             # reader = Reader()
-            image = self.get_neighboring_image(image = image,center_point = co)
-            words = self.extract_all_text(image)
-            for word in words:
-                if re.findall(r'\d+KM',word):
-                    print(word)
-                    if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius',40)) * 1.5:
-                        if co[0] < 500 and co[1] < 220:
-                            self.swipe(330, 160, 760, 530)
-                        elif co[0] < 500 and co[1] > 550:
-                            self.swipe(330, 530, 760, 160)
-                        elif co[0] > 800 and co[1] > 550:
-                            self.swipe(980, 530,330 , 160)
-                        elif co[0] > 800 and co[1] < 220:
-                            self.swipe(760, 160, 330, 530)
-                        elif co[0] < 500:
-                            self.swipe_left()
-                        elif co[0] > 800:
-                            self.swipe_right()
-                        elif co[1] > 360:
-                            self.swipe_down()
-                        elif co[1] < 360:
-                            self.swipe_up()
-                        self.better_sleep((1, 2))
-                        return self.recenter()
+
+            x, y = co[0] - 10, co[1] - 10
+            x2, y2 = co[0] + 50, co[1] + 50
+            # Fill the specified region with dark gray color
+            cv2.rectangle(image, (x, y), (x2, y2), (50, 50, 50), -1)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = self.get_neighboring_image(image=image, center_point=co)
+            first_try = image[0:35, :]
+            second_try = image[-30:, :]
+
+            word = ''
+
+            first = self.extract_text(first_try, allowlist="0123456789KM")
+            second = self.extract_text(second_try, allowlist="0123456789KM")
+
+            if re.match(r'\d+KM', second):
+                word = second
+            if re.match(r'\d+KM', first):
+                word = first
+            print(word)
+            if re.match(r'\d+KM', word):
+                if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
+                    if co[0] < 500 and co[1] < 220:
+                        self.swipe(330, 160, 760, 530)
+                    elif co[0] < 500 and co[1] > 550:
+                        self.swipe(330, 530, 760, 160)
+                    elif co[0] > 800 and co[1] > 550:
+                        self.swipe(980, 530, 330, 160)
+                    elif co[0] > 800 and co[1] < 220:
+                        self.swipe(760, 160, 330, 530)
+                    elif co[0] < 500:
+                        self.swipe_left()
+                    elif co[0] > 800:
+                        self.swipe_right()
+                    elif co[1] > 360:
+                        self.swipe_down()
+                    elif co[1] < 360:
+                        self.swipe_up()
+                    self.better_sleep((1, 2))
+                    return self.recenter()
 
     @get_name
     def scan_gem(self):
@@ -553,10 +523,14 @@ class GatherGem(Task):
 
         for second_string in ["left", "mid", "right"]:
             for first_string in ["up", "mid", "down"]:
-                self.check_if_kill()
-                co = self.validate_co(self.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}", confidence=0.82))
+
+                co = self.validate_co(
+                    self.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}",
+                                  confidence=0.82))
                 if co is None:
-                    co = self.validate_co(self.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}", confidence=0.82))
+                    co = self.validate_co(
+                        self.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}",
+                                      confidence=0.82))
                 if co is not None:
                     self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                     if self.already_mining(co[0], co[1], screen):
@@ -572,7 +546,8 @@ class GatherGem(Task):
                         self.check_download_page()
                         self.leave_kd_buff()
                         if self.check_log_back():
-                            self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
+                            self.print(
+                                "You interrupted gem gathering by connecting from an other device, bot is restarting it")
                             return self.run(self.end_time)
                         screen = self.adb.get_cv2_img()
                         cv_image = screen[0:100, 0:800]
@@ -597,7 +572,7 @@ class GatherGem(Task):
                             break
                         self.print("Trying to send the nearest troop..")
                         if self.send_nearest_troop_gem():
-                            if self.find_img(target="new_troops_button",confidence=0.70):
+                            if self.find_img(target="new_troops_button", confidence=0.70):
                                 self.send_new_troop()
                             break
                         else:
@@ -622,7 +597,8 @@ class GatherGem(Task):
                             if scan_frequency_timer >= random_wait:
 
                                 if self.check_log_back():
-                                    self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
+                                    self.print(
+                                        "You interrupted gem gathering by connecting from an other device, bot is restarting it")
                                     return self.run(self.end_time)
                                 self.run_game()
                                 timer_image = self.adb.get_cv2_img()
@@ -631,8 +607,10 @@ class GatherGem(Task):
                                 if self.find_cross_source(cross_image):
                                     return self.adjusted_leave_city(x_click, y_click)
                                 if self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_experimental"):
-                                    if self.find_img(target="back_normal_view", source=back_image, confidence=0.9) is not None:
-                                        self.print("Bot detected a troop is going back to the city, now bypassing the sleep time..")
+                                    if self.find_img(target="back_normal_view", source=back_image,
+                                                     confidence=0.9) is not None:
+                                        self.print(
+                                            "Bot detected a troop is going back to the city, now bypassing the sleep time..")
                                         break
                                     if self.free_troop_commander_list():
                                         self.print("Bot detected a troop is free, now bypassing the sleep time..")
@@ -711,7 +689,7 @@ class GatherGem(Task):
 
     @get_name
     def swipe_scan(self, scan, direction):
-        self.check_if_kill()
+
         self.script_pause()
         # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
         direction()
@@ -750,11 +728,11 @@ class GatherGem(Task):
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
-        self.better_sleep((0.5,0.7))
+        self.better_sleep((0.5, 0.7))
         return scan()
 
     @get_class
-    def run(self, end_time = None ):
+    def run(self, end_time=None):
         """
                    Gather gems
                    """
@@ -773,20 +751,20 @@ class GatherGem(Task):
         randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
                                    self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
         # print(f"{randomization = }")
-        self.check_if_kill()
+
         radius = (self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 50) // 10)
         width = radius + 1
         height = radius + 1
         starting_time = time()
         time_restart = time()
         # print(self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'))
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') > self.data[str(self.sel)]['schedules'][
-            self.current_profile].get('gather_gem_duration2'):
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') > \
+                self.data[str(self.sel)]['schedules'][
+                    self.current_profile].get('gather_gem_duration2'):
             self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1'], \
                 self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'] = \
                 self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'], \
                     self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1']
-
 
         if self.end_time is None:
             self.end_time = starting_time + (
@@ -823,13 +801,13 @@ class GatherGem(Task):
                     time_restart = time()
 
             pil_image = self.adb.get_curr_device_screen_img()
-            cv_image =self.pil_to_array(pil_image)
+            cv_image = self.pil_to_array(pil_image)
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cropped_image = cv_image[0:100, 0:800]
             if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
                 self.print("Block icon detected. Cancelling the function !")
                 return
-            self.check_if_kill()
+
             self.scan_gem()
             self.check_reconnect(cv_image)
             self.check_log_back()
@@ -902,7 +880,6 @@ class GatherGem(Task):
                     self.check_captcha(False)
                     self.leave_kd_buff()
                     self.swipe_scan(self.scan_gem, self.swipe_left)
-
 
                     for i in range(height):
                         if self.end_time < time(): return

@@ -28,10 +28,11 @@ class DailyChest2(Task):
             if co is not None:
                 self.click(uniform(1102, 1030), uniform(92, 118))
                 self.better_sleep((2, 4))
+
     @get_name
     def claim_legendary_chest(self):
         try:
-            co = self.find_img(target='legendary_chest_tiny',confidence=0.7)
+            co = self.find_img(target='legendary_chest_tiny', confidence=0.7)
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))
                 self.better_sleep((1.7, 3))

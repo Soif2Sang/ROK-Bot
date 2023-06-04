@@ -49,8 +49,8 @@ class ClearFog(Task):
                 return self.run(starting_time)
             self.check_reconnect()
             if not count:
-                scout =self.data[str(self.sel)]['schedules'][self.current_profile]["scout_camp"]
-                x, y = scout[0],scout[1]
+                scout = self.data[str(self.sel)]['schedules'][self.current_profile]["scout_camp"]
+                x, y = scout[0], scout[1]
                 self.click(uniform(x - 10, x + 10), uniform(y - 10, y - 10))
                 self.better_sleep((1.25, 1.75))
                 co = self.find_img(target="scout_button")
@@ -67,7 +67,8 @@ class ClearFog(Task):
                             sleep(5)
                             co = self.find_img(target="scout_button2")
                 if co is None:
-                    self.print("Unable to find the scout button, try to place the building in the center of your city so the bot can see the icons.")
+                    self.print(
+                        "Unable to find the scout button, try to place the building in the center of your city so the bot can see the icons.")
                     return
                 self.click(uniform(co[0], co[0] + 30), uniform(co[1], co[1] + 30))
                 self.better_sleep((3, 4.5))
@@ -93,6 +94,6 @@ class ClearFog(Task):
                 time_to_sleep = randint(5, 10)
                 self.print(f"All scout seems occupied, waiting for {time_to_sleep:0.1f} seconds")
                 count = True
-                for _ in range(time_to_sleep*10):
+                for _ in range(time_to_sleep * 10):
                     self.script_pause()
                     sleep(0.1)

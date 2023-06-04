@@ -20,6 +20,7 @@ from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
 from tasks.Task_gather_gem import GatherGem
 from tasks.Task_gather_rss import GatherRss
+from tasks.Task_gather_rss2 import GatherRss2
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
 from tasks.Task_maraudeurs import Maraudeurs
@@ -52,20 +53,20 @@ class TaskRunner(Task):
     def set_current_task(self, name):
         names = {
             "ClaimCampaign": "Claiming campaign rewards",
-            "CollectResource":"Collecting city rss",
-            "BuyMerchant" : "Buying merchant..",
+            "CollectResource": "Collecting city rss",
+            "BuyMerchant": "Buying merchant..",
             "GatherRss": "Gathering Rss",
-            "GatherGem":"Gathering Gem",
+            "GatherGem": "Gathering Gem",
             "UseEnhancedBuff": "Enabling enhanced buffs",
             "AllianceDonation": "Donating to alliance",
-            "HuntBarbarians":"Killing barbarians",
-            "ClearFog" : "Exploring fog",
-            "DailyVip":"Daily VIP rewards",
-            "DailyChest":"Daily Chest rewards",
-            "BarbarianFort":"Launching fort",
-            "HealTroop":"Healing troops",
-            "ProduceMaterials":"Producing materials",
-            "AutoUpgrade":"Upgrading the city..",
+            "HuntBarbarians": "Killing barbarians",
+            "ClearFog": "Exploring fog",
+            "DailyVip": "Daily VIP rewards",
+            "DailyChest": "Daily Chest rewards",
+            "BarbarianFort": "Launching fort",
+            "HealTroop": "Healing troops",
+            "ProduceMaterials": "Producing materials",
+            "AutoUpgrade": "Upgrading the city..",
             "AllianceHelp": "Helping the alliance..",
             "DailyQuests": "Claiming daily quests..",
             "TroopTraining": "Training troop..",
@@ -97,12 +98,12 @@ class TaskRunner(Task):
             "RssTransfer": "Transferring rss.."
         }
 
-        return names.get(name,name)
+        return names.get(name, name)
 
     def execute_tasks(self, lib_tasks, profile):
         self.run_game()
         screen = self.adb.get_cv2_img()
-        co = self.find_img(target="hide_quests",source=screen)
+        co = self.find_img(target="hide_quests", source=screen)
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         current_task = 1
@@ -123,7 +124,7 @@ class TaskRunner(Task):
                 AllianceHelp(self).run()
 
             if func.task_name() in ["AllianceDonation", "CollectResource", "BuyMerchant", "ClearFog", "HealTroop",
-                                 "DailyChest","AutoUpgrade","ProduceMaterials","TroopTraining"]:
+                                    "DailyChest", "AutoUpgrade", "ProduceMaterials", "TroopTraining"]:
                 self.go_city()
             try:
                 # print(f"{ func.__name__ in ['gather_rss','gather_gem'] =}")
@@ -133,16 +134,16 @@ class TaskRunner(Task):
                     if self.find_img(target="block_icon", source=cv_image, confidence=0.90) is None:
                         func.run()
                     else:
-                        self.print("Bot detected that you got restricted","red")
+                        self.print("Bot detected that you got restricted", "red")
                 else:
                     if func.task_name() in ["GatherRss", "GatherGem"]:
                         self.check_captcha()
                     func.run()
                 self.better_sleep((1, 2))
             except Exception as e:
-                self.print(f"Exception during {func.task_name()}","red")
+                self.print(f"Exception during {func.task_name()}", "red")
                 exception = traceback.format_exc()
-                self.print(f"{exception}","red")
+                self.print(f"{exception}", "red")
                 self.leave_game()
                 self.better_sleep((5, 10))
                 self.run_game()
@@ -153,7 +154,8 @@ class TaskRunner(Task):
             #     self.better_sleep((0.795, 1.2))
             # self.check_reconnect()
         self.check_captcha()
-    def get_available_task(self, profile:str =None):
+
+    def get_available_task(self, profile: str = None):
         # self.data = self.update_data()
         if profile is None:
             profile = self.data.get(self.sel)
@@ -168,7 +170,10 @@ class TaskRunner(Task):
         if profile.get('buy_merchant', False):
             lib_tasks.append(BuyMerchant(self))
         if profile.get('gather_rss', False):
-            lib_tasks.append(GatherRss(self))
+            if not profile.get('gather_rss_method'):
+                lib_tasks.append(GatherRss(self))
+            else:
+                lib_tasks.append(GatherRss2(self))
         if profile.get('use_enhanced_buff', False):
             lib_tasks.append(UseEnhancedBuff(self))
         if profile.get('check_donation', False):
@@ -189,13 +194,13 @@ class TaskRunner(Task):
             lib_tasks.append(ProduceMaterials(self))
         if profile.get('claim_daily_chest', False):
             lib_tasks.append(DailyChest(self))
-        if profile.get('claim_daily_quests',False):
+        if profile.get('claim_daily_quests', False):
             lib_tasks.append(DailyQuests(self))
         if profile.get('auto_upgrade', False):
             lib_tasks.append(UpgradeCity(self))
         if profile.get('train_troops', False):
             lib_tasks.append(TroopTraining(self))
-        if profile.get('transfer_enable',False):
+        if profile.get('transfer_enable', False):
             lib_tasks.append(RssTransfer(self))
         if profile.get('upgrade_city', False):
             lib_tasks.append(UpgradeCity(self))
@@ -211,7 +216,7 @@ class TaskRunner(Task):
                 lib_tasks[a], lib_tasks[b] = lib_tasks[b], lib_tasks[a]
 
         if "BarbarianFort" in tasks_name:
-            for element in ["GatherRss", "GatherGem","hunt_barbarians"]:
+            for element in ["GatherRss", "GatherGem", "hunt_barbarians"]:
                 if element in tasks_name:
                     a = tasks_name.index("BarbarianFort")
                     b = tasks_name.index(element)
@@ -319,7 +324,7 @@ class TaskRunner(Task):
     @get_name
     def findNextChar(self):
         screen = self.adb.get_cv2_img()
-        logged_icon = self.find_img(source=screen,target="logged_icon")
+        logged_icon = self.find_img(source=screen, target="logged_icon")
         stars_all = self.adb.find_multiple_img(target="star")
         stars_bellow = []
         for star in stars_all:
@@ -327,15 +332,15 @@ class TaskRunner(Task):
                 minus = 0
             else:
                 minus = 40
-            if logged_icon[1]-minus < star[1]:
+            if logged_icon[1] - minus < star[1]:
                 stars_bellow.append(star)
-        stars_bellow.sort(key=lambda co:co[1])
+        stars_bellow.sort(key=lambda co: co[1])
         final = []
         for star in stars_bellow:
             add = True
-            for i in range(-3,4):
-                for y in range(-3,4):
-                    if (star[0]+i,star[1]+y) in final:
+            for i in range(-3, 4):
+                for y in range(-3, 4):
+                    if (star[0] + i, star[1] + y) in final:
                         add = False
             if add:
                 final.append(star)
@@ -344,10 +349,10 @@ class TaskRunner(Task):
                 final.pop(0)
         if final:
             final = final[0]
-            self.click(final[0]+uniform(-100,-50),final[1]+uniform(-5,5))
+            self.click(final[0] + uniform(-100, -50), final[1] + uniform(-5, 5))
 
     @get_name
-    def change_character_param(self, co_first, nb_chars=0, trigger_stop = False):
+    def change_character_param(self, co_first, nb_chars=0, trigger_stop=False):
         self.print("Switching Character")
         self.set_status(f"Switching Character")
         deadstop = 0
@@ -360,9 +365,9 @@ class TaskRunner(Task):
                     self.run_game()
                     self.print(f"Error in character switch. Restarting the character switch..")
                     self.check_captcha()
-                    return self.change_character_param(co_first, nb_chars, trigger_stop = True)
+                    return self.change_character_param(co_first, nb_chars, trigger_stop=True)
                 while trigger_stop:
-                    self.print(f"Error in character switch. Bot is now stopped","red")
+                    self.print(f"Error in character switch. Bot is now stopped", "red")
                     self.set_status("Error.")
                     self.script_pause()
                     sleep(0.1)
@@ -415,10 +420,8 @@ class TaskRunner(Task):
             self.click(x, y)
             return False
 
-
-
     @get_name
-    def start_emulator(self, emulator:str):
+    def start_emulator(self, emulator: str):
         path = get_path()
         cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
         self.print(f'Executing {cmd}')
@@ -437,16 +440,16 @@ class TaskRunner(Task):
     def run2(self):
         print("starting")
         self.set_status = lambda text, color=None: print(text)
-        self.set_text = lambda text,color=None: print(text)
+        self.set_text = lambda text, color=None: print(text)
         self.set_sel("0")
         self.adb.connect_to_device()
         self.data = self.update_data()
-        i=0
+        i = 0
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
         for i in range(loop_task):
             loop_time = time()
             for emulator in sorted(self.data):
-                if emulator!="user":
+                if emulator != "user":
                     self.set_sel(emulator)
                     self.start_emulator(emulator)
                     self.print("Changing adb..")
@@ -464,7 +467,7 @@ class TaskRunner(Task):
                     self.check_captcha()
                     # First character
                     self.current_profile = "1"
-                    self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
+                    self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
                     self.better_sleep((2.2, 4))
                     self.go_city()
                     city_upgrade = UpgradeCity(self)
@@ -474,10 +477,8 @@ class TaskRunner(Task):
 
                     city_upgrade.run()
 
-
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
                                                                                               False):
-
 
                         co_first = self.get_first_character()
                         boolean = True
@@ -517,12 +518,12 @@ class TaskRunner(Task):
                 ttw1, ttw2 = self.data.get("0").get("time_to_wait_loop1", 60), self.data.get("0").get(
                     "time_to_wait_loop2", 90)
 
-                #self.print("")
+                # self.print("")
                 self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                #self.print("")
+                # self.print("")
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
                 self.set_timer(time_before_redo_tasks)
@@ -555,8 +556,9 @@ class TaskRunner(Task):
             # nb_profile = 0
             can_go = None
             when_go = None
-            if not (self.data[self.sel]['schedules']["1"]['enabled'] or self.data[self.sel]['schedules']["2"]['enabled'] or self.data[self.sel]['schedules']["3"]['enabled']):
-                self.print("There is no profile enabled.","red")
+            if not (self.data[self.sel]['schedules']["1"]['enabled'] or self.data[self.sel]['schedules']["2"][
+                'enabled'] or self.data[self.sel]['schedules']["3"]['enabled']):
+                self.print("There is no profile enabled.", "red")
 
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
@@ -566,9 +568,9 @@ class TaskRunner(Task):
                         when_go = 0
                         print(f"Profile {profile} enabled")
                         for t in self.data[self.sel]['schedules'][profile]["timing"]:
-                            if is_in_frametime(t[0],t[1]):
+                            if is_in_frametime(t[0], t[1]):
                                 can_go = True
-                                when_go = random_time_in_frametime(t[0],t[1])
+                                when_go = random_time_in_frametime(t[0], t[1])
                                 self.print(f"Profile {profile} able to run")
                                 break
                         if not can_go:
@@ -581,23 +583,24 @@ class TaskRunner(Task):
                     else:
                         print(f"Profile {profile} no rules set")
                     self.current_profile = profile
-                    self.print(f"Profile n°{profile} enabled ! ","blue")
+                    self.print(f"Profile n°{profile} enabled ! ", "blue")
 
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character"):
                         self.print(f"Character n°1", "blue")
                     # First character
-                    self.execute_tasks(self.get_available_task(profile),profile)
+                    self.execute_tasks(self.get_available_task(profile), profile)
 
-                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",False):
+                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
+                                                                                              False):
                         co_first = self.get_first_character()
                         self.wait_until_connected()
                         # Characters remaining
                         boolean = True
                         nb_characters = 2
                         while boolean:
-                            self.print(f"Character n°{nb_characters}","blue")
+                            self.print(f"Character n°{nb_characters}", "blue")
                             nb_characters += 1
-                            self.execute_tasks(self.get_available_task(profile),profile)
+                            self.execute_tasks(self.get_available_task(profile), profile)
                             self.better_sleep((1.2, 4))
 
                             boolean = self.change_character_param(co_first, nb_characters)
@@ -609,12 +612,12 @@ class TaskRunner(Task):
                 ttw1 = self.data.get(self.sel).get("time_to_wait_loop1", 60)
                 ttw2 = self.data.get(self.sel).get("time_to_wait_loop2", 90)
                 heures, minutes = divmod((int(time()) - loop_time), 60)
-                minutes,secondes = divmod(int(minutes), 60)
+                minutes, secondes = divmod(int(minutes), 60)
                 self.print(f"Run nb°{i} took {int(heures):02d}:{int(minutes):02d}:{int(secondes):02d} to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes","#f5b400")
+                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes", "#f5b400")
 
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     if time_before_redo_tasks < 600:
@@ -624,9 +627,10 @@ class TaskRunner(Task):
 
                 self.set_timer(time_before_redo_tasks)
 
-        self.print(f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.","green")
+        self.print(
+            f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.",
+            "green")
         return
-
 
     @get_name
     def run3(self):
@@ -634,12 +638,12 @@ class TaskRunner(Task):
         self.set_sel(self.tile.get_enabled_sel()[0])
         # self.adb.connect_to_device()
         self.data = self.update_data()
-        i=0
+        i = 0
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
         for i in range(loop_task):
             loop_time = time()
 
-            first=self.tile.get_enabled_sel()[0]
+            first = self.tile.get_enabled_sel()[0]
             for emulator in self.tile.get_enabled_sel():
                 self.set_sel(emulator)
                 self.start_emulator(emulator)
@@ -659,20 +663,18 @@ class TaskRunner(Task):
                 # First character
                 self.current_profile = "1"
                 self.print("Reminder : only the first profile is available")
-                self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
+                self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
                 self.better_sleep((2.2, 4))
-                self.go_city()
-                city_upgrade = UpgradeCity(self)
-                city_upgrade.setup_view()
-
-                for i in range(2):
-                    sleep(5)
-                    city_upgrade.run()
-
+                # self.go_city()
+                # city_upgrade = UpgradeCity(self)
+                # city_upgrade.setup_view()
+                #
+                # for i in range(2):
+                #     sleep(5)
+                #     city_upgrade.run()
 
                 if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
                                                                                           False):
-
 
                     co_first = self.get_first_character()
                     boolean = True
@@ -690,7 +692,7 @@ class TaskRunner(Task):
                         self.check_mge()
                         self.check_captcha()
 
-                        self.execute_tasks(self.get_available_task(self.current_profile),self.current_profile)
+                        self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
                         self.better_sleep((2.2, 4))
 
                         nb_characters += 1
@@ -708,13 +710,13 @@ class TaskRunner(Task):
             if self.data.get(first).get("loop_task"):
                 # ttw1, ttw2 = self.data.get(first).get("time_to_wait_loop1", 60), self.data.get(first).get(
                 #     "time_to_wait_loop2", 90)
-                ttw1,ttw2 = 1,1
-                #self.print("")
+                ttw1, ttw2 = 1, 1
+                # self.print("")
                 self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                #self.print("")
+                # self.print("")
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
                 self.set_timer(time_before_redo_tasks)
@@ -727,5 +729,3 @@ class TaskRunner(Task):
                 for _ in range(time_before_redo_tasks):
                     self.script_pause()
                     sleep(1)
-
-
