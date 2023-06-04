@@ -24,12 +24,11 @@ class BuyMerchant(Task):
     def manage_artefact_shop(self):
         co = self.find_img(target="artefact_shop", confidence=0.7)
         if co is not None:
-            self.click(co[0] + uniform(10,35), co[1] + uniform(0,30))
-            self.better_sleep((1,2))
-            if(co:=self.find_img("close_window")):
-                self.click(uniform(1100,1120),uniform(73,80))
+            self.click(co[0] + uniform(10, 35), co[1] + uniform(0, 30))
+            self.better_sleep((1, 2))
+            if (co := self.find_img("close_window")):
+                self.click(uniform(1100, 1120), uniform(73, 80))
                 self.better_sleep((1, 2))
-
 
     @get_name
     def buy_from_shop(self):
@@ -47,7 +46,7 @@ class BuyMerchant(Task):
                     total += 1
                 x1, y1 = uniform(586, 870), uniform(457, 487)
                 x2, y2 = x1 + uniform(-10, 10), y1 - uniform(120, 150)
-                if i!=3:
+                if i != 3:
                     self.swipe(x1, y1, x2, y2)
             if y != 0:
                 break
@@ -59,6 +58,7 @@ class BuyMerchant(Task):
             self.click(x, y)
         if total:
             self.print(f"Bought {total} items.")
+
     @get_class
     def run(self):
         self.manage_artefact_shop()
@@ -67,7 +67,7 @@ class BuyMerchant(Task):
             return self.print("Merchant is not here.")
         if not filter_coordinate(co):
             return self.print("Merchant seems inaccessible.")
-        self.print("Robbing the shop.","green")
+        self.print("Robbing the shop.", "green")
         self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
         self.buy_from_shop()
         self.click(uniform(1077, 1100), uniform(64, 95))

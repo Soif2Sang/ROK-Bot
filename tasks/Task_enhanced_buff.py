@@ -77,7 +77,7 @@ class UseEnhancedBuff(Task):
                 self.print(f"Trying to enable {element} boost")
                 co = self.find_img(target="no")
                 if co is not None:
-                    self.print(f"{element} is already enabled","red")
+                    self.print(f"{element} is already enabled", "red")
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(1, 15))
                     self.better_sleep((1.9, 3))
                 if element == "speed":

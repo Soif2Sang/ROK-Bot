@@ -1,10 +1,10 @@
 import math
-import math
 import re
 from datetime import datetime
 from random import uniform, randint, random, choice
 from time import sleep, time
 
+import cv2
 from PIL import Image
 
 from tasks.Task import Task
@@ -34,7 +34,6 @@ class Maraudeurs(Task):
     def task_name(self):
         return "Maraudeurs"
 
-
     @get_name
     def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
         if x_click > 950:
@@ -52,9 +51,9 @@ class Maraudeurs(Task):
 
     @get_name
     def adjusted_leave_city(self, x_click: int, y_click: int) -> None:
-        self.check_if_kill()
+
         self.zoom_out_city()
-        self.check_if_kill()
+
         self.better_sleep((1, 2))
         self.little_zoom_from_x_y(x_click, y_click)
         return self.better_sleep((0.7, 1.4))
@@ -101,7 +100,7 @@ class Maraudeurs(Task):
             return False
 
     @get_name
-    def recall(self, nb_troop: int=-1, wait=True):
+    def recall(self, nb_troop: int = -1, wait=True):
         self.print('Recalling troops')
         # print(nb_troop)
         x, y = uniform(1170, 1183), uniform(160, 175)
@@ -111,7 +110,7 @@ class Maraudeurs(Task):
         if nb_troop == -1:
             nb_troop = self.nb_hunter
         breakint = 0
-        while nb_to_go > 0 and breakint!=4 :
+        while nb_to_go > 0 and breakint != 4:
             co = self.adb.find_multiple_img(target="return_button")
             # print(co)
             while (co is None and co != []) and breakint != 4:
@@ -142,17 +141,17 @@ class Maraudeurs(Task):
                     self.print("Waiting for the troop to come back..")
                 sleep(10)
 
-    def distance(self,point1, point2):
+    def distance(self, point1, point2):
         """Calculates the Euclidean distance between two points."""
         x1, y1 = point1
         x2, y2 = point2
         return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
     @get_name
-    def nearest_point(self,points):
+    def nearest_point(self, points):
         """Finds the closest point to the center of the grid."""
         center = (640, 360)
-        if (co:=self.find_img("stand_by",confidence=0.7)):
+        if (co := self.find_img("stand_by", confidence=0.7)):
             closest_point = co
         else:
             closest_point = points[0]
@@ -172,10 +171,10 @@ class Maraudeurs(Task):
         self.print(f'Check if AP pop-op box is detected')
         if self.find_img(target="ap_bottle"):
             self.print(f'AP pop-op box Detected')
-            if (co:=self.find_img(target="daily_ap_claim")):
+            if (co := self.find_img(target="daily_ap_claim")):
                 x, y = co[0] + uniform(0, 30), co[1] + uniform(0, 20)
                 self.click(x, y)
-                self.print("Claiming Free AP","green")
+                self.print("Claiming Free AP", "green")
                 self.better_sleep((1.325, 1.795))
                 self.close_windows()
                 if (co := self.find_img('march_bar')):
@@ -183,18 +182,18 @@ class Maraudeurs(Task):
                     self.better_sleep((2, 3))
                 return False
             if self.find_img('ap_use'):
-                self.click(975,260)
+                self.click(975, 260)
                 self.better_sleep((1.325, 1.795))
-                self.click(800,260)
+                self.click(800, 260)
                 self.better_sleep((1.325, 1.795))
                 self.close_windows()
-                while(co:= self.find_img('march_bar')):
+                while (co := self.find_img('march_bar')):
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(0, 10))
                     self.better_sleep((2, 3))
                 return False
                 # self.scan_maraudeur()
             self.close_windows()
-            self.click(uniform(700,800),uniform(300,400))
+            self.click(uniform(700, 800), uniform(300, 400))
             return True
         self.print(f'AP pop-op box Not detected')
         return False
@@ -213,12 +212,12 @@ class Maraudeurs(Task):
             self.script_pause()
             self.check_reconnect()
             self.check_captcha()
-            self.better_sleep((8,15))
+            self.better_sleep((8, 15))
             print(f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian..")
 
     def select_all_troop_zommed_out(self):
         for i in range(2):
-            self.click(1226,220)
+            self.click(1226, 220)
             sleep(0.01)
         sleep(1.1)
 
@@ -246,7 +245,7 @@ class Maraudeurs(Task):
         # self.better_sleep((1, 2))
 
         self.click(co[0], co[1])
-        self.better_sleep((3,4))
+        self.better_sleep((3, 4))
 
         cos = self.adb.find_multiple_img(target=f"maraudeur_icon_zoom", confidence=0.75)
         final = []
@@ -268,7 +267,7 @@ class Maraudeurs(Task):
 
         self.select_troops()
 
-        while(co:= self.find_img('march_bar')):
+        while (co := self.find_img('march_bar')):
             self.click(co[0] + uniform(0, 30), co[1] + uniform(0, 10))
             self.better_sleep((2, 3))
 
@@ -416,7 +415,7 @@ class Maraudeurs(Task):
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
-        self.better_sleep((0.5,0.7))
+        self.better_sleep((0.5, 0.7))
         return scan()
 
     @get_name
@@ -535,50 +534,67 @@ class Maraudeurs(Task):
                     self.close_windows()
         return hunters
 
-    def get_neighboring_image(self,image,center_point, grid_width = 1280, grid_height = 720, up=50, left=20, right=60, down=85):
+    def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
+                              down=85):
         """Gets the neighboring points around a center point on the grid."""
         x, y = center_point[0], center_point[1]
-        print(x,y)
+        print(x, y)
         min_x = max(0, x - left)
         max_x = min(grid_width - 1, x + right)
         min_y = max(0, y - up)
         max_y = min(grid_height - 1, y + down)
 
-        return image[min_y:max_y,min_x:max_x]
+        return image[min_y:max_y, min_x:max_x]
 
-
+    @get_name
     def recenter(self):
         image = self.adb.get_cv2_img()
-        if (co:=self.find_img(source=image,target="green_home_button")):
+        if (co := self.find_img(source=image, target="green_home_button")):
             # reader = Reader()
-            image = self.get_neighboring_image(image = image,center_point = co)
-            # words, _ = reader.extract_text(img=image, allowlist=None)
-            words = self.extract_all_text()
-            for word in words:
-                if re.findall(r'\d+KM',word):
-                    print(word)
-                    if word.replace("KM","").isnumeric() and int(word.replace("KM","")) > 65:
-                        if co[0] < 720 and co[1] < 220:
-                            self.swipe(330, 160, 760, 530)
-                        elif co[0] < 720 and co[1] > 600:
-                            self.swipe(760, 530, 330, 160)
-                        elif co[0] > 720 and co[1] > 600:
-                            self.swipe(330, 530, 980, 160)
-                        elif co[0] > 720 and co[1] < 220:
-                            self.swipe(760, 530, 330, 160)
-                        elif co[0] < 720:
-                            self.swipe_left()
-                        elif co[0] > 720:
-                            self.swipe_right()
-                        elif co[1] > 360:
-                            self.swipe_down()
-                        elif co[1] < 360:
-                            self.swipe_up()
-                        self.better_sleep((1, 2))
-                        return self.recenter()
+
+            x, y = co[0] - 10, co[1] - 10
+            x2, y2 = co[0] + 50, co[1] + 50
+            # Fill the specified region with dark gray color
+            cv2.rectangle(image, (x, y), (x2, y2), (50, 50, 50), -1)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = self.get_neighboring_image(image=image, center_point=co)
+            first_try = image[0:35, :]
+            second_try = image[-30:, :]
+
+            word = ''
+
+            first = self.extract_text(first_try, allowlist="0123456789KM")
+            second = self.extract_text(second_try, allowlist="0123456789KM")
+
+            if re.match(r'\d+KM', second):
+                word = second
+            if re.match(r'\d+KM', first):
+                word = first
+            print(word)
+            if re.match(r'\d+KM', word):
+                if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
+                    if co[0] < 500 and co[1] < 220:
+                        self.swipe(330, 160, 760, 530)
+                    elif co[0] < 500 and co[1] > 550:
+                        self.swipe(330, 530, 760, 160)
+                    elif co[0] > 800 and co[1] > 550:
+                        self.swipe(980, 530, 330, 160)
+                    elif co[0] > 800 and co[1] < 220:
+                        self.swipe(760, 160, 330, 530)
+                    elif co[0] < 500:
+                        self.swipe_left()
+                    elif co[0] > 800:
+                        self.swipe_right()
+                    elif co[1] > 360:
+                        self.swipe_down()
+                    elif co[1] < 360:
+                        self.swipe_up()
+                    self.better_sleep((1, 2))
+                    return self.recenter()
 
     @get_class
-    def run(self, end_time = None ):
+    def run(self, end_time=None):
         """
        Gather gems
        """
@@ -588,7 +604,7 @@ class Maraudeurs(Task):
         self.leave_city()
         # print("premier leave city")
         self.better_sleep((1.5, 2))
-        if  end_time is None:
+        if end_time is None:
             self.nb_hunter = self.deploy_hunter()
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
@@ -604,13 +620,13 @@ class Maraudeurs(Task):
         starting_time = time()
         time_restart = time()
         # print(self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'))
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') > self.data[str(self.sel)]['schedules'][
-            self.current_profile].get('gather_gem_duration2'):
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') > \
+                self.data[str(self.sel)]['schedules'][
+                    self.current_profile].get('gather_gem_duration2'):
             self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1'], \
                 self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'] = \
                 self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'], \
                     self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1']
-
 
         if self.end_time is None:
             self.end_time = starting_time + (300 * 60)
@@ -697,7 +713,7 @@ class Maraudeurs(Task):
                     self.swipe_scan(self.scan_maraudeur, self.swipe_left)
                     self.recenter()
 
-                    if self.end_time < time():return self.recall()
+                    if self.end_time < time(): return self.recall()
 
                     for i in range(height):
                         if self.end_time < time(): return self.recall()
@@ -742,7 +758,7 @@ class Maraudeurs(Task):
             self.better_sleep((1.525, 2.795))
             # self.leave_city()
             # print("second leave cit")
-            self.click(700,400)
+            self.click(700, 400)
             randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
                                        self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500),
                                        randomization)

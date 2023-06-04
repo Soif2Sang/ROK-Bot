@@ -77,7 +77,7 @@ class UpgradeCity(Task):
 
     @get_name
     def recursive_upgrade(self):
-        co = self.find_img(target="upgrade_build",confidence=0.7)
+        co = self.find_img(target="upgrade_build", confidence=0.7)
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
@@ -88,8 +88,9 @@ class UpgradeCity(Task):
             else:
                 self.click(uniform(916, 1050), uniform(530, 560))
                 self.better_sleep((1.7, 2.2))
-                if (co:=self.find_img(target="hire_constructor")) is not None or (co:=self.find_img(target="hire_constructor2")):
-                    self.click(co[0] + uniform(0,110), co[1] + uniform(0,40))
+                if (co := self.find_img(target="hire_constructor")) is not None or (
+                co := self.find_img(target="hire_constructor2")):
+                    self.click(co[0] + uniform(0, 110), co[1] + uniform(0, 40))
                     self.better_sleep((1.7, 2.2))
                     self.click(uniform(916, 1050), uniform(530, 560))
                     self.better_sleep((1.7, 2.2))
@@ -116,15 +117,15 @@ class UpgradeCity(Task):
         y = uniform(517, 560)
         # print(x,y)
         self.click(x, y)
-        self.better_sleep((1.9,3))
+        self.better_sleep((1.9, 3))
         x = uniform(1096, 1120)
         y = uniform(186, 210)
         self.click(x, y)
-        self.better_sleep((1.9,3))
+        self.better_sleep((1.9, 3))
         x = uniform(1223, 1241)
         y = uniform(28, 46)
         self.click(x, y)
-        self.better_sleep((1.9,3))
+        self.better_sleep((1.9, 3))
 
     @get_name
     def is_city_hall_upgradable(self):
@@ -147,8 +148,10 @@ class UpgradeCity(Task):
 
     @get_class
     def run1(self):
-        for x, y in [self.pass_coordinates(), self.barracks_coordinates(), self.archery_coordinates(), self.stable_coordinates(),
-                     self.siege_coordinates(), self.tavern_coordinates(), self.ch_coordinates(), self.hospital_coordinates(),
+        for x, y in [self.pass_coordinates(), self.barracks_coordinates(), self.archery_coordinates(),
+                     self.stable_coordinates(),
+                     self.siege_coordinates(), self.tavern_coordinates(), self.ch_coordinates(),
+                     self.hospital_coordinates(),
                      self.academy_coordinates(), self.alliance_center_coordinates(), self.scout_coordinates()]:
             self.setup_view()
             if not self.free_constructor():
@@ -171,22 +174,21 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone",confidence=0.92)
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2",confidence=0.92))
+        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.92)
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.92))
         upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.92))
-        upgrades_final = list(filter(lambda co: co[1]<480, upgrades_brut))
+        upgrades_final = list(filter(lambda co: co[1] < 480, upgrades_brut))
         return upgrades_final
-
 
     @get_class
     def run(self):
         self.setup_view()
         for i in range(2):
-            if (upgrades_final:=self.free_worker()):
+            if (upgrades_final := self.free_worker()):
                 current_build = upgrades_final[0]
-                self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
+                self.click(current_build[0] + uniform(-5, 5), current_build[1] + uniform(-20, 0))
                 self.better_sleep((0.9, 1.2))
-                self.click(current_build[0]+uniform(-5,5), current_build[1]+uniform(-20,0))
+                self.click(current_build[0] + uniform(-5, 5), current_build[1] + uniform(-20, 0))
                 self.better_sleep((0.9, 1.2))
                 self.recursive_upgrade()
                 self.better_sleep((0.9, 1.2))

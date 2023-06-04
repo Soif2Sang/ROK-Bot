@@ -34,19 +34,19 @@ class RssTransfer(Task):
         transport_capacity = default_image[558:590, 285:435]
         tax_rate = default_image[450:480, 374:420]
 
-        cv2.imwrite("transport.png",transport_capacity)
-        cv2.imwrite("tax.png",tax_rate)
-        transport_capacity = self.extract_text(transport_capacity,  allowlist="0123456789/,")
-        transport_capacity = int(transport_capacity.split("/")[1].replace(",",""))
+        cv2.imwrite("transport.png", transport_capacity)
+        cv2.imwrite("tax.png", tax_rate)
+        transport_capacity = self.extract_text(transport_capacity, allowlist="0123456789/,")
+        transport_capacity = int(transport_capacity.split("/")[1].replace(",", ""))
 
         tax_rate = self.extract_text(tax_rate, allowlist="0123456789%")
         print(tax_rate)
 
-        tax_rate = tax_rate.replace("%","")
-        if  len(tax_rate)  == 2 and tax_rate[0] == "8":
+        tax_rate = tax_rate.replace("%", "")
+        if len(tax_rate) == 2 and tax_rate[0] == "8":
             tax_rate = tax_rate[:-1]
         if len(tax_rate) == 3:
-            tax_rate  = tax_rate[:-1]
+            tax_rate = tax_rate[:-1]
         tax_rate = int(tax_rate)
 
         print(transport_capacity)
@@ -67,28 +67,27 @@ class RssTransfer(Task):
     #                                               config=r'--oem 1 --psm 13 -c tessedit_char_whitelist=0123456789/,')
     #     return int(native_text.split("/")[1].replace(",",""))
 
-
     @get_name
-    def setup_ui(self,deadstop = 0):
-        if deadstop ==3:
+    def setup_ui(self, deadstop=0):
+        if deadstop == 3:
             raise ValueError()
 
         city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
-        self.click(city[0]+uniform(-10,10),city[1]+uniform(-10,10))
-        self.better_sleep((1,2))
+        self.click(city[0] + uniform(-10, 10), city[1] + uniform(-10, 10))
+        self.better_sleep((1, 2))
         co = self.find_img(target="assist_button")
         if co is None:
             self.close_windows()
-            return self.setup_ui(deadstop = deadstop+1)
-        self.click(co[0]+ uniform(0,40),co[1] + uniform(0,20))
-        self.better_sleep((1,2))
+            return self.setup_ui(deadstop=deadstop + 1)
+        self.click(co[0] + uniform(0, 40), co[1] + uniform(0, 20))
+        self.better_sleep((1, 2))
 
     @get_name
-    def solve(self,path, sel, defaultApiKey=False):
-        return super().solve(path,sel,defaultApiKey)
+    def solve(self, path, sel, defaultApiKey=False):
+        return super().solve(path, sel, defaultApiKey)
 
     @get_name
-    def check_captcha(self,chest=True):
+    def check_captcha(self, chest=True):
         if not chest:
             super().check_captcha(chest)
             sleep(1)
@@ -96,20 +95,20 @@ class RssTransfer(Task):
 
     @get_name
     def send_rss(self, type):
-        types = {'food':uniform(210,230),
-                 'wood':uniform(300,320),
+        types = {'food': uniform(210, 230),
+                 'wood': uniform(300, 320),
                  'stone': uniform(390, 410),
-                 'gold':uniform(470,490)}
-        start = (uniform(589,597),types[type])
-        end = (uniform(1045,1100), types[type]+uniform(-10,10))
-        self.swipe(start[0],start[1],end[0],end[1])
-        self.better_sleep((0.7,1.4))
-        self.click(uniform(700,850),uniform(570,600))
+                 'gold': uniform(470, 490)}
+        start = (uniform(589, 597), types[type])
+        end = (uniform(1045, 1100), types[type] + uniform(-10, 10))
+        self.swipe(start[0], start[1], end[0], end[1])
+        self.better_sleep((0.7, 1.4))
+        self.click(uniform(700, 850), uniform(570, 600))
         self.better_sleep((0.7, 1.4))
 
     @get_class
-    def run(self,type = None,quantity = None):
-        if self.data[self.sel]['API_KEY'] =="":
+    def run(self, type=None, quantity=None):
+        if self.data[self.sel]['API_KEY'] == "":
             return self.print("This feature require a custom ApiKey")
         self.check_captcha()
 
@@ -118,22 +117,21 @@ class RssTransfer(Task):
         transportation_capacity = self.get_capacity()
 
         print(f"{transportation_capacity = }")
-        for type in ["food","wood","stone","gold"]:
+        for type in ["food", "wood", "stone", "gold"]:
 
             rss_sent = 0
-            transfert_wanted = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"transfer_{type}"] * 1_000_000
+            transfert_wanted = self.data[str(self.sel)]['schedules'][str(self.current_profile)][
+                                   f"transfer_{type}"] * 1_000_000
             loop = int(transfert_wanted / transportation_capacity)
             if transportation_capacity * loop < transfert_wanted:
                 loop += 1
             print(f"{transfert_wanted = }")
             for i in range(loop):
-
                 rss_sent += transportation_capacity
                 self.send_rss(type)
                 print(f"{type} amount sent : {rss_sent}")
-                self.better_sleep((1,2))
+                self.better_sleep((1, 2))
                 self.check_captcha(chest=True)
                 self.setup_ui()
-
 
         self.close_windows()

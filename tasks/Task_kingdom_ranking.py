@@ -476,7 +476,6 @@ class KingdomRanking(Task):
             print(array)
             rankings.writerow(array)
 
-
     def correct_image(self,
                       img: Image.Image,
                       crop_range: tuple,

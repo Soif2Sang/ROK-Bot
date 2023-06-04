@@ -56,9 +56,9 @@ class AllianceDonation(Task):
         if alliance_tech_logo is not None:
             self.click(alliance_tech_logo[0] + uniform(0, 30), alliance_tech_logo[1] + uniform(0, 15))
             self.better_sleep((2, 3))
-            donation_logo = self.find_img(target="tech_2",confidence=0.97)
+            donation_logo = self.find_img(target="tech_2", confidence=0.97)
             # if donation_logo is None:
-                # donation_logo = self.find_img(target="tech_2",confidence=0.97)
+            # donation_logo = self.find_img(target="tech_2",confidence=0.97)
             if donation_logo is not None:
                 self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
                 self.better_sleep((1, 2))

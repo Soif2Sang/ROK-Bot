@@ -24,10 +24,11 @@ class DailyChest(Task):
     @get_name
     def close_chest_popup(self):
         for i in range(2):
-            co = self.find_img(target=f"popup{i}",confidence=0.8)
+            co = self.find_img(target=f"popup{i}", confidence=0.8)
             if co is not None:
                 self.click(uniform(1102, 1030), uniform(92, 118))
                 self.better_sleep((2, 4))
+
     @get_name
     def claim_legendary_chest(self):
         try:
