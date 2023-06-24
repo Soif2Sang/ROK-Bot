@@ -1,12 +1,13 @@
 import flet as ft
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
 
 class FletColumnRss(ft.Column):
     def __init__(self,instance_index, profile_index):
         super().__init__()
-        self.data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.controls=[
@@ -30,7 +31,7 @@ class FletColumnRss(ft.Column):
             ]
 
     def submit(self, e, keyword, method):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
 
         self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value) if e.control.value !="" else 0
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)

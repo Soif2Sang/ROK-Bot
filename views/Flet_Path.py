@@ -3,7 +3,7 @@ import os
 import re
 import win32api
 
-from utils.Task_utils import get_path
+from utils.Task_utils import FileSingleton
 
 
 def find_file(root_folder, rex):
@@ -28,7 +28,8 @@ import flet as ft
 class RowFinder(ft.Row):
     def __init__(self,mot, **kwargs):
         super().__init__(**kwargs)
-        self.path_json = get_path()
+        self.FileSingleton = FileSingleton()
+        self.path_json = self.FileSingleton.get_path()
         self.mot = mot
         self.enhanced_mot = self.mot.split("\\")[0]
         self.text = ft.Text(value=f"Set {self.enhanced_mot} file location")
@@ -70,7 +71,7 @@ class RowFinder(ft.Row):
         print("Selected files:", e.files[0].path)
         print("Selected file or directory:", e.path)
         self.path_json[self.mot.split("\\")[0]] = e.files[0].path
-        self.path_json = get_path()
+        self.path_json = self.FileSingleton.get_path()
         self.entry.value = e.files[0].path
         self.update()
 

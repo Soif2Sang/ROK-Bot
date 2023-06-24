@@ -16,15 +16,7 @@ from utils.Task_utils import get_name, get_class
 class GatherRss2(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = MainTask.data
-        self.current_profile = MainTask.current_profile
-        self.frame = MainTask.tile
-        self.adb = MainTask.adb
-        self.ppid = MainTask.ppid
-        self.pid = MainTask.pid
-        self.language = MainTask.language
-        self.name = MainTask.name
-        self.sel = MainTask.sel
+        self.herite(MainTask)
         self.end_time = None
         self.block = False
 
@@ -84,8 +76,8 @@ class GatherRss2(Task):
             cv_image = self.adb.get_cv2_img()
         else:
             cv_image = image
-        x_min = max(0, x - 30)
-        x_max = min(cv_image.shape[1] - 1, x + 50)
+        x_min = max(0, x - 40)
+        x_max = min(cv_image.shape[1] - 1, x + 60)
         y_min = max(0, y - 40)
         y_max = min(cv_image.shape[0] - 1, y + 50)
 
@@ -374,53 +366,6 @@ class GatherRss2(Task):
         return image[min_y:max_y, min_x:max_x]
 
     @get_name
-    def recenter(self):
-        image = self.adb.get_cv2_img()
-        if (co := self.find_img(source=image, target="green_home_button")):
-            # reader = Reader()
-
-            x, y = co[0] - 10, co[1] - 10
-            x2, y2 = co[0] + 50, co[1] + 50
-            # Fill the specified region with dark gray color
-            cv2.rectangle(image, (x, y), (x2, y2), (50, 50, 50), -1)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            image = self.get_neighboring_image(image=image, center_point=co)
-            first_try = image[0:35, :]
-            second_try = image[-30:, :]
-
-            word = ''
-
-            first = self.extract_text(first_try, allowlist="0123456789KM")
-            second = self.extract_text(second_try, allowlist="0123456789KM")
-
-            if re.match(r'\d+KM', second):
-                word = second
-            if re.match(r'\d+KM', first):
-                word = first
-            print(word)
-            if re.match(r'\d+KM', word):
-                if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
-                    if co[0] < 500 and co[1] < 220:
-                        self.swipe(330, 160, 760, 530)
-                    elif co[0] < 500 and co[1] > 550:
-                        self.swipe(330, 530, 760, 160)
-                    elif co[0] > 800 and co[1] > 550:
-                        self.swipe(980, 530, 330, 160)
-                    elif co[0] > 800 and co[1] < 220:
-                        self.swipe(760, 160, 330, 530)
-                    elif co[0] < 500:
-                        self.swipe_left()
-                    elif co[0] > 800:
-                        self.swipe_right()
-                    elif co[1] > 360:
-                        self.swipe_down()
-                    elif co[1] < 360:
-                        self.swipe_up()
-                    self.better_sleep((1, 2))
-                    return self.recenter()
-
-    @get_name
     def scan_node(self, param=None):
         """
         Scan device screenshot to find gem node,          not 100% working need improvement
@@ -522,6 +467,7 @@ class GatherRss2(Task):
     @get_name
     def next_resource_type(self, place: str) -> str:
         # print(f'[ {current_time()} ] [ {self.name} ] next_resource_type call')
+        print(f"input {place}")
         if place == "First":
             return "Second"
         elif place == "Second":
@@ -542,6 +488,7 @@ class GatherRss2(Task):
         """
        Gather gems
        """
+        self.node_type = node_type
         self.run_game()
         self.random_macro()
         self.check_captcha()
@@ -553,12 +500,12 @@ class GatherRss2(Task):
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
 
-        if node_type is None:
+        if self.node_type is None:
             self.node_type = "First"
         print(self.node_type)
         self.scan_node()
 
-        max_distance = 6
+        max_distance = 0
         swipes = {self.swipe_up: self.swipe_right,
                   self.swipe_right: self.swipe_down,
                   self.swipe_down: self.swipe_left,
@@ -575,4 +522,4 @@ class GatherRss2(Task):
                 self.swipe_scan(self.scan_node, current_swipe)
 
             current_swipe = swipes[current_swipe]
-        return self.run(node_type=self.next_resource_type(node_type))
+        return self.run(node_type=self.next_resource_type(self.node_type))

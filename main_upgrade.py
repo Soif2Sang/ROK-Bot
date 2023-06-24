@@ -82,7 +82,7 @@ class LoginButton(ft.FilledButton):
                 self.page.clean()
                 main(self.page)
                 for element in self.page.tile_manager.tiles.values():
-                    element.started = False
+                    element.paused = False
                     element.stopped = False
                 self.page.update()
         except Exception as e:
@@ -93,7 +93,7 @@ class LoginButton(ft.FilledButton):
             self.page.clean()
             main(self.page)
             for element in self.page.tile_manager.tiles.values():
-                element.started = False
+                element.paused = False
                 element.stopped = False
             self.page.update()
 

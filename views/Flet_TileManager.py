@@ -8,7 +8,8 @@ import pyautogui
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from views.Flet_Tile import Tile
-from utils.Task_utils import get_path, get_data, write_data, get_default_config
+from utils.Task_utils import FileSingleton
+
 
 
 class NavigationBar(ft.Row):
@@ -29,6 +30,7 @@ class TileManager(ft.ListView):
         self.page = page
         self.height = 250
         self.expand = 0
+        self.FileSingleton = FileSingleton()
         self.tiles: dict[str, Tile] = {}
         self.navigation_bar: NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
@@ -58,8 +60,6 @@ class TileManager(ft.ListView):
         while 1:
             for tile in self.tiles.values():
                 if not tile.tasks_process.is_alive():
-                    tile.started = False
-                    tile.stopped = False
                     tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
                     tile.button_stop.disabled = True
                     tile.button_start.update()
@@ -74,7 +74,7 @@ class TileManager(ft.ListView):
 
     def get_dic_instances(self):
         try:
-            path = get_path()
+            path = self.FileSingleton.get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"
@@ -148,9 +148,13 @@ class TileManager(ft.ListView):
         return self.get_current_instances(self.get_dic_instances())
 
     def refresh(self):
-        data = get_data()
-        default_config = get_default_config()
-
+        data = self.FileSingleton.get_data()
+        try:
+            default_config = self.FileSingleton.get_default_config()
+            default_config_here = True
+        except:
+            print("There is no default profile")
+            default_config_here = False
         instances = self.get_dic_instances()
 
         default_dic = {
@@ -265,7 +269,11 @@ class TileManager(ft.ListView):
             "transfer_wood": 0,
             "transfer_stone": 0,
             "transfer_gold": 0,
-            "upgrade_city":False
+            "upgrade_city":False,
+            "kill_marauders" : False,
+            "kill_marauders_duration" : [30,90],
+            "rally_skip_back" :  False,
+            "gather_rss_method": False
         }
         for i in range(1, 4):
             default_dic['schedules'][i] = default_profile
@@ -273,7 +281,11 @@ class TileManager(ft.ListView):
         for instance in instances:
             if str(instance) not in data:
                 print("Default config set !")
-                data[str(instance)] = default_config
+
+                if default_config_here:
+                    data[str(instance)] = default_config
+                else:
+                    data[str(instance)] = default_profile
             else:
                 for key in default_dic:
                     if key not in data[str(instance)]:
@@ -288,7 +300,7 @@ class TileManager(ft.ListView):
             data[str(instance)]['name'] = instances[str(instance)]['name']
             data[str(instance)]['port'] = int(instances[str(instance)]['port'])
 
-        write_data(data)
+        self.FileSingleton.write_data(data)
         instances = self.get_all_vms_running()
         for i in range(len(self.controls) - 1):
             self.controls.pop()

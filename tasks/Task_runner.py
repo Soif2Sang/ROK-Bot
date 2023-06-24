@@ -28,23 +28,15 @@ from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
-from utils.Task_utils import get_name, current_time, get_window_pid, get_path, get_data
+from utils.Task_utils import get_name, current_time, get_window_pid
 from utils.bot_adb import Adb
 from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
 
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
-        super().__init__(tile)
-        self.data = get_data()
-        self.current_profile = MainTask.current_profile
-        self.frame = MainTask.tile
-        self.adb = MainTask.adb
-        self.ppid = MainTask.ppid
-        self.pid = MainTask.pid
-        self.language = MainTask.language
-        self.name = MainTask.name
-        self.sel = MainTask.sel
+        super().__init__(MainTask.tile)
+        self.herite(MainTask)
 
     def task_name(self):
         return "runner"
@@ -422,7 +414,7 @@ class TaskRunner(Task):
 
     @get_name
     def start_emulator(self, emulator: str):
-        path = get_path()
+        path = self.FileSingleton.get_path()
         cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
         self.print(f'Executing {cmd}')
         process = multiprocessing.Process(target=subprocess.Popen, args=(cmd,))
@@ -533,9 +525,7 @@ class TaskRunner(Task):
                     else:
                         self.leave_game(force=False)
 
-                for _ in range(time_before_redo_tasks):
-                    self.script_pause()
-                    sleep(1)
+                self.better_sleep((time_before_redo_tasks,time_before_redo_tasks))
 
     @get_name
     def run(self):
@@ -710,7 +700,8 @@ class TaskRunner(Task):
             if self.data.get(first).get("loop_task"):
                 # ttw1, ttw2 = self.data.get(first).get("time_to_wait_loop1", 60), self.data.get(first).get(
                 #     "time_to_wait_loop2", 90)
-                ttw1, ttw2 = 1, 1
+                ttw1 = self.data.get(first).get("time_to_wait_loop1", 60)
+                ttw2 = self.data.get(first).get("time_to_wait_loop2", 90)
                 # self.print("")
                 self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
                 if ttw1 > ttw2:
@@ -726,6 +717,3 @@ class TaskRunner(Task):
                 #     else:
                 #         self.leave_game(force=False)
 
-                for _ in range(time_before_redo_tasks):
-                    self.script_pause()
-                    sleep(1)

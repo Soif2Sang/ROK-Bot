@@ -7,15 +7,7 @@ from utils.Task_utils import get_class, filter_coordinate
 class AllianceHelp(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = MainTask.data
-        self.current_profile = MainTask.current_profile
-        self.frame = MainTask.tile
-        self.adb = MainTask.adb
-        self.ppid = MainTask.ppid
-        self.pid = MainTask.pid
-        self.language = MainTask.language
-        self.name = MainTask.name
-        self.sel = MainTask.sel
+        self.herite(MainTask)
 
     def task_name(self):
         return "AllianceHelp"

@@ -6,8 +6,7 @@ from time import sleep
 from PIL import ImageFile
 from numpy import array, ndarray
 
-from utils import discord_bot
-from utils.Task_utils import get_window_pid, get_name, current_time, get_data
+from utils.Task_utils import get_window_pid, get_name, current_time, FileSingleton
 from utils.COD_bot_adb import Adb
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -15,7 +14,8 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 class Task:
     def __init__(self, tile):
-        self.data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
         self.current_profile = '1'
         self.tile = tile
         self.sel = tile.number
@@ -46,7 +46,7 @@ class Task:
 
     @get_name
     def update_data(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         return self.data
 
     def set_sel(self, sel) -> None:
@@ -64,8 +64,9 @@ class Task:
 
     @get_name
     def send_discord_message(self, message):
-        if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
-            return discord_bot.send_message(self.data["discord"]["user_id"], f"[{current_time()}] {message}")
+        return
+        # if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
+        #     return discord_bot.send_message(self.data["discord"]["user_id"], f"[{current_time()}] {message}")
 
     @get_name
     def click(self, x, y):
@@ -211,7 +212,7 @@ class Task:
             print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot")
             sys.exit(1)
 
-        while not self.tile.started:
+        while not self.tile.paused:
             if not said:
                 # self.print(f"You is paused.","Yellow")
                 self.set_text(f"[{current_time()}] Script is paused.","orange")

@@ -17,6 +17,12 @@ def Main(page: ft.Page, days=950):
     page.frames = {}
     page.window_width = 400
     page.tile_manager = Flet_TileManager.TileManager(page)
+
+    theme = ft.Theme()
+    theme.page_transitions.windows = ft.PageTransitionTheme.FADE_UPWARDS
+    page.theme = theme
+    page.update()
+
     page.add(page.tile_manager)
     page.add(ft.Divider())
     page.tile_manager.refresh()

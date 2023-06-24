@@ -3,7 +3,6 @@ from random import uniform, shuffle
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task
-from utils.Task_utils import get_data
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 

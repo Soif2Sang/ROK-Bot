@@ -13,14 +13,15 @@ import io
 import pytesseract as tess
 from PIL import Image
 
-from utils.Task_utils import current_time, get_data, get_path, write
+from utils.Task_utils import current_time, FileSingleton
 
 Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
 from utils.resources import ImageSingleton
 class Adb:
     def __init__(self, number, host='127.0.0.1', port=5037):
-        data = get_data()
+        self.FileSingleton = FileSingleton()
+        data = self.FileSingleton.get_data()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
@@ -35,8 +36,8 @@ class Adb:
 
 
     def connect_to_device(self, host='127.0.0.1'):
-        data = get_data()
-        path = get_path()
+        data = self.FileSingleton.get_data()
+        path = self.FileSingleton.get_path()
 
         self.port = int(data[str(self.number)]['port'])
         adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
@@ -48,13 +49,13 @@ class Adb:
 
     def get_device(self, host='127.0.0.1'):
         try:
-            data = get_data()
+            data = self.FileSingleton.get_data()
             self.port = str(data[str(self.number)]['port'])
             device = self.client.device(f'{host}:{self.port}')
             if device is None:
                 self.print(f"INFO : Device is None, trying to reconnect..")
 
-                path = get_path()
+                path = self.FileSingleton.get_path()
 
                 adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
                 cmd = f"{adb_path} connect {host}:{self.port}"
@@ -68,7 +69,7 @@ class Adb:
             traceback.print_exc()
             self.print("EXCEPTION : Error in connect to device")
 
-            path = get_path()
+            path = self.FileSingleton.get_path()
             cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
             subprocess.Popen(cmd)
 
@@ -84,9 +85,9 @@ class Adb:
             return self.get_device()
 
     def print(self, text:str):
-        data = get_data()
+        data = self.FileSingleton.get_data()
         print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
-        write(self.name,text)
+        self.FileSingleton.write(self.name,text)
 
     def get_curr_device_screen_img_byte_array(self):
         try:
@@ -293,7 +294,7 @@ class Adb:
 
     def restart_emulator(self):
         try:
-            path = get_path()
+            path = self.FileSingleton.get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"

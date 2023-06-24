@@ -1,11 +1,18 @@
+import datetime
 import json
 from random import randint, uniform
 from threading import Thread
+
+import cv2
 import flet as ft
+import numpy as np
 
 import taskscod.COD_Task_daily_vip
 from tasks import Task_gather_rss
+from tasks.Task_gather_gem import GatherGem
+from tasks.Task_gather_rss2 import GatherRss2
 from tasks.Task_kingdom_ranking import KingdomRanking
+from tasks.Task_maraudeurs import Maraudeurs
 from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 from taskscod.COD_Task_daily_chest import DailyChest
 from taskscod.COD_Task_gather_rss import GatherRss
@@ -19,16 +26,19 @@ from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_runner import TaskRunner
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.bot_adb import *
+
 #from rkp import *
 #from auto_upgrade import *
+file  =  FileSingleton()
 
-data = get_data()
+data = file.get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 
 class Frame():
     def __init__(self,sel):
         self.started = True
         self.stopped = False
+        self.paused = False
         self.number = sel
 
     def add_text(self,phrase, color="black"):
@@ -54,6 +64,8 @@ class Bot():
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.rss  =  Task_gather_rss.GatherRss(self.main_task)
+        self.rss2  =  GatherRss2(self.main_task)
+
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)
         self.vip = DailyVip(self.main_task)
@@ -67,6 +79,8 @@ class Bot():
         self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
         self.code_training = COD_Task_training.TroopTraining(self.main_task)
         self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
+        self.maraudeurs = Maraudeurs(self.main_task)
+        self.gem = GatherGem(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -423,6 +437,7 @@ def get_bot(number):
     frame.number = number
     frame.stopped = False
     frame.started = True
+    frame.paused = False
     frame.add_text = lambda x,_: print(x)
     frame.set_text = lambda x, _: print(x)
 
@@ -445,51 +460,48 @@ def upgrade_all():
 
 if __name__ == "__main__":
     # upgrade_all()
-    for i in range(2):
-        bot = get_bot(i)
-        bot.trade.current_profile = "3"
-        Thread(target=bot.trade.run).start()
-    # if not (co := bot.task.find_img("cod_research_top", confidence=0.8)):
-    #     bot.task.close_windows()
-    # bot.task.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
-    # bot.task.better_sleep((1.2, 1.7))
-    # if not (co := bot.task.find_img("cod_research_button")):
-    #     bot.task.close_windows()
-    # bot.task.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
-    # bot.task.better_sleep((1.2, 1.7))
-    # bot.task.close_windows()
-    # hwnd = win32gui.FindWindow(None, bot.adb.name)
-    # hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-    # for _ in range(2):
-    #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-    #     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-    #     sleep(0.20)
-    #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-    #     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-    #     bot.task.better_sleep((1.4, 2))
-    # print(bot.upgrade.free_worker())
 
-    # print(bot.task.findNextChar())
-    # bot1 = get_bot(0)
+    bot =  get_bot(0)
+    print(bot.rss2.run())
+    exit()
+    screen =   bot.adb.get_cv2_img()
+    for second_string in ["left", "mid", "right"]:
+        for first_string in ["up", "mid", "down"]:
 
-    # print(id(bot.adb.images)==id(bot1.adb.images))
-    # while True:
-    #     print("Asking screencap")
-    #     pil_image = bot.adb.get_curr_device_screen_img()
-    #     print("Screencap received")
-    #     source = array(pil_image)
-    #     print("Screencap converted to np array")
-    #     source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
-    #     print("Reading academy.png")
-    #     img_to_find = cv2.imread('resources/academy.png')
-    #     print("Read academy.png")
-    #     result = cv2.matchTemplate(source, img_to_find, cv2.TM_CCOEFF_NORMED)
-    #     print("Template matched")
-    #     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    #     print("MinMaxLoc")
-    # bot.trade.get_capacity()
-    # Thread(target=lambda: rss_transfert(1,"gold",130_000_000)).start()
-    # Thread(target=lambda: rss_transfert(0,"wood",400_000_000)).start()
-    # Thread(target=lambda: upgrade_instance(0)).start()
-    # upgrade_all()
+            co = bot.gem.validate_co(
+                bot.task.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}",
+                              confidence=0.82))
+            if co is None:
+                co = bot.gem.validate_co(
+                    bot.task.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}",
+                                  confidence=0.82))
+            if co is not None:
+                bot.task.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
+                if bot.gem.already_mining(co[0], co[1], screen):
+                    bot.task.print(f"Already mining this gem node")
+                    x,y = co
+                    x_min = max(0, x - 40)
+                    x_max = min(screen.shape[1] - 1, x + 60)
+                    y_min = max(0, y - 40)
+                    y_max = min(screen.shape[0] - 1, y + 50)
 
+                    cropped_image = screen[y_min:y_max, x_min:x_max]
+                    cv2.imshow('Upscaled Gray Image', cropped_image)
+                    cv2.waitKey(0)
+                    cv2.destroyAllWindows()
+    # Affichage de l'image
+
+    # print(bot.trade.get_capacity())
+    # from paddleocr import PaddleOCR, draw_ocr
+    #
+    # # Paddleocr supports Chinese, English, French, German, Korean and Japanese.
+    # # You can set the parameter `lang` as `ch`, `en`, `fr`, `german`, `korean`, `japan`
+    # # to switch the language model in order.
+    # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
+    # img_path = bot.adb.get_cv2_img()
+    # result = ocr.ocr(img_path, cls=False)
+    # for idx in range(len(result)):
+    #     print(idx)
+    #     res = result[idx]
+    #     for line in res:
+    #         print(line[-1])

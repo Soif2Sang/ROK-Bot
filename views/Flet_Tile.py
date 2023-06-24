@@ -5,19 +5,19 @@ from tasks.Task import Task
 import flet as ft
 
 from tasks.Task_runner import TaskRunner
-from utils.Task_utils import get_data
+from utils.Task_utils import FileSingleton
 
 
 class Tile(ft.Row):
     def __init__(self, page, number, **kwargs):
         super().__init__(**kwargs)
-
-        data = get_data()
+        self.FileSingleton = FileSingleton()
+        data = self.FileSingleton.get_data()
 
         self.page = page
         self.number = number
 
-        self.started = False
+        self.paused = False
         self.stopped = False
         self.tasks_process = None
         self.main_task = Task(self)
@@ -63,21 +63,30 @@ class Tile(ft.Row):
         self.page.update()
 
     def start(self):
-        self.started = not self.started
-        self.stopped = False
-        if self.started:
+        if not self.tasks_process.is_alive():
             self.button_start.icon = ft.icons.PAUSE
             self.button_stop.disabled = False
+            self.paused = False
+            self.stopped = False
+            self.start_tasks()
         else:
-            self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-            self.button_stop.disabled = False
-        self.start_tasks()
+            if self.paused:
+                self.button_start.icon = ft.icons.PAUSE
+                self.button_stop.disabled = False
+                self.paused = False
+                self.stopped = False
+            else:
+                self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+                self.button_stop.disabled = False
+                self.paused = True
+                self.stopped = False
+
         self.button_start.update()
         self.button_stop.update()
 
     def process_is_alive(self):
         self.tasks_process.join()
-        self.started = False
+        self.paused = False
         self.stopped = False
         self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
         self.button_stop.disabled = True
@@ -96,16 +105,21 @@ class Tile(ft.Row):
             # is_alive.deamon = True
             # is_alive.start()
         else:
-            print("Task is running")
+            print("Task is frozen, you may need to restart the bot.")
 
     def stop(self):
-        self.started = False
+        self.paused = False
         self.stopped = True
+
         self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
         self.button_stop.disabled = True
-        self.set_text("")
+
+
+        self.tasks_process = threading.Thread(target=self.runner.run)
+        self.tasks_process.daemon = True
         self.button_start.update()
         self.button_stop.update()
+        self.set_text("")
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase

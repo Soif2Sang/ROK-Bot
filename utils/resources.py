@@ -24,6 +24,7 @@ class ImageSingleton:
        self.alliance_tech_recommend= imread(f'{dir}/alliance_tech_recommend.png')
        self.already_connected= imread(f'{dir}/already_connected.png')
        self.ap_bottle= imread(f'{dir}/ap_bottle.png')
+       self.ap_use= imread(f'{dir}/ap_use.png')
        self.archery_badge= imread(f'{dir}/archery_badge.png')
        self.archery_range_button= imread(f'{dir}/archery_range_button.png')
        self.artefact_shop= imread(f'{dir}/artefact_shop.png')
@@ -79,6 +80,9 @@ class ImageSingleton:
        self.cod_march_button= imread(f'{dir}/cod_march_button.png')
        self.cod_march_button_out= imread(f'{dir}/cod_march_button_out.png')
        self.cod_open_chest= imread(f'{dir}/cod_open_chest.png')
+       self.cod_research= imread(f'{dir}/cod_research.png')
+       self.cod_research_button= imread(f'{dir}/cod_research_button.png')
+       self.cod_research_top= imread(f'{dir}/cod_research_top.png')
        self.cod_scout_camp_icon= imread(f'{dir}/cod_scout_camp_icon.png')
        self.cod_scout_explore_button_in= imread(f'{dir}/cod_scout_explore_button_in.png')
        self.cod_scout_explore_button_out= imread(f'{dir}/cod_scout_explore_button_out.png')
@@ -207,6 +211,7 @@ class ImageSingleton:
        self.map_icon= imread(f'{dir}/map_icon.png')
        self.maraudeurs_forts_icon= imread(f'{dir}/maraudeurs_forts_icon.png')
        self.maraudeur_icon= imread(f'{dir}/maraudeur_icon.png')
+       self.maraudeur_icon_zoom= imread(f'{dir}/maraudeur_icon_zoom.png')
        self.marching_logo= imread(f'{dir}/marching_logo.png')
        self.march_bar= imread(f'{dir}/march_bar.png')
        self.materials_production_button= imread(f'{dir}/materials_production_button.png')
@@ -260,6 +265,7 @@ class ImageSingleton:
        self.speed_up_button= imread(f'{dir}/speed_up_button.png')
        self.stable_button= imread(f'{dir}/stable_button.png')
        self.standby_icon= imread(f'{dir}/standby_icon.png')
+       self.stand_by= imread(f'{dir}/stand_by.png')
        self.star= imread(f'{dir}/star.png')
        self.stone_icon= imread(f'{dir}/stone_icon.png')
        self.stone_max= imread(f'{dir}/stone_max.png')
@@ -333,6 +339,8 @@ class ImageSingleton:
             return self.already_connected
         if file_name == "ap_bottle":
             return self.ap_bottle
+        if file_name == "ap_use":
+            return self.ap_use
         if file_name == "archery_badge":
             return self.archery_badge
         if file_name == "archery_range_button":
@@ -443,6 +451,12 @@ class ImageSingleton:
             return self.cod_march_button_out
         if file_name == "cod_open_chest":
             return self.cod_open_chest
+        if file_name == "cod_research":
+            return self.cod_research
+        if file_name == "cod_research_button":
+            return self.cod_research_button
+        if file_name == "cod_research_top":
+            return self.cod_research_top
         if file_name == "cod_scout_camp_icon":
             return self.cod_scout_camp_icon
         if file_name == "cod_scout_explore_button_in":
@@ -699,6 +713,8 @@ class ImageSingleton:
             return self.maraudeurs_forts_icon
         if file_name == "maraudeur_icon":
             return self.maraudeur_icon
+        if file_name == "maraudeur_icon_zoom":
+            return self.maraudeur_icon_zoom
         if file_name == "marching_logo":
             return self.marching_logo
         if file_name == "march_bar":
@@ -805,6 +821,8 @@ class ImageSingleton:
             return self.stable_button
         if file_name == "standby_icon":
             return self.standby_icon
+        if file_name == "stand_by":
+            return self.stand_by
         if file_name == "star":
             return self.star
         if file_name == "stone_icon":

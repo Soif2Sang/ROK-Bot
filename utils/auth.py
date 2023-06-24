@@ -121,7 +121,7 @@ class selfApi:
         json = jsond.loads(response)
         wid1 = self.getvar("HWID1")
         wid2 = self.getvar("HWID2")
-
+        print(wid2,wid1)
         if wid1 == "None":
             self.setvar("HWID1",hwid)
             wid1 = hwid

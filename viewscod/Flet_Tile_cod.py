@@ -5,14 +5,14 @@ from taskscod.COD_Task import Task
 import flet as ft
 
 from taskscod.COD_Task_runner import TaskRunner
-from utils.Task_utils import get_data
+from utils.Task_utils import FileSingleton
 
 
 class Tile(ft.Row):
     def __init__(self, page, number, **kwargs):
         super().__init__(**kwargs)
-
-        data = get_data()
+        self.FileSingleton = FileSingleton()
+        data = self.FileSingleton.get_data()
 
         self.page = page
         self.number = number

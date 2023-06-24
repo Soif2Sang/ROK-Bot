@@ -13,7 +13,7 @@ from views.Flet_row_rss import FletRowRss
 from views.Flet_col_transfer import FletColumnRss
 from views.Flet_row_troops import FletRowTraining
 from views.Flet_city_layout import start, main2, CityPlacement
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
 color_bank = {
     1: "#3b8ed0",
@@ -25,7 +25,8 @@ color_bank = {
 class SettingContainer(ft.Container):
     def __init__(self, page, tab, instance_index: int, profile_index: int):
         super().__init__()
-        self.data = get_data()        
+        self.FileSingleton =  FileSingleton()
+        self.data = self.FileSingleton.get_data()
         self.tabs = tab
         self.page = page
         self.instance_index = instance_index
@@ -77,6 +78,7 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("alliance_help", "Alliance Help")
         self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", self.page_barbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
+        self.create_advanced_switch("kill_marauders", "Kill marauders", self.page_marauders)
         self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
         self.create_normal_switch("upgrade_city", "Upgrade City")
         self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
@@ -105,20 +107,20 @@ class SettingContainer(ft.Container):
         self.page.go(f"/citylayout/{self.instance_index}/{self.profile_index}")
 
     def submit(self, e, keyword, method):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1",'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
             print(self.data[str(self.instance_index)][keyword])
-            return write_data(self.data)
+            return self.FileSingleton.write_data(self.data)
 
         if keyword not in ["sleep_multiplicator","defeat_barbarians"]:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
         else:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(e.control.value.replace("x", "").replace("level ",""))
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)
 
     def page_gems(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=1, )
@@ -136,7 +138,18 @@ class SettingContainer(ft.Container):
 
         self.content.controls.extend([
             ft.Divider(),
-            ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure yellow-lineups with farmers !", size=15, color="red"),
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "*REQUIREMENT* ",
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "Pre-configure yellow-lineups with gathering gem commanders !\n",
+                        style=ft.TextStyle(size=15, color="red"),
+                    )
+                ]
+            ),
             ft.Divider(),
             ft.TextField(label="Your kingdom :",
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kingdom"],
@@ -223,8 +236,116 @@ class SettingContainer(ft.Container):
         # print(self.page)
         self.page.update()
 
+    def page_marauders(self):
+        self.data = self.FileSingleton.get_data()
+        self.clean()
+        self.tabs.expand = True
+        self.content = ft.ListView(height=500, expand=0, padding=1, )
+        self.content.controls.append(
+            ft.Row(
+                controls=[
+                    ft.IconButton(
+                        icon=ft.icons.ARROW_BACK,
+                        on_click=lambda _: self.reset()
+                    ),
+                    ft.Text("Settings", size=20),
+                ],
+            )
+        )
+
+        self.content.controls.extend([
+            ft.Divider(),
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "*REQUIREMENT* ",
+                        style=ft.TextStyle(size=15, color="red",weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "Pre-configure red-lineups with commanders with the same march speed!\n",
+                        style=ft.TextStyle(size=15, color="red"),
+                    )
+                ]
+            ),
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "I also recommend having it running up to maximum",
+                        style=ft.TextStyle(size=15),
+                    ),
+                    ft.TextSpan(
+                        " 3-4 hours ",
+                        style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "with re-do tasks enabled so the marches can come back to the city and heal.",
+                        style=ft.TextStyle(size=15)
+                    )
+                ]
+            ),
+            ft.Divider(),
+            ft.TextField(label="Your kingdom :",
+                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kingdom"],
+                         width=300,
+                         content_padding=ft.padding.all(10),
+                         on_change=lambda e: self.submit(e, "kingdom", str)),
+            ft.Divider(),
+            ft.TextField(label="Area location X coordinates :",
+                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_x"],
+                         width=300,
+                         content_padding=ft.padding.all(10),
+                         on_change=lambda e: self.submit(e, "city_x", int)
+                         ),
+            ft.Divider(),
+            ft.TextField(label="Area location Y coordinates :",
+                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_y"],
+                         width=300,
+                         content_padding=ft.padding.all(10),
+                         on_change=lambda e: self.submit(e, "city_y", int),
+                         ),
+            ft.Divider(),
+            ft.Row(
+                controls=[
+                    ft.Text("Killing duration (mins)"),
+                    ft.TextField(label="Minimum",
+                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                                     "kill_marauders_duration"][0],
+                                 width=80,
+                                 content_padding=ft.padding.all(10),
+                                 on_change=lambda e: self.submit_marauders(e, 0)
+                                 ),
+                    ft.Text("~"),
+                    ft.TextField(label="Maximum",
+                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                                     "kill_marauders_duration"][1],
+                                 width=90,
+                                 content_padding=ft.padding.all(10),
+                                 on_change=lambda e: self.submit_marauders(e, 1)),
+                ]
+            ),
+            ft.Divider(),
+            ft.Text(value="Peacekeeper presets"),
+            ft.Column(
+                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in
+                          range(1, 8)],
+                wrap=True,
+                spacing=10,
+                run_spacing=10,
+                height=150
+            )
+        ]
+
+        )
+        # print(self.page)
+        self.page.update()
+
+    def submit_marauders(self, e, index):
+        self.data = self.FileSingleton.get_data()
+        self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kill_marauders_duration"][index] = e.control.value if e.control.value is not None or e.control.value != "" else 0
+        self.FileSingleton.write_data(self.data)
+
     def page_troops(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -259,7 +380,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_rss(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -286,7 +407,7 @@ class SettingContainer(ft.Container):
             "Sixth",
             "Seventh"
         ]
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.content.controls.append(
             ft.Switch(
                 label="Use Yellow presets as gatherers",
@@ -296,13 +417,22 @@ class SettingContainer(ft.Container):
                 on_change=lambda _: self.reverse_keyword("rss_custom_preset")
             )
         )
+        self.content.controls.append(
+            ft.Switch(
+                label="Use zoom out method (the bot won't read levels)",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "gather_rss_method"] else False,
+                on_change=lambda _: self.reverse_keyword("gather_rss_method")
+            )
+        )
         for key in keys:
             self.content.controls.append(FletRowRss(key = key, instance_index = self.instance_index, profile_index= self.profile_index))
 
         self.update()
 
     def page_fog(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
@@ -342,7 +472,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_heal(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
@@ -371,7 +501,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_materials(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -400,7 +530,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_transfer(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -425,7 +555,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_barbs(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -441,7 +571,40 @@ class SettingContainer(ft.Container):
         )
         self.content.controls.append(ft.Divider(),)
         self.content.controls.extend([
-            ft.Text(value="*REQUIREMENT*\n\n/!\ Pre-configure all red slot with PeaceKeeper/!\ \n\n/!\Avoid AOE to not hit higher barb level/!\ \n\n/!\The bot is unenable see to the troops health/!\ \n\nNote this function is not designed for New accounts !", size=15, color="red"),
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "*REQUIREMENT*\n",
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "Pre-configure red-lineups with PeaceKeeper commanders !\n",
+                        style=ft.TextStyle(size=15, color="red"),
+                    ),
+                    ft.TextSpan(
+                        "Avoid AOE ",
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "if you're using this function on low accounts\n",
+                        style=ft.TextStyle(size=15, color="red"),
+                    ),
+                    ft.TextSpan(
+                        "The bot is",
+                        style=ft.TextStyle(size=15, color="red"),
+                    ),
+                    ft.TextSpan(
+                        " unable ",
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
+                    ),
+
+                    ft.TextSpan(
+                        "to see the troops health",
+                        style=ft.TextStyle(size=15, color="red"),
+                    ),
+                ]
+            ),
+
             ft.Divider(),
             ft.Row(
                 controls=[
@@ -472,7 +635,7 @@ class SettingContainer(ft.Container):
 
 
     def page_rally(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -497,7 +660,33 @@ class SettingContainer(ft.Container):
             "Seventh"
         ]
         self.content.controls.extend([
-            ft.Text(value="*REQUIREMENT*\n/!\ Pre-configure first slot of red line-up with rally Leader !", size=15, color="red"),
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "*REQUIREMENT*\n",
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "Pre-configure first slot of red line-up with rally Leader !",
+                        style=ft.TextStyle(size=15, color="red"),
+                    )
+                ]
+            ),
+
+            ft.Switch(
+                label="Look for Marauders forts",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "mauraudeurs_forts"] else False,
+                on_change=lambda _: self.reverse_keyword("mauraudeurs_forts")
+            ),
+            ft.Switch(
+                label="Skip commander back",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "rally_skip_back"] else False,
+                on_change=lambda _: self.reverse_keyword("rally_skip_back")
+            ),
             ft.Row(
                 controls=[
                     ft.Container(
@@ -541,13 +730,15 @@ class SettingContainer(ft.Container):
                         on_change=lambda e: self.submit(e, "rally_type", str)
                     )
                 ]
-            )
+            ),
+
         ]
+
         )
         self.update()
 
     def page_character(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -574,7 +765,7 @@ class SettingContainer(ft.Container):
         self.page.update()
 
     def page_logback(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -589,11 +780,12 @@ class SettingContainer(ft.Container):
                 ],
             ),
             ft.Divider(),
-            ft.Row(
-                controls=[
-                    ft.Text(
-                        "Time to wait before the bot log\nback from your connection(mins): \n\n", size=17
-                    ),
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "Time to wait before the bot log  back from your connection(minutes):\n",
+                        style=ft.TextStyle(size=15, color="black"),
+                    )
                 ]
             ),
             ft.Row(
@@ -619,7 +811,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_profile(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -674,7 +866,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_redo(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -692,20 +884,17 @@ class SettingContainer(ft.Container):
         )
         self.content.controls.append(ft.Divider(), )
         self.content.controls.extend([
-            ft.Row(
-                controls=[
-                    ft.Text(
-                        "*Randomise it as much as possible*",
-                        size=20,
-                        font_family="RobotoSlab",
-                        weight=ft.FontWeight.W_400,
-                        color="red"
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "*Randomise it as much as possible*\n",
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "Time to wait before the bot re-do the tasks selected (minutes):\n",
+                        style=ft.TextStyle(size=15, color="red"),
                     )
                 ]
-            ),
-
-            ft.Text(
-                "Time to wait before\nthe bot re-do the tasks selected  (mins):"
             ),
             ft.Row(
                 controls=[
@@ -739,10 +928,10 @@ class SettingContainer(ft.Container):
             print(keyword,self.data[str(self.instance_index)][keyword])
 
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)
 
     def create_normal_switch(self, keyword: str, text: str):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.content.controls.append(
             ft.Switch(
                 label=text,
@@ -754,7 +943,7 @@ class SettingContainer(ft.Container):
         )
 
     def create_advanced_switch(self, keyword: str, text: str, function):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         if keyword not in ["loop_task", "scheduler"]:
             self.content.controls.append(
                 ft.Row(
