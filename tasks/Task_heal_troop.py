@@ -4,7 +4,7 @@ import cv2
 
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
-from utils.Task_utils import get_name, get_class, filter_coordinate, write
+from utils.Task_utils import get_name, get_class, filter_coordinate
 
 
 # from utils.easyOcr import Reader
@@ -13,15 +13,7 @@ from utils.Task_utils import get_name, get_class, filter_coordinate, write
 class HealTroop(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = MainTask.data
-        self.current_profile = MainTask.current_profile
-        self.frame = MainTask.tile
-        self.adb = MainTask.adb
-        self.ppid = MainTask.ppid
-        self.pid = MainTask.pid
-        self.language = MainTask.language
-        self.name = MainTask.name
-        self.sel = MainTask.sel
+        self.herite(MainTask)
 
     def task_name(self):
         return "HealTroop"
@@ -76,7 +68,7 @@ class HealTroop(Task):
                 self.better_sleep((1, 1.8))
             # print(f"{self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') =}")
             healing_hut = self.data[str(self.sel)]['schedules'][self.current_profile]['hospital']
-            write(self.name, f"Healing building placement (randomised) : {healing_hut}")
+            self.FileSingleton.write(self.name, f"Healing building placement (randomised) : {healing_hut}")
             self.click(healing_hut[0], healing_hut[1])
             # print("après les healing_hut")
             co = self.find_img(target="heal_icon")

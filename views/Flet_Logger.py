@@ -1,15 +1,16 @@
 import flet as ft
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
 
 class Logger(ft.ListView):
     def __init__(self,frame,page,**kwargs):
         super().__init__(**kwargs)
-        data = get_data()
+        self.FileSingleton = FileSingleton()
+        data = self.FileSingleton.get_data()
         if "interface" not in data:
             data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
-        write_data(data)
+        self.FileSingleton.write_data(data)
         self.auto_scroll= data["interface"]["auto_scroll"]
         self.parent = frame
         self.page = page

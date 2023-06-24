@@ -83,7 +83,7 @@ class LoginButton(ft.FilledButton):
                 self.page.clean()
                 main(self.page)
                 for element in self.page.tile_manager.tiles.values():
-                    element.started = False
+                    element.paused = False
                     element.stopped = True
                 self.page.update()
         except:
@@ -216,8 +216,8 @@ def main(page: ft.Page):
     if "user" in data:
         if data["user"]["username"] != "":
             # Flet_main_interface.Main(page, 100)
-            login_button.login(None, data['user']["username"], data['user']["password"])
-
+            # login_button.login(None, data['user']["username"], data['user']["password"])
+            a = 1
 from pathlib import Path
 from threading import Thread
 
@@ -229,29 +229,10 @@ LOGGING_PATH = (
 )  # -- This can be any path
 
 # -- Construct Class
-security = PythonProtector(
-    debug=True,
-    modules=[
-        "AntiProcess",
-        "AntiVM",
-        "Miscellaneous",
-        "AntiDLL",
-        "AntiAnalysis",
-        "AntiDump"],
-    logs_path=LOGGING_PATH,
-    webhook_url="https://discord.com/api/webhooks/1107397207075860520/yKnjI7AY6svKqI13e7QB-Kj-em5BHqrKRAaXoE0SZ2QV8bkPWGlwD-CxxDfrZyv8Z1ib",
-    on_detect=[
-        "Report",
-        "Exit",
-        "Screenshot"],
-)
+
 
 # -- Main Code
 
 
 if __name__ == "__main__":
-    SecurityThread = Thread(
-        name="Python Protector", target=security.start
-    )  # -- Start Before Any Other Code Is Run
-    SecurityThread.start()
     ft.app(target=main)

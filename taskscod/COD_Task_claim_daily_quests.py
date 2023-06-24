@@ -3,7 +3,7 @@ from PIL import Image
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task, get_name
-from utils.Task_utils import get_class, get_data
+from utils.Task_utils import get_class
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 

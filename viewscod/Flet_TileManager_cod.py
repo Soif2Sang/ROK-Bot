@@ -8,7 +8,8 @@ import pyautogui
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from viewscod.Flet_Tile_cod import Tile
-from utils.Task_utils import get_path, get_data, write_data, get_default_config
+from utils.Task_utils import FileSingleton
+
 
 
 class NavigationBar(ft.Row):
@@ -32,6 +33,7 @@ class TileManager(ft.ListView):
         self.tiles: dict[str, Tile] = {}
         self.navigation_bar: NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
+        self.FileSingleton = FileSingleton()
 
     def add_tile(self, number: str):
         self.tiles[number] = Tile(self.page, number)
@@ -74,7 +76,7 @@ class TileManager(ft.ListView):
 
     def get_dic_instances(self):
         try:
-            path = get_path()
+            path = self.FileSingleton.get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"
@@ -148,7 +150,7 @@ class TileManager(ft.ListView):
         return self.get_current_instances(self.get_dic_instances())
 
     def refresh(self):
-        data = get_data()
+        data = self.FileSingleton.get_data()
 
         instances = self.get_dic_instances()
 
@@ -238,7 +240,7 @@ class TileManager(ft.ListView):
             data[str(instance)]['name'] = instances[str(instance)]['name']
             data[str(instance)]['port'] = int(instances[str(instance)]['port'])
 
-        write_data(data)
+        self.FileSingleton.write_data(data)
         instances = self.get_all_vms_running()
         for i in range(len(self.controls) - 1):
             self.controls.pop()

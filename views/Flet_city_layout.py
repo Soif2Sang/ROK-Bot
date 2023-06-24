@@ -4,7 +4,8 @@ import traceback
 
 import flet as ft
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
+
 import base64
 global sel,profile
 
@@ -14,7 +15,9 @@ def image_to_base64(image_path):
         return encoded_string.decode('utf-8')
 
 def main(page:ft.Page):
-    data = get_data()
+    page.FileSingleton = FileSingleton()
+
+    data = page.FileSingleton.get_data()
     page.window_width = 830
     page.window_height = 430
     page.current_build = None
@@ -64,7 +67,7 @@ def main(page:ft.Page):
         except Exception as e:
             traceback.print_exc()
             return
-        write_data(data)
+        page.FileSingleton.write_data(data)
 
     c = ft.Container(bgcolor=ft.colors.RED,left=0, top=0, image_src="city.png",height=720/2,width=1280/2)
 
@@ -97,7 +100,8 @@ def main(page:ft.Page):
 
 def main2(sel,profile):
     global  column2, current_build
-    data = get_data()
+    fileSingleton = FileSingleton()
+    data = fileSingleton.get_data()
 
     buttons = {
         "infantry_camp":0,
@@ -124,7 +128,7 @@ def main2(sel,profile):
         except Exception as e:
             traceback.print_exc()
             return
-        write_data(data)
+        fileSingleton.write_data(data)
 
     c = ft.Container(bgcolor=ft.colors.RED,left=0, top=0, image_src="city.png",height=720/2,width=1280/2)
 
@@ -169,8 +173,8 @@ class CityPlacement(ft.Container):
         self.instance = instance
         self.profile = profile
         self.current_build =  None
-
-        self.data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
 
         self.main_container = ft.Image(left=0, top=0, src_base64=image_to_base64("city.png"), height=720 / 2, width=1280 / 2)
 
@@ -217,7 +221,13 @@ class CityPlacement(ft.Container):
     def on_tap_update(self,e:ft.ControlEvent):
         print(e.local_x*2, e.local_y*2)
         try:
+            self.data = self.FileSingleton.get_data()
+            print(f"{self.instance =  } {self.profile =}")
+            print(self.data[str(self.instance)]['schedules'][str(self.profile)][self.current_build])
             self.data[str(self.instance)]['schedules'][str(self.profile)][self.current_build] = (int(e.local_x*2), int(e.local_y*2))
+            self.FileSingleton.write_data(self.data)
+            self.data = self.FileSingleton.get_data()
+            print(self.data[str(self.instance)]['schedules'][str(self.profile)][self.current_build])
             self.updateButtons()
         except Exception as e:
             traceback.print_exc()
@@ -225,7 +235,7 @@ class CityPlacement(ft.Container):
         for element in self.buttons.controls:
             element.color = "blue"
         self.buttons.page.update()
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)
 
 
 def start(sel_param="1",profile_param="1"):

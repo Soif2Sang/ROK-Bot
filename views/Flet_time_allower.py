@@ -3,7 +3,7 @@ from random import randint
 
 import flet as ft
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
 color_bank = {
     1: "#3b8ed0",
@@ -52,7 +52,8 @@ def random_time_in_frametime(first,second):
 class RowTimezone(ft.Row):
     def __init__(self,instance,profile,parent,start ="00:00",end="00:00",default=True,**kwargs):
         super().__init__(**kwargs)
-        self.data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
         if start == "00:00" and end == "00:00" and default:
             self.data[str(instance)]['schedules'][str(profile)]["timing"].append(["00:00","00:00"])
         self.instance = str(instance)
@@ -70,7 +71,7 @@ class RowTimezone(ft.Row):
             on_click=lambda _: self.parent.delete(self)
         )
         self.controls.extend([self.field_start, self.field_stop, self.delete])
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)
 
     def close_banner(self,e):
         self.page.banner.open = False
@@ -90,17 +91,15 @@ class RowTimezone(ft.Row):
         )
         self.page.update()
     def sub(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         i = self.data[self.instance]['schedules'][self.profile]["timing"].index([self.start,self.stop])
         print(self.data[self.instance]['schedules'][self.profile]["timing"])
         self.data[self.instance]['schedules'][self.profile]["timing"][i] = [self.field_start.value,self.field_stop.value]
         if not is_valid_time(self.field_start.value) or not is_valid_time(self.field_stop.value):
-
             self.pop_banner("Wrong format, please fix")
         else:
             self.start, self.stop = self.field_start.value, self.field_stop.value
-
-            write_data(self.data)
+            self.FileSingleton.write_data(self.data)
 
 class ManagerTimezone(ft.ListView):
     def __init__(self,instance,profile,**kwargs):

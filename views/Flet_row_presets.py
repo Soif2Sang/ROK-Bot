@@ -1,12 +1,13 @@
 import flet as ft
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
 
 class FletRowPresets(ft.Row):
     def __init__(self, instance_index, profile_index,preset_index):
         super().__init__()
-        self.data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.preset_index = preset_index
@@ -18,6 +19,6 @@ class FletRowPresets(ft.Row):
         ]
 
     def submit(self, e):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["barbarians_preset"][self.preset_index] = bool(e.control.value)
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)

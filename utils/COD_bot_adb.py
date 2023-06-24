@@ -13,7 +13,7 @@ import io
 import pytesseract as tess
 from PIL import Image
 
-from utils.Task_utils import current_time, get_data, get_path, write
+from utils.Task_utils import current_time, FileSingleton
 
 Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
@@ -21,13 +21,14 @@ from utils.resources import *
 
 class Adb:
     def __init__(self, number, host='127.0.0.1', port=5037):
-        data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.images = ImageSingleton()
+        self.data = self.FileSingleton.get_data()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
         self.number = number
-        self.name = data[str(self.number)]['name']
-        self.images = ImageSingleton()
+        self.name = self.data[str(self.number)]['name']
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
@@ -35,8 +36,8 @@ class Adb:
 
 
     def connect_to_device(self, host='127.0.0.1'):
-        data = get_data()
-        path = get_path()
+        data = self.FileSingleton.get_data()
+        path = self.FileSingleton.get_path()
 
         self.port = int(data[str(self.number)]['port'])
         adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
@@ -47,15 +48,13 @@ class Adb:
         return self.client.devices()
 
     def get_device(self, host='127.0.0.1'):
+        data = self.FileSingleton.get_data()
+        path = self.FileSingleton.get_path()
         try:
-            data = get_data()
             self.port = str(data[str(self.number)]['port'])
             device = self.client.device(f'{host}:{self.port}')
             if device is None:
                 self.print(f"INFO : Device is None, trying to reconnect..")
-
-                path = get_path()
-
                 adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
                 cmd = f"{adb_path} connect {host}:{self.port}"
                 subprocess.Popen(cmd)
@@ -68,7 +67,6 @@ class Adb:
             traceback.print_exc()
             self.print("EXCEPTION : Error in connect to device")
 
-            path = get_path()
             cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
             subprocess.Popen(cmd)
 
@@ -84,8 +82,7 @@ class Adb:
             return self.get_device()
 
     def print(self, text:str):
-        data = get_data()
-        print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
+        print(f"[ {date.today()} {current_time()} ] [ {self.data[str(self.number)]['name']} ] {text}")
         write(self.name,text)
 
     def get_curr_device_screen_img_byte_array(self):
@@ -292,7 +289,8 @@ class Adb:
 
     def restart_emulator(self):
         try:
-            path = get_path()
+            data = self.FileSingleton.get_data()
+            path = self.FileSingleton.get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"

@@ -2,12 +2,13 @@ import traceback
 
 import flet as ft
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
 global sel,profile
 
 def main(page:ft.Page):
-    data = get_data()
+    page.FileSingleton = FileSingleton()
+    data = page.FileSingleton.get_data()
     page.window_width = 830
     page.window_height = 430
     page.current_build = None
@@ -49,7 +50,7 @@ def main(page:ft.Page):
 
     def on_tap_update(e:ft.ControlEvent):
         print(e.local_x*2, e.local_y*2)
-        data = get_data()
+        data = page.FileSingleton.get_data()
         print(data[str(sel)]['schedules'][str(profile)][page.current_build])
         try:
             print(data[str(sel)]['schedules'][str(profile)])
@@ -58,8 +59,8 @@ def main(page:ft.Page):
         except Exception as e:
             traceback.print_exc()
             return
-        write_data(data)
-        data = get_data()
+        page.FileSingleton.write_data(data)
+        data = page.FileSingleton.get_data()
         print(data[str(sel)]['schedules'][str(profile)][page.current_build])
 
     c = ft.Container(bgcolor=ft.colors.RED,left=0, top=0, image_src="city.png",height=720/2,width=1280/2)
@@ -95,7 +96,8 @@ def main(page:ft.Page):
 
 def main2(sel,profile):
     global  column2, current_build
-    data = get_data()
+
+    data = FileSingleton.get_data()
 
     buttons = {
         "infantry_camp":0,
@@ -123,7 +125,7 @@ def main2(sel,profile):
         except Exception as e:
             traceback.print_exc()
             return
-        write_data(data)
+        column2.page.FileSingleton.write_data(data)
 
     c = ft.Container(bgcolor=ft.colors.RED,left=0, top=0, image_src="city.png",height=720/2,width=1280/2)
 
@@ -166,8 +168,7 @@ class CityPlacement(ft.Container):
         self.instance = instance
         self.profile = profile
         self.current_build =  None
-
-        self.data = get_data()
+        self.data = self.page.FileSingleton.get_data()
 
         self.main_container = ft.Container(bgcolor=ft.colors.RED, left=0, top=0, image_src="city.png", height=720 / 2, width=1280 / 2)
 
@@ -221,12 +222,11 @@ class CityPlacement(ft.Container):
         for element in self.buttons.controls:
             element.color = "blue"
         self.buttons.page.update()
-        write_data(self.data)
+        self.page.FileSingleton.write_data(self.data)
 def start(sel_param="1",profile_param="1"):
     global sel,profile,data
     sel = sel_param
     profile = profile_param
-    data = get_data()
     ft.app(target=main)
 
 if __name__ == "__main__":

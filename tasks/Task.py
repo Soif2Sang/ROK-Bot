@@ -7,6 +7,7 @@ from datetime import date
 from random import uniform, randint
 from time import sleep
 
+import re
 import cv2
 import win32api
 import win32con
@@ -20,7 +21,7 @@ from pytesseract import pytesseract
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 # from utils import discord_bot
-from utils.Task_utils import get_window_pid, get_name, current_time, get_time, get_data, write, string_to_co, get_path
+from utils.Task_utils import get_window_pid, get_name, current_time, get_time, string_to_co, FileSingleton
 from utils.bot_adb import Adb
 # from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
@@ -30,7 +31,8 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 class Task:
     def __init__(self, tile):
-        self.data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
         self.current_profile = '1'
         self.tile = tile
         self.sel = tile.number
@@ -42,6 +44,39 @@ class Task:
         self.language = None
         self.name = self.adb.name
 
+    def herite(self, MainTask):
+        self.data = MainTask.data
+        self.current_profile = MainTask.current_profile
+        self.frame = MainTask.tile
+        self.adb = MainTask.adb
+        self.ppid = MainTask.ppid
+        self.pid = MainTask.pid
+        self.language = MainTask.language
+        self.name = MainTask.name
+        self.sel = MainTask.sel
+
+    def script_pause(self):
+        said = False
+
+        while self.tile.paused and not self.tile.stopped:
+            if not said:
+                # self.print(f"You is paused.","Yellow")
+                self.set_text(f"[{current_time()}] Script is paused.", "orange")
+                print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Script is paused.")
+                said = True
+                # self.set_text("Script paused.")
+
+        if self.tile.stopped:
+            self.tile.stopped = False
+            self.set_text(f"[{current_time()}] You stopped the bot", "Red")
+            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot")
+            sys.exit(1)
+
+        if said:
+            self.set_text(f"[{current_time()}] You resumed the script.", "Green")
+            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You resumed the script.")
+
+
     def set_text(self, text, color=None):
         return self.tile.add_text(text, color)
 
@@ -51,19 +86,16 @@ class Task:
     def set_timer(self, seconds: int):
         condition = True
         while seconds and condition:
-            self.script_pause()
             hours, mins = divmod(seconds, 3600)
             mins, secs = divmod(mins, 60)
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
-            for i in range(10):
-                self.script_pause()
-                sleep(0.1)
             seconds -= 1
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
+            self.better_sleep((1,1))
 
     @get_name
     def update_data(self):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         return self.data
 
     def set_sel(self, sel) -> None:
@@ -212,7 +244,7 @@ class Task:
     @get_name
     def random_macro(self) -> None:
         try:
-            path_json = get_path()
+            path_json = self.FileSingleton.get_path()
             for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg",
                          "com.lilithgames.rok.gp.jp.cfg",
                          "com.lilithgames.rok.gpkr.cfg"]:
@@ -274,7 +306,7 @@ class Task:
                             self.script_pause()
                             win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                             win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                            sleep(0.20)
+                            self.better_sleep((0.2, 0.2))
                             win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                             win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
                             self.better_sleep((1.4, 2))
@@ -316,9 +348,10 @@ class Task:
             print(f"[ {self.name} ] {string =}")
             string = string.replace("\n", "")
             string = string.split(":")
-            self.print(f'Current level : {string[1]}')
-            # self.set_text(f"[{current_time()}] Current level : {string[1]}")
+
             try:
+                self.print(f'Current level : {string[1]}')
+                # self.set_text(f"[{current_time()}] Current level : {string[1]}")
                 level_to_go = level - int(string[1])
             except:
                 x, y = self.find_img(target='minus_button')
@@ -415,7 +448,7 @@ class Task:
             self.better_sleep((1.5, 2))
         else:
             self.click(uniform(24, 91), uniform(625, 680))
-            self.better_sleep((1.5, 2))
+            self.better_sleep((2.5,3.5))
             self.click(uniform(24, 91), uniform(625, 680))
         return True
 
@@ -438,19 +471,19 @@ class Task:
             co = self.find_img(target="rokicon", confidence=0.8)
             if co is not None:
                 self.click(co[0] + 10, co[1] + 10)
-                sleep(3)
+                self.better_sleep((3,3))
                 return self.wait_until_connected()
             else:
                 if count == 0:
                     self.adb.home_button()
-                    sleep(3)
+                    self.better_sleep((3, 3))
                     return self.run_game(count=1)
                 if count == 1:
                     if self.language is None or self.language == "eng":
                         for _ in range(2):
                             string = self.adb.shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
-                            write(self.name,
-                                  f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            self.FileSingleton.write(self.name,
+                                                     f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 break
                             if 'Activity not started' not in str(string):
@@ -463,8 +496,9 @@ class Task:
                     if self.language is None or self.language == "vn":
                         for i in range(2):
                             string = self.adb.shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
-                            write(self.name,
-                                  f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            self.FileSingleton.write(
+                                self.name,
+                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
@@ -479,8 +513,9 @@ class Task:
                         for i in range(2):
                             string = self.adb.shell(
                                 "am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity")
-                            write(self.name,
-                                  f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
+                            self.FileSingleton.write(
+                                self.name,
+                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
                             if 'Error' in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
@@ -504,10 +539,16 @@ class Task:
         a = limits[0]
         b = limits[1]
         if self.data[str(self.sel)]['schedules'][self.current_profile]["slow_mode"]:
-            # self.set_text(tuple,tuple[0])
-            a = a * self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
-            b = b * self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
-        sleep(uniform(a, b))
+            a *= self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
+            b *= self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
+
+        sleep_duration = uniform(a, b)
+        interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
+        num_intervals = int(sleep_duration / interval_duration)
+
+        for _ in range(num_intervals):
+            sleep(interval_duration)
+            self.script_pause()
 
     @get_name
     def solve(self, path, sel, defaultApiKey=True):
@@ -529,7 +570,13 @@ class Task:
             if e == 'ERROR_CAPTCHA_UNSOLVABLE':
                 if self.refresh_captcha():
                     return self.check_captcha()
-
+            if e == 'ERROR_NO_SLOT_AVAILABLE':
+                self.print(
+                    "Captcha service is out of capacity right now, waiting few minutes until the service is back again",
+                    "yellow")
+                self.better_sleep((4 * 60, 6 * 60))
+                if self.refresh_captcha():
+                    return self.check_captcha()
             self.print(f"EXCEPTION : Exception raised during the resolving of the captcha :\n{e}\n", "red")
             return {'error': e}
 
@@ -544,8 +591,7 @@ class Task:
             self.set_status("Error")
             self.send_discord_message("Error in resolving the captcha, human action required.")
             while True:
-                self.script_pause()
-                sleep(1)
+                self.better_sleep((1,1))
         try:
             if defaultApiKey:
                 api_key = '4805a29997857b110ef26530c7f39db1'
@@ -576,8 +622,9 @@ class Task:
             traceback.print_exc()
             print(
                 f"[ {current_time()} ] [ {self.name} ] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
-            write(self.name,
-                  f"EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
+            self.FileSingleton.write(
+                self.name,
+                f"EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
 
             if e == 'ERROR_CAPTCHA_UNSOLVABLE':
                 if self.refresh_captcha():
@@ -594,14 +641,14 @@ class Task:
         try:
             cv_image = array(pil_image)
         except OSError:
-            sleep(1)
+            self.better_sleep((1,1))
 
             return self.save_captcha()
         cropped_image = cv_image[100:560, 440:840]
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
         im_pil = Image.fromarray(cropped_image)
         im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
-        sleep(0.5)
+        self.better_sleep((0.5,0.5))
         size = os.path.getsize(rf"{os.getcwd()}\captcha{self.sel}.jpg")
         if size > 99999:
             self.print(f"Captcha is too big ({size}), refreshing it..")
@@ -619,25 +666,6 @@ class Task:
             return True
         return False
 
-    def script_pause(self):
-        said = False
-
-        if self.tile.stopped:
-            self.tile.stopped = False
-            self.set_text(f"[{current_time()}] You stopped the bot", "Red")
-            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot")
-            sys.exit(1)
-
-        while not self.tile.started:
-            if not said:
-                # self.print(f"You is paused.","Yellow")
-                self.set_text(f"[{current_time()}] Script is paused.", "orange")
-                print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Script is paused.")
-                said = True
-                # self.set_text("Script paused.")
-        if said:
-            self.set_text(f"[{current_time()}] You resumed the script.", "Green")
-            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You resumed the script.")
 
     @get_name
     def check_log_back(self, cv_image=None):
@@ -663,12 +691,10 @@ class Task:
                                 self.data.get(self.sel).get('schedules').get(self.current_profile).get(
                                     'log_back2')) * 60 + randint(0, 59)
                 self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
-                for i in range(value):
-                    self.script_pause()
-                    sleep(1)
+                self.better_sleep((value,value))
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(-10, 20))
                 self.print("Reconnection..")
-                sleep(uniform(5, 10))
+                self.better_sleep((5, 10))
                 self.run_game()
                 return True
             else:
@@ -712,7 +738,7 @@ class Task:
                     a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                     print(a)
                     self.click(a[0], a[1])
-                sleep(10)
+                self.better_sleep((10,10))
                 self.wait_until_connected()
                 return self.adb.get_cv2_img()
             else:
@@ -770,7 +796,8 @@ class Task:
             return cv_image
         except OSError:
             self.print("Cannot load the image..")
-            sleep(1)
+            self.better_sleep((1,1))
+
             return self.pil_to_array(image)
 
     # @get_name
@@ -822,16 +849,16 @@ class Task:
                 if self.data[self.sel]['schedules'][self.current_profile]['auto_captcha']:
                     # print(co)
                     self.click(chest[0] + uniform(775, 795), chest[1] + uniform(35, 50))
-                    self.better_sleep((3, 4))
+                    self.better_sleep((3,4))
                     return True
                 else:
                     self.set_text(f"[{current_time()}] Captcha verification is Off")
                     self.set_status("Captcha is Off")
                     self.send_discord_message("Captcha detected, Captcha verification off.")
                     while True:
-                        self.script_pause()
-                        sleep(1)
-            sleep(0.3)
+                        self.better_sleep((1,1.1))
+                        
+            self.better_sleep((0.3,0.3))
         return False
 
     @get_time
@@ -842,8 +869,7 @@ class Task:
         self.print(f"Scanning the screen for verification..")
         if chest:
             self.check_chest()
-            sleep(1)
-
+            self.better_sleep((1,1.1))
         co = self.find_img(target="verification_button")
         if co is not None:
             self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
@@ -851,7 +877,7 @@ class Task:
                 co = self.find_img(target="verification_button")
                 if co is not None:
                     self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
-                sleep(uniform(1, 3))
+                self.better_sleep((1.4,3))
         i = 0
         resolved = False
         previous_text = self.get_text()
@@ -944,9 +970,9 @@ class Task:
         """
         self.print(f"Leaving the game..")
         self.adb.shell("input keyevent KEYCODE_APP_SWITCH")
-        sleep(2)
+        self.better_sleep((2,2.1))
         self.click(920, 62)
-        sleep(2)
+        self.better_sleep((2,2.1))
 
     @get_name
     def kill_game(self) -> None:
@@ -1005,3 +1031,55 @@ class Task:
 
     def get_text(self):
         return self.tile.get_text()
+    
+
+    @get_name
+    def recenter(self, deadstop = 0):
+        image = self.adb.get_cv2_img()
+        if (co := self.find_img(source=image, target="green_home_button")):
+            # reader = Reader()
+            if deadstop == 10:
+                self.click(co[0],co[1])
+                self.better_sleep((2,3))
+                return
+            x, y = co[0] - 10, co[1] - 10
+            x2, y2 = co[0] + 50, co[1] + 50
+            # Fill the specified region with dark gray color
+            cv2.rectangle(image, (x, y), (x2, y2), (50, 50, 50), -1)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            image = self.get_neighboring_image(image=image, center_point=co)
+            first_try = image[0:35, :]
+            second_try = image[-30:, :]
+
+            word = ''
+
+            first = self.extract_text(first_try, allowlist="0123456789KM")
+            second = self.extract_text(second_try, allowlist="0123456789KM")
+
+            if re.match(r'\d+KM', second):
+                word = second
+            if re.match(r'\d+KM', first):
+                word = first
+            if re.match(r'\d+KM', word):
+                if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
+                    print(word)
+                    if co[0] < 500 and co[1] < 220:
+                        self.swipe(330, 160, 760, 530)
+                    elif co[0] < 500 and co[1] > 550:
+                        self.swipe(330, 530, 760, 160)
+                    elif co[0] > 800 and co[1] > 550:
+                        self.swipe(980, 530, 330, 160)
+                    elif co[0] > 800 and co[1] < 220:
+                        self.swipe(760, 160, 330, 530)
+                    elif co[0] <= 500:
+                        self.swipe_left()
+                    elif co[0] >= 800:
+                        self.swipe_right()
+                    elif co[1] >= 360:
+                        self.swipe_down()
+                    else:
+                        self.swipe_up()
+                    self.better_sleep((1, 2))
+                    return self.recenter(deadstop = deadstop +1)
+

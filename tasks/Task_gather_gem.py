@@ -18,15 +18,7 @@ from utils.Task_utils import get_name, get_class
 class GatherGem(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
-        self.data = MainTask.data
-        self.current_profile = MainTask.current_profile
-        self.frame = MainTask.tile
-        self.adb = MainTask.adb
-        self.ppid = MainTask.ppid
-        self.pid = MainTask.pid
-        self.language = MainTask.language
-        self.name = MainTask.name
-        self.sel = MainTask.sel
+        self.herite(MainTask)
         self.end_time = None
         self.block = False
 
@@ -84,8 +76,8 @@ class GatherGem(Task):
             cv_image = self.adb.get_cv2_img()
         else:
             cv_image = image
-        x_min = max(0, x - 30)
-        x_max = min(cv_image.shape[1] - 1, x + 50)
+        x_min = max(0, x - 40)
+        x_max = min(cv_image.shape[1] - 1, x + 60)
         y_min = max(0, y - 40)
         y_max = min(cv_image.shape[0] - 1, y + 50)
 
@@ -291,15 +283,6 @@ class GatherGem(Task):
                 co = self.find_img(source=cv_image, target="march_bar", confidence=0.8)
                 if co is not None:
                     x, y = co[0], co[1]
-                    # start_point = (990, 0)
-                    # end_point = (996, 719)
-                    # color = (169,169,169)  # Valeur de couleur pour le noir
-                    # thickness = 5
-                    # cv_image = cv2.line(cv_image, start_point, end_point, color, thickness)
-                    # start_point = (1021, 0)
-                    # end_point = (1025, 719)
-                    # thickness = 5
-                    # cv_image = cv2.line(cv_image, start_point, end_point, color, thickness)
 
                     cropped_image = cv_image[y + 27:y + 55, 956:1061]
                     cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
@@ -309,14 +292,7 @@ class GatherGem(Task):
                     string = self.extract_text(img=cropped_image, allowlist="1234567890:")
                     # string = string.replace(":","")
                     print(string)
-                    #
-                    # hours = string[:2]
-                    # minutes = string[2:4]
-                    # seconds = string[4:]
-                    #
-                    # # Formatter les heures, les minutes et les secondes dans le format "00:00:00"
-                    # formatted_time = f"{hours}:{minutes}:{seconds}"
-                    # print(formatted_time)
+
                     pattern = r'\d\d:\d\d:\d\d'  # Regular expression pattern
 
                     if not re.fullmatch(pattern, string):
@@ -421,6 +397,13 @@ class GatherGem(Task):
                     self.print("Node occupied")
                     return True
         return False
+    
+    def commander_selection_down(self):
+        self.swipe_arg(1220, 360, 1220, 230,randint(1000,1500))
+    
+    def commander_selection_up(self):
+        self.swipe_arg(1220, 230, 1220, 360,randint(1000,1500))
+        
 
     def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
                               down=85):
@@ -433,52 +416,6 @@ class GatherGem(Task):
 
         return image[min_y:max_y, min_x:max_x]
 
-    @get_name
-    def recenter(self):
-        image = self.adb.get_cv2_img()
-        if (co := self.find_img(source=image, target="green_home_button")):
-            # reader = Reader()
-
-            x, y = co[0] - 10, co[1] - 10
-            x2, y2 = co[0] + 50, co[1] + 50
-            # Fill the specified region with dark gray color
-            cv2.rectangle(image, (x, y), (x2, y2), (50, 50, 50), -1)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            image = self.get_neighboring_image(image=image, center_point=co)
-            first_try = image[0:35, :]
-            second_try = image[-30:, :]
-
-            word = ''
-
-            first = self.extract_text(first_try, allowlist="0123456789KM")
-            second = self.extract_text(second_try, allowlist="0123456789KM")
-
-            if re.match(r'\d+KM', second):
-                word = second
-            if re.match(r'\d+KM', first):
-                word = first
-            print(word)
-            if re.match(r'\d+KM', word):
-                if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
-                    if co[0] < 500 and co[1] < 220:
-                        self.swipe(330, 160, 760, 530)
-                    elif co[0] < 500 and co[1] > 550:
-                        self.swipe(330, 530, 760, 160)
-                    elif co[0] > 800 and co[1] > 550:
-                        self.swipe(980, 530, 330, 160)
-                    elif co[0] > 800 and co[1] < 220:
-                        self.swipe(760, 160, 330, 530)
-                    elif co[0] < 500:
-                        self.swipe_left()
-                    elif co[0] > 800:
-                        self.swipe_right()
-                    elif co[1] > 360:
-                        self.swipe_down()
-                    elif co[1] < 360:
-                        self.swipe_up()
-                    self.better_sleep((1, 2))
-                    return self.recenter()
 
     @get_name
     def scan_gem(self):
@@ -541,10 +478,12 @@ class GatherGem(Task):
                     x_click = co[0]
                     y_click = co[1]
                     self.better_sleep((2, 2.5))
-                    self.check_captcha()
+                    
+                    default = True
                     while True:
                         self.check_download_page()
                         self.leave_kd_buff()
+                        self.check_captcha()
                         if self.check_log_back():
                             self.print(
                                 "You interrupted gem gathering by connecting from an other device, bot is restarting it")
@@ -559,65 +498,142 @@ class GatherGem(Task):
                         if self.find_cross():
                             return self.adjusted_leave_city(x_click, y_click)
 
-                        if not self.click_on_node():
-                            return self.adjusted_leave_city(x_click, y_click)
+                        if not self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_experimental"):
+                            if not self.click_on_node():
+                                return self.adjusted_leave_city(x_click, y_click)
 
-                        if self.free_troop_selection():
-                            self.click(uniform(1172, 1222), uniform(77, 112))
-                            # self.better_sleep((0.6, 1))
+                            if self.free_troop_selection():
+                                self.click(uniform(1172, 1222), uniform(77, 112))
+                                # self.better_sleep((0.6, 1))
 
-                        self.better_sleep((1.3, 2))
+                            self.better_sleep((1.3, 2))
 
-                        if self.send_new_troop():
-                            break
-                        self.print("Trying to send the nearest troop..")
-                        if self.send_nearest_troop_gem():
-                            if self.find_img(target="new_troops_button", confidence=0.70):
-                                self.send_new_troop()
-                            break
-                        else:
-                            self.print("All queues are occupied")
+                            if self.send_new_troop():
+                                break
+                            self.print("Trying to send the nearest troop..")
+                            if self.send_nearest_troop_gem():
+                                if self.find_img(target="new_troops_button", confidence=0.70):
+                                    self.send_new_troop()
+                                break
+                            else:
+                                self.print("All queues are occupied")
 
-                        self.click(uniform(400, 700), uniform(300, 400))
-                        self.better_sleep((1.8, 3))
-                        self.check_captcha()
+                            self.click(uniform(400, 700), uniform(300, 400))
+                            self.better_sleep((1.8, 3))
+                            self.check_captcha()
 
-                        scan_frequency = randint(
-                            self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_check1"),
-                            self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_check2")
-                        )
+                            scan_frequency = randint(
+                                self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_check1"),
+                                self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_check2")
+                            )
 
-                        self.print(f"Script is paused for {scan_frequency} seconds")
-                        scan_frequency_timer = 0
-                        random_wait = uniform(20, 30)
-                        for i in range(scan_frequency):
-                            self.script_pause()
-                            sleep(1)
-                            scan_frequency_timer += 1
-                            if scan_frequency_timer >= random_wait:
+                            self.print(f"Script is paused for {scan_frequency} seconds")
+                            scan_frequency_timer = 0
+                            random_wait = uniform(20, 30)
+                            for i in range(scan_frequency):
+                                self.better_sleep((1,1))
+                                scan_frequency_timer += 1
+                                if scan_frequency_timer >= random_wait:
 
-                                if self.check_log_back():
-                                    self.print(
-                                        "You interrupted gem gathering by connecting from an other device, bot is restarting it")
-                                    return self.run(self.end_time)
-                                self.run_game()
-                                timer_image = self.adb.get_cv2_img()
-                                cross_image = timer_image[240:490, 490:790]
-                                back_image = timer_image[150:477, 1160:]
-                                if self.find_cross_source(cross_image):
-                                    return self.adjusted_leave_city(x_click, y_click)
-                                if self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_experimental"):
+                                    if self.check_log_back():
+                                        self.print(
+                                            "You interrupted gem gathering by connecting from an other device, bot is restarting it")
+                                        return self.run(self.end_time)
+                                    self.run_game()
+                                    timer_image = self.adb.get_cv2_img()
+                                    cross_image = timer_image[240:490, 490:790]
+                                    back_image = timer_image[150:477, 1160:]
+                                    if self.find_cross_source(cross_image):
+                                        return self.adjusted_leave_city(x_click, y_click)
                                     if self.find_img(target="back_normal_view", source=back_image,
-                                                     confidence=0.9) is not None:
+                                                        confidence=0.9) is not None:
                                         self.print(
                                             "Bot detected a troop is going back to the city, now bypassing the sleep time..")
                                         break
                                     if self.free_troop_commander_list():
                                         self.print("Bot detected a troop is free, now bypassing the sleep time..")
                                         break
-                                if self.data[str(self.sel)]['schedules'][self.current_profile].get('alliance_help'):
-                                    AllianceHelp(self).run()
-                                scan_frequency_timer = 0
+                                    if self.data[str(self.sel)]['schedules'][self.current_profile].get('alliance_help'):
+                                        AllianceHelp(self).run()
+                                    scan_frequency_timer = 0
+                        else:
+                            
+                            if not self.adb.is_game_alive():
+                                self.run_game()
+                                return self.run(self.end_time)
+                            
+                            if self.find_img(target="back_normal_view",confidence=0.9) is not None or \
+                                    self.free_troop_commander_list():
+                                self.print("Bot detected")
+                                if not self.click_on_node():
+                                    self.better_sleep((1, 1.895))
+                                    self.check_captcha()
+                                    return self.adjusted_leave_city(x_click, y_click)
+                                if self.send_new_troop():
+                                    self.better_sleep((1, 1.895))
+                                    self.check_captcha()
+                                    return self.adjusted_leave_city(x_click, y_click)
+                                self.print("Trying to send the nearest troop..")
+                                if self.send_nearest_troop_gem():
+                                    if self.find_img(target="new_troops_button", confidence=0.70):
+                                        self.send_new_troop()
+                                    self.better_sleep((1, 1.895))
+                                    self.check_captcha()
+                                    return self.adjusted_leave_city(x_click, y_click)
+                                else:
+                                    self.print("All queues are occupied")
+                            for i in range(2):
+                                if default:
+                                    self.commander_selection_down()
+                                else:
+                                    self.commander_selection_up()
+                                if self.find_img(target="back_normal_view",confidence=0.9) is not None or self.free_troop_commander_list():
+                                    if not self.click_on_node():
+                                        self.better_sleep((1, 1.895))
+                                        self.check_captcha()
+                                        return self.adjusted_leave_city(x_click, y_click)
+                                    if self.send_new_troop():
+                                        self.better_sleep((1, 1.895))
+                                        self.check_captcha()
+                                        return self.adjusted_leave_city(x_click, y_click)
+                                    self.print("Trying to send the nearest troop..")
+                                    if self.send_nearest_troop_gem():
+                                        if self.find_img(target="new_troops_button", confidence=0.70):
+                                            self.send_new_troop()
+                                        self.better_sleep((1, 1.895))
+                                        self.check_captcha()
+                                        return self.adjusted_leave_city(x_click, y_click)
+                                    else:
+                                        self.print("All queues are occupied")
+                                self.better_sleep((1,1))
+                            default = not default
+
+                            # random_wait = uniform(20, 30)
+                            self.better_sleep((15,30))
+                            self.check_captcha()
+                            if self.check_log_back():
+                                self.print(
+                                    "You interrupted gem gathering by connecting from an other device, bot is restarting it")
+                                return self.run(self.end_time)
+                            
+                            self.check_reconnect()
+                            self.check_download_page()
+                            # self.run_game()
+                            # timer_image = self.adb.get_cv2_img()
+                            # cross_image = timer_image[240:490, 490:790]
+                            # back_image = timer_image[150:477, 1160:]
+                            # if self.find_cross_source(cross_image):
+                            #     return self.adjusted_leave_city(x_click, y_click)
+                            # if self.find_img(target="back_normal_view", source=back_image,
+                            #                     confidence=0.9) is not None:
+                            #     self.print(
+                            #         "Bot detected a troop is going back to the city, now bypassing the sleep time..")
+                            #     break
+                            # if self.free_troop_commander_list():
+                            #     self.print("Bot detected a troop is free, now bypassing the sleep time..")
+                            #     break
+                            if self.data[str(self.sel)]['schedules'][self.current_profile].get('alliance_help'):
+                                AllianceHelp(self).run()
                     self.better_sleep((1, 1.895))
                     self.check_captcha()
                     return self.adjusted_leave_city(x_click, y_click)
@@ -689,8 +705,6 @@ class GatherGem(Task):
 
     @get_name
     def swipe_scan(self, scan, direction):
-
-        self.script_pause()
         # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
         direction()
         screen = self.adb.get_cv2_img()
@@ -699,7 +713,7 @@ class GatherGem(Task):
         cropped_image = screen[420:540, 480:810]
 
         if random() > 0.7:
-            co = self.find_img(source=screen, target="verification_button", confidence=0.8)
+            co = self.find_img(source=screen, target="verification_button", confidence=0.6)
             if co is not None:
                 self.check_captcha()
             self.check_reconnect(cropped_image)

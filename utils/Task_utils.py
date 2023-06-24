@@ -1,6 +1,8 @@
+import hashlib
 import json
 import logging
 import os
+import sys
 from datetime import datetime
 from functools import wraps
 from threading import Lock
@@ -11,50 +13,48 @@ import win32process
 from PIL import Image
 from numpy import ndarray, array
 
-if os.path.isdir("./resources"):
-    dir = "./"
-else:
-    dir = "../"
+dir = "./"
 
-PathLock = Lock()
+class FileSingleton:
+    __instance = None
+    FileLock = Lock()
+    def __new__(cls):
+       if cls.__instance is None:
+           cls.__instance = super().__new__(cls)
+       return cls.__instance
 
-DataLock = Lock()
+    def write(self,name,text:str):
+        self.FileLock.acquire()
+        with open(f"{dir}logs/{name}_logs.txt", "a+", encoding="utf-8") as logger:
+            logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
+        self.FileLock.release()
 
-LogsLock = Lock()
+    def get_data(self):
+        self.FileLock.acquire()
+        with open(f"{dir}user_settings.json", encoding='utf-8') as config_file:
+            data = json.load(config_file)
+        self.FileLock.release()
+        return data
 
-def write(name,text:str):
-    try:
-        with LogsLock:
-            with open(f"{dir}logs/{name}_logs.txt", "a+", encoding="utf-8") as logger:
-                logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
-    except:
-        return
-
-def get_data():
-    try:
-        with DataLock:
-            with open(f"{dir}user_settings.json", encoding='utf-8') as config_file:
-                data = json.load(config_file)
-    except:
-        return get_data()
-    return data
-
-def get_path():
-    with PathLock:
+    def get_path(self):
+        self.FileLock.acquire()
         with open(f"{dir}path.json", encoding='utf-8') as config_file:
             path = json.load(config_file)
-    return path
+        self.FileLock.release()
+        return  path
 
-def write_data(data):
-    with DataLock:
+    def write_data(self,data):
+        self.FileLock.acquire()
         with open(f"{dir}user_settings.json",'w', encoding='utf-8') as config_file:
             config_file.write(json.dumps(data,indent=2))
+        self.FileLock.release()
 
-def get_default_config():
-    with DataLock:
+    def get_default_config(self):
+        self.FileLock.acquire()
         with open(f"{dir}default_profile.json", encoding='utf-8') as config_file:
             data = json.load(config_file)
-    return data
+        self.FileLock.release()
+        return data
 
 def current_time():
     return datetime.now().strftime("%H:%M:%S")
@@ -90,7 +90,7 @@ def get_time(func):
             # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
                 # logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
                 # logger.write(f"[ {date.today()} ] [ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
-            write(self.name,f"INFO : Verification made in {(end_time - start_time):0.1f}\n" )
+            self.FileSingleton.write(self.name,f"INFO : Verification made in {(end_time - start_time):0.1f}\n" )
         return func_output
 
     return wrapper
@@ -164,3 +164,12 @@ def change_resource_type(place: str) -> str:
     elif place == "Fourth":
         return "Done"
 
+def getchecksum():
+    md5_hash = hashlib.md5()
+    try:
+        file = open(''.join(sys.argv), "rb")
+    except:
+        file = open(''.join(sys.argv[0]), "rb")
+    md5_hash.update(file.read())
+    digest = md5_hash.hexdigest()
+    return digest
