@@ -104,20 +104,6 @@ class UpgradeCity(Task):
             win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
             win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
             self.better_sleep((1.4, 2))
-        return
-        x = uniform(33, 76)
-        y = uniform(517, 560)
-        # print(x,y)
-        self.click(x, y)
-        self.better_sleep((1.9, 3))
-        x = uniform(1096, 1120)
-        y = uniform(186, 210)
-        self.click(x, y)
-        self.better_sleep((1.9, 3))
-        x = uniform(1223, 1241)
-        y = uniform(28, 46)
-        self.click(x, y)
-        self.better_sleep((1.9, 3))
 
     @get_name
     def is_city_hall_upgradable(self):

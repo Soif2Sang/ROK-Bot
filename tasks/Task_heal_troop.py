@@ -113,6 +113,7 @@ class HealTroop(Task):
             self.click(uniform(880, 1018), uniform(560, 600))
             self.better_sleep((1, 1.5))
             self.click_help()
+            self.click(healing_hut[0], healing_hut[1])
 
     def click_help(self):
         AllianceHelp(self).run()

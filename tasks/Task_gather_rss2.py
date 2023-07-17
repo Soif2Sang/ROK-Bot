@@ -198,8 +198,6 @@ class GatherRss2(Task):
             self.better_sleep((1.5, 2))
             self.scan_node()
             self.better_sleep((0.125, 0.195))
-            self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
-                       self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
 
     @get_name
     def send_new_troop(self, deadstop: int = 0, color: str = 'yellow') -> bool:
@@ -373,52 +371,59 @@ class GatherRss2(Task):
         """
         self.restart_if_game_crashed()
         screen = self.adb.get_cv2_img()
-        nodes = self.adb.find_multiple_img(source=screen,
-                                           target=f"{self.data[str(self.sel)]['schedules'][self.current_profile][self.node_type]}_icon_zoom",
-                                           confidence=0.7)
-        print(nodes)
-        print(f"{self.data[str(self.sel)]['schedules'][self.current_profile][self.node_type]}_icon")
-        nodes = filter(self.validate_co, nodes)
-        for co in list(nodes):
+        list_nodes = [f"{self.data[str(self.sel)]['schedules'][self.current_profile][self.node_type]}_icon_zoom"]
+        for element  in ['down','up']:
+            for element2 in ['left','right']:
+                list_nodes.append(f"{self.data[str(self.sel)]['schedules'][self.current_profile][self.node_type]}_{element}_{element2}_icon_zoom")
+        co = None
+        for icon in list_nodes:
+            co = self.validate_co(
+                self.find_img(source=screen, target=icon,confidence=0.82))
+            if co is None:
+                co = self.validate_co(
+                    self.find_img(source=screen, target=icon,confidence=0.82))
             if co is not None:
                 self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
                     self.print(f"Already mining this gem node")
-                    continue
-                self.print(f"Node x:{co[0]}, y:{co[1]}")
-                self.click(co[0], co[1])
-                x_click = co[0]
-                y_click = co[1]
-                self.better_sleep((2, 2.5))
-                self.check_captcha()
-                self.check_download_page()
-                self.leave_kd_buff()
-                if self.check_log_back():
-                    self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
-                    return self.run(self.end_time)
-                screen = self.adb.get_cv2_img()
-                cv_image = screen[0:100, 0:800]
-                if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
-                    self.print("Bot detected the block icon, now cancelling the function..")
-                    self.block = True
-                    return
+                    co = None
+            if co:
+                break
+        if co:
+            self.print(f"Node x:{co[0]}, y:{co[1]}")
+            self.click(co[0], co[1])
+            x_click = co[0]
+            y_click = co[1]
+            self.better_sleep((2, 2.5))
+            self.check_captcha()
+            self.check_download_page()
+            self.leave_kd_buff()
+            if self.check_log_back():
+                self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
+                return self.run(self.end_time)
+            screen = self.adb.get_cv2_img()
+            cv_image = screen[0:100, 0:800]
+            if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
+                self.print("Bot detected the block icon, now cancelling the function..")
+                self.block = True
+                return
 
-                if self.find_cross():
-                    return self.adjusted_leave_city(x_click, y_click)
+            if self.find_cross():
+                return self.adjusted_leave_city(x_click, y_click)
 
-                if not self.click_on_node():
-                    return self.adjusted_leave_city(x_click, y_click)
+            if not self.click_on_node():
+                return self.adjusted_leave_city(x_click, y_click)
 
-                if self.free_troop_selection():
-                    self.click(uniform(1172, 1222), uniform(77, 112))
-                    # self.better_sleep((0.6, 1))
+            if self.free_troop_selection():
+                self.click(uniform(1172, 1222), uniform(77, 112))
+                # self.better_sleep((0.6, 1))
 
-                self.better_sleep((1.3, 2))
+            self.better_sleep((1.3, 2))
 
-                if self.send_troop():
-                    self.node_type = self.next_resource_type(self.node_type)
-                    print(self.node_type)
-                return self.zoom_out_city()
+            if self.send_troop():
+                self.node_type = self.next_resource_type(self.node_type)
+                print(self.node_type)
+            return self.zoom_out_city()
 
     @get_name
     def swipe_scan(self, scan, direction):
@@ -505,7 +510,7 @@ class GatherRss2(Task):
         print(self.node_type)
         self.scan_node()
 
-        max_distance = 0
+        max_distance = 5
         swipes = {self.swipe_up: self.swipe_right,
                   self.swipe_right: self.swipe_down,
                   self.swipe_down: self.swipe_left,
