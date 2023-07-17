@@ -6,6 +6,7 @@ from time import time, sleep
 
 import win32gui
 
+from Task_gather_gem2 import GatherGem2
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
@@ -173,7 +174,11 @@ class TaskRunner(Task):
         if profile.get('defeat_barbarians', False):
             lib_tasks.append(HuntBarbarians(self))
         if profile.get('gather_gem', False):
-            lib_tasks.append(GatherGem(self))
+            if not profile.get('gem_experimental'):
+                lib_tasks.append(GatherGem(self))
+            else:
+                lib_tasks.append(GatherGem2(self))
+
         if profile.get('scout_fog', False):
             lib_tasks.append(ClearFog(self))
         if profile.get('claim_daily_vip', False):

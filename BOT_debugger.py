@@ -8,6 +8,7 @@ import flet as ft
 import numpy as np
 
 import taskscod.COD_Task_daily_vip
+from tasks.Task_title import Title
 from tasks import Task_gather_rss
 from tasks.Task_gather_gem import GatherGem
 from tasks.Task_gather_rss2 import GatherRss2
@@ -55,7 +56,7 @@ class Frame():
 
 class Bot():
     def __init__(self,adb):
-        self.adb=adb
+        self.adb: Adb =adb
         self.device= adb.get_device()
         self.main_task= Task(Frame(adb.number)) #tasksGEM / tasks
         self.main_task.adb = adb
@@ -81,6 +82,7 @@ class Bot():
         self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
         self.maraudeurs = Maraudeurs(self.main_task)
         self.gem = GatherGem(self.main_task)
+        self.title = Title(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -444,6 +446,7 @@ def get_bot(number):
     bot.task.tile = frame
     bot.task.tile.stopped = False
     return bot
+
 def upgrade_all():
     Thread(target=lambda: upgrade_instance(3)).start()
     Thread(target=lambda: upgrade_instance(4)).start()
@@ -461,8 +464,11 @@ def upgrade_all():
 if __name__ == "__main__":
     # upgrade_all()
 
-    bot =  get_bot(0)
-    print(bot.rss2.run())
+    bot =  get_bot(3)
+    bot.title.run('duke',  '3190', 718,  537)
+    exit()
+    print(bot.gem.run2()
+          ())
     exit()
     screen =   bot.adb.get_cv2_img()
     for second_string in ["left", "mid", "right"]:

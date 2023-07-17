@@ -756,10 +756,10 @@ class Task:
         condition = True
         while condition:
             self.run_game()
-            if self.find_img(target="menu_button", confidence=0.8) or \
-                    self.find_img(target="map_icon", confidence=0.8) or \
-                    self.find_img(target="hammer", confidence=0.8) or \
-                    self.find_img(target="inbox", confidence=0.8):
+            if self.find_img(target="menu_button", confidence=0.6) or \
+                    self.find_img(target="map_icon", confidence=0.6) or \
+                    self.find_img(target="hammer", confidence=0.6) or \
+                    self.find_img(target="inbox", confidence=0.6):
                 condition = False
             co = self.find_img(target="mightiest_gov", confidence=0.8)
             if co is not None:
@@ -838,7 +838,7 @@ class Task:
             # cv_image = array(pil_image)
             # cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cv_image = self.adb.get_cv2_img()
-            cropped_image = cv_image[30:170, 770:1225]
+            cropped_image = cv_image[30:170, 0:1225]
             chest = None
             for i in range(1, 4):
                 self.script_pause()
@@ -848,7 +848,7 @@ class Task:
             if chest is not None:
                 if self.data[self.sel]['schedules'][self.current_profile]['auto_captcha']:
                     # print(co)
-                    self.click(chest[0] + uniform(775, 795), chest[1] + uniform(35, 50))
+                    self.click(chest[0] + uniform(0, 30), chest[1] + uniform(35, 50))
                     self.better_sleep((3,4))
                     return True
                 else:
@@ -861,12 +861,12 @@ class Task:
             self.better_sleep((0.3,0.3))
         return False
 
-    @get_time
+    @get_name
     def check_captcha(self, chest=True, DefaultApiKey=True) -> bool:
         """
         Check and resolve verification
         """
-        self.print(f"Scanning the screen for verification..")
+        # self.print(f"Scanning the screen for verification..")
         if chest:
             self.check_chest()
             self.better_sleep((1,1.1))
@@ -1009,7 +1009,7 @@ class Task:
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return not self.find_img(target='gem_search_button', confidence=0.99)
+        return not self.find_img(target='gem_search_button', confidence=0.79)
 
     @get_name
     def close_windows(self):

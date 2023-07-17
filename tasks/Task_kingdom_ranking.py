@@ -103,10 +103,10 @@ class KingdomRanking(Task):
             "-d", "--dir", type=str, default=datetime.now().strftime("%Y-%m-%d")
         )
         parser.add_argument("-s", "--start-rank", type=int, default=1)
-        parser.add_argument("-e", "--end-rank", type=int, default=500)
+        parser.add_argument("-e", "--end-rank", type=int, default=300)
         args = parser.parse_args()
 
-        print(f"\n===== {args.start_rank}位から{args.end_rank}位までキャプチャします。 =====\n")
+        print(f"\n===== Scanning from {args.start_rank} to {args.end_rank}. =====\n")
 
         template_dir_path = ""
         dir_path = "./"
@@ -144,7 +144,7 @@ class KingdomRanking(Task):
         for i in range(start, end):
             current_rank = i + 1
 
-            print(f"\n===== {current_rank}位のキャプチャを開始します。 =====\n")
+            print(f"\n===== Currently scanning player rank : {current_rank}. =====\n")
 
             # 総督情報表示
             if current_rank <= 3:
@@ -160,7 +160,7 @@ class KingdomRanking(Task):
             try:
                 self.checkImg(template_dir_path + "player")
             except TimeoutError:
-                self.err(f"{current_rank}位: 総督情報の表示に失敗しました。キャプチャをスキップします。 -> {current_rank}")
+                self.err(f"An error occurred when scanning {current_rank}")
                 if self.find_img(template_dir_path + "ranking"):
                     self.adb.swipe_arg(
                         RANKING_TAP_POS_X,
@@ -171,7 +171,7 @@ class KingdomRanking(Task):
                     )
                     continue
                 else:
-                    self.err(f"ランキングの表示に失敗しました。処理を中止します。 -> {current_rank}")
+                    self.err(f"An error occurred when scanning {current_rank}, the bot has to stop.")
                     sys.exit(1)
 
             # 撃破詳細表示・キャプチャ
@@ -181,7 +181,7 @@ class KingdomRanking(Task):
             try:
                 self.checkImg(template_dir_path + "kill")
             except TimeoutError:
-                self.err(f"{current_rank}位: 撃破詳細の表示に失敗しました。キャプチャをスキップします。 -> {current_rank}")
+                self.err(f"An error occurred when scanning {current_rank}. Returning to the Ranking Screen")
                 self.returnToRankingScreen()
                 continue
 
@@ -235,7 +235,7 @@ class KingdomRanking(Task):
             if self.find_img(template_dir_path + "ranking"):
                 break
             elif timer >= 4:
-                self.err(f"ランキングの表示に失敗しました。処理を中止します。 -> {current_rank}")
+                self.err(f"Unable to return to the ranking screen, current rank was : {current_rank}")
                 sys.exit(1)
             else:
                 co = self.find_img(template_dir_path + "close")
@@ -306,7 +306,7 @@ class KingdomRanking(Task):
         id = re.sub("\)$", "", id)
         if id == "":
             self.err(
-                f"{rank}位 - {name}: 「ID」の読み取りに失敗しました。 -> {rank}-id",
+                f"{rank}th - {name}: Failed to read 'ID'. -> {rank}-id",
                 [(f"{rank}-id", id_img)],
             )
 
@@ -360,12 +360,12 @@ class KingdomRanking(Task):
 
             if kill == "":
                 self.err(
-                    f"{rank}位 - {name}: 「T{i + 1}撃破数」の読み取りに失敗しました。 -> {kill_img_file_name}, {kill_p_img_file_name}",
+                    f"{rank}th - {name}: Failed to read 'T{i + 1} Kill Count'. -> {kill_img_file_name}, {kill_p_img_file_name}",
                     [(kill_img_file_name, kill_img), (kill_p_img_file_name, kill_p_img)],
                 )
             elif abs(int(kill) * kill_point_coefficient - int(kill_p)) > 1:
                 self.err(
-                    f"{rank}位 - {name}: 「T{i + 1}撃破数」を正しく読み取りできなかった可能性があります。OCRの結果は撃破数「{kill}」、撃破ポイント「{kill_p}」です。 -> {kill_img_file_name}, {kill_p_img_file_name}",
+                    f"{rank}th - {name}: There may be a failure in reading 'T{i + 1} Kill Count' accurately. OCR result: Kill Count: '{kill}', Kill Points: '{kill_p}'. -> {kill_img_file_name}, {kill_p_img_file_name}",
                     [(kill_img_file_name, kill_img), (kill_p_img_file_name, kill_p_img)],
                 )
 
@@ -384,10 +384,9 @@ class KingdomRanking(Task):
         ranged = ranged.replace(",", "")
         if ranged == "":
             self.err(
-                f"{rank}位 - {name}: 「遠隔ポイント」の読み取りに失敗しました。 -> {rank}-ranged",
+                f"{rank}th - {name}: Failed to read 'Ranged Points'. -> {rank}-ranged",
                 [(f"{rank}-ranged", ranged_img)],
             )
-
         # 戦力
         power_img = self.correct_image(
             img_b, POWER_CROP_RANGE, threshold=50, brightness=2, contrast=1.2
@@ -396,7 +395,7 @@ class KingdomRanking(Task):
         power = power.replace(",", "")
         if power == "":
             self.err(
-                f"{rank}位 - {name}: 「戦力」の読み取りに失敗しました。 -> {rank}-power",
+                f"{rank}th - {name}: Failed to read 'Power'. -> {rank}-power",
                 [(f"{rank}-power", power_img)],
             )
 
@@ -408,14 +407,14 @@ class KingdomRanking(Task):
         hpower = hpower.replace(",", "")
         if hpower == "":
             self.err(
-                f"{rank}位 - {name}: 「過去最大戦力」の読み取りに失敗しました。 -> {rank}-hpower",
+                f"{rank}th - {name}: Failed to read 'Highest Power'. -> {rank}-hpower",
                 [(f"{rank}-dead", hpower_img)],
             )
 
         # 戦力チェック
         if power != "" and hpower != "" and int(power) > int(hpower):
             self.err(
-                f"{rank}位 - {name}: 「戦力」または「過去最大戦力」を正しく読み取りできなかった可能性があります。OCRの結果は戦力「{power}」、過去最大戦力「{hpower}」です。 -> {rank}-power, {rank}-hpower",
+                f"{rank}th - {name}: There may be a failure in reading 'Power' or 'Highest Power' accurately. OCR results: Power: '{power}', Highest Power: '{hpower}'. -> {rank}-power, {rank}-hpower",
                 [(f"{rank}-power", power_img), (f"{rank}-hpower", hpower_img)],
             )
 
@@ -425,17 +424,16 @@ class KingdomRanking(Task):
         dead = dead.replace(",", "")
         if dead == "":
             self.err(
-                f"{rank}位 - {name}: 「戦死数」の読み取りに失敗しました。 -> {rank}-dead",
+                f"{rank}th - {name}: Failed to read 'Death Count'. -> {rank}-dead",
                 [(f"{rank}-dead", dead_img)],
             )
-
         # 資源援助
         rss_img = self.correct_image(img_b, RSS_CROP_RANGE, brightness=1.3, contrast=1.8)
         rss = self.ocr_image(rss_img)
         rss = rss.replace(",", "")
         if rss == "":
             self.err(
-                f"{rank}位 - {name}: 「資源援助数」の読み取りに失敗しました。 -> {rank}-rss",
+                f"{rank}th - {name}: Failed to read 'Resource Assistance Count'. -> {rank}-rss",
                 [(f"{rank}-rss", rss_img)],
             )
 

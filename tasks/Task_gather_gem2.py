@@ -15,7 +15,7 @@ from utils.Task_utils import get_name, get_class
 # from utils.easyOcr import Reader
 
 
-class GatherGem(Task):
+class GatherGem2(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
@@ -200,7 +200,7 @@ class GatherGem(Task):
             self.scan_gem()
             self.better_sleep((0.125, 0.195))
             self.go_city(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
-                       self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
+                         self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
 
     @get_name
     def send_new_troop(self, deadstop: int = 0, color: str = 'yellow') -> bool:
@@ -398,13 +398,12 @@ class GatherGem(Task):
                     self.print("Node occupied")
                     return True
         return False
-    
+
     def commander_selection_down(self):
-        self.swipe_arg(1220, 360, 1220, 230,randint(1000,1500))
-    
+        self.swipe_arg(1220, 360, 1220, 230, randint(1000, 1500))
+
     def commander_selection_up(self):
-        self.swipe_arg(1220, 230, 1220, 360,randint(1000,1500))
-        
+        self.swipe_arg(1220, 230, 1220, 360, randint(1000, 1500))
 
     def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
                               down=85):
@@ -416,7 +415,6 @@ class GatherGem(Task):
         max_y = min(grid_height - 1, y + down)
 
         return image[min_y:max_y, min_x:max_x]
-
 
     @get_name
     def scan_gem(self):
@@ -462,13 +460,14 @@ class GatherGem(Task):
         co = None
         for second_string in ["left", "mid", "right"]:
             for first_string in ["up", "mid", "down"]:
-                icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
+                icons.append(
+                    [f"gem_icon_day_{first_string}_{second_string}", f"gem_icon_night_{first_string}_{second_string}"])
         for icon in icons:
             co = self.validate_co(
-                self.find_img(source=screen, target=icon[0],confidence=0.82))
+                self.find_img(source=screen, target=icon[0], confidence=0.82))
             if co is None:
                 co = self.validate_co(
-                    self.find_img(source=screen, target=icon[1],confidence=0.82))
+                    self.find_img(source=screen, target=icon[1], confidence=0.82))
             if co is not None:
                 self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
@@ -515,7 +514,7 @@ class GatherGem(Task):
                     scan_frequency_timer = 0
                     random_wait = uniform(20, 30)
                     for i in range(scan_frequency):
-                        self.better_sleep((1,1))
+                        self.better_sleep((1, 1))
                         scan_frequency_timer += 1
                         if scan_frequency_timer >= random_wait:
                             if self.check_if_interrupt():
@@ -527,7 +526,8 @@ class GatherGem(Task):
 
                             if self.find_cross_source(cross_image):
                                 break
-                            if self.find_img(target="back_normal_view", source=back_image,confidence=0.9) is not None or \
+                            if self.find_img(target="back_normal_view", source=back_image,
+                                             confidence=0.9) is not None or \
                                     self.free_troop_commander_list():
                                 self.print("This node can be gathered.")
                                 break
@@ -539,7 +539,6 @@ class GatherGem(Task):
                     if not self.adb.is_game_alive():
                         self.run_game()
                         return self.run(self.end_time)
-
 
                     if self.find_img(target="back_normal_view", confidence=0.9) is not None or \
                             self.free_troop_commander_list():
@@ -577,7 +576,7 @@ class GatherGem(Task):
                     default = not default
 
                     # random_wait = uniform(20, 30)
-                    self.better_sleep((15,30))
+                    self.better_sleep((15, 30))
                     if self.check_if_interrupt():
                         return self.run(self.end_time)
 
@@ -691,7 +690,7 @@ class GatherGem(Task):
         :param: y -> int y map location
         :return: starting location between 0,1,2,3
         """
-        x2, y2 = x + randint(-2,2), y + randint(-2,2)
+        x2, y2 = x + randint(-2, 2), y + randint(-2, 2)
         x3, y3 = uniform(290, 400), uniform(15, 26)
         self.click(x3, y3)
         self.better_sleep((0.3, 0.5))
@@ -974,7 +973,7 @@ class GatherGem(Task):
         self.print("Gathering gem time elapsed !")
 
     @get_class
-    def run1(self, node_type=None):
+    def run(self, node_type=None):
         """
        Gather gems
        """
@@ -1011,8 +1010,7 @@ class GatherGem(Task):
 
         while self.end_time > time():
             self.scan_gem()
-            max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 7)
-            max_distance = int(max_distance - (1.5/max_distance))
+            max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 5)
 
             swipes = {
                 self.swipe_up: self.swipe_right,
@@ -1033,4 +1031,4 @@ class GatherGem(Task):
 
                 current_swipe = swipes[current_swipe]
             self.go_city(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
-                                       self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
+                         self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
