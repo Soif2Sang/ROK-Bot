@@ -6,7 +6,7 @@ from time import time, sleep
 
 import win32gui
 
-from Task_gather_gem2 import GatherGem2
+from tasks.Task_gather_gem2 import GatherGem2
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
