@@ -511,7 +511,7 @@ class Maraudeurs(Task):
                 if co is not None:
                     self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
                     self.better_sleep((1.325, 1.795))
-                    if self.find_img(target="new_troops_button"):
+                    if self.find_img(target="new_troops_button", confidence=0.7):
                         if not self.send_new_troop(preset=preset):
                             breakloop = True
                             break
