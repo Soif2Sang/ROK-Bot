@@ -5,6 +5,7 @@ import flet as ft
 
 from utils.Task_utils import FileSingleton
 
+
 color_bank = {
     1: "#3b8ed0",
     2: "#ba4543",
@@ -104,7 +105,8 @@ class RowTimezone(ft.Row):
 class ManagerTimezone(ft.ListView):
     def __init__(self,instance,profile,**kwargs):
         super().__init__(**kwargs)
-        self.data = get_data()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
         self.instance = str(instance)
         self.profile = str(profile)
         self.spacing = 10
@@ -112,7 +114,6 @@ class ManagerTimezone(ft.ListView):
         self.controls.append(ft.Text(value="You can set a frametime to a profile\n"
                                            "The only format allowed is 'hours:minutes' also, 02:00 pm -> 14:00\n"
                                            "You may want to tune your re-do tasks timings to avoid running the profile twice during the same frametime"))
-        self.data = get_data()
         self.controls.append(
             ft.Row(
                 controls=[
@@ -136,7 +137,7 @@ class ManagerTimezone(ft.ListView):
         print(f"{keyword = }, {index = }, {self.instance =}")
         self.data[str(self.instance)]['schedules'][str(index)][keyword] = not \
             self.data[str(self.instance)]['schedules'][str(index)][keyword]
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)
 
     def init(self):
         print(self.instance,self.profile)
@@ -149,25 +150,24 @@ class ManagerTimezone(ft.ListView):
             self.controls.append(RowTimezone(self.instance,self.profile,self,start=start,end=stop,default=False))
 
     def add_tile(self,refresh=True):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.controls.append(RowTimezone(self.instance,self.profile,self))
         self.update()
 
     def delete(self,tile):
-        self.data = get_data()
+        self.data = self.FileSingleton.get_data()
         self.data[self.instance]['schedules'][self.profile]["timing"].pop(self.data[self.instance]['schedules'][self.profile]["timing"].index([tile.start, tile.stop]))
 
         for i in range(len(self.controls)):
             if self.controls[i] == tile:
                 self.controls.pop(i)
                 break
-        write_data(self.data)
+        self.FileSingleton.write_data(self.data)
         self.update()
 
 global sel,profile
 
 def main(page:ft.Page):
-    data = get_data()
     page.window_width = 720
     page.window_height = 430
 
@@ -183,11 +183,3 @@ def start(sel_param="1",profile_param="1"):
 
 if __name__ == "__main__":
     start()
-    data = get_data()
-    times = data["1"]['schedules']["1"]["timing"]
-    print(time.time())
-
-
-    for t in times:
-        print(t)
-        print(is_in_frametime(t[0],t[1]))

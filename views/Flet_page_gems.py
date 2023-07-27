@@ -1,11 +1,12 @@
 import flet as ft
 
 from Flet_page import FletPage
-from utils.Task_utils import get_data
+from utils.Task_utils import FileSingleton
 
+fileSingleton = FileSingleton()
 
 def page_gems(self):
-    self.data = get_data()
+    self.data = fileSingleton.get_data()
 
     self.clean()
     self.tabs.expand = True
@@ -105,6 +106,13 @@ def page_gems(self):
             value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                 "gem_experimental"] else False,
             on_change=lambda _: self.reverse_keyword("gem_experimental")
+        ),
+        ft.Switch(
+            label="Recenter feature (turn off if the cords are not the city)",
+            active_track_color=self.color_choice,
+            value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                "recenter_feature"] else False,
+            on_change=lambda _: self.reverse_keyword("recenter_feature")
         )
     ]
 
@@ -202,6 +210,13 @@ class FletGem(FletPage):
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gem_experimental"] else False,
                 on_change=lambda _: self.reverse_keyword("gem_experimental")
+            ),
+            ft.Switch(
+                label="Recenter feature (turn off if the cords are not the city)",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "recenter_feature"] else False,
+                on_change=lambda _: self.reverse_keyword("recenter_feature")
             )
         ]
         )

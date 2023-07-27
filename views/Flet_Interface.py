@@ -1,8 +1,9 @@
 import flet as ft
 import pyautogui
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
+fileSingleton = FileSingleton()
 
 class Tile(ft.Row):
     def __init__(self, page, number, **kwargs):
@@ -202,7 +203,7 @@ color_bank ={
 class SettingContainer(ft.Container):
     def __init__(self, page,tab, instance_index: int, profile_index: int):
         super().__init__()
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.tabs = tab
         self.page = page
         self.instance_index = instance_index
@@ -243,17 +244,17 @@ class SettingContainer(ft.Container):
     def submit(self, e, keyword, method):
         if keyword in ["time_to_wait_loop2","time_to_wait_loop1"]:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            write_data(self.data)
+            fileSingleton.write_data(self.data)
             return
         if keyword != "sleep_multiplicator":
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
         else:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(e.control.value.replace("x",""))
-        write_data(self.data)
+        fileSingleton.write_data(self.data)
 
 
     def page_gems(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.tabs.expand=True
         self.content = ft.ListView(height=500, expand=0, padding=1, )
@@ -342,7 +343,7 @@ class SettingContainer(ft.Container):
         self.page.update()
 
     def page_rss(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -413,7 +414,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_fog(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.content = ft.Column()
         self.content.controls.extend([
@@ -458,7 +459,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_heal(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.content = ft.Column()
         self.content.controls.extend([
@@ -493,7 +494,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_materials(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
@@ -545,7 +546,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_rally(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.content = ft.Column()
         self.content.controls.append(
@@ -618,7 +619,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_character(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -645,7 +646,7 @@ class SettingContainer(ft.Container):
         self.page.update()
 
     def page_logback(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -686,7 +687,7 @@ class SettingContainer(ft.Container):
 
 
     def page_profile(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -730,7 +731,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def page_redo(self):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
@@ -782,7 +783,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def reverse_keyword(self, keyword: str, index = None):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         if index is None:
             index = self.instance_index
         if keyword not in ["loop_task", "scheduler"]:
@@ -791,10 +792,10 @@ class SettingContainer(ft.Container):
         else:
             self.data[str(self.instance_index)][keyword] = not \
                 self.data[str(self.instance_index)][keyword]
-        write_data(self.data)
+        fileSingleton.write_data(self.data)
 
     def create_normal_switch(self, keyword: str, text: str):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.content.controls.append(
             ft.Switch(
                 label=text,
@@ -806,7 +807,7 @@ class SettingContainer(ft.Container):
         )
 
     def create_advanced_switch(self, keyword: str, text: str, function):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         if keyword not in ["loop_task", "scheduler"]:
             self.content.controls.append(
                 ft.Row(

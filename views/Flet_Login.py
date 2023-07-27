@@ -12,9 +12,11 @@ from pyautogui import getAllWindows
 
 import Flet_main_interface
 from Flet_Path import find_file_in_all_drives
-from utils.Task_utils import get_data, get_path, write_data
+from utils.Task_utils import FileSingleton
 from utils.auth import selfApi
 
+
+fileSingleton = FileSingleton()
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -27,9 +29,9 @@ def getchecksum():
     return digest
 
 def update_user_info(password, username):
-    data = get_data()
+    data = fileSingleton.get_data()
     data["user"] = {'username': username, 'password': password}
-    write_data(data)
+    fileSingleton.write_data(data)
 
 def find_window(window_title):
     return any(window_title in element.title for element in getAllWindows())
@@ -120,10 +122,10 @@ class LoginButton(ft.FilledButton):
         # try:
         if self.keyauthapp.login(username, password,page=self.page):
             print("Login successful")
-            data = get_data()
+            data =  fileSingleton.get_data()
             if 'user' not in data:
                 data['user'] = {'username':username,'password':password}
-                write_data(data)
+                fileSingleton.write_data(data)
             date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
             heures = date_brut.split('-')
             future = date(int(heures[0]), int(heures[1]), int(heures[2]))
@@ -161,11 +163,11 @@ class LoginButton(ft.FilledButton):
 def main(page: ft.Page):
     try:
         if not os.path.exists("../user_settings.json"):
-            write_data({})
+            fileSingleton.write_data({})
             print("User settings created")
     except:
         pass
-    path = get_path()
+    path =  fileSingleton.get_path()
     if not os.path.exists(path['bluestacks']) or not os.path.exists(path['HD-Player']):
         if result:=find_file_in_all_drives('bluestacks\.conf'):
             path['bluestacks\.conf'.split("\\")[0]] = result
@@ -176,10 +178,10 @@ def main(page: ft.Page):
             with open('../path.json', 'w', encoding="UTF-8") as f:
                 json.dump(path, f, indent=2)
 
-    data = get_data()
+    data =  fileSingleton.get_data()
     if "discord" not in data:
         data["discord"] = {"user_id":0, "enabled":False}
-        write_data(data)
+        fileSingleton.write_data(data)
     for i in range(5):
         ready = False
         try:
@@ -207,7 +209,7 @@ def main(page: ft.Page):
     page.close_banner = login_button.close_banner
     page.add(login_button)
     page.update()
-    path = get_path()
+    path =  fileSingleton.get_path()
     cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
     subprocess.Popen(cmd)
     print("Bot is starting..")

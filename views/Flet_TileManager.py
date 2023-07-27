@@ -59,7 +59,7 @@ class TileManager(ft.ListView):
     def process_is_alive(self):
         while 1:
             for tile in self.tiles.values():
-                if not tile.tasks_process.is_alive():
+                if not tile.tasks_process.is_alive() and self.page is not None and self.page.route == '/':
                     tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
                     tile.button_stop.disabled = True
                     tile.button_start.update()
@@ -215,6 +215,7 @@ class TileManager(ft.ListView):
             'gem_check1': 60,
             'gem_check2': 120,
             'gem_experimental': False,
+            'recenter_feature': True,
             'gather_gem_duration1': 60,
             'gather_gem_duration2': 90,
             'restart_game': False,

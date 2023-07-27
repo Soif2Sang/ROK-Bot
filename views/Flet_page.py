@@ -1,12 +1,13 @@
 import flet as ft
 
-from utils.Task_utils import get_data, write_data
+from utils.Task_utils import FileSingleton
 
+fileSingleton = FileSingleton()
 
 class FletPage(ft.ListView):
     def __init__(self,tab,**kwargs):
         super().__init__(**kwargs)
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
         self.tab = tab
         self.height = 500
         self.expend = 0
@@ -41,19 +42,19 @@ class FletPage(ft.ListView):
         else:
             self.data[str(self.instance_index)][keyword] = not \
                 self.data[str(self.instance_index)][keyword]
-        write_data(self.data)
+        fileSingleton.write_data(self.data)
 
     def submit(self, e, keyword, method):
-        self.data = get_data()
+        self.data = fileSingleton.get_data()
 
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", 'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
             print(self.data[str(self.instance_index)][keyword])
-            write_data(self.data)
+            fileSingleton.write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
         else:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(
                 e.control.value.replace("x", "").replace("level ", ""))
-        write_data(self.data)
+        fileSingleton.write_data(self.data)
