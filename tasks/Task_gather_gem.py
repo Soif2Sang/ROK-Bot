@@ -465,10 +465,10 @@ class GatherGem(Task):
                 icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
         for icon in icons:
             co = self.validate_co(
-                self.find_img(source=screen, target=icon[0],confidence=0.82))
+                self.find_img(source=screen, target=icon[0],confidence=0.77))
             if co is None:
                 co = self.validate_co(
-                    self.find_img(source=screen, target=icon[1],confidence=0.82))
+                    self.find_img(source=screen, target=icon[1],confidence=0.77))
             if co is not None:
                 self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
@@ -774,6 +774,10 @@ class GatherGem(Task):
         self.better_sleep((0.5, 0.7))
         return scan()
 
+    def recenter(self, deadstop = 0):
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
+            return super().recenter(deadstop)
+
     @get_class
     def run(self, end_time=None):
         """
@@ -1025,7 +1029,8 @@ class GatherGem(Task):
             current_swipe = swipes[random_function]
 
             for i in range(max_distance):
-                self.recenter()
+                if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
+                    self.recenter()
                 for y in range(i):
                     if self.end_time < time(): return
                     if self.block: return
