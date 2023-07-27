@@ -281,7 +281,7 @@ class GatherGem2(Task):
                 pil_image = self.adb.get_curr_device_screen_img()
                 cv_image = self.pil_to_array(pil_image)
                 cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-                co = self.find_img(source=cv_image, target="march_bar", confidence=0.8)
+                co = self.find_img(source=cv_image, target="march_bar", confidence=0.7)
                 if co is not None:
                     x, y = co[0], co[1]
 
@@ -301,11 +301,13 @@ class GatherGem2(Task):
                     datetime_object = datetime.strptime(string, '%H:%M:%S').time()
                     timer.append(
                         [datetime_object, (points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0)), (x, y)])
-
+                else:
+                    return False
             def takeFirst(elem):
                 return elem[0]
 
             timer.sort(key=takeFirst)
+
             fastest = timer[0][1]
             # print(timer)
             # print(fastest)
@@ -464,10 +466,10 @@ class GatherGem2(Task):
                     [f"gem_icon_day_{first_string}_{second_string}", f"gem_icon_night_{first_string}_{second_string}"])
         for icon in icons:
             co = self.validate_co(
-                self.find_img(source=screen, target=icon[0], confidence=0.82))
+                self.find_img(source=screen, target=icon[0], confidence=0.77))
             if co is None:
                 co = self.validate_co(
-                    self.find_img(source=screen, target=icon[1], confidence=0.82))
+                    self.find_img(source=screen, target=icon[1], confidence=0.77))
             if co is not None:
                 self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
@@ -555,7 +557,7 @@ class GatherGem2(Task):
 
                     if self.find_img(target="back_normal_view", confidence=0.9) is not None or \
                             self.free_troop_commander_list():
-                        self.print("This node can be gathered.")
+                        self.print("This node can be ggathered.")
                         if not self.click_on_node():
                             break
                         if self.send_troop_to_node():
@@ -972,6 +974,10 @@ class GatherGem2(Task):
             self.zoom_out_city()
         self.print("Gathering gem time elapsed !")
 
+    def recenter(self, deadstop = 0):
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
+            return super().recenter(deadstop)
+
     @get_class
     def run(self, node_type=None):
         """
@@ -1007,10 +1013,12 @@ class GatherGem2(Task):
             )
 
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
+        self.go_city(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
+                     self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
 
         while self.end_time > time():
             self.scan_gem()
-            max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 5)
+            max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 4)
 
             swipes = {
                 self.swipe_up: self.swipe_right,
@@ -1022,13 +1030,22 @@ class GatherGem2(Task):
             random_function = choice(list(swipes.keys()))
             current_swipe = swipes[random_function]
 
+            has_to_hit = 2
+            loop = 1
+            current = 0
+
             for i in range(max_distance):
                 self.recenter()
-                for y in range(i):
+                if has_to_hit == current:
+                    loop += 1
+                    current = 0
+                for y in range(loop):
                     if self.end_time < time(): return
                     if self.block: return
                     self.swipe_scan(self.scan_gem, current_swipe)
 
+                current += 1
                 current_swipe = swipes[current_swipe]
+
             self.go_city(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
                          self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
