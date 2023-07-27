@@ -62,6 +62,7 @@ class SettingContainer(ft.Container):
         self.page.window_width = 400
         self.page.window_height = 700
         self.page.go("/")
+
     def init(self):
         self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
@@ -229,7 +230,14 @@ class SettingContainer(ft.Container):
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gem_experimental"] else False,
                 on_change=lambda _: self.reverse_keyword("gem_experimental")
+            ),
+            ft.Switch(
+                label="Recenter feature (turn off if the cords are not the city)",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["recenter_feature"] else False,
+                on_change=lambda _: self.reverse_keyword("recenter_feature")
             )
+
         ]
 
         )

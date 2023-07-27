@@ -11,8 +11,10 @@ import flet as ft
 from pyautogui import getAllWindows
 
 import Flet_secret_interface
-from utils.Task_utils import get_data, get_path, write_data
+from utils.Task_utils import FileSingleton
 from utils.auth import selfApi
+
+fileSingleton = FileSingleton()
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -25,9 +27,9 @@ def getchecksum():
     return digest
 
 def update_user_info(password, username):
-    data = get_data()
+    data = fileSingleton.get_data()
     data["user"] = {'username': username, 'password': password}
-    write_data(data)
+    fileSingleton.write_data(data)
 
 
 def find_window(window_title):
@@ -37,7 +39,7 @@ def find_window(window_title):
 class LoginButton(ft.FilledButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.keyauthapp:api = None
+        self.keyauthapp = None
 
     def is_str_valid(self, username, password):
         for element in ['#', "$", "&", "|", "\0",
@@ -147,11 +149,11 @@ def main(page: ft.Page):
     os.environ["FLET_APP_LIFETIME_MINUTES"] = "1"
     try:
         if not os.path.exists("../user_settings.json"):
-            write_data({})
+            fileSingleton.write_data({})
             print("User settings created")
     except:
         pass
-    data = get_data()
+    data = fileSingleton.get_data()
     for i in range(5):
         ready = False
         try:
@@ -179,7 +181,7 @@ def main(page: ft.Page):
     page.close_banner = login_button.close_banner
     page.add(login_button)
     page.update()
-    path = get_path()
+    path = fileSingleton.get_path()
     cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
     subprocess.Popen(cmd)
     print("Bot is starting..")
