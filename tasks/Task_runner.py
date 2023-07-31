@@ -6,7 +6,7 @@ from time import time, sleep
 
 import win32gui
 
-from tasks.Task_gather_gem2 import GatherGem2
+from tasks.Task_gather_gem_spiral import GatherGem2
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
@@ -19,7 +19,7 @@ from tasks.Task_collect_resource import CollectResource
 from tasks.Task_daily_chest import DailyChest
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
-from tasks.Task_gather_gem import GatherGem
+from tasks.Task_gather_gem_default import GatherGem
 from tasks.Task_gather_rss import GatherRss
 from tasks.Task_gather_rss2 import GatherRss2
 from tasks.Task_heal_troop import HealTroop
