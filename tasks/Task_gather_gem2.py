@@ -550,10 +550,11 @@ class GatherGem2(Task):
                         if self.send_troop_to_node():
                             break
 
-                    if default:
-                        self.commander_selection_down()
-                    else:
-                        self.commander_selection_up()
+                    if self.find_img(target="extend_troops", confidence=0.9) is not None:
+                        if default:
+                            self.commander_selection_down()
+                        else:
+                            self.commander_selection_up()
 
                     if self.find_img(target="back_normal_view", confidence=0.9) is not None or \
                             self.free_troop_commander_list():
@@ -563,10 +564,12 @@ class GatherGem2(Task):
                         if self.send_troop_to_node():
                             break
 
-                    if default:
-                        self.commander_selection_down()
-                    else:
-                        self.commander_selection_up()
+                    if self.find_img(target="extend_troops", confidence=0.9) is not None:
+                        if default:
+                            self.commander_selection_down()
+                        else:
+                            self.commander_selection_up()
+
                     if self.find_img(target="back_normal_view", confidence=0.9) is not None or \
                             self.free_troop_commander_list():
                         self.print("This node can be gathered.")

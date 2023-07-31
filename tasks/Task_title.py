@@ -83,9 +83,6 @@ class Title(Task):
 
     @get_class
     def run(self, type: str, kingdom:str, x:int, y:int):
-        sleep(10)
-
-        return
         self.leave_city_simple()
         self.go_to(kingdom, x, y)
         self.better_sleep((1.5, 3))
