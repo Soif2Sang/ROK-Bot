@@ -9,9 +9,9 @@ import numpy as np
 
 import taskscod.COD_Task_daily_vip
 from tasks.Task_title import Title
-from tasks import Task_gather_rss
-from tasks.Task_gather_gem import GatherGem
-from tasks.Task_gather_rss2 import GatherRss2
+from tasks import Task_gather_rss_default
+from tasks.Task_gather_gem_default import GatherGem
+from tasks.Task_gather_rss_zoom import GatherRss2
 from tasks.Task_kingdom_ranking import KingdomRanking
 from tasks.Task_maraudeurs import Maraudeurs
 from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
