@@ -94,6 +94,34 @@ def page_gems(self):
             ]
         ),
         ft.Switch(
+            label="Spiral path method, should decrease march speed.",
+            active_track_color=self.color_choice,
+            value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                "recenter_feature"] else False,
+            on_change=lambda _: self.reverse_keyword("gather_gem_spiral_method")
+        ),
+        ft.Switch(
+            label="Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)",
+            active_track_color=self.color_choice,
+            value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                "recenter_feature"] else False,
+            on_change=lambda _: self.reverse_keyword("recenter_feature")
+        ),
+        ft.Switch(
+            label="Compare march speed (Increase gem gathering but increase number of actions",
+            active_track_color=self.color_choice,
+            value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                "recenter_feature"] else False,
+            on_change=lambda _: self.reverse_keyword("gather_gem_compare_march_duration")
+        ),
+        ft.Switch(
+            label="Detect free marches without clicking on the node",
+            active_track_color=self.color_choice,
+            value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                "recenter_feature"] else False,
+            on_change=lambda _: self.reverse_keyword("gather_gem_swipe_check")
+        ),
+        ft.Switch(
             label="Restart the game randomly",
             active_track_color=self.color_choice,
             value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
@@ -107,13 +135,7 @@ def page_gems(self):
                 "gem_experimental"] else False,
             on_change=lambda _: self.reverse_keyword("gem_experimental")
         ),
-        ft.Switch(
-            label="Recenter feature (turn off if the cords are not the city)",
-            active_track_color=self.color_choice,
-            value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                "recenter_feature"] else False,
-            on_change=lambda _: self.reverse_keyword("recenter_feature")
-        )
+
     ]
 
     )

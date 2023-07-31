@@ -159,42 +159,35 @@ class HuntBarbarians(Task):
     @get_name
     def recall(self, nb_troop: int, wait=True) -> bool:
         self.print('Recalling troops')
-        # print(nb_troop)
-        x, y = uniform(1170, 1183), uniform(160, 175)
-        self.click(x, y)
+        self.click(uniform(1170, 1183), uniform(160, 175))
         self.better_sleep((1.595, 2))
         nb_to_go = nb_troop
         breakint = 0
-        while nb_to_go > 0:
-            co = self.adb.find_multiple_img(target="return_button")
-            # print(co)
-            while (co is None and co != []) and breakint != 4:
-                print(
-                    f'[ {current_time()} ] [ {self.name} ] Return button not found')
+        while (nb_to_go > 0) & (breakint != 4):
+
+            while ((co:=self.find_img(target="return_button")) is None and breakint != 4):
+                print(f'[ {current_time()} ] [ {self.name} ] Return button not found')
 
                 y, x = uniform(290, 480), uniform(460, 560)
                 x2, y2 = x + uniform(-30, 30), y + uniform(-200, -100)
                 self.swipe(x, y, x2, y2)
                 self.better_sleep((2, 3))
-                co = self.adb.find_multiple_img(target="return_button")
                 breakint += 1
-            if (co is not None and co != []):
-                co = co[0]
+            if co:
                 self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
                 self.better_sleep((1.695, 2))
                 nb_to_go = nb_to_go - 1
             self.better_sleep((1.695, 2))
-        sleep(0.5)
-        x, y = uniform(1080, 1093), uniform(72, 88)
-        self.click(x, y)
-        self.better_sleep((1.595, 2))
+
+        self.close_windows()
+
         if wait:
             said = False
             while self.find_img(target="back_normal_view", confidence=0.9):
                 if not said:
                     said = True
                     self.print("Waiting for the troop to come back..")
-                sleep(10)
+                self.better_sleep((10,10))
 
     @get_name
     def check_ap_box(self) -> bool:
