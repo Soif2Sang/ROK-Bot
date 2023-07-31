@@ -1085,6 +1085,230 @@ class Task(ABC):
                     self.better_sleep((1, 2))
                     return self.recenter(deadstop = deadstop +1)
 
+    @get_name
+    def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
+        if x_click > 950:
+            self.swipe_left_low()
+            return
+        if x_click < 380:
+            self.swipe_right_low()
+            return
+        if y_click < 150:
+            self.swipe_down_low()
+            return
+        if y_click > 480:
+            self.swipe_up_low()
+            return
+
+    @get_name
+    def validate_co(self, co: tuple[int, int]) -> None | tuple[int, int]:
+        if co is not None:
+            if (co[0] < 550 and co[1] < 100) or \
+                    ((1180 < co[0] < 1235) and (520 < co[1] < 620)) or \
+                    ((1159 < co[0] < 1235) and (150 < co[1] < 195)) or \
+                    (co[0] < 556 and co[1] > 630) or \
+                    (co[0] < 110 and co[1] > 495) or \
+                    (co[0] > 1040 and co[1] < 160) or \
+                    (co[1] > 515 and co[0] > 1175) or \
+                    (co[0] < 120 and co[1] < 120) or \
+                    (co[0] < 685 and co[1] > 615) or \
+                    co[0] < 100 or \
+                    co[1] < 35:
+                co = None
+        return co
+
+    @get_name
+    def adjusted_leave_city(self, x_click: int, y_click: int) -> None:
+
+        self.zoom_out_city()
+
+        self.better_sleep((1, 2))
+        self.little_zoom_from_x_y(x_click, y_click)
+        return self.better_sleep((0.7, 1.4))
+
+    @get_name
+    def find_cross_source(self, source) -> bool:
+        """
+        :param: pil_image or cv_image
+        :return: True if node is occupied or someone is coming to the node
+        :return: False if node is free to gather
+        """
+        return self.find_cross(source)
+        img = Image.fromarray(source)
+        for i in range(img.size[0]):
+            for y in range(img.size[1]):
+                if (((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] < 5) and (
+                        img.getpixel((i, y))[2] > 175) and (img.getpixel((i, y))[2] < 196) and (
+                             (img.getpixel((i, y))[0] != 2) and (img.getpixel((i, y))[1] != 4) and (
+                             img.getpixel((i, y))[2] != 183))) or
+                        ((img.getpixel((i, y))[0] == 233) and (img.getpixel((i, y))[1] == 233) and (
+                                img.getpixel((i, y))[2] == 233)) or
+                        ((img.getpixel((i, y))[0] == 247) and (img.getpixel((i, y))[1] == 156) and (
+                                img.getpixel((i, y))[2] == 47)) or
+                        ((img.getpixel((i, y))[0] == 207) and (img.getpixel((i, y))[1] == 131) and (
+                                img.getpixel((i, y))[2] == 40)) or
+                        ((img.getpixel((i, y))[0] == 248) and (img.getpixel((i, y))[1] == 157) and (
+                                img.getpixel((i, y))[2] == 48)) or
+                        ((img.getpixel((i, y))[0] == 239) and (img.getpixel((i, y))[1] == 205) and (
+                                img.getpixel((i, y))[2] == 165)) or
+                        ((img.getpixel((i, y))[2] < 179) and (img.getpixel((i, y))[2] > 175) and (
+                                img.getpixel((i, y))[1] > 116) and (img.getpixel((i, y))[1] < 119) and (
+                                 img.getpixel((i, y))[0] < 2)) or
+                        ((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] > 142) and (
+                                img.getpixel((i, y))[1] < 150) and (img.getpixel((i, y))[2] < 200) and (
+                                 img.getpixel((i, y))[2] > 190)) or
+                        (img.getpixel((i, y)) == (0, 0, 178)) or
+                        (img.getpixel((i, y)) == (178, 0, 0)) or
+                        (img.getpixel((i, y)) == (2, 204, 2)) or
+                        (img.getpixel((i, y)) == (195, 142, 0)) or
+                        (img.getpixel((i, y)) == (0, 142, 195)) or
+                        (img.getpixel((i, y)) == (0, 154, 14)) or
+                        (img.getpixel((i, y)) == (0, 154, 13)) or
+                        (img.getpixel((i, y)) == (14, 154, 0)) or
+                        (img.getpixel((i, y)) == (13, 154, 0)) or
+                        (img.getpixel((i, y)) == (1, 186, 0)) or
+                        (img.getpixel((i, y)) == (0, 186, 1)) or
+                        (img.getpixel((i, y)) == (0, 142, 193)) or
+                        (img.getpixel((i, y)) == (193, 142, 0)) or
+                        (img.getpixel((i, y)) == (12, 154, 1)) or
+                        (img.getpixel((i, y)) == (1, 154, 12)) or
+                        (img.getpixel((i, y)) == (1, 215, 0)) or
+                        (img.getpixel((i, y)) == (1, 216, 0)) or
+                        (img.getpixel((i, y)) == (0, 215, 1)) or
+                        (img.getpixel((i, y)) == (0, 216, 1)) or
+                        (img.getpixel((i, y)) == (253, 253, 253)) or
+                        (img.getpixel((i, y)) == (49, 161, 255)) or
+                        (img.getpixel((i, y)) == (255, 161, 49)) or
+                        (img.getpixel((i, y)) == (2, 197, 2)) or
+                        (img.getpixel((i, y)) == (247, 210, 167)) or
+                        (img.getpixel((i, y)) == (255, 161, 49)) or
+                        (img.getpixel((i, y)) == (167, 210, 247)) or
+                        (img.getpixel((i, y)) == (49, 161, 255)) or
+                        (img.getpixel((i, y)) == (76, 150, 30)) or
+                        (img.getpixel((i, y)) == (30, 150, 76)) or
+                        img.getpixel((i, y)) in [(178, 118, 0), (0, 118, 178)] or
+                        img.getpixel((i, y)) in [(167, 121, 28), (28, 121, 167)] or
+                        img.getpixel((i, y)) in [(0, 143, 195), (195, 143, 0)]):
+                    self.print(f"{img.getpixel((i, y))}")
+                    self.print("Node occupied")
+                    return True
+        return False
+
+
+    @get_name
+    def already_mining(self, x, y, image=None) -> bool:
+        """
+        :param: x -> int - x location of the node
+        :param: y -> int - y location of the node
+        :param: image -> image - device screenshot
+        :return: True if node is not free
+        :return: False if node is free to gather
+        """
+        if image is None:
+            cv_image = self.adb.get_cv2_img()
+        else:
+            cv_image = image
+        x_min = max(0, x - 40)
+        x_max = min(cv_image.shape[1] - 1, x + 60)
+        y_min = max(0, y - 40)
+        y_max = min(cv_image.shape[0] - 1, y + 50)
+
+        cropped_image = cv_image[y_min:y_max, x_min:x_max]
+
+        # cv2.imwrite("gem_node.png", cropped_image)
+        return self.find_cross_source(cropped_image)
+
+
+    @get_name
+    def leave_city_simple(self) -> bool:
+        """
+        -Enter and leave city if not in city
+        -Leave city if in city
+        """
+        if self.in_city():
+            self.click(uniform(24, 91), uniform(625, 680))
+            self.better_sleep((1.5, 3))
+        return True
+
+    @get_name
+    def node_found(self) -> bool:
+        if self.find_img(target='search_button') is not None:
+            self.print("Node not found")
+            return False
+        return True
+
+    @get_name
+    def find_cross(self, source=None) -> bool:
+        """
+        :return: True if node is occupied or someone is coming to the node
+        :return: False if node is free to gather
+        """
+        self.print("Scanning the node..")
+        if source is None:
+            source = self.adb.get_cv2_img()[230:480, 441:814]
+        img = Image.fromarray(source)
+
+        occupied_colors = [
+            (2, 4, 183), (233, 233, 233), (247, 156, 47), (207, 131, 40), (248, 157, 48),
+            (239, 205, 165), (0, 0, 178), (2, 204, 2), (195, 142, 0), (0, 154, 14),
+            (0, 154, 13), (1, 186, 0), (0, 142, 193), (12, 154, 1), (1, 215, 0),
+            (1, 216, 0), (253, 253, 253), (49, 161, 255), (2, 197, 2), (247, 210, 167),
+            (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167)
+        ]
+
+        for i in range(img.size[0]):
+            for y in range(img.size[1]):
+                if (((img.getpixel((i, y))[0] < 5) and
+                     (img.getpixel((i, y))[1] < 5) and
+                     (img.getpixel((i, y))[2] > 175) and
+                     (img.getpixel((i, y))[2] < 196) and
+                     ((img.getpixel((i, y))[0] != 2) and
+                      (img.getpixel((i, y))[1] != 4) and
+                      (img.getpixel((i, y))[2] != 183))) or
+
+                        ((img.getpixel((i, y))[2] < 179) and
+                         (img.getpixel((i, y))[2] > 175) and
+                         (img.getpixel((i, y))[1] > 116) and
+                         (img.getpixel((i, y))[1] < 119) and
+                         (img.getpixel((i, y))[0] < 2))
+                        or
+                        ((img.getpixel((i, y))[0] < 5) and
+                         (img.getpixel((i, y))[1] > 142) and
+                         (img.getpixel((i, y))[1] < 150) and
+                         (img.getpixel((i, y))[2] < 200) and
+                         (img.getpixel((i, y))[2] > 190))
+                        or
+                        (img.getpixel((i, y)) in occupied_colors)):
+                    self.print(f"{img.getpixel((i, y))}")
+                    self.print("Node occupied")
+                    return True
+        return False
+
+    @get_name
+    def enough_action_points(self) -> bool:
+        cv_image = self.adb.get_cv2_img()
+        img = Image.fromarray(cv_image)
+        print(img.getpixel((33, 73)))
+        if (
+                (10 < img.getpixel((33, 73))[0] < 20) and
+                (225 < img.getpixel((33, 73))[1] < 240) and
+                (120 < img.getpixel((33, 73))[2] < 135)
+        ) \
+                or \
+                (
+                        (10 < img.getpixel((33, 73))[2] < 20) and
+                        (225 < img.getpixel((33, 73))[1] < 240) and
+                        (120 < img.getpixel((33, 73))[0] < 135)
+                ) \
+                or \
+                (
+                        img.getpixel((33, 73)) == (0, 255, 142)
+                ):
+
+            return True
+        else:
+            return False
+
     @abstractmethod
     def run(self):
         pass

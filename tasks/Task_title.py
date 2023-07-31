@@ -68,19 +68,6 @@ class Title(Task):
 
         self.better_sleep((1, 2))
 
-    @get_name
-    def leave_city_simple(self) -> bool:
-        """
-        -Enter and leave city if not in city
-        -Leave city if in city
-        """
-        if self.in_city():
-            self.click(uniform(24, 91), uniform(625, 680))
-            self.better_sleep((1.5, 3))
-        return True
-
-
-
     @get_class
     def run(self, type: str, kingdom:str, x:int, y:int):
         self.leave_city_simple()

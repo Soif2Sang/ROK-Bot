@@ -176,61 +176,6 @@ class BarbFort(Task):
         return False
 
     @get_name
-    def find_cross(self) -> bool:
-        """
-        :return: True if node is occupied or someone is coming to the node
-        :return: False if node is free to gather
-        """
-        self.print("Scanning the node..")
-        cv_image = self.adb.get_cv2_img()
-        cropped_image = cv_image[230:480, 441:814]
-        img = Image.fromarray(cropped_image)
-        for i in range(img.size[0]):
-            for y in range(img.size[1]):
-                if (((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] < 5) and (
-                        img.getpixel((i, y))[2] > 175) and (img.getpixel((i, y))[2] < 196) and (
-                             (img.getpixel((i, y))[0] != 2) and (img.getpixel((i, y))[1] != 4) and (
-                             img.getpixel((i, y))[2] != 183))) or
-                        ((img.getpixel((i, y))[0] == 233) and (img.getpixel((i, y))[1] == 233) and (
-                                img.getpixel((i, y))[2] == 233)) or
-                        ((img.getpixel((i, y))[0] == 247) and (img.getpixel((i, y))[1] == 156) and (
-                                img.getpixel((i, y))[2] == 47)) or
-                        ((img.getpixel((i, y))[0] == 207) and (img.getpixel((i, y))[1] == 131) and (
-                                img.getpixel((i, y))[2] == 40)) or
-                        ((img.getpixel((i, y))[0] == 248) and (img.getpixel((i, y))[1] == 157) and (
-                                img.getpixel((i, y))[2] == 48)) or
-                        ((img.getpixel((i, y))[0] == 239) and (img.getpixel((i, y))[1] == 205) and (
-                                img.getpixel((i, y))[2] == 165)) or
-                        ((img.getpixel((i, y))[2] < 179) and (img.getpixel((i, y))[2] > 175) and (
-                                img.getpixel((i, y))[1] > 116) and (img.getpixel((i, y))[1] < 119) and (
-                                 img.getpixel((i, y))[0] < 2)) or
-                        ((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] > 142) and (
-                                img.getpixel((i, y))[1] < 150) and (img.getpixel((i, y))[2] < 200) and (
-                                 img.getpixel((i, y))[2] > 190)) or
-                        (img.getpixel((i, y)) == (0, 0, 178)) or
-                        (img.getpixel((i, y)) == (2, 204, 2)) or
-                        (img.getpixel((i, y)) == (195, 142, 0)) or
-                        (img.getpixel((i, y)) == (0, 154, 14)) or
-                        (img.getpixel((i, y)) == (0, 154, 13)) or
-                        (img.getpixel((i, y)) == (1, 186, 0)) or
-                        (img.getpixel((i, y)) == (0, 142, 193)) or
-                        (img.getpixel((i, y)) == (12, 154, 1)) or
-                        (img.getpixel((i, y)) == (1, 215, 0)) or
-                        (img.getpixel((i, y)) == (1, 215, 0)) or
-                        (img.getpixel((i, y)) == (1, 216, 0)) or
-                        (img.getpixel((i, y)) == (253, 253, 253)) or
-                        (img.getpixel((i, y)) == (49, 161, 255)) or
-                        (img.getpixel((i, y)) == (2, 197, 2)) or
-                        (img.getpixel((i, y)) == (247, 210, 167)) or
-                        (img.getpixel((i, y)) == (255, 161, 49)) or
-                        (img.getpixel((i, y)) == (253, 253, 253)) or
-                        img.getpixel((i, y)) in [(167, 121, 28), (28, 121, 167)]):
-                    self.print(f"{img.getpixel((i, y))}")
-                    self.print("Node occupied")
-                    return True
-        return False
-
-    @get_name
     def click_on_fort(self) -> bool:
         i = 0
         while (co := self.find_img(target="fort_rally_button1")) is None:
