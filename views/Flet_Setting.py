@@ -121,6 +121,7 @@ class SettingContainer(ft.Container):
         self.FileSingleton.write_data(self.data)
 
     def page_gems(self):
+        print("here")
         self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
@@ -218,6 +219,34 @@ class SettingContainer(ft.Container):
                 ]
             ),
             ft.Switch(
+                label="Spiral path method, should decrease march speed.",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "gather_gem_spiral_method"] else False,
+                on_change=lambda _: self.reverse_keyword("gather_gem_spiral_method")
+            ),
+            ft.Switch(
+                label="Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "recenter_feature"] else False,
+                on_change=lambda _: self.reverse_keyword("recenter_feature")
+            ),
+            ft.Switch(
+                label="Compare march speed (Increase gem gathering\nbut increase number of actions",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "gather_gem_compare_march_duration"] else False,
+                on_change=lambda _: self.reverse_keyword("gather_gem_compare_march_duration")
+            ),
+            ft.Switch(
+                label="Detect free marches without clicking on the node",
+                active_track_color=self.color_choice,
+                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "gather_gem_swipe_check"] else False,
+                on_change=lambda _: self.reverse_keyword("gather_gem_swipe_check")
+            ),
+            ft.Switch(
                 label="Restart the game randomly",
                 active_track_color=self.color_choice,
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
@@ -231,12 +260,6 @@ class SettingContainer(ft.Container):
                     "gem_experimental"] else False,
                 on_change=lambda _: self.reverse_keyword("gem_experimental")
             ),
-            ft.Switch(
-                label="Recenter feature (turn off if the cords are not the city)",
-                active_track_color=self.color_choice,
-                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["recenter_feature"] else False,
-                on_change=lambda _: self.reverse_keyword("recenter_feature")
-            )
 
         ]
 
@@ -933,7 +956,7 @@ class SettingContainer(ft.Container):
         if keyword not in ["loop_task", "scheduler","leave_game_loop"]:
             self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
         else:
-            print(keyword,self.data[str(self.instance_index)][keyword])
+            print(keyword, self.data[str(self.instance_index)]['schedules'][str(index)][keyword])
 
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)

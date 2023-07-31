@@ -275,6 +275,21 @@ class GatherGem(Task):
             if not points:
                 return False
             timer = []
+
+            if not self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_compare_march_duration'):
+                self.click(points[0][0] + uniform(-20, 0), points[0][1] + uniform(-20, 0))
+                self.better_sleep((1, 1.7))
+                co = self.find_img(target="march_bar", confidence=0.8)
+                if co:
+                    self.click(co[0] + uniform(0, 30), co[1] + uniform(-5, +10))
+                    self.better_sleep((1, 1.7))
+                if self.find_img(target="troops_march_button") is not None:
+                    self.click(x=uniform(1110, 1127), y=uniform(30, 55))
+                    self.better_sleep((0.9, 1.3))
+                    return self.send_new_troop()
+                self.print("Troop sent to the node.", "green")
+                return True
+
             for i in range(len(points)):
                 self.click(points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0))
                 self.better_sleep((1, 1.7))
@@ -404,7 +419,6 @@ class GatherGem(Task):
     
     def commander_selection_up(self):
         self.swipe_arg(1220, 230, 1220, 360,randint(1000,1500))
-        
 
     def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
                               down=85):
@@ -500,7 +514,7 @@ class GatherGem(Task):
                 if self.find_cross():
                     break
 
-                if not self.data[str(self.sel)]['schedules'][self.current_profile].get("gem_experimental"):
+                if not self.data[str(self.sel)]['schedules'][self.current_profile].get("gather_gem_swipe_check"):
                     if not self.click_on_node():
                         break
                     if self.send_troop_to_node():
@@ -549,10 +563,11 @@ class GatherGem(Task):
                         if self.send_troop_to_node():
                             break
 
-                    if default:
-                        self.commander_selection_down()
-                    else:
-                        self.commander_selection_up()
+                    if self.find_img(target="extend_troops", confidence=0.9) is not None:
+                        if default:
+                            self.commander_selection_down()
+                        else:
+                            self.commander_selection_up()
 
                     if self.find_img(target="back_normal_view", confidence=0.9) is not None or \
                             self.free_troop_commander_list():
@@ -562,10 +577,12 @@ class GatherGem(Task):
                         if self.send_troop_to_node():
                             break
 
-                    if default:
-                        self.commander_selection_down()
-                    else:
-                        self.commander_selection_up()
+                    if self.find_img(target="extend_troops", confidence=0.9) is not None:
+                        if default:
+                            self.commander_selection_down()
+                        else:
+                            self.commander_selection_up()
+
                     if self.find_img(target="back_normal_view", confidence=0.9) is not None or \
                             self.free_troop_commander_list():
                         self.print("This node can be gathered.")

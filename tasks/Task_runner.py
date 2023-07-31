@@ -174,11 +174,10 @@ class TaskRunner(Task):
         if profile.get('defeat_barbarians', False):
             lib_tasks.append(HuntBarbarians(self))
         if profile.get('gather_gem', False):
-            if not profile.get('gem_experimental'):
+            if not profile.get('gather_gem_spiral_method'):
                 lib_tasks.append(GatherGem(self))
             else:
                 lib_tasks.append(GatherGem2(self))
-
         if profile.get('scout_fog', False):
             lib_tasks.append(ClearFog(self))
         if profile.get('claim_daily_vip', False):
