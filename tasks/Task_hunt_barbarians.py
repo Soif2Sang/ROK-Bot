@@ -132,31 +132,6 @@ class HuntBarbarians(Task):
         return hunters
 
     @get_name
-    def enough_action_points(self) -> bool:
-        cv_image = self.adb.get_cv2_img()
-        img = Image.fromarray(cv_image)
-        print(img.getpixel((33, 73)))
-        if (
-                (10 < img.getpixel((33, 73))[0] < 20) and
-                (225 < img.getpixel((33, 73))[1] < 240) and
-                (120 < img.getpixel((33, 73))[2] < 135)
-        ) \
-                or \
-                (
-                        (10 < img.getpixel((33, 73))[2] < 20) and
-                        (225 < img.getpixel((33, 73))[1] < 240) and
-                        (120 < img.getpixel((33, 73))[0] < 135)
-                ) \
-                or \
-                (
-                        img.getpixel((33, 73)) == (0, 255, 142)
-                ):
-
-            return True
-        else:
-            return False
-
-    @get_name
     def recall(self, nb_troop: int, wait=True) -> bool:
         self.print('Recalling troops')
         self.click(uniform(1170, 1183), uniform(160, 175))

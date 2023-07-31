@@ -6,7 +6,6 @@ from time import time, sleep
 
 import win32gui
 
-from tasks.Task_gather_gem_spiral import GatherGem2
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
@@ -19,9 +18,10 @@ from tasks.Task_collect_resource import CollectResource
 from tasks.Task_daily_chest import DailyChest
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
-from tasks.Task_gather_gem_default import GatherGem
-from tasks.Task_gather_rss import GatherRss
-from tasks.Task_gather_rss2 import GatherRss2
+from tasks.Task_gather_gem_default import GatherGemDefault
+from tasks.Task_gather_gem_spiral import GatherGemSpiral
+from tasks.Task_gather_rss_default import GatherRss
+from tasks.Task_gather_rss_zoom import GatherRss2
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
 from tasks.Task_maraudeurs import Maraudeurs
@@ -175,9 +175,9 @@ class TaskRunner(Task):
             lib_tasks.append(HuntBarbarians(self))
         if profile.get('gather_gem', False):
             if not profile.get('gather_gem_spiral_method'):
-                lib_tasks.append(GatherGem(self))
+                lib_tasks.append(GatherGemDefault(self))
             else:
-                lib_tasks.append(GatherGem2(self))
+                lib_tasks.append(GatherGemSpiral(self))
         if profile.get('scout_fog', False):
             lib_tasks.append(ClearFog(self))
         if profile.get('claim_daily_vip', False):
