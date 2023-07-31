@@ -729,6 +729,7 @@ class Task:
         if co is not None:
 
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_reconnect', False):
+                print("[ {current_time()} ] [ {self.name} ] You just got disconnected")
                 print(co)
                 if cropped:
                     a = (480 + co[0] + uniform(0, 100), 420 + co[1] + uniform(0, 20))

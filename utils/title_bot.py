@@ -32,22 +32,25 @@ user_list_lock = asyncio.Lock()
 
 bot_rok = get_bot(3)
 
+
 async def async_function(type, kingdom, x, y):
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, bot_rok.title.run, type, kingdom, x, y)
+
 
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
     print('Bot is ready.')
 
 
-async def waitForClosure(type,current_user):
+async def waitForClosure(type, current_user):
     timer = duration
     while current_user in titles[type] and timer:
         await asyncio.sleep(1)
-        timer = timer -1
+        timer = timer - 1
     if current_user in titles[type]:
         titles[type].remove(current_user)
+
 
 @bot.command()
 @lightbulb.option('y', 'City Y location', type=int)
@@ -55,6 +58,7 @@ async def waitForClosure(type,current_user):
 @lightbulb.option('kingdom', 'Your kingdom (#1111)', type=str)
 @lightbulb.option('title', '(justice|duke|architect|scientist)', type=str)
 @lightbulb.command(name='title', description='Ask your title there')
+@lightbulb.implements(lightbulb.SlashCommand)
 async def title(ctx: lightbulb.Context):
     user = ctx.author
     title = ctx.options.title.lower()
@@ -77,9 +81,7 @@ async def title(ctx: lightbulb.Context):
     current_user = titles[title][0]
 
     if current_user['time'] + duration < time.time() and len(titles[title]) >= 2:
-        previous_user = current_user
         current_user = titles[title][1]
-
 
         # await ctx.respond(f"{previous_user['mention']} is out of time! Giving it to {current_user['username']}.")
 
@@ -92,7 +94,7 @@ async def title(ctx: lightbulb.Context):
             await ctx.respond(f"Unable to assign {title.capitalize()} to {current_user['username']}.")
             await ctx.respond(await get_current_queue(title))
 
-        await waitForClosure(title,current_user)
+        await waitForClosure(title, current_user)
 
         print(f"Job ended for {current_user['username']}")
 
@@ -108,7 +110,7 @@ async def title(ctx: lightbulb.Context):
             await ctx.respond(f"Unable to assign {title.capitalize()} to {current_user['username']}.")
         print(f"Job ended for {current_user['username']}")
 
-        await waitForClosure(title,current_user)
+        await waitForClosure(title, current_user)
 
 
 @bot.command()
@@ -124,7 +126,7 @@ async def done(ctx: lightbulb.Context):
 
     for i, user_info in enumerate(titles[ctx.options.title]):
         if user_info['user_id'] == user.id:
-            del titles[ctx.options.title][i]
+            titles[ctx.options.title].remove(i)
             found = True
             break
 
@@ -134,6 +136,7 @@ async def done(ctx: lightbulb.Context):
     else:
         await ctx.respond(f'{user.username}, you are not currently in the list.')
 
+
 async def add_to_queue(type, username):
     embed = hikari.Embed(
         title=f"{type.capitalize()} Request Added from {username}",
@@ -142,6 +145,7 @@ async def add_to_queue(type, username):
     )
     return embed
 
+
 async def get_current_queue(type):
     embed = hikari.Embed(
         title=f"{type.capitalize()} Requests",
@@ -149,5 +153,6 @@ async def get_current_queue(type):
         color=0x00FF00  # Green color
     )
     return embed
+
 
 bot.run()
