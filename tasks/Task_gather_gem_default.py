@@ -1,0 +1,228 @@
+import re
+import traceback
+from datetime import datetime
+from random import uniform, randint, random, choice
+from time import sleep, time
+
+import cv2
+
+from Task_gather_gem import GatherGem
+from tasks.Task import Task
+from utils.Task_utils import get_name, get_class
+
+
+# from utils.easyOcr import Reader
+
+
+class GatherGemDefault(GatherGem):
+    def __init__(self, MainTask: Task):
+        super().__init__(MainTask.tile)
+        self.herite(MainTask)
+        self.end_time = None
+        self.block = False
+
+    def task_name(self):
+        return "GatherGem"
+
+    def recenter(self, deadstop = 0):
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
+            return super().recenter(deadstop)
+
+
+    @get_class
+    def run(self, end_time=None):
+        """
+                   Gather gems
+                   """
+        self.end_time = end_time
+        self.random_macro()
+
+        self.run_game()
+        self.check_captcha()
+        self.leave_city()
+        # print("premier leave city")
+        self.better_sleep((1.5, 2))
+        self.zoom_out_city()
+        self.better_sleep((1.5, 2))
+        self.scan_gem()
+        self.better_sleep((0.125, 0.195))
+        randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
+                                   self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
+        # print(f"{randomization = }")
+
+        radius = (self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 50) // 10)
+        width = radius + 1
+        height = radius + 1
+        starting_time = time()
+        time_restart = time()
+        # print(self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'))
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') > \
+                self.data[str(self.sel)]['schedules'][
+                    self.current_profile].get('gather_gem_duration2'):
+            self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1'], \
+                self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'] = \
+                self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'], \
+                    self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1']
+
+        if self.end_time is None:
+            self.end_time = starting_time + (
+                    randint(
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'),
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration2')
+                    ) * 60
+            )
+
+        # print(f'starting_time : {datetime.fromtimestamp(starting_time).strftime("%H:%M:%S")} , time to beat : {datetime.fromtimestamp(end_time).strftime("%H:%M:%S")} , {starting_time>end_time = }')
+        self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
+        while self.end_time > time():
+            self.run_game()
+            if self.data[str(self.sel)]['schedules'][self.current_profile].get("restart_game", True):
+                random_time = uniform(4000, 5800)
+                if time() > time_restart + random_time:
+                    self.print("Time to restart the game during gathering gems !")
+                    self.leave_game(force=True)
+                    self.print(f"Game is stopped, game starting in about 7sec")
+                    self.better_sleep((5, 10))
+                    self.run_game()
+                    self.print("Function is going to restart")
+                    self.check_captcha()
+                    self.leave_city()
+                    # print("premier leave city")
+                    self.better_sleep((1.5, 2))
+                    self.zoom_out_city()
+                    self.better_sleep((1.5, 2))
+                    self.scan_gem()
+                    self.better_sleep((0.125, 0.195))
+                    randomization = self.go_to(
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
+                    time_restart = time()
+
+            pil_image = self.adb.get_curr_device_screen_img()
+            cv_image = self.pil_to_array(pil_image)
+            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            cropped_image = cv_image[0:100, 0:800]
+            if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
+                self.print("Block icon detected. Cancelling the function !")
+                return
+
+            self.scan_gem()
+            self.check_reconnect(cv_image)
+            self.check_log_back()
+            self.check_captcha(False)
+            self.leave_kd_buff()
+
+            # print("test")
+            if randomization == 0:
+                for y in range(width - 1):
+                    for i in range(width):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_right)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+                    self.swipe_scan(self.scan_gem, self.swipe_down)
+
+                    for i in range(width):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_left)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+
+                    if y != (width - 2):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_down)
+                        self.recenter()
+
+            if randomization == 2:
+                for y in range(width - 1):
+                    for i in range(width):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_left)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+                    self.swipe_scan(self.scan_gem, self.swipe_up)
+
+                    for i in range(width):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_right)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+
+                    if y != (width - 2):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_up)
+                        self.recenter()
+
+            if randomization == 1:
+                for y in range(height - 1):
+                    for i in range(height):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_down)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+                    self.swipe_scan(self.scan_gem, self.swipe_left)
+
+                    for i in range(height):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_up)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+
+                    if y != (height - 2):
+                        self.swipe_scan(self.scan_gem, self.swipe_left)
+                        self.recenter()
+
+            if randomization == 3:
+                for y in range(height - 1):
+                    for i in range(height):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_up)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+                    self.swipe_scan(self.scan_gem, self.swipe_right)
+
+                    for i in range(height):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        self.swipe_scan(self.scan_gem, self.swipe_down)
+
+                    self.recenter()
+                    self.check_captcha(False)
+                    self.leave_kd_buff()
+
+                    if y != (height - 2):
+                        self.swipe_scan(self.scan_gem, self.swipe_right)
+                        self.recenter()
+
+            self.better_sleep((1.525, 2.795))
+            # self.leave_city()
+            # print("second leave cit")
+            randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
+                                       self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500),
+                                       randomization)
+            self.print(f"Current path n°{randomization}")
+            self.zoom_out_city()
+        self.print("Gathering gem time elapsed !")

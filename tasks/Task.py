@@ -27,9 +27,10 @@ from utils.bot_adb import Adb
 from utils.twocaptcha import TwoCaptcha
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+from abc import ABC, abstractmethod
 
 
-class Task:
+class Task(ABC):
     def __init__(self, tile):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
@@ -1083,4 +1084,8 @@ class Task:
                         self.swipe_up()
                     self.better_sleep((1, 2))
                     return self.recenter(deadstop = deadstop +1)
+
+    @abstractmethod
+    def run(self):
+        pass
 
