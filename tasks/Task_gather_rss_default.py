@@ -13,7 +13,7 @@ from utils.Task_utils import get_name, get_class
 
 class GatherRssDefault(GatherRss):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask)
         self.herite(MainTask)
 
     def task_name(self):

@@ -27,10 +27,9 @@ from utils.bot_adb import Adb
 from utils.twocaptcha import TwoCaptcha
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-from abc import ABC, abstractmethod
 
 
-class Task(ABC):
+class Task():
     def __init__(self, tile):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
@@ -1309,7 +1308,6 @@ class Task(ABC):
         else:
             return False
 
-    @abstractmethod
     def run(self):
         pass
 
