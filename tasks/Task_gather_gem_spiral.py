@@ -14,7 +14,7 @@ from utils.Task_utils import get_name, get_class
 
 class GatherGemSpiral(GatherGem):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask)
         self.herite(MainTask)
         self.end_time = None
         self.block = False

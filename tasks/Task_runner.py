@@ -20,8 +20,8 @@ from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
 from tasks.Task_gather_gem_default import GatherGemDefault
 from tasks.Task_gather_gem_spiral import GatherGemSpiral
-from tasks.Task_gather_rss_default import GatherRss
-from tasks.Task_gather_rss_zoom import GatherRss2
+from tasks.Task_gather_rss_default import GatherRssDefault
+from tasks.Task_gather_rss_zoom import GatherRssZoom
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
 from tasks.Task_maraudeurs import Maraudeurs
@@ -164,9 +164,9 @@ class TaskRunner(Task):
             lib_tasks.append(BuyMerchant(self))
         if profile.get('gather_rss', False):
             if not profile.get('gather_rss_method'):
-                lib_tasks.append(GatherRss(self))
+                lib_tasks.append(GatherRssDefault(self))
             else:
-                lib_tasks.append(GatherRss2(self))
+                lib_tasks.append(GatherRssZoom(self))
         if profile.get('use_enhanced_buff', False):
             lib_tasks.append(UseEnhancedBuff(self))
         if profile.get('check_donation', False):
