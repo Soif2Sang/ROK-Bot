@@ -63,8 +63,8 @@ class Frame(ft.Tabs):
                 self.settings.selected_index=int(profile)-1
                 break
 
-    def add_text(self, texte: str):
-        self.logger.add_text(texte)
+    def add_text(self, texte: str, color=None):
+        self.logger.add_text(texte, color)
 
     def add_divider(self):
         self.logger.add_divider()

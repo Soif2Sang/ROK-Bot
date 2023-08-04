@@ -25,24 +25,23 @@ from utils.Task_utils import get_window_pid, get_name, current_time, get_time, s
 from utils.bot_adb import Adb
 # from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
-from views.Flet_Tile import Tile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Task():
-    def __init__(self, tile: Tile):
+    def __init__(self, tile):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
-        self.current_profile = '1'
-        self.tile: Tile = tile
-        self.sel = tile.number
+        self.current_profile: str = '1'
+        self.tile = tile
+        self.sel: int = tile.number
         # print(self.sel)
-        self.adb = Adb(self.sel)
+        self.adb: Adb = Adb(self.sel)
         # print(self.sel)
         self.ppid = os.getppid()
         self.pid = get_window_pid(self.adb.name)
-        self.language = None
-        self.name = self.adb.name
+        self.language: str | None = None
+        self.name: str = self.adb.name
 
     def herite(self, MainTask):
         self.data = MainTask.data
