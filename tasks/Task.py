@@ -25,16 +25,16 @@ from utils.Task_utils import get_window_pid, get_name, current_time, get_time, s
 from utils.bot_adb import Adb
 # from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
-
+from views.Flet_Tile import Tile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Task():
-    def __init__(self, tile):
+    def __init__(self, tile: Tile):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         self.current_profile = '1'
-        self.tile = tile
+        self.tile: Tile = tile
         self.sel = tile.number
         # print(self.sel)
         self.adb = Adb(self.sel)
@@ -70,6 +70,7 @@ class Task():
             self.tile.stopped = False
             self.set_text(f"[{current_time()}] You stopped the bot", "Red")
             print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot")
+            self.set_divider()
             sys.exit(1)
 
         if said:
@@ -79,6 +80,9 @@ class Task():
 
     def set_text(self, text, color=None):
         return self.tile.add_text(text, color)
+
+    def set_divider(self):
+        return self.tile.add_divider()
 
     def set_status(self, text):
         return self.tile.set_text(text)
@@ -175,6 +179,7 @@ class Task():
             self.set_text(f"[{current_time()}] {text}", color)
         else:
             self.set_text("")
+
 
     @get_name
     def send_discord_message(self, message):
@@ -294,14 +299,12 @@ class Task():
         self.script_pause()
         try:
             self.print("Zooming out..")
-            co = self.find_img(target='gem_search_button')
-            if co is not None:
+            if self.find_img(target='gem_search_button'):
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
                 for _ in range(4):
                     self.script_pause()
-                    boolean = self.find_img(target="gem_search_button")
-                    if boolean is not None:
+                    if self.find_img(target="gem_search_button"):
                         for _ in range(2):
                             self.script_pause()
                             win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
@@ -1237,12 +1240,13 @@ class Task():
         return True
 
     @get_name
-    def find_cross(self, source=None) -> bool:
+    def find_cross(self, source=None, notify = True) -> bool:
         """
         :return: True if node is occupied or someone is coming to the node
         :return: False if node is free to gather
         """
-        self.print("Scanning the node..")
+        if notify:
+            self.print("Scanning the node..")
         if source is None:
             source = self.adb.get_cv2_img()[230:480, 441:814]
         img = Image.fromarray(source)
@@ -1278,8 +1282,7 @@ class Task():
                          (img.getpixel((i, y))[2] > 190))
                         or
                         (img.getpixel((i, y)) in occupied_colors)):
-                    self.print(f"{img.getpixel((i, y))}")
-                    self.print("Node occupied")
+                    self.print(f"Node occupied {img.getpixel((i, y))}")
                     return True
         return False
 

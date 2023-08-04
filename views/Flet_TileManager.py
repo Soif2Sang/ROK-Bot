@@ -48,10 +48,8 @@ class TileManager(ft.ListView):
 
     def unselect_all(self):
         for tile in self.controls[1:]:
-            try:
-                tile.button_select.selected = False
-            finally:
-                tile.button_select.update()
+            tile.button_select.selected = False
+            tile.button_select.update()
 
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
@@ -59,7 +57,7 @@ class TileManager(ft.ListView):
     def process_is_alive(self):
         while 1:
             for tile in self.tiles.values():
-                if not tile.tasks_process.is_alive() and self.page is not None and self.page.route == '/':
+                if not tile.tasks_process.is_alive() and ((self.page is not None) and (self.page.route == '/')):
                     tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
                     tile.button_stop.disabled = True
                     tile.button_start.update()

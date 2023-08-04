@@ -264,13 +264,13 @@ class GatherGem(Task):
             return self.send_nearest_troop_gem(deadstop=deadstop + 1)
 
     @get_name
-    def find_cross_source(self, source) -> bool:
+    def find_cross_source(self, source, notify=True) -> bool:
         """
         :param: pil_image or cv_image
         :return: True if node is occupied or someone is coming to the node
         :return: False if node is free to gather
         """
-        return self.find_cross(source)
+        return self.find_cross(source, notify)
 
     def commander_selection_down(self):
         self.swipe_arg(1220, 360, 1220, 230, randint(1000, 1500))
@@ -373,7 +373,6 @@ class GatherGem(Task):
             if co is not None:
                 self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
-                    self.print(f"Already mining this gem node")
                     co = None
             if co:
                 break
@@ -398,7 +397,7 @@ class GatherGem(Task):
                     self.block = True
                     return
 
-                if self.find_cross():
+                if self.find_cross(notify=False):
                     break
 
                 if not self.data[str(self.sel)]['schedules'][self.current_profile].get("gather_gem_swipe_check"):
@@ -426,7 +425,7 @@ class GatherGem(Task):
                             cross_image = timer_image[240:490, 490:790]
                             back_image = timer_image[150:477, 1160:]
 
-                            if self.find_cross_source(cross_image):
+                            if self.find_cross_source(cross_image, False):
                                 break
                             if self.find_img(target="back_normal_view", source=back_image,
                                              confidence=0.9) is not None or \

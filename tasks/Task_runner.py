@@ -624,6 +624,7 @@ class TaskRunner(Task):
         self.print(
             f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.",
             "green")
+        self.set_divider()
         return
 
     @get_name
