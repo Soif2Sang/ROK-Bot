@@ -371,8 +371,8 @@ class GatherGem(Task):
                 co = self.validate_co(
                     self.find_img(source=screen, target=icon[1], confidence=0.77))
             if co is not None:
-                self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
+                    self.print(f"Node is occupied - x: {co[0]} y:{co[1]}")
                     co = None
             if co:
                 break

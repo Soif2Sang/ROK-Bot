@@ -16,9 +16,7 @@ class AllianceHelp(Task):
     def run(self):
         for i in range(1, 4):
             if (co := self.find_img(f"help{i}")):
-                if co is not None:
-                    cond = filter_coordinate(co)
-                    if cond:
-                        self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
-                        self.print("Successfully helped alliance members !", "green")
-                        self.better_sleep((1, 2))
+                if filter_coordinate(co):
+                    self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
+                    self.print("Successfully helped alliance members !", "green")
+                    self.better_sleep((1, 2))
