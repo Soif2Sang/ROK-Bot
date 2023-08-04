@@ -121,7 +121,6 @@ class SettingContainer(ft.Container):
         self.FileSingleton.write_data(self.data)
 
     def page_gems(self):
-        print("here")
         self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True

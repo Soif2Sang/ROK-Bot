@@ -7,11 +7,13 @@ class Logger(ft.ListView):
     def __init__(self,frame,page,**kwargs):
         super().__init__(**kwargs)
         self.FileSingleton = FileSingleton()
-        data = self.FileSingleton.get_data()
-        if "interface" not in data:
-            data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
-        self.FileSingleton.write_data(data)
-        self.auto_scroll= data["interface"]["auto_scroll"]
+        self.data = self.FileSingleton.get_data()
+        if "interface" not in self.data:
+            self.data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
+        self.FileSingleton.write_data(self.data)
+        self.auto_scroll = self.data["interface"]["auto_scroll"]
+        self.limit_logs = self.data["interface"].get("limit_logs", False)
+
         self.parent = frame
         self.page = page
 
@@ -20,8 +22,17 @@ class Logger(ft.ListView):
             text = ft.Text(value=texte,weight=ft.FontWeight.W_600)
         else:
             text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)
+        if len(self.controls) > 300 and self.limit_logs:
+            self.controls.pop(0)
         self.controls.append(text)
-        if self.parent == self.page.controls[-1] :
+        if self.parent == self.page.controls[-1] and ((self.page is not None) and (self.page.route == '/')):
+            self.update()
+
+    def add_divider(self):
+        if len(self.controls) > 300 and self.limit_logs:
+            self.controls.pop(0)
+        self.controls.append(ft.Divider())
+        if self.parent == self.page.controls[-1] and ((self.page is not None) and (self.page.route == '/')):
             self.update()
 
 

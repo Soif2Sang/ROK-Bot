@@ -4,7 +4,7 @@ from time import sleep
 
 from PIL import Image
 
-from Task_gather_rss import GatherRss
+from tasks.Task_gather_rss import GatherRss
 from tasks.Task import Task
 from utils.Task_utils import get_name, get_class
 

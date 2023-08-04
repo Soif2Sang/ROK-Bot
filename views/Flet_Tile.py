@@ -54,7 +54,7 @@ class Tile(ft.Row):
         self.page.tile_manager.unselect_all()
         self.button_select.selected = True
         # print(f"{len(self.page.controls)>2 =}")
-        if len(self.page.controls)>2:
+        if len(self.page.controls) > 2:
             self.page.controls.pop()
         if self.number not in self.page.frames:
             self.page.frames[self.number] = Frame(self.page, self.number)
@@ -105,6 +105,7 @@ class Tile(ft.Row):
             # is_alive.deamon = True
             # is_alive.start()
         else:
+            self.add_text("Task is frozen, you may need to restart the bot.")
             print("Task is frozen, you may need to restart the bot.")
 
     def stop(self):
@@ -114,7 +115,6 @@ class Tile(ft.Row):
         self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
         self.button_stop.disabled = True
 
-
         self.tasks_process = threading.Thread(target=self.runner.run)
         self.tasks_process.daemon = True
         self.button_start.update()
@@ -123,21 +123,20 @@ class Tile(ft.Row):
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        if self.page.route == "/" :
-            self.text_status.update()
+        if (self.page is not None) and (self.page.route == '/'):
+            self.update()
 
     def get_text(self):
         return self.text_status.value
 
-    def add_text(self, phrase: str, color = None):
-        # # print(self.page.frames)
-        # if len(self.page.controls) > 2:
-        #     self.page.controls.pop()
+    def add_text(self, phrase: str, color=None):
         if self.number not in self.page.frames:
             self.page.frames[self.number] = Frame(self.page, self.number)
-            # self.page.add(self.page.frames[self.number])
-            # self.page.update()
 
-        self.page.frames[self.number].logger.add_text(phrase, color)
+        self.page.frames[self.number].add_text(phrase, color)
 
-        # self.page.update()
+    def add_divider(self):
+        if self.number not in self.page.frames:
+            self.page.frames[self.number] = Frame(self.page, self.number)
+
+        self.page.frames[self.number].add_divider()

@@ -4,7 +4,7 @@ from datetime import datetime
 from random import uniform, randint, random, choice
 from time import sleep, time
 
-from Task_gather_gem import GatherGem
+from tasks.Task_gather_gem import GatherGem
 from tasks.Task import Task
 from utils.Task_utils import get_name, get_class
 

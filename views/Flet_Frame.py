@@ -16,6 +16,8 @@ class InterfaceSettings(ft.Tab):
         self.content = ft.Column(
             controls=[
                 ft.Row(controls=[ft.Switch(label="Logger autoscroll",value=data["interface"]["auto_scroll"],on_change=lambda _: self.reverse_keyword("auto_scroll"))]),
+                ft.Row(controls=[ft.Switch(label="Limit Logs to 300 (reduce lags)", value=data["interface"].get("limit_logs",False),
+                                           on_change=lambda _: self.reverse_keyword("limit_logs"))]),
                 # ft.Row(controls=[ft.Switch(label="Enable Discord Notifications", value=data["discord"]["enabled"],on_change=lambda _: self.reverse_keyword("enabled"))]),
                 # ft.Row(controls=[ft.TextField(label="Your discord ID", value=data["discord"]["user_id"],on_change=self.submit)])
             ]
@@ -24,18 +26,14 @@ class InterfaceSettings(ft.Tab):
 
 
     def reverse_keyword(self, keyword:str):
-        if keyword == "auto_scroll":
+        if keyword == "auto_scroll" or keyword == "limit_logs":
             data = self.FileSingleton.get_data()
-            data["interface"][keyword] = not data["interface"][keyword]
+            data["interface"][keyword] = not data["interface"].get(keyword, False)
             self.FileSingleton.write_data(data)
             if keyword == 'auto_scroll':
                 for frame in self.page.frames:
                     self.page.frames[frame].logger.auto_scroll = data["interface"][keyword]
                 self.update()
-        else:
-            data = self.FileSingleton.get_data()
-            data["discord"][keyword] = not data["discord"][keyword]
-            self.FileSingleton.write_data(data)
 
     def submit(self,e):
         data = self.FileSingleton.get_data()
@@ -64,9 +62,12 @@ class Frame(ft.Tabs):
             if data[str(number)]['schedules'][profile]['enabled']:
                 self.settings.selected_index=int(profile)-1
                 break
-    def add_text(self, texte:str):
+
+    def add_text(self, texte: str):
         self.logger.add_text(texte)
 
+    def add_divider(self):
+        self.logger.add_divider()
 
 
 class FrameUpgrade(ft.Tabs):
