@@ -5,15 +5,15 @@ from utils.Task_utils import FileSingleton
 fileSingleton = FileSingleton()
 
 class FletPage(ft.ListView):
-    def __init__(self,tab,**kwargs):
+    def __init__(self,tab,instance_index, profile_index, color_choice, **kwargs):
         super().__init__(**kwargs)
         self.data = fileSingleton.get_data()
         self.tab = tab
         self.height = 500
         self.expend = 0
-        self.instance_index = tab.instance_index
-        self.profile_index = tab.profile_index
-        self.color_choice = tab.color_choice
+        self.instance_index = instance_index
+        self.profile_index = profile_index
+        self.color_choice = color_choice
 
 
     def show(self):
@@ -48,8 +48,12 @@ class FletPage(ft.ListView):
         self.data = fileSingleton.get_data()
 
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", 'API_KEY']:
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            print(self.data[str(self.instance_index)][keyword])
+            if keyword != 'API_KEY':
+                self.data[str(self.instance_index)][keyword] = method(e.control.value)
+
+            else:
+                self.data[str(self.instance_index)][keyword] = method(e.control.value)
+
             fileSingleton.write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:

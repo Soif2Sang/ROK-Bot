@@ -497,8 +497,8 @@ class SettingContainer(ft.Container):
                     ),
 
                     ft.Dropdown(
-                        width=140,
-                        height=70,
+                        width=140,                        height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Minutes",
                         options=[
                             ft.dropdown.Option("5"),
@@ -519,8 +519,8 @@ class SettingContainer(ft.Container):
                     ),
 
                     ft.Dropdown(
-                        width=140,
-                        height=70,
+                        width=140,                        height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Type",
                         options=[
                             ft.dropdown.Option("cav"),
@@ -821,8 +821,8 @@ class SettingContainer(ft.Container):
                     on_change=lambda _: self.reverse_keyword("slow_mode")
                 ),
                 ft.Dropdown(
-                    width=140,
-                    height=70,
+                    width=140,                        height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                     label="Multiplicator",
                     options=[
                         ft.dropdown.Option("1.0x"),

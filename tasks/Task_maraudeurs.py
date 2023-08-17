@@ -156,7 +156,7 @@ class Maraudeurs(Task):
         """
         # self.select_all_troop_zommed_out()
 
-        cos = self.adb.find_multiple_img(target=f"maraudeur_icon", confidence=0.82)
+        cos = self.adb.find_multiple_img(target=f"maraudeur_icon", confidence=0.75)
         final = []
         for element in cos:
             if self.validate_co(element):
@@ -362,7 +362,7 @@ class Maraudeurs(Task):
                 while True:
                     self.script_pause()
                     sleep(0.1)
-            self.click(uniform(1092, 1114), uniform(225, 248))
+            self.click(uniform(1092, 1114), uniform(190, 200))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
             self.print("Switching between line-up..")
@@ -388,13 +388,13 @@ class Maraudeurs(Task):
             self.better_sleep((1.825, 2.495))
             self.select_lineup_color(color="red")
             presets = {
-                "1": 290,
-                "2": 346,
-                "3": 402,
-                "4": 458,
-                "5": 517,
-                "6": 570,
-                "7": 626
+                "1": 260,
+                "2": 320,
+                "3": 370,
+                "4": 430,
+                "5": 480,
+                "6": 530,
+                "7": 680
             }
             self.click(uniform(1096, 1118), presets[preset])
             self.better_sleep((0.5, 1))

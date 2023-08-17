@@ -8,10 +8,10 @@ import flet as ft
 import numpy as np
 
 import taskscod.COD_Task_daily_vip
-from tasks.Task_title import Title
+# from tasks.Task_title import Title
 from tasks import Task_gather_rss_default
 from tasks.Task_gather_gem_default import GatherGem
-from tasks.Task_gather_rss_zoom import GatherRss2
+from tasks.Task_gather_rss_default import GatherRss
 from tasks.Task_kingdom_ranking import KingdomRanking
 from tasks.Task_maraudeurs import Maraudeurs
 from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
@@ -64,8 +64,8 @@ class Bot():
         self.main_task.set_sel(str(adb.number))
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
-        self.rss  =  Task_gather_rss.GatherRss(self.main_task)
-        self.rss2  =  GatherRss2(self.main_task)
+        self.rss  =  GatherRss(self.main_task)
+        # self.rss2  =  GatherRss2(self.main_task)
 
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)
@@ -82,7 +82,7 @@ class Bot():
         self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
         self.maraudeurs = Maraudeurs(self.main_task)
         self.gem = GatherGem(self.main_task)
-        self.title = Title(self.main_task)
+        # self.title = Title(self.main_task)
         #self.rkp = Rkp(self.adb)
         #self.rkp.set_sel('4')
         #self.up = Up(self.adb)
@@ -464,11 +464,67 @@ def upgrade_all():
 if __name__ == "__main__":
     # upgrade_all()
 
-    bot =  get_bot(3)
-    bot.title.run('duke',  '3190', 718,  537)
-    exit()
-    print(bot.gem.run2()
-          ())
+    bot =  get_bot(1)
+
+
+    import cv2
+
+    import numpy as np
+
+    # Read image.
+    while 1:
+        print("get screen")
+        # img = bot.adb.get_curr_device_screen_img()
+        # print("got screen")
+
+        img = bot.adb.get_cv2_img()[120:508, 650:]
+        print("got screen")
+        # Convert to grayscale.
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        # Blur using 3 * 3 kernel.
+        gray_blurred = cv2.blur(gray, (3, 3))
+
+        # Apply Hough transform on the blurred image.
+        detected_circles = cv2.HoughCircles(gray_blurred,
+                                            cv2.HOUGH_GRADIENT, 1, 50, param1=50,
+                                            param2=30, minRadius=30, maxRadius=100)
+        print(detected_circles)
+        # Draw circles that are detected.
+        if detected_circles is not None:
+
+            # Convert the circle parameters a, b and r to integers.
+            detected_circles = np.uint16(np.around(detected_circles))
+
+            for pt in detected_circles[0, :]:
+                a, b, r = pt[0], pt[1], pt[2]
+
+                # Draw the circumference of the circle.
+                cv2.circle(img, (a, b), r, (0, 255, 0), 2)
+
+                # Draw a small circle (of radius 1) to show the center.
+                cv2.circle(img, (a, b), 1, (0, 0, 255), 3)
+                cv2.imshow("Detected Circle", img)
+                print(a, b)
+                bot.adb.click(650 + a, 120 + b)
+                sleep(0.3)
+    # img = bot.adb.get_cv2_img()
+    # # convert to grayscale
+    # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # # resize for the visualization purposes
+    # img = cv2.resize(img, None, img, fx=0.4, fy=0.4)
+    # # find edges with Canny
+    # edges = cv2.Canny(img, 10, 20, apertureSize=3)
+    # # show and save the result
+    # cv2.imshow("edges", edges)
+    # cv2.waitKey(0)
+    # cv2.imwrite("result.png", edges)
+
+    # top, left=  130, 700
+    # for i in range(700,1160, 10):
+    #     for y in range(top, 500,10):
+    #         bot.adb.click(i,y)
+
     exit()
     screen =   bot.adb.get_cv2_img()
     for second_string in ["left", "mid", "right"]:

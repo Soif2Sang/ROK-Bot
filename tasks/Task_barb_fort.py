@@ -214,7 +214,7 @@ class BarbFort(Task):
                 while True:
                     self.script_pause()
                     sleep(1)
-            self.click(uniform(1092, 1114), uniform(260, 282))
+            self.click(uniform(1092, 1114), uniform(190, 200))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
             self.print("Switching between line-up..")

@@ -18,8 +18,8 @@ class FletRowRss(ft.Row):
                     ),
 
                     ft.Dropdown(
-                        width=140,
-                        height=70,
+                        width=140,                        height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Node Type",
                         options=[
                             ft.dropdown.Option("food"),
@@ -33,8 +33,8 @@ class FletRowRss(ft.Row):
                     ),
 
                     ft.Dropdown(
-                        width=140,
-                        height=70,
+                        width=140,                        height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Node Level",
                         options=[
                             ft.dropdown.Option("1"),

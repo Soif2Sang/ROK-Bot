@@ -35,3 +35,12 @@ logs/*
 /models/
 /logs/
 /utils/character/
+/.idea/bot.iml
+/.idea/misc.xml
+/.idea/vcs.xml
+/.idea/webResources.xml
+/tesseract/*
+/utils/easyocr/*
+/utils/models/craft_mlt_25k.pth
+/utils/models/english_g2.pth
+/logs

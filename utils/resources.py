@@ -52,6 +52,7 @@ class ImageSingleton:
        self.chest_open_button= imread(f'{dir}/chest_open_button.png')
        self.choose_right= imread(f'{dir}/choose_right.png')
        self.choose_right1= imread(f'{dir}/choose_right1.png')
+       self.city_editor_button= imread(f'{dir}/city_editor_button.png')
        self.claim_daily= imread(f'{dir}/claim_daily.png')
        self.claim_quest= imread(f'{dir}/claim_quest.png')
        self.close= imread(f'{dir}/close.png')
@@ -113,8 +114,14 @@ class ImageSingleton:
        self.explore_button2= imread(f'{dir}/explore_button2.png')
        self.explore_button_fog= imread(f'{dir}/explore_button_fog.png')
        self.explore_button_scout= imread(f'{dir}/explore_button_scout.png')
+       self.extend_troops= imread(f'{dir}/extend_troops.png')
+       self.food_down_left_icon_zoom= imread(f'{dir}/food_down_left_icon_zoom.png')
+       self.food_down_right_icon_zoom= imread(f'{dir}/food_down_right_icon_zoom.png')
+       self.food_icon_zoom= imread(f'{dir}/food_icon_zoom.png')
        self.food_max= imread(f'{dir}/food_max.png')
        self.food_min= imread(f'{dir}/food_min.png')
+       self.food_up_left_icon_zoom= imread(f'{dir}/food_up_left_icon_zoom.png')
+       self.food_up_right_icon_zoom= imread(f'{dir}/food_up_right_icon_zoom.png')
        self.forge_1= imread(f'{dir}/forge_1.png')
        self.forge_2= imread(f'{dir}/forge_2.png')
        self.forge_3= imread(f'{dir}/forge_3.png')
@@ -169,8 +176,13 @@ class ImageSingleton:
        self.get_more_rss= imread(f'{dir}/get_more_rss.png')
        self.golden_chest= imread(f'{dir}/golden_chest.png')
        self.golden_chest_tiny= imread(f'{dir}/golden_chest_tiny.png')
+       self.gold_down_left_icon_zoom= imread(f'{dir}/gold_down_left_icon_zoom.png')
+       self.gold_down_right_icon_zoom= imread(f'{dir}/gold_down_right_icon_zoom.png')
+       self.gold_icon_zoom= imread(f'{dir}/gold_icon_zoom.png')
        self.gold_max= imread(f'{dir}/gold_max.png')
        self.gold_min= imread(f'{dir}/gold_min.png')
+       self.gold_up_left_icon_zoom= imread(f'{dir}/gold_up_left_icon_zoom.png')
+       self.gold_up_right_icon_zoom= imread(f'{dir}/gold_up_right_icon_zoom.png')
        self.great_button= imread(f'{dir}/great_button.png')
        self.green_home_button= imread(f'{dir}/green_home_button.png')
        self.hammer= imread(f'{dir}/hammer.png')
@@ -224,6 +236,7 @@ class ImageSingleton:
        self.merchant_icon= imread(f'{dir}/merchant_icon.png')
        self.mightiest_gov= imread(f'{dir}/mightiest_gov.png')
        self.minus_button= imread(f'{dir}/minus_button.png')
+       self.network_disconnected= imread(f'{dir}/network_disconnected.png')
        self.new_troops_button= imread(f'{dir}/new_troops_button.png')
        self.no= imread(f'{dir}/no.png')
        self.ok= imread(f'{dir}/ok.png')
@@ -267,9 +280,14 @@ class ImageSingleton:
        self.standby_icon= imread(f'{dir}/standby_icon.png')
        self.stand_by= imread(f'{dir}/stand_by.png')
        self.star= imread(f'{dir}/star.png')
+       self.stone_down_left_icon_zoom= imread(f'{dir}/stone_down_left_icon_zoom.png')
+       self.stone_down_right_icon_zoom= imread(f'{dir}/stone_down_right_icon_zoom.png')
        self.stone_icon= imread(f'{dir}/stone_icon.png')
+       self.stone_icon_zoom= imread(f'{dir}/stone_icon_zoom.png')
        self.stone_max= imread(f'{dir}/stone_max.png')
        self.stone_min= imread(f'{dir}/stone_min.png')
+       self.stone_up_left_icon_zoom= imread(f'{dir}/stone_up_left_icon_zoom.png')
+       self.stone_up_right_icon_zoom= imread(f'{dir}/stone_up_right_icon_zoom.png')
        self.switch_save= imread(f'{dir}/switch_save.png')
        self.t1_badge= imread(f'{dir}/t1_badge.png')
        self.t2_badge= imread(f'{dir}/t2_badge.png')
@@ -282,6 +300,7 @@ class ImageSingleton:
        self.tech_2= imread(f'{dir}/tech_2.png')
        self.tech_speedup= imread(f'{dir}/tech_speedup.png')
        self.test_read= imread(f'{dir}/test_read.png')
+       self.title_button= imread(f'{dir}/title_button.png')
        self.training_upgrade_button= imread(f'{dir}/training_upgrade_button.png')
        self.train_button= imread(f'{dir}/train_button.png')
        self.troops_march_button= imread(f'{dir}/troops_march_button.png')
@@ -313,8 +332,13 @@ class ImageSingleton:
        self.window= imread(f'{dir}/window.png')
        self.window_title= imread(f'{dir}/window_title.png')
        self.window_title_mark= imread(f'{dir}/window_title_mark.png')
+       self.wood_down_left_icon_zoom= imread(f'{dir}/wood_down_left_icon_zoom.png')
+       self.wood_down_right_icon_zoom= imread(f'{dir}/wood_down_right_icon_zoom.png')
+       self.wood_icon_zoom= imread(f'{dir}/wood_icon_zoom.png')
        self.wood_max= imread(f'{dir}/wood_max.png')
        self.wood_min= imread(f'{dir}/wood_min.png')
+       self.wood_up_left_icon_zoom= imread(f'{dir}/wood_up_left_icon_zoom.png')
+       self.wood_up_right_icon_zoom= imread(f'{dir}/wood_up_right_icon_zoom.png')
        self.yellow_icon= imread(f'{dir}/yellow_icon.png')
        self.yellow_icon1= imread(f'{dir}/yellow_icon1.png')
 
@@ -395,6 +419,8 @@ class ImageSingleton:
             return self.choose_right
         if file_name == "choose_right1":
             return self.choose_right1
+        if file_name == "city_editor_button":
+            return self.city_editor_button
         if file_name == "claim_daily":
             return self.claim_daily
         if file_name == "claim_quest":
@@ -517,10 +543,22 @@ class ImageSingleton:
             return self.explore_button_fog
         if file_name == "explore_button_scout":
             return self.explore_button_scout
+        if file_name == "extend_troops":
+            return self.extend_troops
+        if file_name == "food_down_left_icon_zoom":
+            return self.food_down_left_icon_zoom
+        if file_name == "food_down_right_icon_zoom":
+            return self.food_down_right_icon_zoom
+        if file_name == "food_icon_zoom":
+            return self.food_icon_zoom
         if file_name == "food_max":
             return self.food_max
         if file_name == "food_min":
             return self.food_min
+        if file_name == "food_up_left_icon_zoom":
+            return self.food_up_left_icon_zoom
+        if file_name == "food_up_right_icon_zoom":
+            return self.food_up_right_icon_zoom
         if file_name == "forge_1":
             return self.forge_1
         if file_name == "forge_2":
@@ -629,10 +667,20 @@ class ImageSingleton:
             return self.golden_chest
         if file_name == "golden_chest_tiny":
             return self.golden_chest_tiny
+        if file_name == "gold_down_left_icon_zoom":
+            return self.gold_down_left_icon_zoom
+        if file_name == "gold_down_right_icon_zoom":
+            return self.gold_down_right_icon_zoom
+        if file_name == "gold_icon_zoom":
+            return self.gold_icon_zoom
         if file_name == "gold_max":
             return self.gold_max
         if file_name == "gold_min":
             return self.gold_min
+        if file_name == "gold_up_left_icon_zoom":
+            return self.gold_up_left_icon_zoom
+        if file_name == "gold_up_right_icon_zoom":
+            return self.gold_up_right_icon_zoom
         if file_name == "great_button":
             return self.great_button
         if file_name == "green_home_button":
@@ -739,6 +787,8 @@ class ImageSingleton:
             return self.mightiest_gov
         if file_name == "minus_button":
             return self.minus_button
+        if file_name == "network_disconnected":
+            return self.network_disconnected
         if file_name == "new_troops_button":
             return self.new_troops_button
         if file_name == "no":
@@ -825,12 +875,22 @@ class ImageSingleton:
             return self.stand_by
         if file_name == "star":
             return self.star
+        if file_name == "stone_down_left_icon_zoom":
+            return self.stone_down_left_icon_zoom
+        if file_name == "stone_down_right_icon_zoom":
+            return self.stone_down_right_icon_zoom
         if file_name == "stone_icon":
             return self.stone_icon
+        if file_name == "stone_icon_zoom":
+            return self.stone_icon_zoom
         if file_name == "stone_max":
             return self.stone_max
         if file_name == "stone_min":
             return self.stone_min
+        if file_name == "stone_up_left_icon_zoom":
+            return self.stone_up_left_icon_zoom
+        if file_name == "stone_up_right_icon_zoom":
+            return self.stone_up_right_icon_zoom
         if file_name == "switch_save":
             return self.switch_save
         if file_name == "t1_badge":
@@ -855,6 +915,8 @@ class ImageSingleton:
             return self.tech_speedup
         if file_name == "test_read":
             return self.test_read
+        if file_name == "title_button":
+            return self.title_button
         if file_name == "training_upgrade_button":
             return self.training_upgrade_button
         if file_name == "train_button":
@@ -917,10 +979,20 @@ class ImageSingleton:
             return self.window_title
         if file_name == "window_title_mark":
             return self.window_title_mark
+        if file_name == "wood_down_left_icon_zoom":
+            return self.wood_down_left_icon_zoom
+        if file_name == "wood_down_right_icon_zoom":
+            return self.wood_down_right_icon_zoom
+        if file_name == "wood_icon_zoom":
+            return self.wood_icon_zoom
         if file_name == "wood_max":
             return self.wood_max
         if file_name == "wood_min":
             return self.wood_min
+        if file_name == "wood_up_left_icon_zoom":
+            return self.wood_up_left_icon_zoom
+        if file_name == "wood_up_right_icon_zoom":
+            return self.wood_up_right_icon_zoom
         if file_name == "yellow_icon":
             return self.yellow_icon
         if file_name == "yellow_icon1":

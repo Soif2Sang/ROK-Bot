@@ -20,7 +20,7 @@ class FletRowTraining(ft.Row):
                     ),
                     ft.Dropdown(
                         width=140,
-                        label=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}_tier"],
+                        label="Tier",
                         options=[
                             ft.dropdown.Option("t1"),
                             ft.dropdown.Option("t2"),
@@ -29,7 +29,10 @@ class FletRowTraining(ft.Row):
                             ft.dropdown.Option("t5"),
                         ],
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}_tier"],
-                        on_change=lambda e: self.submit(e, f"{key}_tier", str)
+                        on_change=lambda e: self.submit(e, f"{key}_tier", str),
+                        height=40,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3)  # modify to your likings
+
                     )
                 ]
 

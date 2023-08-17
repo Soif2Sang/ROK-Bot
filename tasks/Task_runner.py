@@ -5,7 +5,7 @@ from random import uniform, randint, shuffle
 from time import time, sleep
 
 import win32gui
-
+import flet as ft
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
@@ -120,7 +120,6 @@ class TaskRunner(Task):
                                     "DailyChest", "AutoUpgrade", "ProduceMaterials", "TroopTraining"]:
                 self.go_city()
             try:
-                # print(f"{ func.__name__ in ['gather_rss','gather_gem'] =}")
                 if func.task_name() in ["GatherRss", "GatherGem"]:
                     cv_image = self.adb.get_cv2_img()
                     cv_image = cv_image[0:100, 0:800]
@@ -134,6 +133,10 @@ class TaskRunner(Task):
                     func.run()
                 self.better_sleep((1, 2))
             except Exception as e:
+                self.send_discord_message(f"Something wrong happened when running {func.task_name()}")
+                self.tile.page.generate_toast("Warning",
+                                              f"Something wrong happened when running {func.task_name()}", )
+
                 self.print(f"Exception during {func.task_name()}", "red")
                 exception = traceback.format_exc()
                 self.print(f"{exception}", "red")
@@ -228,7 +231,7 @@ class TaskRunner(Task):
 
     @get_name
     def enter_setting(self):
-        self.click(uniform(957, 1000), uniform(511, 554))
+        self.click(uniform(991, 1026), uniform(570, 600))
         self.better_sleep((1.925, 2.795))
 
     @get_name
@@ -240,14 +243,11 @@ class TaskRunner(Task):
     def get_first_character(self) -> tuple[float, float]:
         self.print("Switching Character")
         self.set_status(f"Switching Character")
-        x, y = uniform(15, 80), uniform(10, 60)
-        self.click(x, y)
+        self.enter_profile()
         self.better_sleep((1.925, 2.795))
-        x, y = uniform(950, 1015), uniform(510, 560)
-        self.click(x, y)
+        self.enter_setting()
         self.better_sleep((1.925, 2.795))
-        x, y = uniform(315, 380), uniform(330, 400)
-        self.click(x, y)
+        self.enter_characters()
         self.better_sleep((4, 5.795))
         trigger_stop = 0
         while self.find_img(target="logged_icon") is None:
@@ -552,7 +552,8 @@ class TaskRunner(Task):
             when_go = None
             if not (self.data[self.sel]['schedules']["1"]['enabled'] or self.data[self.sel]['schedules']["2"][
                 'enabled'] or self.data[self.sel]['schedules']["3"]['enabled']):
-                self.print("There is no profile enabled.", "red")
+                self.print("No active profiles found! Navigate to the profile settings and enable at least one option.", "red")
+                self.tile.page.generate_toast("Warning ", "No active profiles found! Navigate to the profile settings and enable at least one option.", ft.icons.INFO)
 
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
@@ -573,7 +574,7 @@ class TaskRunner(Task):
                             continue
                         if when_go:
                             self.print("In order to mimic a player, the bot will wait a random time")
-                            self.set_timer(when_go)
+                            self.set_timer(randint(0, 60 * 10))
                     else:
                         print(f"Profile {profile} no rules set")
                     self.current_profile = profile
