@@ -25,8 +25,8 @@ class Tile(ft.Row):
         self.tasks_process = threading.Thread(target=self.runner.run)
 
         self.button_select = ft.IconButton(
-            icon=ft.icons.PAGEVIEW,
-            selected_icon=ft.icons.REMOVE_RED_EYE_OUTLINED,
+            icon=ft.icons.SETTINGS_OUTLINED,
+            selected_icon=ft.icons.SETTINGS,
             on_click=lambda _: self.select()
         )
         self.button_start = ft.IconButton(

@@ -205,12 +205,14 @@ class CityPlacement(ft.Container):
             if self.data[str(self.instance)]["schedules"][str(self.profile)][co]:
                 if "✓" not in self.buttons.controls[self.button[co]].text:
                     self.buttons.controls[self.button[co]].text = self.buttons.controls[self.button[co]].text + " ✓"
+
     def updateButtons(self):
         for co in ["infantry_camp","cavalry_camp","archery_camp","siege_camp","hospital","scout_camp","city_transfer"]:
             if self.data[str(self.instance)]["schedules"][str(self.profile)][co]:
                 if "✓" not in self.buttons.controls[self.button[co]].text:
                     self.buttons.controls[self.button[co]].text = self.buttons.controls[self.button[co]].text + " ✓"
         self.update()
+
     def setCurrentBuild(self,param:str):
         self.current_build = param
         for element in self.buttons.controls:

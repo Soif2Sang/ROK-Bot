@@ -79,7 +79,7 @@ class GatherRss(Task):
                 while True:
                     self.script_pause()
                     sleep(0.1)
-            self.click(uniform(1092, 1114), uniform(225, 248))
+            self.click(uniform(1092, 1114), uniform(190, 200))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
             self.print("Switching between line-up..")
@@ -110,12 +110,12 @@ class GatherRss(Task):
                 self.select_lineup_color(color=color)
                 default_image = self.adb.get_cv2_img()
                 for i in range(7):  # change if you have 6-7 troops
-                    default_color = default_image[282 + i * 54, 1100]
-                    x_click, y_click = uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54)
+                    default_color = default_image[260 + i * 50, 1100]
+                    x_click, y_click = uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50)
                     self.click(x_click, y_click)
                     self.better_sleep((1, 2))
                     new_image = self.adb.get_cv2_img()
-                    if (default_color != new_image[282 + i * 54, 1100]).all():
+                    if (default_color != new_image[260 + i * 50, 1100]).all():
                         x, y = self.find_img(target="troops_march_button")
                         x, y = x + uniform(0, 20), y + uniform(0, 20)
 

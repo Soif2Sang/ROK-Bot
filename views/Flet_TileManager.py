@@ -10,8 +10,6 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 from views.Flet_Tile import Tile
 from utils.Task_utils import FileSingleton
 
-
-
 class NavigationBar(ft.Row):
     def __init__(self, tile_manager, **kwargs):
         super().__init__(**kwargs)
@@ -147,12 +145,12 @@ class TileManager(ft.ListView):
 
     def refresh(self):
         data = self.FileSingleton.get_data()
-        try:
-            default_config = self.FileSingleton.get_default_config()
-            default_config_here = True
-        except:
-            print("There is no default profile")
-            default_config_here = False
+        # try:
+        #     default_config = self.FileSingleton.get_default_config()
+        #     default_config_here = True
+        # except:
+        #     print("There is no default profile")
+        #     default_config_here = False
         instances = self.get_dic_instances()
 
         default_dic = {
@@ -275,7 +273,7 @@ class TileManager(ft.ListView):
             "kill_marauders" : False,
             "kill_marauders_duration" : [30,90],
             "rally_skip_back" :  False,
-            "gather_rss_method": False
+            "gather_rss_method": False,
         }
         for i in range(1, 4):
             default_dic['schedules'][i] = default_profile
@@ -284,10 +282,7 @@ class TileManager(ft.ListView):
             if str(instance) not in data:
                 print("Default config set !")
 
-                if default_config_here:
-                    data[str(instance)] = default_config
-                else:
-                    data[str(instance)] = default_profile
+                data[str(instance)] = default_dic
             else:
                 for key in default_dic:
                     if key not in data[str(instance)]:

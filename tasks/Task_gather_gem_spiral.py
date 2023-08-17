@@ -26,6 +26,55 @@ class GatherGemSpiral(GatherGem):
         if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
             return super().recenter(deadstop)
 
+    @get_name
+    def go_city(self, x, y, last=None) -> int:
+        """
+        Define starting path
+        :param: x -> int x map location
+        :param: y -> int y map location
+        :return: starting location between 0,1,2,3
+        """
+        x2, y2 = x + randint(-2, 2), y + randint(-2, 2)
+        x3, y3 = uniform(290, 400), uniform(15, 26)
+        self.click(x3, y3)
+        self.better_sleep((0.3, 0.5))
+        for i in range(2):
+            self.click(uniform(400, 480), uniform(130, 150))
+            self.better_sleep((0.3, 0.5))
+            if i == 0:
+                self.script_pause()
+                # string = "input keyevent --longpress 67 67 67 67 67"
+                string = "input keyevent 67 67 67 67 67 67"
+                self.adb.shell(string)
+                self.script_pause()
+                self.better_sleep((0.3, 0.5))
+                self.adb.shell(
+                    f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}")
+                self.better_sleep((0.3, 0.5))
+                self.script_pause()
+        self.better_sleep((0.3, 0.5))
+        for i in range(2):
+            self.click(uniform(590, 685), uniform(130, 150))
+            self.better_sleep((0.3, 0.5))
+            if i == 0:
+                string = f'input text {x2}'
+                self.script_pause()
+                self.adb.shell(string)
+                self.better_sleep((0.3, 0.5))
+        self.better_sleep((0.3, 0.5))
+        for i in range(2):
+            self.click(uniform(750, 830), uniform(130, 150))
+            self.better_sleep((0.3, 0.5))
+            if i == 0:
+                self.script_pause()
+                string = f'input text {y2}'
+                self.adb.shell(string)
+                self.better_sleep((0.3, 0.5))
+        self.better_sleep((0.3, 0.5))
+        for _ in range(2):
+            self.click(uniform(860, 900), uniform(123, 158))
+        self.better_sleep((1, 2))
+
 
     @get_class
     def run(self, end_time=None):
@@ -33,7 +82,8 @@ class GatherGemSpiral(GatherGem):
        Gather gems
        """
         self.end_time = end_time
-        self.random_macro()
+        if not self.random_macro():
+            return
 
         self.run_game()
         self.check_captcha()
@@ -66,16 +116,17 @@ class GatherGemSpiral(GatherGem):
         self.go_city(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
                      self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
 
+        max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 4)
+
+        swipes = {
+            self.swipe_up: self.swipe_right,
+            self.swipe_right: self.swipe_down,
+            self.swipe_down: self.swipe_left,
+            self.swipe_left: self.swipe_up
+        }
+
         while self.end_time > time():
             self.scan_gem()
-            max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 4)
-
-            swipes = {
-                self.swipe_up: self.swipe_right,
-                self.swipe_right: self.swipe_down,
-                self.swipe_down: self.swipe_left,
-                self.swipe_left: self.swipe_up
-            }
 
             random_function = choice(list(swipes.keys()))
             current_swipe = swipes[random_function]

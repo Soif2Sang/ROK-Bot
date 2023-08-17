@@ -28,14 +28,14 @@ class GatherGemDefault(GatherGem):
         if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
             return super().recenter(deadstop)
 
-
     @get_class
     def run(self, end_time=None):
         """
                    Gather gems
                    """
         self.end_time = end_time
-        self.random_macro()
+        if not self.random_macro():
+            return
 
         self.run_game()
         self.check_captcha()
@@ -108,7 +108,8 @@ class GatherGemDefault(GatherGem):
 
             self.scan_gem()
             self.check_reconnect(cv_image)
-            self.check_log_back()
+            if self.check_if_interrupt():
+                return self.run(self.end_time)
             self.check_captcha(False)
             self.leave_kd_buff()
 

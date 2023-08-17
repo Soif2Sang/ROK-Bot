@@ -14,7 +14,9 @@ from views import Flet_main_interface
 from views.Flet_Path import find_file_in_all_drives
 from utils.Task_utils import FileSingleton, getchecksum
 from utils.auth import selfApi
+
 fileSingleton = FileSingleton()
+
 try:
     if not os.path.exists("./user_settings.json"):
         fileSingleton.write_data({})
@@ -176,6 +178,25 @@ def main(page: ft.Page):
     page.window_width = 330
     page.window_height = 330
     path = page.FileSingleton.get_path()
+
+    if not os.path.exists(path['bluestacks']) or not os.path.exists(path['HD-Player']):
+        progress_bar = ft.ProgressBar(visible=True)
+        page.add(progress_bar)
+        page.update()
+        if result := find_file_in_all_drives('bluestacks\.conf'):
+            path['bluestacks\.conf'.split("\\")[0]] = result
+            with open('./path.json', 'w', encoding="UTF-8") as f:
+                json.dump(path, f, indent=2)
+        if result := find_file_in_all_drives('HD-Player\.exe'):
+            path['HD-Player\.exe'.split("\\")[0]] = result
+            with open('./path.json', 'w', encoding="UTF-8") as f:
+                json.dump(path, f, indent=2)
+        progress_bar.visible = False
+        page.update()
+
+    cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
+    subprocess.Popen(cmd)
+
     for i in range(5):
         ready = False
         try:
@@ -197,6 +218,7 @@ def main(page: ft.Page):
 
     page.add(ft.TextField(label="Username", width=300, value=data.get("user",{}).get("username","")))
     page.add(ft.TextField(label="Password", password=True, can_reveal_password=True, width=300,value=data.get("user",{}).get("password","")))
+
     login_button = LoginButton(text="Login", width=100)
     login_button.keyauthapp = keyauthapp
     login_button.on_click = login_button.login
@@ -204,23 +226,6 @@ def main(page: ft.Page):
     page.add(login_button)
     page.update()
 
-    if not os.path.exists(path['bluestacks']) or not os.path.exists(path['HD-Player']):
-        progress_bar = ft.ProgressBar(visible=True)
-        page.add(progress_bar)
-        page.update()
-        if result := find_file_in_all_drives('bluestacks\.conf'):
-            path['bluestacks\.conf'.split("\\")[0]] = result
-            with open('./path.json', 'w', encoding="UTF-8") as f:
-                json.dump(path, f, indent=2)
-        if result := find_file_in_all_drives('HD-Player\.exe'):
-            path['HD-Player\.exe'.split("\\")[0]] = result
-            with open('./path.json', 'w', encoding="UTF-8") as f:
-                json.dump(path, f, indent=2)
-        progress_bar.visible = False
-        page.update()
-
-    cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
-    subprocess.Popen(cmd)
     if "user" in data:
         if data["user"]["username"] != "":
             login_button.on_click(None, data['user']["username"], data['user']["password"])

@@ -93,7 +93,7 @@ class GatherGem(Task):
                 while True:
                     self.script_pause()
                     sleep(0.1)
-            self.click(uniform(1092, 1114), uniform(225, 248))
+            self.click(uniform(1092, 1114), uniform(190, 200))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
             self.print("Switching between line-up..")
@@ -143,12 +143,12 @@ class GatherGem(Task):
                 self.select_lineup_color(color=color)
                 default_image = self.adb.get_cv2_img()
                 for i in range(7):  # change if you have 6-7 troops
-                    default_color = default_image[282 + i * 54, 1100]
-                    x_click, y_click = uniform(1096, 1118), uniform(282 + i * 54, 302 + i * 54)
+                    default_color = default_image[260 + i * 50, 1100]
+                    x_click, y_click = uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50)
                     self.click(x_click, y_click)
                     self.better_sleep((1, 2))
                     new_image = self.adb.get_cv2_img()
-                    if (default_color != new_image[282 + i * 54, 1100]).all():
+                    if (default_color != new_image[260 + i * 50, 1100]).all():
                         x, y = self.find_img(target="troops_march_button")
                         x, y = x + uniform(0, 20), y + uniform(0, 20)
 
@@ -290,13 +290,13 @@ class GatherGem(Task):
         return image[min_y:max_y, min_x:max_x]
 
     @get_name
-    def check_if_interrupt(self):
+    def check_if_interrupt(self, screen = None):
         if not self.adb.is_game_alive():
             return True
-        self.check_download_page()
-        self.leave_kd_buff()
-        self.check_captcha()
-        if self.check_log_back():
+        self.check_download_page(screen)
+        self.leave_kd_buff(screen)
+        self.check_reconnect(screen)
+        if self.check_log_back(screen):
             return True
         return False
 
@@ -387,7 +387,9 @@ class GatherGem(Task):
             blocked = False
 
             while not blocked:
+                self.check_captcha()
                 if self.check_if_interrupt():
+                    print("Interrupted")
                     return self.run(self.end_time)
 
                 screen = self.adb.get_cv2_img()
@@ -418,6 +420,7 @@ class GatherGem(Task):
                         self.better_sleep((1, 1))
                         scan_frequency_timer += 1
                         if scan_frequency_timer >= random_wait:
+                            self.check_captcha()
                             if self.check_if_interrupt():
                                 return self.run(self.end_time)
 
@@ -481,6 +484,7 @@ class GatherGem(Task):
 
                     # random_wait = uniform(20, 30)
                     self.better_sleep((15, 30))
+                    self.check_captcha()
                     if self.check_if_interrupt():
                         return self.run(self.end_time)
 
@@ -615,18 +619,17 @@ class GatherGem(Task):
         info_screen = screen[470:700, 0:115]
         cropped_image = screen[420:540, 480:810]
 
+        if random() > 0.9:
+            self.close_windows()
+
         if random() > 0.7:
             co = self.find_img(source=screen, target="verification_button", confidence=0.6)
             if co is not None:
                 self.check_captcha()
-            self.check_reconnect(screen)
 
         if random() > 0.4:
-            self.check_download_page(screen)
-            self.leave_kd_buff(screen)
-
-        if random() > 0.9:
-            self.close_windows()
+            if self.check_if_interrupt(screen):
+                return self.run(self.end_time)
 
         cropped_image = screen[616:710, 1168:1270]
 
@@ -654,4 +657,5 @@ class GatherGem(Task):
 
     @get_class
     def run(self, end_time=None):
+        print("Pass")
         pass

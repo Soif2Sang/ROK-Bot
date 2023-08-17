@@ -1,19 +1,15 @@
-import multiprocessing
-from time import sleep
-
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from flet_route import path, Routing
+from flet_route import path
 
-import views.Flet_time_allower
-from views import Flet_time_allower
+from utils.Task_utils import FileSingleton
+from views.Flet_city_layout import CityPlacement
+from views.Flet_col_transfer import FletColumnRss
 from views.Flet_row_material import FletRowMaterial
 from views.Flet_row_presets import FletRowPresets
 from views.Flet_row_rss import FletRowRss
-from views.Flet_col_transfer import FletColumnRss
 from views.Flet_row_troops import FletRowTraining
-from views.Flet_city_layout import start, main2, CityPlacement
-from utils.Task_utils import FileSingleton
+from views.Flet_time_allower import ManagerTimezone
 
 color_bank = {
     1: "#3b8ed0",
@@ -25,38 +21,92 @@ color_bank = {
 class SettingContainer(ft.Container):
     def __init__(self, page, tab, instance_index: int, profile_index: int):
         super().__init__()
-        self.FileSingleton =  FileSingleton()
+        self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         self.tabs = tab
         self.page = page
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.color_choice = color_bank[self.profile_index]
-        self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300,spacing=2)
+        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300, spacing=3)
         self.init()
-        # print(f"{self.instance_index = } {self.profile_index =}")
 
-        self.page.app_routes.append(path(url=f"/citylayout/{self.instance_index}/{self.profile_index}", clear=True, view=self.nextView))
+        self.page.app_routes.append(
+            path(url=f"/citylayout/{self.instance_index}/{self.profile_index}", clear=True, view=self.cityLayout))
 
-    def nextView(self,page, params, basket):
+        self.page.app_routes.append(path(url=f"/profile/{self.instance_index}/1/settings", clear=True,
+                                         view=lambda page, params, basket: self.profileSetting(page, params, basket,
+                                                                                               self.instance_index, 1)))
+        self.page.app_routes.append(path(url=f"/profile/{self.instance_index}/2/settings", clear=True,
+                                         view=lambda page, params, basket: self.profileSetting(page, params, basket,
+                                                                                               self.instance_index, 2)))
+        self.page.app_routes.append(path(url=f"/profile/{self.instance_index}/3/settings", clear=True,
+                                         view=lambda page, params, basket: self.profileSetting(page, params, basket,
+                                                                                               self.instance_index, 3)))
+    def cityLayout(self, page, params, basket):
         self.page.window_width = 900
         self.page.window_height = 500
         self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
 
         return ft.View(
-                f"/citylayout/{self.instance_index}/{self.profile_index}",
-                controls=[
-                    ft.Container(bgcolor="#ecf0f1",
-                        content = ft.Row(controls=[
-                                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
-                                    ft.Text(value="Go back")
-                                        ]
-                                    )
-                                 ),
-                    ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
-                    CityPlacement(self.instance_index, self.profile_index)
-                ]
-            )
+            f"/citylayout/{self.instance_index}/{self.profile_index}",
+            controls=[
+                ft.Container(bgcolor="#ecf0f1",
+                             content=ft.Row(controls=[
+                                 ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
+                                 ft.Text(value="Go back")
+                             ]
+                             )
+                             ),
+                ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
+                CityPlacement(self.instance_index, self.profile_index)
+            ]
+        )
+
+    def profileSetting(self, page, params, basket, instance_index, profile_index):
+        self.page.window_width = 900
+        self.page.window_height = 500
+
+        return ft.View(
+            f"/profile/{instance_index}/{profile_index}/settings",
+            controls=[
+                ft.Container(bgcolor="#ecf0f1",
+                             content=ft.Row(controls=[
+                                 ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
+                                 ft.Text(value="Go back")
+                             ]
+                             )
+                             ),
+                # ft.Column(
+                #     controls=[
+                #         ft.Row(controls=[
+                #             ft.Text("Time to wait after this profile is done (minutes)")
+                #         ]),
+                #         ft.Row(controls=[
+                #         ft.TextField(label="Minimum",
+                #                      value=
+                #                      self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                #                          "gather_gem_duration1"],
+                #                      width=80,
+                #                      content_padding=ft.padding.all(10),
+                #                      on_change=lambda e: self.submit(e, "gather_gem_duration1", int)
+                #                      ),
+                #         ft.Text("~"),
+                #         ft.TextField(label="Maximum",
+                #                      value=
+                #                      self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                #                          "gather_gem_duration2"],
+                #                      width=90,
+                #                      content_padding=ft.padding.all(10),
+                #                      on_change=lambda e: self.submit(e, "gather_gem_duration2", int)),
+                #         ]
+                #         )
+                #     ]
+                # ),
+                # ft.Divider(),
+                ManagerTimezone(instance_index, profile_index)
+            ]
+        )
 
     def returnHome(self):
         self.page.window_width = 400
@@ -75,28 +125,31 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
         self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
         self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
-        self.create_normal_switch("claim_campaign", "Claim Campaign Rewards")
+        self.create_normal_switch("claim_campaign", "Claim Expedition Rewards")
         self.create_normal_switch("alliance_help", "Alliance Help")
         self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", self.page_barbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", self.page_rally)
         self.create_advanced_switch("kill_marauders", "Kill marauders", self.page_marauders)
         self.create_advanced_switch("scout_fog", "Clear fog", self.page_fog)
-        self.create_normal_switch("upgrade_city", "Upgrade City")
+        self.create_normal_switch("upgrade_city", "Upgrade City (light)")
         self.create_advanced_switch("heal_troop", "Troops healing", self.page_heal)
         self.create_advanced_switch("transfer_enable", "Rss Transfer", self.page_transfer)
 
         self.content.controls.append(ft.Divider())
 
-        self.create_normal_switch("auto_reconnect", "Auto reconnection")
-        self.create_normal_switch("auto_captcha", "Resolve captchas")
+        self.create_normal_switch("auto_reconnect", "Log back from network issues)")
+        self.create_advanced_switch("auto_log_back", "Log back from device switch", self.page_logback)
+
+        self.create_normal_switch("auto_captcha", "Resolve captcha")
         self.create_slow_mode()
         self.create_advanced_switch("switch_character", "Characters switching", self.page_character)
-        self.create_advanced_switch("auto_log_back", "Log back from other device", self.page_logback)
 
-        self.create_advanced_switch("loop_task", "Re-do Tasks", self.page_redo)
+        self.create_advanced_switch("loop_task", "Do tasks again", self.page_redo)
         self.create_advanced_switch("scheduler", "Profiles", self.page_profile)
 
-        self.content.controls.append(ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'], on_change=lambda e: self.submit(e, 'API_KEY', str)))
+        self.content.controls.append(
+            ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'],
+                         on_change=lambda e: self.submit(e, 'API_KEY', str)))
 
     def reset(self):
         self.content.clean()
@@ -109,15 +162,18 @@ class SettingContainer(ft.Container):
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1",'API_KEY']:
+        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", 'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            print(self.data[str(self.instance_index)][keyword])
-            return self.FileSingleton.write_data(self.data)
-
-        if keyword not in ["sleep_multiplicator","defeat_barbarians"]:
-            self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
+            # print(self.data[str(self.instance_index)][keyword])
+            # return self.FileSingleton.write_data(self.data)
+        elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
+            if e.control.value == '':
+                self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(0)
+            else:
+                self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(e.control.value.replace("x", "").replace("level ",""))
+            self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", ""))
         self.FileSingleton.write_data(self.data)
 
     def page_gems(self):
@@ -201,7 +257,7 @@ class SettingContainer(ft.Container):
             ft.Divider(),
             ft.Row(
                 controls=[
-                    ft.Text("Available troop scan frequency"),
+                    ft.Text("Available troop scan\nfrequency (seconds)"),
                     ft.TextField(label="Minimum",
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "gem_check1"],
@@ -289,7 +345,7 @@ class SettingContainer(ft.Container):
                 spans=[
                     ft.TextSpan(
                         "*REQUIREMENT* ",
-                        style=ft.TextStyle(size=15, color="red",weight=ft.FontWeight.BOLD),
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
                     ),
                     ft.TextSpan(
                         "Pre-configure red-lineups with commanders with the same march speed!\n",
@@ -371,14 +427,15 @@ class SettingContainer(ft.Container):
 
     def submit_marauders(self, e, index):
         self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kill_marauders_duration"][index] = e.control.value if e.control.value is not None or e.control.value != "" else 0
+        self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kill_marauders_duration"][
+            index] = e.control.value if e.control.value is not None or e.control.value != "" else 0
         self.FileSingleton.write_data(self.data)
 
     def page_troops(self):
         self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
-        self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), spacing=5)
         self.content.controls.append(
             ft.Row(
                 controls=[
@@ -402,10 +459,12 @@ class SettingContainer(ft.Container):
             "siege",
         ]
         for key in keys:
-            self.content.controls.append(FletRowTraining(key = key, instance_index = self.instance_index, profile_index= self.profile_index))
-            self.content.controls.append(ft.Divider())
+            self.content.controls.append(
+                FletRowTraining(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
+            # self.content.controls.append(ft.Divider())
         # self.content.controls.append(ft.Divider())
-        self.content.controls.append(ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Scout camp position",
+        self.content.controls.append(
+            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Training camps position",
                               on_click=lambda _: self.show_cords_page()))
         self.update()
 
@@ -413,7 +472,7 @@ class SettingContainer(ft.Container):
         self.data = self.FileSingleton.get_data()
         self.clean()
         self.tabs.expand = True
-        self.content:ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), spacing=3)
         self.content.controls.append(
             ft.Row(
                 controls=[
@@ -457,14 +516,15 @@ class SettingContainer(ft.Container):
             )
         )
         for key in keys:
-            self.content.controls.append(FletRowRss(key = key, instance_index = self.instance_index, profile_index= self.profile_index))
+            self.content.controls.append(
+                FletRowRss(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
 
         self.update()
 
     def page_fog(self):
         self.data = self.FileSingleton.get_data()
         self.clean()
-        self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
             ft.Row(
                 controls=[
@@ -504,7 +564,7 @@ class SettingContainer(ft.Container):
     def page_heal(self):
         self.data = self.FileSingleton.get_data()
         self.clean()
-        self.content =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
             ft.Row(
                 controls=[
@@ -533,7 +593,7 @@ class SettingContainer(ft.Container):
     def page_materials(self):
         self.data = self.FileSingleton.get_data()
         self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), spacing=5)
         self.content.controls.append(
             ft.Row(
                 controls=[
@@ -556,7 +616,8 @@ class SettingContainer(ft.Container):
             "Fifth",
         ]
         for i in range(1, 6):
-            self.content.controls.append(FletRowMaterial(keys = keys, i = i, instance_index = self.instance_index, profile_index = self.profile_index))
+            self.content.controls.append(
+                FletRowMaterial(keys=keys, i=i, instance_index=self.instance_index, profile_index=self.profile_index))
         self.update()
 
     def page_transfer(self):
@@ -574,20 +635,22 @@ class SettingContainer(ft.Container):
                 ],
             )
         )
-        self.content.controls.append(ft.Text(value="/!\ This feature require a custom ApiKey /!\ \n""/!\ This feature is on beta and may crash /!\ \n", size=15, color="red"))
-        self.content.controls.append(ft.Divider() )
+        self.content.controls.append(ft.Text(
+            value="/!\ This feature require a custom ApiKey /!\ \n""/!\ This feature is on beta and may crash /!\ \n",
+            size=15, color="red"))
+        self.content.controls.append(ft.Divider())
         self.content.controls.append(
-            FletColumnRss(self.instance_index,self.profile_index)
+            FletColumnRss(self.instance_index, self.profile_index)
         )
         self.content.controls.append(ft.Divider())
         self.content.controls.append(ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set City Position",
-                              on_click=lambda _: self.show_cords_page()))
+                                                       on_click=lambda _: self.show_cords_page()))
         self.update()
 
     def page_barbs(self):
         self.data = self.FileSingleton.get_data()
         self.clean()
-        self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
             ft.Row(
                 controls=[
@@ -599,7 +662,7 @@ class SettingContainer(ft.Container):
                 ],
             )
         )
-        self.content.controls.append(ft.Divider(),)
+        self.content.controls.append(ft.Divider(), )
         self.content.controls.extend([
             ft.Text(
                 spans=[
@@ -634,18 +697,22 @@ class SettingContainer(ft.Container):
                     ),
                 ]
             ),
-
+            ft.Text("You should only use this with natural AP bar.", color="orange", size=15),
             ft.Divider(),
             ft.Row(
                 controls=[
-                ft.Text(value="Barbarian Level"),
-                ft.Dropdown(
-                    width=50,
-                    options=[
-                        ft.dropdown.Option(str(i)) for i in range(1, 56)
-                    ], on_change=lambda e: self.submit(e, "barbarians_level", str),
-                    value = self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["barbarians_level"]
-                )
+                    ft.Text(value="Barbarian Level"),
+                    ft.Dropdown(
+                        width=70,
+                        height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
+                        options=[
+                            ft.dropdown.Option(str(i)) for i in range(1, 56)
+                        ],
+                        on_change=lambda e: self.submit(e, "barbarians_level", str),
+                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                            "barbarians_level"]
+                    )
                 ]
                 , width=300
             ),
@@ -658,16 +725,15 @@ class SettingContainer(ft.Container):
                 spacing=10,
                 run_spacing=10,
                 height=150
-                )
-            ]
+            )
+        ]
         )
         self.update()
-
 
     def page_rally(self):
         self.data = self.FileSingleton.get_data()
         self.clean()
-        self.content:ft.ListView =  ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
+        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
             ft.Row(
                 controls=[
@@ -726,8 +792,8 @@ class SettingContainer(ft.Container):
                     ),
 
                     ft.Dropdown(
-                        width=140,
-                        height=70,
+                        width=140, height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Minutes",
                         options=[
                             ft.dropdown.Option("5"),
@@ -748,8 +814,8 @@ class SettingContainer(ft.Container):
                     ),
 
                     ft.Dropdown(
-                        width=140,
-                        height=70,
+                        width=140, height=50,
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Type",
                         options=[
                             ft.dropdown.Option("cav"),
@@ -856,42 +922,66 @@ class SettingContainer(ft.Container):
                 ],
             )
         )
-        self.content.controls.append(ft.Divider(), )
         self.content.controls.extend([
+            ft.Divider(),
             ft.Row(
-                controls=[ft.Switch(
-                    label="Profile n°1",
-                    active_track_color="#3b8ed0",
-                    value=True if self.data[str(self.instance_index)]['schedules'][str(1)][
-                        "enabled"] else False,
-                    on_change=lambda _: self.reverse_keyword("enabled", 1)
-                ),
-                ft.ElevatedButton(text="Settings",on_click=lambda _:multiprocessing.Process(target=Flet_time_allower.start, args=(self.instance_index, "1")).start())
-            ]),
-            ft.Row(controls=[
-            ft.Switch(
-                label="Profile n°2",
-                active_track_color="#ba4543",
-                value=True if self.data[str(self.instance_index)]['schedules'][str(2)][
-                    "enabled"] else False,
-                on_change=lambda _: self.reverse_keyword("enabled", 2)
+                controls=[
+                    ft.Switch(
+                        label="Profile n°1",
+                        active_track_color="#3b8ed0",
+                        value=True if self.data[str(self.instance_index)]['schedules'][str(1)][
+                            "enabled"] else False,
+                        on_change=lambda _: self.reverse_keyword("enabled", 1)
+                    ),
+                    ft.OutlinedButton(
+                        text="Settings",
+                        icon_color="#3b8ed0",
+                        icon=ft.icons.SETTINGS,
+                        on_click=lambda _: self.page.go(f"/profile/{self.instance_index}/1/settings"),
+                        style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
             ),
-            ft.ElevatedButton(text="Settings",
-                              on_click=lambda _: multiprocessing.Process(target=Flet_time_allower.start,
-                                                                         args=(self.instance_index, "2")).start())]),
-            ft.Row(controls=[
-            ft.Switch(
-                label="Profile n°3",
-                active_track_color="#dec433",
-                value=True if self.data[str(self.instance_index)]['schedules'][str(3)][
-                    "enabled"] else False,
-                on_change=lambda _: self.reverse_keyword("enabled", 3)
+            ft.Row(
+                controls=[
+                    ft.Switch(
+                        label="Profile n°2",
+                        active_track_color="#ba4543",
+                        value=True if self.data[str(self.instance_index)]['schedules'][str(2)][
+                            "enabled"] else False,
+                        on_change=lambda _: self.reverse_keyword("enabled", 2)
+                    ),
+                    ft.OutlinedButton(
+                        text="Settings",
+                        icon_color="#ba4543",
+                        icon=ft.icons.SETTINGS,
+                        on_click=lambda _: self.page.go(f"/profile/{self.instance_index}/2/settings"),
+                        style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
             ),
-            ft.ElevatedButton(text="Settings",
-                              on_click=lambda _: multiprocessing.Process(target=Flet_time_allower.start,
-                                                                         args=(self.instance_index, "3")).start())])
+            ft.Row(
+                controls=[
+                    ft.Switch(
+                        label="Profile n°3",
+                        active_track_color="#dec433",
+                        value=True if self.data[str(self.instance_index)]['schedules'][str(3)][
+                            "enabled"] else False,
+                        on_change=lambda _: self.reverse_keyword("enabled", 3)
+                    ),
+                    ft.OutlinedButton(
+                        text="Settings",
+                        icon_color="#dec433",
+                        icon=ft.icons.SETTINGS,
+                        on_click=lambda _: self.page.go(f"/profile/{self.instance_index}/3/settings"),
+                        style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
+                    )
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+            )]
 
-        ]
         )
         self.update()
 
@@ -943,19 +1033,19 @@ class SettingContainer(ft.Container):
             ),
             ft.Switch(label="Close the game after all the tasks are done",
                       value=self.data[str(self.instance_index)]["leave_game_loop"],
-                      on_change=lambda _:self.reverse_keyword('leave_game_loop'))
+                      on_change=lambda _: self.reverse_keyword('leave_game_loop'))
         ]
         )
         self.update()
 
-
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
             index = self.profile_index
-        if keyword not in ["loop_task", "scheduler","leave_game_loop"]:
-            self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
+        if keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
+            self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not \
+                self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
         else:
-            print(keyword, self.data[str(self.instance_index)]['schedules'][str(index)][keyword])
+            print(keyword, self.data[str(self.instance_index)][keyword])
 
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)
@@ -991,9 +1081,9 @@ class SettingContainer(ft.Container):
                             icon_color=self.color_choice,
                             icon=ft.icons.SETTINGS,
                             on_click=lambda _: function()
-                        , style = ButtonStyle(shape={
-                ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-            })
+                            , style=ButtonStyle(shape={
+                                ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
+                            })
                         )
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN
@@ -1013,9 +1103,9 @@ class SettingContainer(ft.Container):
                             text="Settings",
                             icon_color=self.color_choice,
                             icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(), style = ButtonStyle(shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-                            },)
+                            on_click=lambda _: function(), style=ButtonStyle(shape={
+                                ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
+                            }, ),
                         )
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -1038,12 +1128,13 @@ class SettingContainer(ft.Container):
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         )
         )
+
     def create_slow_mode(self):
         self.content.controls.append(ft.Row
             (
             controls=[
                 ft.Switch(
-                    label="Slow mode",
+                    label="Reduce bot speed",
                     active_track_color=self.color_choice,
                     value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                         "slow_mode"] else False,
@@ -1066,6 +1157,8 @@ class SettingContainer(ft.Container):
                     value=str(self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                   "sleep_multiplicator"]) + "x",
                     on_change=lambda e: self.submit(e, "sleep_multiplicator", str),
+                    height=50,
+                    content_padding=ft.Padding(left=5, top=3, right=5, bottom=3)  # modify to your likings
                 )
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN

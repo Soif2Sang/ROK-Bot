@@ -50,6 +50,7 @@ def random_time_in_frametime(first,second):
     start = start - current
     end = end - current
     return randint(start,end)
+
 class RowTimezone(ft.Row):
     def __init__(self,instance,profile,parent,start ="00:00",end="00:00",default=True,**kwargs):
         super().__init__(**kwargs)
@@ -62,8 +63,8 @@ class RowTimezone(ft.Row):
         self.parent = parent
         self.start = start
         self.stop = end
-        self.field_start = ft.TextField(label="Start",value=start,on_submit=lambda _:self.sub(),height=50)
-        self.field_stop = ft.TextField(label="End",value=end,on_submit=lambda _:self.sub(),height=50)
+        self.field_start = ft.TextField(label="Start",value=start,on_submit=lambda _:self.sub(),height=50, width=100)
+        self.field_stop = ft.TextField(label="End",value=end,on_submit=lambda _:self.sub(),height=50, width=100)
         self.delete = ft.IconButton(
             icon=ft.icons.DELETE_FOREVER_ROUNDED,
             icon_color="pink600",
@@ -91,6 +92,7 @@ class RowTimezone(ft.Row):
             open=True
         )
         self.page.update()
+
     def sub(self):
         self.data = self.FileSingleton.get_data()
         i = self.data[self.instance]['schedules'][self.profile]["timing"].index([self.start,self.stop])
@@ -111,9 +113,12 @@ class ManagerTimezone(ft.ListView):
         self.profile = str(profile)
         self.spacing = 10
         print(self.data[self.instance]['schedules'][self.profile]["timing"])
-        self.controls.append(ft.Text(value="You can set a frametime to a profile\n"
-                                           "The only format allowed is 'hours:minutes' also, 02:00 pm -> 14:00\n"
-                                           "You may want to tune your re-do tasks timings to avoid running the profile twice during the same frametime"))
+        self.controls.append(ft.Text(value="Welcome to Profile Activation Settings!\n"
+                                           "You have the flexibility to set multiple activation frametimes for your profile.\n"
+                                           "When entering the time, please use the 'hours:minutes' format, following a 24-hour clock notation.\nFor example, 02:00 pm should be entered as 14:00, aligning with your computer's 24-hour clock time.\n"
+                                           "It's essential to adjust your re-do task timings carefully to avoid unintentionally running the profile twice at the same frametime.\n\n"
+                                           "Enjoy the power of customizing your profile activation schedule!"))
+
         self.controls.append(
             ft.Row(
                 controls=[
@@ -131,6 +136,7 @@ class ManagerTimezone(ft.ListView):
 
         )
         self.init()
+
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
             index = self.profile
@@ -143,8 +149,6 @@ class ManagerTimezone(ft.ListView):
         print(self.instance,self.profile)
 
         for tup in self.data[self.instance]['schedules'][self.profile]["timing"]:
-            print(tup)
-            print(tup)
             start = tup[0]
             stop = tup[1]
             self.controls.append(RowTimezone(self.instance,self.profile,self,start=start,end=stop,default=False))

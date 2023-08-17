@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import shutil
@@ -16,6 +17,11 @@ from PIL import Image, ImageFile
 from numpy import array, ndarray
 from psutil import pid_exists
 from pytesseract import pytesseract
+from statistics import median
+
+from utils.discord_utils import send_discord_message
+
+# import discord_bot
 
 # from paddleocr import PaddleOCR
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
@@ -127,11 +133,14 @@ class Task():
     @get_name
     def extract_text(self, img, allowlist=None):
         if allowlist is not None:
-            config = fr'--oem 1 --psm 6 -c tessedit_char_whitelist={allowlist}'
+            config = fr'--oem 3 --psm 10 -c tessedit_char_whitelist={allowlist}'
         else:
-            config = r'--oem 1 --psm 6'
+            config = r'--oem 3 --psm 10'
 
-        return pytesseract.image_to_string(img, config=config).replace("\n", "")
+        # enhanced_image = self.modify_image(image)
+        # return pytesseract.image_to_string(img, config=config).replace("\n", "")
+
+        return pytesseract.image_to_string(self.modify_image(img), config=config).replace("\n", "")
 
         # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
         # result = ocr.ocr(img, cls=False)
@@ -182,9 +191,9 @@ class Task():
 
     @get_name
     def send_discord_message(self, message):
-        return
-        # if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
-        #     return discord_bot.send_message(self.data["discord"]["user_id"], f"[{current_time()}] {message}")
+        if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
+            # loop = asyncio.get_event_loop()
+            asyncio.run(send_discord_message(f"[ {self.name} ]" + message))
 
     @get_name
     def click(self, x, y):
@@ -246,7 +255,7 @@ class Task():
             return enhanced_text[0] < enhanced_text[1]
 
     @get_name
-    def random_macro(self) -> None:
+    def random_macro(self) -> bool:
         try:
             path_json = self.FileSingleton.get_path()
             for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg",
@@ -278,16 +287,19 @@ class Task():
             with open(path2, 'w', encoding="UTF-8") as outfile:
                 json.dump(macro_json, outfile, ensure_ascii=False)
             shutil.copy(path2, path)
-
+            return True
         except Exception as e:
+            self.tile.page.generate_toast("Warning", "Macro is not installed or applied! Watch the tutorial again.",)
+
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ", "red")
             print(
                 f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
             self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial")
+                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial", "red")
             for _ in range(5):
-                self.print("/!\ FIX IT !! /!\ ")
+                self.print("/!\ FIX IT !! /!\ ", "red")
+            return False
 
     @get_name
     def zoom_out_city(self) -> None:
@@ -726,13 +738,15 @@ class Task():
         """
         if cv_image is None:
             cv_image = self.adb.get_cv2_img()
-        co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
+        co = self.find_img(source=cv_image, target="network_disconnected", confidence=0.85)
 
         if co is not None:
 
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_reconnect', False):
-                print("[ {current_time()} ] [ {self.name} ] You just got disconnected")
+                print(f"[ {current_time()} ] [ {self.name} ] You just got disconnected")
                 print(co)
+                co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
+
                 if cropped:
                     a = (480 + co[0] + uniform(0, 100), 420 + co[1] + uniform(0, 20))
                     print(a)
@@ -784,14 +798,14 @@ class Task():
                 self.better_sleep((2, 4))
 
     @get_name
-    def leave_kd_buff(self, Source=None):
+    def leave_kd_buff(self, source=None):
 
-        co = self.find_img(target="kingdom_buff", source=Source)
+        co = self.find_img(target="kingdom_buff", source=source)
         if co is not None:
             self.click(uniform(70, 270), uniform(100, 542))
             self.better_sleep((1.8, 3))
-            Source = self.adb.get_cv2_img()
-        return Source
+            source = self.adb.get_cv2_img()
+        return source
 
     def pil_to_array(self, image):
         try:
@@ -1034,11 +1048,38 @@ class Task():
 
     def get_text(self):
         return self.tile.get_text()
-    
+
+    def modify_image(self,re_open):
+        img = cv2.resize(re_open, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+
+        if len(img.shape) == 2:
+            img = cv2.merge([img, img, img])
+
+        # Convert the image to grayscale
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # Apply a threshold to the image to make the text more visible
+        thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+        # Perform some morphological operations to remove noise and smooth the image
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=1)
+        dilate = cv2.dilate(opening, kernel, iterations=1)
+        return dilate
+
+    def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
+                              down=85):
+        """Gets the neighboring points around a center point on the grid."""
+        x, y = center_point[0], center_point[1]
+        min_x = max(0, x - left)
+        max_x = min(grid_width - 1, x + right)
+        min_y = max(0, y - up)
+        max_y = min(grid_height - 1, y + down)
+
+        return image[min_y:max_y, min_x:max_x]
 
     @get_name
     def recenter(self, deadstop = 0):
         image = self.adb.get_cv2_img()
+
         if (co := self.find_img(source=image, target="green_home_button")):
             # reader = Reader()
             if deadstop == 10:
@@ -1055,18 +1096,33 @@ class Task():
             second_try = image[-30:, :]
 
             word = ''
+            #
+            # stop = 5
+            # distances = []
+            # for i in range(stop):
+            #     word = self.extract_text(first_try, allowlist="0123456789KM")
+            #     if re.match(r'\d+KM', word) and word.split("KM")[0].isnumeric():
+            #         distances.append(int(word.split("KM")[0]))
+            #
+            #     word = self.extract_text(second_try, allowlist="0123456789KM")
+            #     if re.match(r'\d+KM', word) and word.split("KM")[0].isnumeric():
+            #         distances.append(int(word.split("KM")[0]))
 
             first = self.extract_text(first_try, allowlist="0123456789KM")
             second = self.extract_text(second_try, allowlist="0123456789KM")
-
+            # print(f"{first = } {second = }")
+            # return
             if re.match(r'\d+KM', second):
                 word = second
             if re.match(r'\d+KM', first):
                 word = first
             if re.match(r'\d+KM', word):
+            # print(distances)
+            # if distances:
                 if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
                         self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
-                    print(word)
+                # if median(distances) > int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
+                #     print(word)
                     if co[0] < 500 and co[1] < 220:
                         self.swipe(330, 160, 760, 530)
                     elif co[0] < 500 and co[1] > 550:

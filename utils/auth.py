@@ -121,17 +121,17 @@ class selfApi:
         json = jsond.loads(response)
         wid1 = self.getvar("HWID1")
         wid2 = self.getvar("HWID2")
-        print(wid2,wid1)
+
         if wid1 == "None":
             self.setvar("HWID1",hwid)
             wid1 = hwid
-        if wid2 == "None" and wid1!=hwid:
+        if wid2 == "None" and (wid1 != hwid):
             self.setvar("HWID2", hwid)
             wid2 = hwid
 
-        if wid1 != hwid and wid2 !=hwid:
+        if (wid1 != hwid) and (wid2 !=hwid):
             if self.page is not None:
-                self.pop_banner("Hardware id doesn't match, contact the admin")
+                self.page.open_banner("Hardware id doesn't match, contact the admin")
             print("Hardware id doesn't match")
             return False
 
@@ -140,23 +140,9 @@ class selfApi:
             return True
         else:
             if self.page is not None:
-                self.pop_banner(json["message"])
-            print(json["message"])
+                self.page.open_banner("Invalid credentials")
+            print("Invalid credentials")
             return False
-
-    def pop_banner(self, text):
-        self.page.banner = ft.Banner(
-            bgcolor=ft.colors.AMBER_100,
-            leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
-            content=ft.Text(
-                value=text
-            ),
-            actions=[
-                ft.TextButton("Ok", on_click=self.page.close_banner),
-            ],
-            open=True
-        )
-        self.page.update()
 
     def var(self, name):
         self.checkinit()
@@ -204,7 +190,6 @@ class selfApi:
         if json["success"]:
             return json["response"]
         else:
-            print(json["message"])
             return "None"
 
     def setvar(self, var_name, var_data):

@@ -162,7 +162,8 @@ class GatherRssZoom(GatherRss):
     def run(self, node_type=None):
         self.node_type = node_type
         self.run_game()
-        self.random_macro()
+        if not self.random_macro():
+            return
         self.check_captcha()
         self.check_reconnect()
         self.check_log_back()
