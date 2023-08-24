@@ -274,7 +274,7 @@ class SettingContainer(ft.Container):
                 ]
             ),
             ft.Switch(
-                label="Spiral path method, should decrease march speed.",
+                label="Spiral path method, \nonly if you gather near your city.",
                 active_track_color=self.color_choice,
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_spiral_method"] else False,
@@ -508,7 +508,7 @@ class SettingContainer(ft.Container):
         )
         self.content.controls.append(
             ft.Switch(
-                label="Use zoom out method (the bot won't read levels)",
+                label="Use zoom out method\n(the bot won't read node levels but is safer)",
                 active_track_color=self.color_choice,
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_rss_method"] else False,
