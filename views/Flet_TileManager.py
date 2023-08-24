@@ -39,28 +39,29 @@ class TileManager(ft.ListView):
         # self.update()
 
     def delete_tile(self, number: str):
-        index = self.controls.index(self.tiles[number])
-        self.controls.pop(index)
-        del self.tiles[number]
+        # index = self.controls.index(self.tiles[number])
+        self.controls.remove(self.tiles[number])
+        self.tiles.pop(number)
         self.update()
 
     def unselect_all(self):
         for tile in self.controls[1:]:
             tile.button_select.selected = False
-            tile.button_select.update()
+        self.update()
 
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
 
     def process_is_alive(self):
         while 1:
-            for tile in self.tiles.values():
-                if not tile.tasks_process.is_alive() and ((self.page is not None) and (self.page.route == '/')):
-                    tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-                    tile.button_stop.disabled = True
-                    tile.button_start.update()
-                    tile.button_stop.update()
-                    tile.set_text("")
+            if (self.page is not None) and (self.page.route == '/'):
+                for tile in self.tiles.values():
+                    if not tile.tasks_process.is_alive():
+                        tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+                        tile.button_stop.disabled = True
+                        tile.button_start.update()
+                        tile.button_stop.update()
+                        tile.set_text("")
             sleep(0.1)
 
     def update_tiles(self):

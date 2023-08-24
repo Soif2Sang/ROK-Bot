@@ -97,8 +97,7 @@ class Tile(ft.Row):
     def start_tasks(self):
         # print(f"{self.tasks_process.is_alive() = }")
         if not self.tasks_process.is_alive():
-            self.tasks_process = threading.Thread(target=self.runner.run)
-            self.tasks_process.daemon = True
+            self.tasks_process = threading.Thread(target=self.runner.run, daemon=True)
             self.tasks_process.start()
             # asyncio.create_task(run(self.runner.run))
             # is_alive = threading.Thread(target=self.process_is_alive)
@@ -106,6 +105,7 @@ class Tile(ft.Row):
             # is_alive.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
+            self.page.generate_toast('Warning', "Task is frozen, you may need to restart the bot.")
             print("Task is frozen, you may need to restart the bot.")
 
     def stop(self):
@@ -115,8 +115,7 @@ class Tile(ft.Row):
         self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
         self.button_stop.disabled = True
 
-        self.tasks_process = threading.Thread(target=self.runner.run)
-        self.tasks_process.daemon = True
+        self.tasks_process = threading.Thread(target=self.runner.run,daemon=True)
         self.button_start.update()
         self.button_stop.update()
         self.set_text("")

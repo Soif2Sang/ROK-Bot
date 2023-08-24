@@ -116,7 +116,7 @@ class ManagerTimezone(ft.ListView):
         self.controls.append(ft.Text(value="Welcome to Profile Activation Settings!\n"
                                            "You have the flexibility to set multiple activation frametimes for your profile.\n"
                                            "When entering the time, please use the 'hours:minutes' format, following a 24-hour clock notation.\nFor example, 02:00 pm should be entered as 14:00, aligning with your computer's 24-hour clock time.\n"
-                                           "It's essential to adjust your re-do task timings carefully to avoid unintentionally running the profile twice at the same frametime.\n\n"
+                                           "It's essential to adjust your re-do task timings carefully to avoid unintentionally running the profile twice during the same frametime.\n\n"
                                            "Enjoy the power of customizing your profile activation schedule!"))
 
         self.controls.append(
