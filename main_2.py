@@ -46,6 +46,7 @@ def update_user_info(password, username):
     data = fileSingleton.get_data()
     data["user"] = {'username': username, 'password': password}
     fileSingleton.write_data(data)
+
 def getchecksum():
     md5_hash = hashlib.md5()
     try:
@@ -79,7 +80,7 @@ class LoginUI(ft.View):
 
     def init(self):
         self.textfield_username = ft.TextField(label="Username", width=300, value=self.data.get("user",{}).get("username",""))
-        self.textfield_password = ft.TextField(label="Password", password=True, can_reveal_password=True, width=300,value=self.data.get("user",{}).get("password",""))
+        self.textfield_password = ft.TextField(label="Password", password=True, can_reveal_password=True, width=300, value=self.data.get("user",{}).get("password",""))
         self.button_login = ft.OutlinedButton(text="Login", on_click=self.page.login, width=100)
 
         return self.controls.extend([self.textfield_username, self.textfield_password, self.button_login])
@@ -92,7 +93,7 @@ def main(page: ft.Page):
     path_file = page.FileSingleton.get_path()
 
     cmd = f"{path_file['HD-Player'].replace('Player', 'Adb')} start-server"
-    subprocess.run(cmd)
+    subprocess.Popen(cmd)
 
     if not os.path.exists(path_file['bluestacks']) or not os.path.exists(path_file['HD-Player']):
         progress_bar = ft.ProgressBar(visible=True)
@@ -158,7 +159,7 @@ def main(page: ft.Page):
             if username == '' or password == '':
                 return
             if not is_str_valid(username, password):
-                page.pop_banner("Illegal characters..")
+                page.open_banner("Illegal characters..")
             if page.keyauthapp.login(user=username, password=password, page=page):
                 update_user_info(password, username)
                 date_brut = \
@@ -237,14 +238,7 @@ def main(page: ft.Page):
             width=360,
             set_history=toasts_history,
             position=Position.TOP_RIGHT,
-            # actions=[
-            #     ToastAction(
-            #         text="action",
-            #         action_style="texted",
-            #         on_click=lambda e: print(toasts_history),
-            #     )
-            # ]
-            bgcolor_title="orange"
+            bgcolor_title="AMBER"
         )
 
     page.generate_toast = lambda title, description, icon=ft.icons.INFO: generate_toast(title, description, icon)
