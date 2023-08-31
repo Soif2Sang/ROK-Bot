@@ -1,15 +1,12 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from flet_route import path
 
 from utils.Task_utils import FileSingleton
-from views.Flet_city_layout import CityPlacement
 from views.Flet_col_transfer import FletColumnRss
 from views.Flet_row_material import FletRowMaterial
 from views.Flet_row_presets import FletRowPresets
 from views.Flet_row_rss import FletRowRss
 from views.Flet_row_troops import FletRowTraining
-from views.Flet_time_allower import ManagerTimezone
 
 color_bank = {
     1: "#3b8ed0",
@@ -17,101 +14,17 @@ color_bank = {
     3: "#dec433"
 }
 
-
 class SettingContainer(ft.Container):
     def __init__(self, page, tab, instance_index: int, profile_index: int):
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         self.tabs = tab
-        self.page = page
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.color_choice = color_bank[self.profile_index]
         self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300, spacing=3)
         self.init()
-
-        self.page.app_routes.append(
-            path(url=f"/citylayout/{self.instance_index}/{self.profile_index}", clear=True, view=self.cityLayout))
-
-        self.page.app_routes.append(path(url=f"/profile/{self.instance_index}/1/settings", clear=True,
-                                         view=lambda page, params, basket: self.profileSetting(page, params, basket,
-                                                                                               self.instance_index, 1)))
-        self.page.app_routes.append(path(url=f"/profile/{self.instance_index}/2/settings", clear=True,
-                                         view=lambda page, params, basket: self.profileSetting(page, params, basket,
-                                                                                               self.instance_index, 2)))
-        self.page.app_routes.append(path(url=f"/profile/{self.instance_index}/3/settings", clear=True,
-                                         view=lambda page, params, basket: self.profileSetting(page, params, basket,
-                                                                                               self.instance_index, 3)))
-    def cityLayout(self, page, params, basket):
-        self.page.window_width = 900
-        self.page.window_height = 500
-        self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
-
-        return ft.View(
-            f"/citylayout/{self.instance_index}/{self.profile_index}",
-            controls=[
-                ft.Container(bgcolor="#ecf0f1",
-                             content=ft.Row(controls=[
-                                 ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
-                                 ft.Text(value="Go back")
-                             ]
-                             )
-                             ),
-                ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
-                CityPlacement(self.instance_index, self.profile_index)
-            ]
-        )
-
-    def profileSetting(self, page, params, basket, instance_index, profile_index):
-        self.page.window_width = 900
-        self.page.window_height = 500
-
-        return ft.View(
-            f"/profile/{instance_index}/{profile_index}/settings",
-            controls=[
-                ft.Container(bgcolor="#ecf0f1",
-                             content=ft.Row(controls=[
-                                 ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
-                                 ft.Text(value="Go back")
-                             ]
-                             )
-                             ),
-                # ft.Column(
-                #     controls=[
-                #         ft.Row(controls=[
-                #             ft.Text("Time to wait after this profile is done (minutes)")
-                #         ]),
-                #         ft.Row(controls=[
-                #         ft.TextField(label="Minimum",
-                #                      value=
-                #                      self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                #                          "gather_gem_duration1"],
-                #                      width=80,
-                #                      content_padding=ft.padding.all(10),
-                #                      on_change=lambda e: self.submit(e, "gather_gem_duration1", int)
-                #                      ),
-                #         ft.Text("~"),
-                #         ft.TextField(label="Maximum",
-                #                      value=
-                #                      self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                #                          "gather_gem_duration2"],
-                #                      width=90,
-                #                      content_padding=ft.padding.all(10),
-                #                      on_change=lambda e: self.submit(e, "gather_gem_duration2", int)),
-                #         ]
-                #         )
-                #     ]
-                # ),
-                # ft.Divider(),
-                ManagerTimezone(instance_index, profile_index)
-            ]
-        )
-
-    def returnHome(self):
-        self.page.window_width = 400
-        self.page.window_height = 700
-        self.page.go("/")
 
     def init(self):
         self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
@@ -154,11 +67,7 @@ class SettingContainer(ft.Container):
     def reset(self):
         self.content.clean()
         self.init()
-        self.page.update()
-
-    def show_cords_page(self):
-        self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
-        self.page.go(f"/citylayout/{self.instance_index}/{self.profile_index}")
+        self.update()
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
@@ -170,7 +79,8 @@ class SettingContainer(ft.Container):
             if e.control.value == '':
                 self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(0)
             else:
-                self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(e.control.value)
+                self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(
+                    e.control.value)
         else:
             self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(
                 e.control.value.replace("x", "").replace("level ", ""))
@@ -319,8 +229,7 @@ class SettingContainer(ft.Container):
         ]
 
         )
-        # print(self.page)
-        self.page.update()
+        self.update()
 
     def page_marauders(self):
         self.data = self.FileSingleton.get_data()
@@ -422,8 +331,7 @@ class SettingContainer(ft.Container):
         ]
 
         )
-        # print(self.page)
-        self.page.update()
+        self.update()
 
     def submit_marauders(self, e, index):
         self.data = self.FileSingleton.get_data()
@@ -451,7 +359,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Divider(),
         )
-        # self.show_cords_page()
+
         keys = [
             "infantry",
             "cavalry",
@@ -461,11 +369,11 @@ class SettingContainer(ft.Container):
         for key in keys:
             self.content.controls.append(
                 FletRowTraining(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
-            # self.content.controls.append(ft.Divider())
-        # self.content.controls.append(ft.Divider())
+
         self.content.controls.append(
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Training camps position",
-                              on_click=lambda _: self.show_cords_page()))
+                              on_click=lambda _: self.page.go(
+                                  f"/citylayout/{self.instance_index}/{self.profile_index}")))
         self.update()
 
     def page_rss(self):
@@ -555,7 +463,8 @@ class SettingContainer(ft.Container):
             ),
             ft.Divider(),
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Scout camp position",
-                              on_click=lambda _: self.show_cords_page()),
+                              on_click=lambda _: self.page.go(
+                                  f"/citylayout/{self.instance_index}/{self.profile_index}")),
 
         ]
         )
@@ -584,7 +493,8 @@ class SettingContainer(ft.Container):
                          ),
             ft.Divider(),
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Hospital position",
-                              on_click=lambda _: self.show_cords_page()),
+                              on_click=lambda _: self.page.go(
+                                  f"/citylayout/{self.instance_index}/{self.profile_index}")),
 
         ]
         )
@@ -644,7 +554,8 @@ class SettingContainer(ft.Container):
         )
         self.content.controls.append(ft.Divider())
         self.content.controls.append(ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set City Position",
-                                                       on_click=lambda _: self.show_cords_page()))
+                                                       on_click=lambda _: self.page.go(
+                                                           f"/citylayout/{self.instance_index}/{self.profile_index}")))
         self.update()
 
     def page_barbs(self):
@@ -858,7 +769,7 @@ class SettingContainer(ft.Container):
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character")
             )
         )
-        self.page.update()
+        self.update()
 
     def page_logback(self):
         self.data = self.FileSingleton.get_data()
