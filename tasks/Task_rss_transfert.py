@@ -1,4 +1,4 @@
-from random import uniform
+from random import uniform, shuffle
 from time import sleep
 
 import cv2
@@ -66,13 +66,13 @@ class RssTransfer(Task):
 
         city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
         self.click(city[0] + uniform(-10, 10), city[1] + uniform(-10, 10))
-        self.better_sleep((1, 2))
+        self.better_sleep((1, 1))
         co = self.find_img(target="assist_button")
         if co is None:
             self.close_windows()
             return self.setup_ui(deadstop=deadstop + 1)
         self.click(co[0] + uniform(0, 40), co[1] + uniform(0, 20))
-        self.better_sleep((1, 2))
+        self.better_sleep((1, 1))
 
     @get_name
     def solve(self, path, sel, defaultApiKey=False):
@@ -94,13 +94,14 @@ class RssTransfer(Task):
         start = (uniform(589, 597), types[type])
         end = (uniform(1045, 1100), types[type] + uniform(-10, 10))
         self.swipe(start[0], start[1], end[0], end[1])
-        self.better_sleep((0.7, 1.4))
+        # self.better_sleep((0.7, 1.4))
         self.click(uniform(700, 850), uniform(570, 600))
-        self.better_sleep((0.7, 1.4))
+        # self.better_sleep((0.7, 1.4))
 
     @get_class
     def run(self, type=None, quantity=None):
         if self.data[self.sel]['API_KEY'] == "":
+            self.generate_toast("Warning", "This feature require a custom ApiKey.", )
             return self.print("This feature require a custom ApiKey")
         self.check_captcha()
 
@@ -109,6 +110,7 @@ class RssTransfer(Task):
         transportation_capacity = self.get_capacity()
 
         print(f"{transportation_capacity = }")
+        to_send = []
         for type in ["food", "wood", "stone", "gold"]:
 
             rss_sent = 0
@@ -119,11 +121,16 @@ class RssTransfer(Task):
                 loop += 1
             print(f"{transfert_wanted = }")
             for i in range(loop):
-                rss_sent += transportation_capacity
-                self.send_rss(type)
-                print(f"{type} amount sent : {rss_sent}")
-                self.better_sleep((1, 2))
-                self.check_captcha(chest=True)
-                self.setup_ui()
+                to_send.append(type)
+
+        shuffle(to_send)
+        for type in to_send:
+            rss_sent += transportation_capacity
+            self.send_rss(type)
+            print(f"{type} amount sent : {rss_sent}")
+            # self.better_sleep((0.5,0.5))
+
+            self.check_captcha(chest=False)
+            self.setup_ui()
 
         self.close_windows()
