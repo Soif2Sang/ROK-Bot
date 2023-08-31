@@ -18,7 +18,7 @@ from numpy import array, ndarray
 from psutil import pid_exists
 from pytesseract import pytesseract
 from statistics import median
-
+import flet as ft
 from utils.discord_utils import send_discord_message
 
 # import discord_bot
@@ -137,10 +137,10 @@ class Task():
         else:
             config = r'--oem 3 --psm 10'
 
-        # enhanced_image = self.modify_image(image)
+        enhanced_image = self.modify_image(img)
         # return pytesseract.image_to_string(img, config=config).replace("\n", "")
 
-        return pytesseract.image_to_string(self.modify_image(img), config=config).replace("\n", "")
+        return pytesseract.image_to_string(self.modify_image(enhanced_image), config=config).replace("\n", "")
 
         # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
         # result = ocr.ocr(img, cls=False)
@@ -289,7 +289,7 @@ class Task():
             shutil.copy(path2, path)
             return True
         except Exception as e:
-            self.tile.page.generate_toast("Warning", "Macro is not installed or applied! Watch the tutorial again.",)
+            self.generate_toast('Error', 'You did not import the config file, watch #tutorial to import it.')
 
             for _ in range(5):
                 self.print("/!\ FIX IT !! /!\ ", "red")
@@ -300,6 +300,9 @@ class Task():
             for _ in range(5):
                 self.print("/!\ FIX IT !! /!\ ", "red")
             return False
+
+    def generate_toast(self, title, description, icon=ft.icons.INFO):
+        self.tile.page.generate_toast(title, description, icon=ft.icons.INFO)
 
     @get_name
     def zoom_out_city(self) -> None:
@@ -395,7 +398,9 @@ class Task():
 
         x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
         x2 = x1 - uniform(710, 710)
-        self.swipe(x1, y1, x2, y2)
+
+
+        self.swipe(980 + randint(-5,5), 360 + randint(-5,5), 300 + randint(-5,5), 360 + randint(-5,5))
 
     def swipe_left(self) -> None:
         """
@@ -403,7 +408,7 @@ class Task():
         """
         x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
         x2 = x1 - uniform(710, 710)
-        self.swipe(x2, y2, x1, y1)
+        self.swipe(300 + randint(-5,5), 360 + randint(-5,5), 980 + randint(-5,5), 360 + randint(-5,5))
 
     def swipe_up(self) -> None:
         """
@@ -412,7 +417,7 @@ class Task():
         x1, y1 = uniform(600, 680), uniform(540, 560)
         x2 = x1 + uniform(0, 30)
         y2 = y1 - uniform(390, 397)
-        self.swipe(x2, y2, x1, y1)
+        self.swipe(640 + randint(-5,5), 150 + randint(-5,5), 640 + randint(-5,5), 570 + randint(-5,5))
 
     def swipe_down(self) -> None:
         """
@@ -421,7 +426,7 @@ class Task():
         x1, y1 = uniform(600, 680), uniform(540, 560)
         x2 = x1 + uniform(0, 30)
         y2 = y1 - uniform(390, 397)
-        self.swipe(x1, y1, x2, y2)
+        self.swipe(640 + randint(-5,5), 570 + randint(-5,5), 640 + randint(-5,5), 150 + randint(-5,5))
 
     def swipe_right_low(self) -> None:
         """
@@ -1078,6 +1083,7 @@ class Task():
 
     @get_name
     def recenter(self, deadstop = 0):
+        print("recenter")
         image = self.adb.get_cv2_img()
 
         if (co := self.find_img(source=image, target="green_home_button")):
@@ -1096,17 +1102,6 @@ class Task():
             second_try = image[-30:, :]
 
             word = ''
-            #
-            # stop = 5
-            # distances = []
-            # for i in range(stop):
-            #     word = self.extract_text(first_try, allowlist="0123456789KM")
-            #     if re.match(r'\d+KM', word) and word.split("KM")[0].isnumeric():
-            #         distances.append(int(word.split("KM")[0]))
-            #
-            #     word = self.extract_text(second_try, allowlist="0123456789KM")
-            #     if re.match(r'\d+KM', word) and word.split("KM")[0].isnumeric():
-            #         distances.append(int(word.split("KM")[0]))
 
             first = self.extract_text(first_try, allowlist="0123456789KM")
             second = self.extract_text(second_try, allowlist="0123456789KM")
@@ -1117,30 +1112,71 @@ class Task():
             if re.match(r'\d+KM', first):
                 word = first
             if re.match(r'\d+KM', word):
+                print(word)
             # print(distances)
             # if distances:
                 if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
                         self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
-                # if median(distances) > int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
-                #     print(word)
                     if co[0] < 500 and co[1] < 220:
-                        self.swipe(330, 160, 760, 530)
+                        self.swipe(co[0] + 90, co[1] + 90, 640, 360)
+                        # self.swipe(330, 160, 760, 530)
                     elif co[0] < 500 and co[1] > 550:
-                        self.swipe(330, 530, 760, 160)
+                        # self.swipe(330, 530, 760, 160)
+                        self.swipe(co[0] + 90, co[1] - 60, 640, 360)
+
                     elif co[0] > 800 and co[1] > 550:
-                        self.swipe(980, 530, 330, 160)
+                        # self.swipe(980, 530, 330, 160)
+                        self.swipe(co[0] - 60, co[1] - 60, 640, 360)
+
                     elif co[0] > 800 and co[1] < 220:
-                        self.swipe(760, 160, 330, 530)
+                        # self.swipe(760, 160, 330, 530)
+                        self.swipe(co[0] - 60, co[1] + 90, 640, 360)
                     elif co[0] <= 500:
-                        self.swipe_left()
+                        # self.swipe_left()
+                        self.swipe(co[0] + 90, co[1], 640, 360)
                     elif co[0] >= 800:
-                        self.swipe_right()
+                        # self.swipe_right()
+                        self.swipe(co[0] - 60, co[1], 640, 360)
                     elif co[1] >= 360:
-                        self.swipe_down()
+                        # self.swipe_down()
+                        self.swipe(co[0], co[1] - 60, 640, 360)
                     else:
-                        self.swipe_up()
+                        # self.swipe_up()
+                        self.swipe(co[0], co[1] + 90, 640, 360)
+
                     self.better_sleep((1, 2))
-                    return self.recenter(deadstop = deadstop +1)
+                    return self.recenter(deadstop=deadstop + 1)
+
+    @get_name
+    def go_back_to_city(self, deadstop = 0):
+        image = self.adb.get_cv2_img()
+
+        if (co := self.find_img(source=image, target="green_home_button")):
+            self.click(co[0], co[1])
+            self.better_sleep((2, 3))
+
+            return
+
+            if co[0] < 500 and co[1] < 220:
+                self.swipe(330, 160, 760, 530)
+            elif co[0] < 500 and co[1] > 550:
+                self.swipe(330, 530, 760, 160)
+            elif co[0] > 800 and co[1] > 550:
+                self.swipe(980, 530, 330, 160)
+            elif co[0] > 800 and co[1] < 220:
+                self.swipe(760, 160, 330, 530)
+            elif co[0] <= 500:
+                self.swipe_left()
+            elif co[0] >= 800:
+                self.swipe_right()
+            elif co[1] >= 360:
+                self.swipe_down()
+            else:
+                self.swipe_up()
+
+            self.better_sleep((1, 2))
+
+            return self.go_back_to_city(deadstop = deadstop +1)
 
     @get_name
     def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
