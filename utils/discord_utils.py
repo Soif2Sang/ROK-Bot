@@ -3,12 +3,13 @@ import asyncio
 from utils.Task_utils import FileSingleton
 
 token = 'MTEwMDM2MTgyNTQ0MDIzOTY3Ng.Gvz3U-.cjhCXxzLs4kNjlqnaZiwJm55-yHRUjKW6oxMks'
-user_id = 1018570484977238026
 
 async def send_discord_message(message):
     file_Manager = FileSingleton()
     data = file_Manager.get_data()
-
+    user_id = data['discord']['user_id']
+    if not user_id:
+        return
     intents = discord.Intents.default()
     intents.messages = True  # Enable the messages intent
 
