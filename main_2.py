@@ -9,6 +9,8 @@ from time import sleep
 from flet_route import path, Routing
 import flet as ft
 
+from views.view_city_layout import viewCityLayout
+from views.view_profile_settings import viewProfileSettings
 from views.Flet_main_interface import Main
 from views.Flet_Path import find_file_in_all_drives
 from utils.Task_utils import FileSingleton
@@ -38,6 +40,7 @@ except:
     pass
 
 data = fileSingleton.get_data()
+
 if "discord" not in data:
     data["discord"] = {"user_id":0, "enabled":False}
     fileSingleton.write_data(data)
@@ -87,6 +90,10 @@ class LoginUI(ft.View):
 
 
 def main(page: ft.Page):
+
+
+    # return Main(page, 500)
+
     page.window_width = 330
     page.window_height = 330
     page.FileSingleton = FileSingleton()
@@ -121,7 +128,8 @@ def main(page: ft.Page):
                 hash_to_check=getchecksum()
             )
             ready = True
-        except :
+        except Exception as e:
+            print(e)
             page.keyauthapp = None
             print("Problem in the database loading..Wait a bit please..")
             sleep(5)
@@ -148,6 +156,11 @@ def main(page: ft.Page):
         page.update()
 
     def login(e):
+        # page.update()
+        # page.go('/')
+        # page.window_width = 400
+        # page.window_height = 700
+        # return Main(page, 120)
         try:
             page.splash = ft.ProgressBar()
             page.loginUI.button_login.disabled = True
@@ -253,7 +266,15 @@ def main(page: ft.Page):
             url="/",
             clear=True,
             view=index
-            )
+        ),
+        path(url=f"/citylayout/:instance_index/:profile_index",
+             clear=True,
+             view=viewCityLayout
+        ),
+        path(url=f"/profile/:instance_index/:profile_index/settings",
+             clear=True,
+             view=viewProfileSettings
+        )
     ]
 
     page.routing = Routing(
