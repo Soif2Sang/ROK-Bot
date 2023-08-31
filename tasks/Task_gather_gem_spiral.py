@@ -23,8 +23,11 @@ class GatherGemSpiral(GatherGem):
         return "GatherGem"
 
     def recenter(self, deadstop = 0):
+        return super().recenter(deadstop)
+
+    def go_back_to_city(self, deadstop = 0):
         if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
-            return super().recenter(deadstop)
+            return super().go_back_to_city(deadstop)
 
     @get_name
     def go_city(self, x, y, last=None) -> int:
@@ -71,8 +74,7 @@ class GatherGemSpiral(GatherGem):
                 self.adb.shell(string)
                 self.better_sleep((0.3, 0.5))
         self.better_sleep((0.3, 0.5))
-        for _ in range(2):
-            self.click(uniform(860, 900), uniform(123, 158))
+        self.click(uniform(860, 900), uniform(123, 158))
         self.better_sleep((1, 2))
 
 
@@ -113,8 +115,8 @@ class GatherGemSpiral(GatherGem):
             )
 
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
-        self.go_city(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
-                     self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
+
+        self.go_back_to_city()
 
         max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 4)
 
@@ -148,5 +150,4 @@ class GatherGemSpiral(GatherGem):
                 current += 1
                 current_swipe = swipes[current_swipe]
 
-            self.go_city(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
-                         self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
+            self.go_back_to_city()
