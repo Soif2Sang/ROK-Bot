@@ -6,6 +6,8 @@ from time import time, sleep
 
 import win32gui
 import flet as ft
+from PIL import Image
+
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
@@ -29,10 +31,11 @@ from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
-from utils.Task_utils import get_name, current_time, get_window_pid
+from utils.Task_utils import get_name, current_time, get_window_pid, get_dic_instances
 from utils.bot_adb import Adb
 from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
 
+import pretty_errors
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
@@ -134,8 +137,7 @@ class TaskRunner(Task):
                 self.better_sleep((1, 2))
             except Exception as e:
                 self.send_discord_message(f"Something wrong happened when running {func.task_name()}")
-                self.tile.page.generate_toast("Warning",
-                                              f"Something wrong happened when running {func.task_name()}", )
+                self.generate_toast("Warning", f"Something wrong happened when running {func.task_name()}", )
 
                 self.print(f"Exception during {func.task_name()}", "red")
                 exception = traceback.format_exc()
@@ -237,20 +239,24 @@ class TaskRunner(Task):
     @get_name
     def enter_characters(self):
         self.click(uniform(312, 374), uniform(333, 400))
-        self.better_sleep((4, 6))
 
     @get_name
-    def get_first_character(self) -> tuple[float, float]:
+    def get_first_character(self, fail = 0) -> tuple[float, float]:
         self.print("Switching Character")
         self.set_status(f"Switching Character")
         self.enter_profile()
         self.better_sleep((1.925, 2.795))
         self.enter_setting()
         self.better_sleep((1.925, 2.795))
+        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344,326))
         self.enter_characters()
-        self.better_sleep((4, 5.795))
+        stop = 0
+        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color and stop != 6:
+            self.better_sleep((1, 2))
+            stop += 1
+        self.better_sleep((1.925, 2.795))
         trigger_stop = 0
-        while self.find_img(target="logged_icon") is None:
+        while self.find_img(target="logged_icon", confidence=0.7) is None:
             self.check_captcha()
             print(
                 f'[ {current_time()} ] [ {self.name} ] while get_first_character')
@@ -259,15 +265,17 @@ class TaskRunner(Task):
             self.swipe(x, y, x2, y2)
             self.better_sleep((1.925, 2.795))
             trigger_stop += 1
-            if trigger_stop > 4:
+            if trigger_stop == 4:
+                return self.get_first_character(fail+1)
+            if fail > 2:
                 self.print("Error in character switch. Bot is now stopped")
                 self.set_status("Error.")
                 self.send_discord_message("Error in character switch, human interaction required.")
                 while True:
                     self.script_pause()
                     sleep(0.1)
-        x, y = self.find_img(target="logged_icon")
-        co = self.find_img(target="logged_icon")
+        x, y = self.find_img(target="logged_icon", confidence=0.7)
+        co = self.find_img(target="logged_icon", confidence=0.7)
         self.print("Current character detected.")
         if x < 1280 // 2:
             x2 = x + uniform(480, 780)
@@ -279,7 +287,7 @@ class TaskRunner(Task):
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
             self.better_sleep((2.425, 2.795))
-            x, y = self.find_img(target="logged_icon")
+            x, y = self.find_img(target="logged_icon", confidence=0.7)
             self.better_sleep((2.025, 2.795))
             x2 = x - uniform(100, 320)
             y2 = y + uniform(80, 100)
@@ -320,7 +328,7 @@ class TaskRunner(Task):
     @get_name
     def findNextChar(self):
         screen = self.adb.get_cv2_img()
-        logged_icon = self.find_img(source=screen, target="logged_icon")
+        logged_icon = self.find_img(source=screen, target="logged_icon", confidence=0.7)
         stars_all = self.adb.find_multiple_img(target="star")
         stars_bellow = []
         for star in stars_all:
@@ -348,33 +356,40 @@ class TaskRunner(Task):
             self.click(final[0] + uniform(-100, -50), final[1] + uniform(-5, 5))
 
     @get_name
-    def change_character_param(self, co_first, nb_chars=0, trigger_stop=False):
+    def change_character_param(self, co_first, nb_chars=0, fail=0):
         self.print("Switching Character")
         self.set_status(f"Switching Character")
-        deadstop = 0
         self.enter_profile()
+        self.better_sleep((1.925, 2.795))
         self.enter_setting()
+        self.better_sleep((1.925, 2.795))
+        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344,326))
         self.enter_characters()
-        while self.find_img(target="logged_icon") is None:
-            if deadstop == 5:
-                if not trigger_stop:
-                    self.run_game()
-                    self.print(f"Error in character switch. Restarting the character switch..")
-                    self.check_captcha()
-                    return self.change_character_param(co_first, nb_chars, trigger_stop=True)
-                while trigger_stop:
-                    self.print(f"Error in character switch. Bot is now stopped", "red")
-                    self.set_status("Error.")
+        stop = 0
+        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color and stop != 6:
+            self.better_sleep((1, 2))
+            stop += 1
+        self.better_sleep((1.925, 2.795))
+        trigger_stop = 0
+        while self.find_img(target="logged_icon", confidence=0.7) is None:
+            self.check_captcha()
+            print(f'[ {current_time()} ] [ {self.name} ] while get_first_character')
+            y, x = uniform(290, 480), uniform(460, 560)
+            x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
+            self.swipe(x, y, x2, y2)
+            self.better_sleep((1.925, 2.795))
+            trigger_stop += 1
+            if trigger_stop == 4:
+                self.close_windows()
+                return self.change_character_param(co_first, nb_chars, fail + 1)
+            if fail > 2:
+                self.print("Error in character switch. Bot is now stopped")
+                self.set_status("Error.")
+                self.send_discord_message("Error in character switch, human interaction required.")
+                while True:
                     self.script_pause()
                     sleep(0.1)
-                return
-            self.check_captcha()
-            y1, x1 = uniform(290, 480), uniform(460, 560)
-            x2, y2 = x1 + uniform(-30, 30), y1 + uniform(-100, -50)
-            self.swipe(x1, y1, x2, y2)
-            self.better_sleep((1.925, 2.795))
-            deadstop = deadstop + 1
-        x, y = self.find_img(target="logged_icon")
+        x, y = self.find_img(target="logged_icon", confidence=0.7)
         self.print('Current character detected.')
         if x < 1280 // 2:
             # self.print(f"x < 1280 // 2")
@@ -386,7 +401,7 @@ class TaskRunner(Task):
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
             self.better_sleep((2.425, 2.795))
-            x, y = self.find_img(target="logged_icon")
+            x, y = self.find_img(target="logged_icon", confidence=0.7)
             self.better_sleep((2.025, 2.795))
             self.findNextChar()
         elif x > 1280 // 2:
@@ -419,18 +434,29 @@ class TaskRunner(Task):
     @get_name
     def start_emulator(self, emulator: str):
         path = self.FileSingleton.get_path()
+        data = self.FileSingleton.get_data()
+
         cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
-        self.print(f'Executing {cmd}')
-        process = multiprocessing.Process(target=subprocess.Popen, args=(cmd,))
-        process.start()
+        self.print(f'Executing cmd')
+
+        subprocess.run(cmd)
 
         print(f'Bot will wait 1 min from now.')
         sleep(120)
         if win32gui.FindWindow(None, self.name) is None:
-            self.print(f'Executing {cmd}')
-            process = multiprocessing.Process(target=subprocess.Popen, args=(cmd,))
-            process.start()
+            self.print(f'Executing cmd')
+            subprocess.run(cmd)
             sleep(120)
+
+        instances = get_dic_instances()
+        for instance in instances:
+            data[str(instance)]['instance'] = instances[str(instance)]['instance']
+            data[str(instance)]['name'] = instances[str(instance)]['name']
+            data[str(instance)]['port'] = int(instances[str(instance)]['port'])
+        self.data = data
+        self.FileSingleton.write_data(data)
+        self.tile.main_task.adb.connect_to_device()
+        self.tile.runner.adb.connect_to_device()
 
     @get_name
     def run2(self):
@@ -553,7 +579,7 @@ class TaskRunner(Task):
             if not (self.data[self.sel]['schedules']["1"]['enabled'] or self.data[self.sel]['schedules']["2"][
                 'enabled'] or self.data[self.sel]['schedules']["3"]['enabled']):
                 self.print("No active profiles found! Navigate to the profile settings and enable at least one option.", "red")
-                self.tile.page.generate_toast("Warning ", "No active profiles found! Navigate to the profile settings and enable at least one option.", ft.icons.INFO)
+                self.generate_toast("Warning ", "No active profiles found! Navigate to the profile settings and enable at least one option.", ft.icons.INFO)
 
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
