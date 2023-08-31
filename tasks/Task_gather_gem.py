@@ -388,6 +388,7 @@ class GatherGem(Task):
 
             while not blocked:
                 self.check_captcha()
+
                 if self.check_if_interrupt():
                     print("Interrupted")
                     return self.run(self.end_time)
@@ -440,8 +441,8 @@ class GatherGem(Task):
                             scan_frequency_timer = 0
                 else:
 
-                    if not self.adb.is_game_alive():
-                        self.run_game()
+                    if self.check_if_interrupt():
+                        print("Interrupted")
                         return self.run(self.end_time)
 
                     if self.find_img(target="back_normal_view", confidence=0.9) is not None or \
@@ -555,10 +556,11 @@ class GatherGem(Task):
                 string = f'input text {y2}'
                 self.adb.shell(string)
                 self.better_sleep((0.3, 0.5))
+
         self.better_sleep((0.3, 0.5))
-        for _ in range(2):
-            self.click(uniform(860, 900), uniform(123, 158))
+        self.click(uniform(860, 900), uniform(123, 158))
         self.better_sleep((1, 2))
+
         return randomization
 
     @get_name
@@ -606,8 +608,7 @@ class GatherGem(Task):
                 self.adb.shell(string)
                 self.better_sleep((0.3, 0.5))
         self.better_sleep((0.3, 0.5))
-        for _ in range(2):
-            self.click(uniform(860, 900), uniform(123, 158))
+        self.click(uniform(860, 900), uniform(123, 158))
         self.better_sleep((1, 2))
 
     @get_name
@@ -623,13 +624,11 @@ class GatherGem(Task):
             self.close_windows()
 
         if random() > 0.7:
+            if self.check_if_interrupt(screen):
+                return self.run(self.end_time)
             co = self.find_img(source=screen, target="verification_button", confidence=0.6)
             if co is not None:
                 self.check_captcha()
-
-        if random() > 0.4:
-            if self.check_if_interrupt(screen):
-                return self.run(self.end_time)
 
         cropped_image = screen[616:710, 1168:1270]
 
@@ -650,10 +649,6 @@ class GatherGem(Task):
 
         self.better_sleep((0.5, 0.7))
         return scan()
-
-    def recenter(self, deadstop=0):
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('recenter_feature', False):
-            return super().recenter(deadstop)
 
     @get_class
     def run(self, end_time=None):
