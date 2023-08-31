@@ -2,18 +2,28 @@ import hashlib
 import json
 import logging
 import os
+import shutil
 import sys
 from datetime import datetime
 from functools import wraps
+from os.path import exists
 from threading import Lock
 from time import perf_counter, sleep
 from datetime import date
+
+import pyautogui
 import win32gui
 import win32process
 from PIL import Image
 from numpy import ndarray, array
-
+import re
 dir = "./"
+
+def custom_key(item):
+    parts = item['instance'].split('_')
+    if len(parts) == 1:
+        return -1
+    return int(parts[1])
 
 class FileSingleton:
     __instance = None
@@ -173,3 +183,68 @@ def getchecksum():
     md5_hash.update(file.read())
     digest = md5_hash.hexdigest()
     return digest
+
+def get_dic_instances():
+    try:
+        fileSingleton = FileSingleton()
+        path = fileSingleton.get_path()
+        string = path["bluestacks"][:-5] + ".txt"
+        if exists(rf'{path["bluestacks"]}'):
+            string = path["bluestacks"][:-5] + ".txt"
+            shutil.copy(rf'{path["bluestacks"]}', rf'{string}')
+        with open(rf'{string}', 'r', encoding='utf-8') as file:
+            data_instance = file.read().split('\n')
+    except:
+        raise OSError(
+            "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'")
+
+    pattern_status_adb = re.compile(r'bst\.instance\.Nougat64_?(\d*)\.status\.adb_port')
+    pattern_display_name = re.compile(r'bst\.instance\.Nougat64_?(\d*)\.display_name')
+
+    pattern_for_nougat = re.compile(r'Nougat64_?(\d*)')
+    pattern_for_value = re.compile(r'="([^"]*)"')
+
+    matched_lines = []
+
+    for line in data_instance:
+        line = line.strip()
+        # Check for display_name pattern and nougat version
+        if pattern_display_name.search(line):
+            matched_lines.append(pattern_for_nougat.search(line).group())
+            matched_lines.append(pattern_for_value.search(line).group(1))
+        # Check for status and adb_port pattern
+        elif pattern_status_adb.search(line):
+            matched_lines.append(pattern_for_value.search(line).group(1))
+
+    bluestacks_instances = []
+    for i in range(0, len(matched_lines), 3):
+        bluestacks_instances.append(
+            {
+                'instance': str(matched_lines[i]),
+                'name': matched_lines[i + 1],
+                'port': int(matched_lines[i + 2]),
+            }
+        )
+
+    bluestacks_instances.sort(key=custom_key)
+    transformed_dict = dict(map(lambda idx_item: (str(idx_item[0]), idx_item[1]), enumerate(bluestacks_instances)))
+    return transformed_dict
+
+def get_index_and_names(data):
+    names = []
+    for index, value in enumerate(data.values()):
+        names.append((index, value['name']))
+    return names
+
+def get_current_instances(data):
+    names = get_index_and_names(data)
+    instances_available = []
+    for win in pyautogui.getAllWindows():
+        for name in names:
+            if win.title == name[1]:
+                instances_available.append(name)
+    instances_available.sort(key=lambda x: x[0])
+    return instances_available
+
+def get_all_vms_running():
+    return get_current_instances(get_dic_instances())
