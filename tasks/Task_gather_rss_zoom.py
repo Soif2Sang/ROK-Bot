@@ -67,10 +67,10 @@ class GatherRssZoom(GatherRss):
         co = None
         for icon in list_nodes:
             co = self.validate_co(
-                self.find_img(source=screen, target=icon,confidence=0.82))
+                self.find_img(source=screen, target=icon, confidence=0.82))
             if co is None:
                 co = self.validate_co(
-                    self.find_img(source=screen, target=icon,confidence=0.82))
+                    self.find_img(source=screen, target=icon, confidence=0.82))
             if co is not None:
                 self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
@@ -115,6 +115,18 @@ class GatherRssZoom(GatherRss):
             return self.zoom_out_city()
 
     @get_name
+    def check_if_interrupt(self, screen = None):
+        if not self.adb.is_game_alive():
+            return True
+        self.check_download_page(screen)
+        self.leave_kd_buff(screen)
+        self.check_reconnect(screen)
+        if self.check_log_back(screen):
+            return True
+        return False
+
+
+    @get_name
     def swipe_scan(self, scan, direction):
 
         self.script_pause()
@@ -125,18 +137,15 @@ class GatherRssZoom(GatherRss):
         info_screen = screen[470:700, 0:115]
         cropped_image = screen[420:540, 480:810]
 
-        if random() > 0.7:
-            co = self.find_img(source=screen, target="verification_button", confidence=0.8)
-            if co is not None:
-                self.check_captcha()
-            self.check_reconnect(cropped_image)
-
-        if random() > 0.4:
-            self.check_download_page(screen)
-            self.leave_kd_buff(screen)
-
         if random() > 0.9:
             self.close_windows()
+
+        if random() > 0.7:
+            if self.check_if_interrupt(screen):
+                return self.run(self.end_time)
+            co = self.find_img(source=screen, target="verification_button", confidence=0.6)
+            if co is not None:
+                self.check_captcha()
 
         cropped_image = screen[616:710, 1168:1270]
 
@@ -160,6 +169,8 @@ class GatherRssZoom(GatherRss):
 
     @get_class
     def run(self, node_type=None):
+        if node_type == "Done":
+            return self.click(700,400)
         self.node_type = node_type
         self.run_game()
         if not self.random_macro():
@@ -169,7 +180,10 @@ class GatherRssZoom(GatherRss):
         self.check_log_back()
         self.leave_kd_buff()
 
-        self.leave_city()
+        if node_type is None:
+            self.leave_city()
+        else:
+            self.go_back_to_city()
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
 
