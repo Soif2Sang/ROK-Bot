@@ -26,8 +26,8 @@ class RssTransfer(Task):
         transport_capacity = default_image[558:590, 285:435]
         tax_rate = default_image[450:480, 374:420]
 
-        cv2.imwrite("transport.png", transport_capacity)
-        cv2.imwrite("tax.png", tax_rate)
+        # cv2.imwrite("transport.png", transport_capacity)
+        # cv2.imwrite("tax.png", tax_rate)
         transport_capacity = self.extract_text(transport_capacity, allowlist="0123456789/,")
         transport_capacity = int(transport_capacity.split("/")[1].replace(",", ""))
 
@@ -66,13 +66,13 @@ class RssTransfer(Task):
 
         city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
         self.click(city[0] + uniform(-10, 10), city[1] + uniform(-10, 10))
-        self.better_sleep((1, 1))
+        self.better_sleep((1, 2))
         co = self.find_img(target="assist_button")
         if co is None:
             self.close_windows()
             return self.setup_ui(deadstop=deadstop + 1)
         self.click(co[0] + uniform(0, 40), co[1] + uniform(0, 20))
-        self.better_sleep((1, 1))
+        self.better_sleep((1, 2))
 
     @get_name
     def solve(self, path, sel, defaultApiKey=False):
@@ -94,9 +94,25 @@ class RssTransfer(Task):
         start = (uniform(589, 597), types[type])
         end = (uniform(1045, 1100), types[type] + uniform(-10, 10))
         self.swipe(start[0], start[1], end[0], end[1])
-        # self.better_sleep((0.7, 1.4))
+        self.better_sleep((0.1, 1.4))
         self.click(uniform(700, 850), uniform(570, 600))
-        # self.better_sleep((0.7, 1.4))
+        self.better_sleep((0.1, 1.4))
+
+    @get_name
+    def better_sleep(self, limits: tuple[float, float]):
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('fast_rss_transfer', False):
+            a = limits[0]
+            if self.data[str(self.sel)]['schedules'][self.current_profile]["slow_mode"]:
+                a *= self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
+
+            interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
+            num_intervals = int(a / interval_duration)
+
+            for _ in range(num_intervals):
+                sleep(interval_duration)
+                self.script_pause()
+            return
+        return super().better_sleep(limits)
 
     @get_class
     def run(self, type=None, quantity=None):
@@ -124,13 +140,23 @@ class RssTransfer(Task):
                 to_send.append(type)
 
         shuffle(to_send)
+        total_sent = {
+            'food': 0,
+            'wood': 0,
+            'stone': 0,
+            'gold': 0
+        }
         for type in to_send:
-            rss_sent += transportation_capacity
+            total_sent[type] += transportation_capacity
             self.send_rss(type)
-            print(f"{type} amount sent : {rss_sent}")
-            # self.better_sleep((0.5,0.5))
+            print(f"{type} amount sent : {total_sent[type]}")
 
-            self.check_captcha(chest=False)
+            if self.data[str(self.sel)]['schedules'][self.current_profile].get('fast_rss_transfer', False):
+
+                self.check_captcha(chest=False)
+            else:
+                self.check_captcha(chest=True)
+
             self.setup_ui()
 
         self.close_windows()
