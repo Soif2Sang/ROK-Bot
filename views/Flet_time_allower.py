@@ -91,6 +91,7 @@ class RowTimezone(ft.Row):
             ],
             open=True
         )
+
         self.page.update()
 
     def sub(self):

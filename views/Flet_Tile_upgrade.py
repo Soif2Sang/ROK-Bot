@@ -51,7 +51,7 @@ class TileUpgrade(ft.Row):
             self.page.frames[self.number] = FrameUpgrade(self.page, self.number)
         self.page.add(self.page.frames[self.number])
         # self.page.title = f"{time()}"
-        self.page.update()
+        self.update()
         
     def get_enabled_sel(self):
         return self.tile_manager.get_enabled_sel()
