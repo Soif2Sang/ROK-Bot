@@ -549,6 +549,7 @@ class SettingContainer(ft.Container):
             value="/!\ This feature require a custom ApiKey /!\ \n""/!\ This feature is on beta and may crash /!\ \n",
             size=15, color="red"))
         self.content.controls.append(ft.Divider())
+        self.create_normal_switch('fast_rss_transfer', 'Enable faster rss transfer\nmay be riskier')
         self.content.controls.append(
             FletColumnRss(self.instance_index, self.profile_index)
         )

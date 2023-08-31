@@ -196,6 +196,7 @@ class TileManager(ft.ListView):
             "kill_marauders_duration" : [30,90],
             "rally_skip_back" :  False,
             "gather_rss_method": False,
+            "fast_rss_transfer": False
         }
 
         for i in range(1, 4):
