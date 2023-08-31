@@ -1,10 +1,6 @@
 from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode,         IMREAD_COLOR, COLOR_BGR2HSV, inRange
 import os
-if os.path.isdir('../resources'):
-    dir = '../resources'
-else:
-    dir = './resources'
-
+dir = './resources'
 class ImageSingleton:
     __instance = None
     def __new__(cls):
