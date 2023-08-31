@@ -3,6 +3,7 @@ from datetime import date
 from os.path import exists
 from time import sleep
 
+import cv2
 from ppadb.client import Client as PPADBClient
 import subprocess
 import traceback
@@ -34,12 +35,14 @@ class Adb:
         print(f"JsonNumber:{self.number} port:{self.port}")
         return f"JsonNumber:{self.number} port:{self.port}"
 
+    def update_port(self):
+        data = self.FileSingleton.get_data()
+        self.port = int(data[str(self.number)]['port'])
 
     def connect_to_device(self, host='127.0.0.1'):
-        data = self.FileSingleton.get_data()
         path = self.FileSingleton.get_path()
+        self.update_port()
 
-        self.port = int(data[str(self.number)]['port'])
         adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
         cmd = f"{adb_path} connect {host}:{self.port}"
         subprocess.Popen(cmd)
@@ -54,7 +57,7 @@ class Adb:
             device = self.client.device(f'{host}:{self.port}')
             if device is None:
                 self.print(f"INFO : Device is None, trying to reconnect..")
-
+                self.update_port()
                 path = self.FileSingleton.get_path()
 
                 adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
@@ -68,7 +71,7 @@ class Adb:
         except Exception as e:
             traceback.print_exc()
             self.print("EXCEPTION : Error in connect to device")
-
+            self.update_port()
             path = self.FileSingleton.get_path()
             cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
             subprocess.Popen(cmd)
@@ -156,7 +159,7 @@ class Adb:
                 source = cvtColor(source, COLOR_BGR2RGB)
 
             img_to_find = self.images.get_file_name(target)
-
+            # bot.adb.get_cv2_img()
             result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = minMaxLoc(result)
 
@@ -168,6 +171,7 @@ class Adb:
                 return
         except Exception as exception_error:
             self.print("Error occured when using find_image")
+            self.print(target)
             traceback.print_exc()
             self.print(exception_error)
 
