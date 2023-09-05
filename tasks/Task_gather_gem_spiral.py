@@ -118,7 +118,7 @@ class GatherGemSpiral(GatherGem):
 
         self.go_back_to_city()
 
-        max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 4)
+        max_distance = int(self.data[str(self.sel)]['schedules'][self.current_profile].get('radius') // 4) + 1
 
         swipes = {
             self.swipe_up: self.swipe_right,
