@@ -14,7 +14,7 @@ import io
 import pytesseract as tess
 from PIL import Image
 
-from utils.Task_utils import current_time, FileSingleton
+from utils.Task_utils import current_time, FileSingleton, get_dic_instances
 
 Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
@@ -37,7 +37,13 @@ class Adb:
 
     def update_port(self):
         data = self.FileSingleton.get_data()
-        self.port = int(data[str(self.number)]['port'])
+        instances = get_dic_instances()
+        data[str(self.number)]['instance'] = instances[str(self.number)]['instance']
+        data[str(self.number)]['name'] = instances[str(self.number)]['name']
+        data[str(self.number)]['port'] = int(instances[str(self.number)]['port'])
+        self.FileSingleton.write_data(data)
+
+        self.port = int(instances[str(self.number)]['port'])
 
     def connect_to_device(self, host='127.0.0.1'):
         path = self.FileSingleton.get_path()
