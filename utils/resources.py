@@ -148,6 +148,20 @@ class ImageSingleton:
        self.fort_rally_button1= imread(f'{dir}/fort_rally_button1.png')
        self.fort_rally_button2= imread(f'{dir}/fort_rally_button2.png')
        self.free= imread(f'{dir}/free.png')
+       self.GemDeposit0= imread(f'{dir}/GemDeposit0.png')
+       self.GemDeposit1= imread(f'{dir}/GemDeposit1.png')
+       self.GemDeposit10= imread(f'{dir}/GemDeposit10.png')
+       self.GemDeposit11= imread(f'{dir}/GemDeposit11.png')
+       self.GemDeposit12= imread(f'{dir}/GemDeposit12.png')
+       self.GemDeposit13= imread(f'{dir}/GemDeposit13.png')
+       self.GemDeposit2= imread(f'{dir}/GemDeposit2.png')
+       self.GemDeposit3= imread(f'{dir}/GemDeposit3.png')
+       self.GemDeposit4= imread(f'{dir}/GemDeposit4.png')
+       self.GemDeposit5= imread(f'{dir}/GemDeposit5.png')
+       self.GemDeposit6= imread(f'{dir}/GemDeposit6.png')
+       self.GemDeposit7= imread(f'{dir}/GemDeposit7.png')
+       self.GemDeposit8= imread(f'{dir}/GemDeposit8.png')
+       self.GemDeposit9= imread(f'{dir}/GemDeposit9.png')
        self.gem_icon_day_down_= imread(f'{dir}/gem_icon_day_down_.png')
        self.gem_icon_day_down_left= imread(f'{dir}/gem_icon_day_down_left.png')
        self.gem_icon_day_down_mid= imread(f'{dir}/gem_icon_day_down_mid.png')
@@ -615,6 +629,34 @@ class ImageSingleton:
             return self.fort_rally_button2
         if file_name == "free":
             return self.free
+        if file_name == "GemDeposit0":
+            return self.GemDeposit0
+        if file_name == "GemDeposit1":
+            return self.GemDeposit1
+        if file_name == "GemDeposit10":
+            return self.GemDeposit10
+        if file_name == "GemDeposit11":
+            return self.GemDeposit11
+        if file_name == "GemDeposit12":
+            return self.GemDeposit12
+        if file_name == "GemDeposit13":
+            return self.GemDeposit13
+        if file_name == "GemDeposit2":
+            return self.GemDeposit2
+        if file_name == "GemDeposit3":
+            return self.GemDeposit3
+        if file_name == "GemDeposit4":
+            return self.GemDeposit4
+        if file_name == "GemDeposit5":
+            return self.GemDeposit5
+        if file_name == "GemDeposit6":
+            return self.GemDeposit6
+        if file_name == "GemDeposit7":
+            return self.GemDeposit7
+        if file_name == "GemDeposit8":
+            return self.GemDeposit8
+        if file_name == "GemDeposit9":
+            return self.GemDeposit9
         if file_name == "gem_icon_day_down_":
             return self.gem_icon_day_down_
         if file_name == "gem_icon_day_down_left":
