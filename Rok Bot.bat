@@ -2,7 +2,7 @@
 
 setlocal
 
-set command=py -3.11 -m nuitka --clang --mingw64 --onefile --follow-imports --include-module=flet --windows-icon-from-ico=.\Item_Gem.ico --remove-output --output-filename=Bot --windows-company-name=Unknown --windows-product-version=1.0 --onefile-tempdir-spec=C:\Users\Default\AppData\Local\Temp\bot_unknown --nofollow-import-to=scipy  .\main_2.py
+set command=py -3.11 -m nuitka --clang --mingw64 --onefile --follow-imports --windows-icon-from-ico=.\Item_Gem.ico --remove-output --output-filename=Bot --windows-company-name=Unknown --windows-product-version=1.0 --onefile-tempdir-spec=C:\Users\Default\AppData\Local\Temp\bot_unknown .\main_2.py
 
 REM Exécution de la commande
 %command%
