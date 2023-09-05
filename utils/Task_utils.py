@@ -70,16 +70,22 @@ def current_time():
     return datetime.now().strftime("%H:%M:%S")
 
 def string_to_co(string):
-    string = string.replace("coordinates:", "")
-    string = string.replace("x=", "")
-    string = string.replace("y=", "")
-    tmp = string.split(';')
-    boolean = True
-    for i in range(len(tmp)):
-        tmp[i] = tmp[i].split(",")
-        tmp[i][0] = int(tmp[i][0]) + 441
-        tmp[i][1] = int(tmp[i][1]) + 101
-    return tmp
+    pattern_x = r'x=(\d+)'
+    pattern_y = r'y=(\d+)'
+
+    matches_x = re.findall(pattern_x, string)
+    matches_y = re.findall(pattern_y, string)
+
+    return [(int(pair[0]) + 441, int(pair[1]) + 101) for pair in list(zip(matches_x, matches_y))]
+
+def string_to_co_slide(string):
+    pattern_x = r'x=(\d+)'
+    pattern_y = r'y=(\d+)'
+
+    matches_x = re.search(pattern_x, string)
+    matches_y = re.search(pattern_y, string)
+    # print(matches_y.group())
+    return (int(matches_x.group(1)), int(matches_y.group(1)))
 
 def get_window_pid(title):
     hwnd = win32gui.FindWindow(None, title)
@@ -126,7 +132,7 @@ def get_name(func):
         # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
         #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        # print(self.name, f"FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+        # self.logger.info(f"FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
         # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
         #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
         # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
@@ -145,7 +151,7 @@ def get_class(func):
         # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
         #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
         # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
-        print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
+        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)
         return func_output
 
@@ -248,3 +254,12 @@ def get_current_instances(data):
 
 def get_all_vms_running():
     return get_current_instances(get_dic_instances())
+
+def string_to_co_slide(string):
+    pattern_x = r'x=(\d+)'
+    pattern_y = r'y=(\d+)'
+
+    matches_x = re.search(pattern_x, string)
+    matches_y = re.search(pattern_y, string)
+    # print(matches_y.group())
+    return (int(matches_x.group(1)), int(matches_y.group(1)))
