@@ -47,6 +47,7 @@ class RowFinder(ft.Row):
             self.choice,
             self.script
         ])
+
     def close_banner(self, e):
         self.page.banner.open = False
         self.page.update()

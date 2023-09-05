@@ -22,7 +22,10 @@ class Tile(ft.Row):
         self.tasks_process = None
         self.main_task = Task(self)
         self.runner = TaskRunner(self.main_task, self)
-        self.tasks_process = threading.Thread(target=self.runner.run)
+        if self.page.UPGRADE:
+            self.tasks_process = threading.Thread(target=self.runner.run_update)
+        else:
+            self.tasks_process = threading.Thread(target=self.runner.run)
 
         self.button_select = ft.IconButton(
             icon=ft.icons.SETTINGS_OUTLINED,
@@ -97,7 +100,10 @@ class Tile(ft.Row):
     def start_tasks(self):
         # print(f"{self.tasks_process.is_alive() = }")
         if not self.tasks_process.is_alive():
-            self.tasks_process = threading.Thread(target=self.runner.run, daemon=True)
+            if self.page.UPGRADE:
+                self.tasks_process = threading.Thread(target=self.runner.run_update)
+            else:
+                self.tasks_process = threading.Thread(target=self.runner.run)
             self.tasks_process.start()
             # asyncio.create_task(run(self.runner.run))
             # is_alive = threading.Thread(target=self.process_is_alive)
