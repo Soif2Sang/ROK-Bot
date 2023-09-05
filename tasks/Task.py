@@ -7,7 +7,7 @@ import traceback
 from datetime import date
 from random import uniform, randint
 from time import sleep
-
+import logging
 import re
 import cv2
 import win32api
@@ -27,7 +27,7 @@ from utils.discord_utils import send_discord_message
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 # from utils import discord_bot
-from utils.Task_utils import get_window_pid, get_name, current_time, get_time, string_to_co, FileSingleton
+from utils.Task_utils import get_window_pid, get_name, current_time, get_time, string_to_co, FileSingleton, string_to_co_slide
 from utils.bot_adb import Adb
 # from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
@@ -49,6 +49,14 @@ class Task():
         self.language: str | None = None
         self.name: str = self.adb.name
 
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        self.logger = logging.getLogger(self.name)
+        self.logger.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler(f'./logs/{self.name}.log')
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
+        self.DEV = False
+
     def herite(self, MainTask):
         self.data = MainTask.data
         self.current_profile = MainTask.current_profile
@@ -59,6 +67,7 @@ class Task():
         self.language = MainTask.language
         self.name = MainTask.name
         self.sel = MainTask.sel
+        self.DEV = MainTask.DEV
 
     def script_pause(self):
         said = False
@@ -316,19 +325,23 @@ class Task():
             if self.find_img(target='gem_search_button'):
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-                for _ in range(4):
+                self.script_pause()
+                if self.find_img(target="gem_search_button"):
                     self.script_pause()
-                    if self.find_img(target="gem_search_button"):
-                        for _ in range(2):
-                            self.script_pause()
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                            self.better_sleep((0.2, 0.2))
-                            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                            self.better_sleep((1.4, 2))
-                    else:
-                        break
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    self.better_sleep((0.5, 0.5))
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    self.better_sleep((1.4, 2))
+                    self.script_pause()
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    self.better_sleep((0.17, 0.17))
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    self.better_sleep((1.4, 2))
+
         except Exception as e:
             print(e)
 
@@ -400,7 +413,7 @@ class Task():
         x2 = x1 - uniform(710, 710)
 
 
-        self.swipe(980 + randint(-5,5), 360 + randint(-5,5), 300 + randint(-5,5), 360 + randint(-5,5))
+        self.swipe(980 , 360 , 300 , 360 )
 
     def swipe_left(self) -> None:
         """
@@ -408,7 +421,7 @@ class Task():
         """
         x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
         x2 = x1 - uniform(710, 710)
-        self.swipe(300 + randint(-5,5), 360 + randint(-5,5), 980 + randint(-5,5), 360 + randint(-5,5))
+        self.swipe(300 , 360 , 980 , 360 )
 
     def swipe_up(self) -> None:
         """
@@ -417,7 +430,7 @@ class Task():
         x1, y1 = uniform(600, 680), uniform(540, 560)
         x2 = x1 + uniform(0, 30)
         y2 = y1 - uniform(390, 397)
-        self.swipe(640 + randint(-5,5), 150 + randint(-5,5), 640 + randint(-5,5), 570 + randint(-5,5))
+        self.swipe(640 , 150 , 640 , 570 )
 
     def swipe_down(self) -> None:
         """
@@ -426,7 +439,7 @@ class Task():
         x1, y1 = uniform(600, 680), uniform(540, 560)
         x2 = x1 + uniform(0, 30)
         y2 = y1 - uniform(390, 397)
-        self.swipe(640 + randint(-5,5), 570 + randint(-5,5), 640 + randint(-5,5), 150 + randint(-5,5))
+        self.swipe(640 , 570 , 640 , 150 )
 
     def swipe_right_low(self) -> None:
         """
@@ -598,6 +611,69 @@ class Task():
                     return self.check_captcha()
             self.print(f"EXCEPTION : Exception raised during the resolving of the captcha :\n{e}\n", "red")
             return {'error': e}
+
+    @get_name
+    def check_captcha_slider(self, deadstop=0):
+        while self.find_img('slider_captcha') and deadstop != 5:
+            if deadstop == 1:
+                self.print("Captcha detected !", )
+            self.save_captcha_slider()
+            self.solve_slider()
+            deadstop +=1
+        if deadstop == 5:
+            self.print("Unable to bypass the slider captcha","red")
+            self.set_status("Error")
+            self.send_discord_message("Error in resolving the slider captcha.")
+            while True:
+                self.better_sleep((1,1))
+        elif deadstop != 0:
+            self.print("Captcha successfully bypassed!")
+
+    @get_name
+    def save_captcha_slider(self):
+        captcha = self.adb.get_cv2_img()[139:511, 353 + 146:1280 - 353]
+
+        for y in range(30):
+            for i in range(captcha.shape[0]):
+                captcha[y][i] = (255, 255, 255)
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        org = (10, 30)
+        fontScale = 1
+        color = (0, 0, 0)
+        thickness = 2
+        captcha = cv2.putText(captcha, 'Click in puzzle hole', org, font,
+                              fontScale, color, thickness, cv2.LINE_AA)
+
+        captcha = cv2.cvtColor(captcha, cv2.COLOR_BGR2RGB)
+        im_pil = Image.fromarray(captcha)
+        im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
+        return cv2.imread(f"captcha{self.sel}.jpg")
+
+    @get_name
+    def solve_slider(self):
+        if self.data[self.sel]['API_KEY']:
+            api_key = self.data[self.sel]['API_KEY']
+        else:
+            api_key = '4805a29997857b110ef26530c7f39db1'
+
+        solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
+        try:
+            result = solver.coordinates(f"captcha{self.sel}.jpg", lang='en', hintText="Please locate the CENTER of the puzzle hole")
+
+            print(result)
+
+            co = string_to_co_slide(result['code'])
+            slider_x, slider_y = self.find_img('slider_captcha')
+            if len(co) != 1:
+                return
+            else:
+                self.swipe(slider_x + 25, slider_y, co[0] + 353 + 146 + 25, slider_y)
+                self.better_sleep((2, 3))
+        except Exception as e:
+            print(e)
+            self.print("Cannot resolve this captcha slider!")
+
 
     @get_name
     def resolve_captcha(self, compteur=0, defaultApiKey=True):
@@ -788,11 +864,14 @@ class Task():
                 self.click(uniform(co[0] + 5, co[0] + 20), uniform(co[1] + 5, co[1] + 20))
                 condition = False
             self.better_sleep((10, 15))
+            self.check_captcha_slider()
             self.check_reconnect()
             self.check_log_back()
             self.check_captcha()
             self.close_windows()
             self.close_upgrade_popup()
+            if self.DEV:
+                self.click(720,720)
 
     @get_name
     def close_upgrade_popup(self):
@@ -1031,7 +1110,7 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return not self.find_img(target='gem_search_button', confidence=0.79)
+        return not self.find_img(target='go_city_button', confidence=0.79)
 
     @get_name
     def close_windows(self):
@@ -1088,6 +1167,8 @@ class Task():
 
         if (co := self.find_img(source=image, target="green_home_button")):
             # reader = Reader()
+            if (250 > co[0] > 130) and (co[1] > 560):
+                return
             if deadstop == 10:
                 self.click(co[0],co[1])
                 self.better_sleep((2,3))
@@ -1227,66 +1308,6 @@ class Task():
         :return: False if node is free to gather
         """
         return self.find_cross(source)
-        img = Image.fromarray(source)
-        for i in range(img.size[0]):
-            for y in range(img.size[1]):
-                if (((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] < 5) and (
-                        img.getpixel((i, y))[2] > 175) and (img.getpixel((i, y))[2] < 196) and (
-                             (img.getpixel((i, y))[0] != 2) and (img.getpixel((i, y))[1] != 4) and (
-                             img.getpixel((i, y))[2] != 183))) or
-                        ((img.getpixel((i, y))[0] == 233) and (img.getpixel((i, y))[1] == 233) and (
-                                img.getpixel((i, y))[2] == 233)) or
-                        ((img.getpixel((i, y))[0] == 247) and (img.getpixel((i, y))[1] == 156) and (
-                                img.getpixel((i, y))[2] == 47)) or
-                        ((img.getpixel((i, y))[0] == 207) and (img.getpixel((i, y))[1] == 131) and (
-                                img.getpixel((i, y))[2] == 40)) or
-                        ((img.getpixel((i, y))[0] == 248) and (img.getpixel((i, y))[1] == 157) and (
-                                img.getpixel((i, y))[2] == 48)) or
-                        ((img.getpixel((i, y))[0] == 239) and (img.getpixel((i, y))[1] == 205) and (
-                                img.getpixel((i, y))[2] == 165)) or
-                        ((img.getpixel((i, y))[2] < 179) and (img.getpixel((i, y))[2] > 175) and (
-                                img.getpixel((i, y))[1] > 116) and (img.getpixel((i, y))[1] < 119) and (
-                                 img.getpixel((i, y))[0] < 2)) or
-                        ((img.getpixel((i, y))[0] < 5) and (img.getpixel((i, y))[1] > 142) and (
-                                img.getpixel((i, y))[1] < 150) and (img.getpixel((i, y))[2] < 200) and (
-                                 img.getpixel((i, y))[2] > 190)) or
-                        (img.getpixel((i, y)) == (0, 0, 178)) or
-                        (img.getpixel((i, y)) == (178, 0, 0)) or
-                        (img.getpixel((i, y)) == (2, 204, 2)) or
-                        (img.getpixel((i, y)) == (195, 142, 0)) or
-                        (img.getpixel((i, y)) == (0, 142, 195)) or
-                        (img.getpixel((i, y)) == (0, 154, 14)) or
-                        (img.getpixel((i, y)) == (0, 154, 13)) or
-                        (img.getpixel((i, y)) == (14, 154, 0)) or
-                        (img.getpixel((i, y)) == (13, 154, 0)) or
-                        (img.getpixel((i, y)) == (1, 186, 0)) or
-                        (img.getpixel((i, y)) == (0, 186, 1)) or
-                        (img.getpixel((i, y)) == (0, 142, 193)) or
-                        (img.getpixel((i, y)) == (193, 142, 0)) or
-                        (img.getpixel((i, y)) == (12, 154, 1)) or
-                        (img.getpixel((i, y)) == (1, 154, 12)) or
-                        (img.getpixel((i, y)) == (1, 215, 0)) or
-                        (img.getpixel((i, y)) == (1, 216, 0)) or
-                        (img.getpixel((i, y)) == (0, 215, 1)) or
-                        (img.getpixel((i, y)) == (0, 216, 1)) or
-                        (img.getpixel((i, y)) == (253, 253, 253)) or
-                        (img.getpixel((i, y)) == (49, 161, 255)) or
-                        (img.getpixel((i, y)) == (255, 161, 49)) or
-                        (img.getpixel((i, y)) == (2, 197, 2)) or
-                        (img.getpixel((i, y)) == (247, 210, 167)) or
-                        (img.getpixel((i, y)) == (255, 161, 49)) or
-                        (img.getpixel((i, y)) == (167, 210, 247)) or
-                        (img.getpixel((i, y)) == (49, 161, 255)) or
-                        (img.getpixel((i, y)) == (76, 150, 30)) or
-                        (img.getpixel((i, y)) == (30, 150, 76)) or
-                        img.getpixel((i, y)) in [(178, 118, 0), (0, 118, 178)] or
-                        img.getpixel((i, y)) in [(167, 121, 28), (28, 121, 167)] or
-                        img.getpixel((i, y)) in [(0, 143, 195), (195, 143, 0)]):
-                    self.print(f"{img.getpixel((i, y))}")
-                    self.print("Node occupied")
-                    return True
-        return False
-
 
     @get_name
     def already_mining(self, x, y, image=None) -> bool:
@@ -1342,12 +1363,14 @@ class Task():
             source = self.adb.get_cv2_img()[230:480, 441:814]
         img = Image.fromarray(source)
 
+        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255)]
         occupied_colors = [
             (2, 4, 183), (233, 233, 233), (247, 156, 47), (207, 131, 40), (248, 157, 48),
             (239, 205, 165), (0, 0, 178), (2, 204, 2), (195, 142, 0), (0, 154, 14),
             (0, 154, 13), (1, 186, 0), (0, 142, 193), (12, 154, 1), (1, 215, 0),
             (1, 216, 0), (253, 253, 253), (49, 161, 255), (2, 197, 2), (247, 210, 167),
-            (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167)
+            (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167), (92, 157, 246), (246, 157, 92,), (101, 200, 43), (43, 200, 101), (106, 209, 46), (46, 209, 106), (2, 189, 2), (57, 159, 35), (35, 159, 24), (6, 187, 5),
+            (107, 211, 46), (46, 211, 107), (49, 161, 255), (255, 161, 49),
         ]
 
         for i in range(img.size[0]):
@@ -1372,7 +1395,12 @@ class Task():
                          (img.getpixel((i, y))[2] < 200) and
                          (img.getpixel((i, y))[2] > 190))
                         or
-                        (img.getpixel((i, y)) in occupied_colors)):
+                        ((img.getpixel((i, y))[0] < 10) and
+                         (img.getpixel((i, y))[1] > 187) and
+                         (img.getpixel((i, y))[2] < 10)
+                        )
+                        or
+                        (img.getpixel((i, y)) in occupied_colors)) and (img.getpixel((i, y)) not in whitelist):
                     self.print(f"Node occupied {img.getpixel((i, y))}")
                     return True
         return False
