@@ -62,7 +62,7 @@ class TaskRunner(Task):
             "BarbarianFort": "Launching fort",
             "HealTroop": "Healing troops",
             "ProduceMaterials": "Producing materials",
-            "AutoUpgrade": "Upgrading the city..",
+            "": "Upgrading the city..",
             "AllianceHelp": "Helping the alliance..",
             "DailyQuests": "Claiming daily quests..",
             "TroopTraining": "Training troop..",
@@ -120,7 +120,7 @@ class TaskRunner(Task):
                 AllianceHelp(self).run()
 
             if func.task_name() in ["AllianceDonation", "CollectResource", "BuyMerchant", "ClearFog", "HealTroop",
-                                    "DailyChest", "AutoUpgrade", "ProduceMaterials", "TroopTraining"]:
+                                    "DailyChest", "AutoUpgrade", "ProduceMaterials", "TroopTraining", "UpgradeCity"]:
                 self.go_city()
             try:
                 if func.task_name() in ["GatherRss", "GatherGem"]:
