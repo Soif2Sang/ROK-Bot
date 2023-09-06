@@ -243,14 +243,14 @@ class TaskRunner(Task):
         while self.find_img(target="logged_icon", confidence=0.7) is None:
             self.check_captcha()
             self.check_captcha_slider()
-            print(
-                f'[ {current_time()} ] [ {self.name} ] while get_first_character')
+            print(f'[ {current_time()} ] [ {self.name} ] while get_first_character')
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
             self.better_sleep((1.925, 2.795))
             trigger_stop += 1
             if trigger_stop == 4:
+                self.close_windows()
                 return self.get_first_character(fail+1)
             if fail > 2:
                 self.print("Error in character switch. Bot is now stopped")
@@ -311,34 +311,36 @@ class TaskRunner(Task):
             return uniform(660, 1000), uniform(215, 280)
 
     @get_name
-    def findNextChar(self):
+    def click_next_prefered_character(self):
         screen = self.adb.get_cv2_img()
         logged_icon = self.find_img(source=screen, target="logged_icon", confidence=0.7)
-        stars_all = self.adb.find_multiple_img(target="star")
-        stars_bellow = []
-        for star in stars_all:
+        all_prefered_characters = self.adb.find_multiple_img(source=screen, target="star")
+        next_prefered_characters = []
+        
+        for star in all_prefered_characters:
             if logged_icon[0] > 640:
                 minus = 0
             else:
                 minus = 40
             if logged_icon[1] - minus < star[1]:
-                stars_bellow.append(star)
-        stars_bellow.sort(key=lambda co: co[1])
-        final = []
-        for star in stars_bellow:
+                next_prefered_characters.append(star)
+                
+        next_prefered_characters.sort(key=lambda co: co[1])
+        cleaned_next_characters = []
+        for star in next_prefered_characters:
             add = True
             for i in range(-3, 4):
                 for y in range(-3, 4):
-                    if (star[0] + i, star[1] + y) in final:
+                    if (star[0] + i, star[1] + y) in cleaned_next_characters:
                         add = False
             if add:
-                final.append(star)
-        if final:
+                cleaned_next_characters.append(star)
+        if cleaned_next_characters:
             if logged_icon[0] < 640:
-                final.pop(0)
-        if final:
-            final = final[0]
-            self.click(final[0] + uniform(-100, -50), final[1] + uniform(-5, 5))
+                cleaned_next_characters.pop(0)
+        if cleaned_next_characters:
+            cleaned_next_characters = cleaned_next_characters[0]
+            self.click(cleaned_next_characters[0] + uniform(-100, -50), cleaned_next_characters[1] + uniform(-5, 5))
 
     @get_name
     def change_character_param(self, co_first, nb_chars=0, fail=0):
@@ -389,9 +391,9 @@ class TaskRunner(Task):
             self.better_sleep((2.425, 2.795))
             x, y = self.find_img(target="logged_icon", confidence=0.7)
             self.better_sleep((2.025, 2.795))
-            self.findNextChar()
+            self.click_next_prefered_character()
         elif x > 1280 // 2:
-            self.findNextChar()
+            self.click_next_prefered_character()
         self.better_sleep((3.425, 3.995))
 
         if self.find_img(target="character_login_confirm") is not None:
