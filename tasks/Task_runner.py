@@ -62,11 +62,13 @@ class TaskRunner(Task):
             "BarbarianFort": "Launching fort",
             "HealTroop": "Healing troops",
             "ProduceMaterials": "Producing materials",
-            "": "Upgrading the city..",
+            "AutoUpgrade": "Upgrading the city..",
             "AllianceHelp": "Helping the alliance..",
             "DailyQuests": "Claiming daily quests..",
             "TroopTraining": "Training troop..",
-            "RssTransfer": "Transferring rss.."
+            "RssTransfer": "Transferring rss..",
+            "UpgradeCity": "Upgrading the city..",
+            "Maraudeurs": "Killing Maraudeurs..",
         }
         return self.set_status(names.get(name, name))
 
@@ -91,7 +93,9 @@ class TaskRunner(Task):
             "AllianceHelp": "Helping the alliance..",
             "claim_daily_quests": "Claiming daily quests..",
             "TroopTraining": "Training troop..",
-            "RssTransfer": "Transferring rss.."
+            "RssTransfer": "Transferring rss..",
+            "Maraudeurs": "Killing Maraudeurs..",
+            "UpgradeCity": "Upgrading the city..",
         }
 
         return names.get(name, name)
@@ -104,6 +108,7 @@ class TaskRunner(Task):
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         current_task = 1
         self.check_captcha()
+        
         for func in lib_tasks:
             self.print(f"Task {current_task}/{len(lib_tasks)}", "blue")
             self.print(f"Currently executing : {self.get_current_task(func.task_name())}", "blue")
@@ -161,69 +166,48 @@ class TaskRunner(Task):
             profile = self.data.get(self.sel).get('schedules').get(profile)
         # print(profile)
         lib_tasks = []
-        if profile.get('claim_campaign', False):
-            lib_tasks.append(ClaimCampaign(self))
-        if profile.get('collect_ressource', False):
-            lib_tasks.append(CollectResource(self))
-        if profile.get('buy_merchant', False):
-            lib_tasks.append(BuyMerchant(self))
-        if profile.get('gather_rss', False):
-            if not profile.get('gather_rss_method'):
-                lib_tasks.append(GatherRssDefault(self))
-            else:
-                lib_tasks.append(GatherRssZoom(self))
-        if profile.get('use_enhanced_buff', False):
-            lib_tasks.append(UseEnhancedBuff(self))
-        if profile.get('check_donation', False):
-            lib_tasks.append(AllianceDonation(self))
-        if profile.get('defeat_barbarians', False):
-            lib_tasks.append(HuntBarbarians(self))
-        if profile.get('gather_gem', False):
-            if not profile.get('gather_gem_spiral_method'):
-                lib_tasks.append(GatherGemDefault(self))
-            else:
-                lib_tasks.append(GatherGemSpiral(self))
-        if profile.get('scout_fog', False):
-            lib_tasks.append(ClearFog(self))
-        if profile.get('claim_daily_vip', False):
-            lib_tasks.append(DailyVip(self))
-        if profile.get('start_fort', False):
-            lib_tasks.append(BarbFort(self))
-        if profile.get('heal_troop', False):
-            lib_tasks.append(HealTroop(self))
-        if profile.get('material_production', False):
-            lib_tasks.append(ProduceMaterials(self))
-        if profile.get('claim_daily_chest', False):
-            lib_tasks.append(DailyChest(self))
-        if profile.get('claim_daily_quests', False):
-            lib_tasks.append(DailyQuests(self))
-        if profile.get('auto_upgrade', False):
-            lib_tasks.append(UpgradeCity(self))
-        if profile.get('train_troops', False):
-            lib_tasks.append(TroopTraining(self))
-        if profile.get('transfer_enable', False):
-            lib_tasks.append(RssTransfer(self))
-        if profile.get('kill_marauders', False):
-            lib_tasks.append(Maraudeurs(self))
+        
+        tasks = [
+            ('claim_campaign', ClaimCampaign),
+            ('collect_ressource', CollectResource),
+            ('buy_merchant', BuyMerchant),
+            ('gather_rss', GatherRssDefault if not profile.get('gather_rss_method') else GatherRssZoom),
+            ('use_enhanced_buff', UseEnhancedBuff),
+            ('check_donation', AllianceDonation),
+            ('defeat_barbarians', HuntBarbarians),
+            ('gather_gem', GatherGemDefault if not profile.get('gather_gem_spiral_method') else GatherGemSpiral),
+            ('scout_fog', ClearFog),
+            ('claim_daily_vip', DailyVip),
+            ('start_fort', BarbFort),
+            ('heal_troop', HealTroop),
+            ('material_production', ProduceMaterials),
+            ('claim_daily_chest', DailyChest),
+            ('claim_daily_quests', DailyQuests),
+            ('auto_upgrade', UpgradeCity),
+            ('train_troops', TroopTraining),
+            ('transfer_enable', RssTransfer),
+            ('kill_marauders', Marauders)
+        ]
+
+        lib_tasks = [task_class(self) for profile_key, task_class in tasks if profile.get(profile_key, False)]
         shuffle(lib_tasks)
-        tasks_name = [task.task_name() for task in lib_tasks]
+        tasks_names = [task.task_name() for task in lib_tasks]
 
-        if "HuntBarbarians" in tasks_name and "GatherRss" in tasks_name:
-            a = tasks_name.index("HuntBarbarians")
-            b = tasks_name.index("GatherRss")
-            if a > b:
-                lib_tasks[a], lib_tasks[b] = lib_tasks[b], lib_tasks[a]
+        if ("HuntBarbarians" in tasks_names) and ("GatherRss" in tasks_names):
+            hunt_index = tasks_names.index("HuntBarbarians")
+            gather_index = tasks_names.index("GatherRss")
+            lib_tasks[hunt_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[hunt_index]
 
-        if "BarbarianFort" in tasks_name:
+        if "BarbarianFort" in tasks_names:
             for element in ["GatherRss", "GatherGem", "hunt_barbarians"]:
-                if element in tasks_name:
-                    a = tasks_name.index("BarbarianFort")
-                    b = tasks_name.index(element)
-                    if a > b:
-                        lib_tasks[a], lib_tasks[b] = lib_tasks[b], lib_tasks[a]
-        # print(f"{lib_tasks}")
+                if element in tasks_names:
+                    fort_index = tasks_names.index("BarbarianFort")
+                    element_index = tasks_names.index(element)
+                    lib_tasks[fort_index], lib_tasks[element_index] = lib_tasks[element_index], lib_tasks[fort_index]
+
         if profile.get('upgrade_city', False):
             lib_tasks.append(UpgradeCity(self))
+            
         return lib_tasks
 
     @get_name
