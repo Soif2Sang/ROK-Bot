@@ -258,6 +258,7 @@ class TaskRunner(Task):
         trigger_stop = 0
         while self.find_img(target="logged_icon", confidence=0.7) is None:
             self.check_captcha()
+            self.check_captcha_slider()
             print(
                 f'[ {current_time()} ] [ {self.name} ] while get_first_character')
             y, x = uniform(290, 480), uniform(460, 560)
