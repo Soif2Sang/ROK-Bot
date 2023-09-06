@@ -191,7 +191,7 @@ class Adb:
         else:
             return
 
-    def find_multiple_img(self, target,source=None, confidence=0.9):
+    def find_multiple_img(self, target, source=None, confidence=0.9):
         if source is None:
             pil_image = self.get_curr_device_screen_img()
             cv_image = array(pil_image)
