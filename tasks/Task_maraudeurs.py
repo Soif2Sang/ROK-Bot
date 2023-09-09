@@ -14,7 +14,7 @@ from utils.Task_utils import get_name, get_class, current_time
 # from utils.easyOcr import Reader
 
 
-class Maraudeurs(Task):
+class Marauders(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
