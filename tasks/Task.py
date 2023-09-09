@@ -286,8 +286,8 @@ class Task():
                         # print(macro)
                         if macro["KeyOut"] == "F6":
                             # print("True")
-                            x1 = randint(22, 30)
-                            x2 = randint(22, 30)
+                            x1 = randint(40, 50)
+                            x2 = randint(40, 50)
                             y = randint(25, 30)
                             macro["X1"] = x1
                             macro["X2"] = x1
@@ -614,20 +614,21 @@ class Task():
 
     @get_name
     def check_captcha_slider(self, deadstop=0):
-        while self.find_img('slider_captcha') and deadstop != 5:
-            if deadstop == 1:
+        while self.find_img('slider_captcha', confidence=0.83) and deadstop != 5:
+            if deadstop == 0:
                 self.print("Captcha detected !", )
             self.save_captcha_slider()
             self.solve_slider()
             deadstop +=1
+            self.better_sleep((2,3))
         if deadstop == 5:
-            self.print("Unable to bypass the slider captcha","red")
+            self.print("Unable to resolve the slider captcha","red")
             self.set_status("Error")
             self.send_discord_message("Error in resolving the slider captcha.")
             while True:
                 self.better_sleep((1,1))
         elif deadstop != 0:
-            self.print("Captcha successfully bypassed!")
+            self.print("Captcha successfully resolved!")
 
     @get_name
     def save_captcha_slider(self):
@@ -642,7 +643,7 @@ class Task():
         fontScale = 1
         color = (0, 0, 0)
         thickness = 2
-        captcha = cv2.putText(captcha, 'Click in puzzle hole', org, font,
+        captcha = cv2.putText(captcha, 'Click in center of puzzle hole', org, font,
                               fontScale, color, thickness, cv2.LINE_AA)
 
         captcha = cv2.cvtColor(captcha, cv2.COLOR_BGR2RGB)
@@ -664,12 +665,10 @@ class Task():
             print(result)
 
             co = string_to_co_slide(result['code'])
+            print(co)
             slider_x, slider_y = self.find_img('slider_captcha')
-            if len(co) != 1:
-                return
-            else:
-                self.swipe(slider_x + 25, slider_y, co[0] + 353 + 146 + 25, slider_y)
-                self.better_sleep((2, 3))
+            self.swipe_arg(slider_x + 25, slider_y, co[0] + 353 + 146 + 25, slider_y, 3000)
+            self.better_sleep((2, 3))
         except Exception as e:
             print(e)
             self.print("Cannot resolve this captcha slider!")
@@ -854,10 +853,10 @@ class Task():
         condition = True
         while condition:
             self.run_game()
-            if self.find_img(target="menu_button", confidence=0.6) or \
-                    self.find_img(target="map_icon", confidence=0.6) or \
-                    self.find_img(target="hammer", confidence=0.6) or \
-                    self.find_img(target="inbox", confidence=0.6):
+            if self.find_img(target="menu_button", confidence=0.8) or \
+                    self.find_img(target="map_icon", confidence=0.8) or \
+                    self.find_img(target="hammer", confidence=0.8) or \
+                    self.find_img(target="inbox", confidence=0.8):
                 condition = False
             co = self.find_img(target="mightiest_gov", confidence=0.8)
             if co is not None:
@@ -870,8 +869,6 @@ class Task():
             self.check_captcha()
             self.close_windows()
             self.close_upgrade_popup()
-            if self.DEV:
-                self.click(720,720)
 
     @get_name
     def close_upgrade_popup(self):
@@ -1110,7 +1107,7 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return not self.find_img(target='go_city_button', confidence=0.79)
+        return not self.find_img(target='go_city_button', confidence=0.9)
 
     @get_name
     def close_windows(self):

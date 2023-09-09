@@ -63,15 +63,15 @@ class UpgradeCity(Task):
 
     @get_name
     def help_build(self):
-        if co := self.find_img(target='help_build', confidence=0.8):
+        if co := self.find_img(target='help_build', confidence=0.75):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
     @get_name
     def recursive_upgrade(self):
-        co = self.find_img(target="upgrade_build", confidence=0.7)
-        if co is not None:
-            self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 30))
+        stones = self.find_img(target="upgrade_build", confidence=0.7)
+        if stones is not None:
+            self.click(stones[0] + uniform(0, 20), stones[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
             if co := self.find_img(target="upgrade_go"):
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(0, 20))
@@ -86,9 +86,7 @@ class UpgradeCity(Task):
                     self.better_sleep((1.7, 2.2))
                     self.click(uniform(916, 1050), uniform(530, 560))
                     self.better_sleep((1.7, 2.2))
-                while co := self.find_img(target="close_window"):
-                    self.click(co[0] + uniform(10, 15), co[1] + uniform(10, 15))
-                    self.better_sleep((1.7, 2.2))
+                self.close_windows()
             self.better_sleep((1.7, 2.2))
             self.help_build()
             self.better_sleep((1.7, 2.2))
@@ -100,7 +98,7 @@ class UpgradeCity(Task):
         for _ in range(2):
             win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
             win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-            sleep(0.18)
+            sleep(0.17)
             win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
             win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
             self.better_sleep((1.4, 2))
@@ -114,9 +112,14 @@ class UpgradeCity(Task):
 
     @get_name
     def help_alliance(self):
-        if co := self.find_img(target='help_alliance', confidence=0.75):
-            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
+        if co := self.find_img(target='help_alliance', confidence=0.8):
+            self.click(co[0] + uniform(0, 5), co[1])
             self.better_sleep((0.9, 1.2))
+        if co := self.find_img(target="help_alliance_high_view", confidence=0.76):
+            self.click(co[0] + uniform(0, 5), co[1])
+            self.print("Successfully asked alliance help.")
+            self.better_sleep((0.9, 1.2))
+
 
     @get_name
     def free_constructor(self):
@@ -152,9 +155,9 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.92)
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.92))
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.92))
+        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.85)
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.85))
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.85))
         upgrades_final = list(filter(lambda co: co[1] < 480, upgrades_brut))
         return upgrades_final
 
@@ -163,6 +166,7 @@ class UpgradeCity(Task):
         self.setup_view()
         for i in range(2):
             if (upgrades_final := self.free_worker()):
+                self.print("Upgrade available.")
                 current_build = upgrades_final[0]
                 self.click(current_build[0] + uniform(-5, 5), current_build[1] + uniform(-20, 0))
                 self.better_sleep((0.9, 1.2))

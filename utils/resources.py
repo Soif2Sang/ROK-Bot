@@ -22,6 +22,7 @@ class ImageSingleton:
        self.ap_bottle= imread(f'{dir}/ap_bottle.png')
        self.ap_use= imread(f'{dir}/ap_use.png')
        self.archery_badge= imread(f'{dir}/archery_badge.png')
+       self.archery_badge_high_view= imread(f'{dir}/archery_badge_high_view.png')
        self.archery_range_button= imread(f'{dir}/archery_range_button.png')
        self.artefact_shop= imread(f'{dir}/artefact_shop.png')
        self.assist_button= imread(f'{dir}/assist_button.png')
@@ -42,6 +43,7 @@ class ImageSingleton:
        self.button_level= imread(f'{dir}/button_level.png')
        self.buy_arrow= imread(f'{dir}/buy_arrow.png')
        self.cavalry_badge= imread(f'{dir}/cavalry_badge.png')
+       self.cavalry_badge_high_view= imread(f'{dir}/cavalry_badge_high_view.png')
        self.character_login_confirm= imread(f'{dir}/character_login_confirm.png')
        self.character_start= imread(f'{dir}/character_start.png')
        self.chest_confirm_button= imread(f'{dir}/chest_confirm_button.png')
@@ -193,6 +195,7 @@ class ImageSingleton:
        self.gold_min= imread(f'{dir}/gold_min.png')
        self.gold_up_left_icon_zoom= imread(f'{dir}/gold_up_left_icon_zoom.png')
        self.gold_up_right_icon_zoom= imread(f'{dir}/gold_up_right_icon_zoom.png')
+       self.go_city_button= imread(f'{dir}/go_city_button.png')
        self.great_button= imread(f'{dir}/great_button.png')
        self.green_home_button= imread(f'{dir}/green_home_button.png')
        self.hammer= imread(f'{dir}/hammer.png')
@@ -203,6 +206,7 @@ class ImageSingleton:
        self.help2= imread(f'{dir}/help2.png')
        self.help3= imread(f'{dir}/help3.png')
        self.help_alliance= imread(f'{dir}/help_alliance.png')
+       self.help_alliance_high_view= imread(f'{dir}/help_alliance_high_view.png')
        self.help_build= imread(f'{dir}/help_build.png')
        self.help_build2= imread(f'{dir}/help_build2.png')
        self.hide_quests= imread(f'{dir}/hide_quests.png')
@@ -218,6 +222,7 @@ class ImageSingleton:
        self.inbox= imread(f'{dir}/inbox.png')
        self.increasing_button= imread(f'{dir}/increasing_button.png')
        self.infantry_badge= imread(f'{dir}/infantry_badge.png')
+       self.infantry_badge_high_view= imread(f'{dir}/infantry_badge_high_view.png')
        self.investigate_button= imread(f'{dir}/investigate_button.png')
        self.kill= imread(f'{dir}/kill.png')
        self.kingdom_buff= imread(f'{dir}/kingdom_buff.png')
@@ -281,9 +286,11 @@ class ImageSingleton:
        self.selected_save_blue_one= imread(f'{dir}/selected_save_blue_one.png')
        self.send_button_scout= imread(f'{dir}/send_button_scout.png')
        self.siege_badge= imread(f'{dir}/siege_badge.png')
+       self.siege_badge_high_view= imread(f'{dir}/siege_badge_high_view.png')
        self.siege_workshop_button= imread(f'{dir}/siege_workshop_button.png')
        self.silver_chest= imread(f'{dir}/silver_chest.png')
        self.silver_chest_tiny= imread(f'{dir}/silver_chest_tiny.png')
+       self.slider_captcha= imread(f'{dir}/slider_captcha.png')
        self.speedup_healing= imread(f'{dir}/speedup_healing.png')
        self.speed_up_button= imread(f'{dir}/speed_up_button.png')
        self.stable_button= imread(f'{dir}/stable_button.png')
@@ -311,6 +318,7 @@ class ImageSingleton:
        self.tech_speedup= imread(f'{dir}/tech_speedup.png')
        self.test_read= imread(f'{dir}/test_read.png')
        self.title_button= imread(f'{dir}/title_button.png')
+       self.training_button_high_view= imread(f'{dir}/training_button_high_view.png')
        self.training_upgrade_button= imread(f'{dir}/training_upgrade_button.png')
        self.train_button= imread(f'{dir}/train_button.png')
        self.troops_march_button= imread(f'{dir}/troops_march_button.png')
@@ -322,6 +330,7 @@ class ImageSingleton:
        self.upgrade_age= imread(f'{dir}/upgrade_age.png')
        self.upgrade_build= imread(f'{dir}/upgrade_build.png')
        self.upgrade_button= imread(f'{dir}/upgrade_button.png')
+       self.upgrade_button_high_view= imread(f'{dir}/upgrade_button_high_view.png')
        self.upgrade_go= imread(f'{dir}/upgrade_go.png')
        self.upgrade_popup_0= imread(f'{dir}/upgrade_popup_0.png')
        self.upgrade_popup_1= imread(f'{dir}/upgrade_popup_1.png')
@@ -377,6 +386,8 @@ class ImageSingleton:
             return self.ap_use
         if file_name == "archery_badge":
             return self.archery_badge
+        if file_name == "archery_badge_high_view":
+            return self.archery_badge_high_view
         if file_name == "archery_range_button":
             return self.archery_range_button
         if file_name == "artefact_shop":
@@ -417,6 +428,8 @@ class ImageSingleton:
             return self.buy_arrow
         if file_name == "cavalry_badge":
             return self.cavalry_badge
+        if file_name == "cavalry_badge_high_view":
+            return self.cavalry_badge_high_view
         if file_name == "character_login_confirm":
             return self.character_login_confirm
         if file_name == "character_start":
@@ -719,6 +732,8 @@ class ImageSingleton:
             return self.gold_up_left_icon_zoom
         if file_name == "gold_up_right_icon_zoom":
             return self.gold_up_right_icon_zoom
+        if file_name == "go_city_button":
+            return self.go_city_button
         if file_name == "great_button":
             return self.great_button
         if file_name == "green_home_button":
@@ -739,6 +754,8 @@ class ImageSingleton:
             return self.help3
         if file_name == "help_alliance":
             return self.help_alliance
+        if file_name == "help_alliance_high_view":
+            return self.help_alliance_high_view
         if file_name == "help_build":
             return self.help_build
         if file_name == "help_build2":
@@ -769,6 +786,8 @@ class ImageSingleton:
             return self.increasing_button
         if file_name == "infantry_badge":
             return self.infantry_badge
+        if file_name == "infantry_badge_high_view":
+            return self.infantry_badge_high_view
         if file_name == "investigate_button":
             return self.investigate_button
         if file_name == "kill":
@@ -895,12 +914,16 @@ class ImageSingleton:
             return self.send_button_scout
         if file_name == "siege_badge":
             return self.siege_badge
+        if file_name == "siege_badge_high_view":
+            return self.siege_badge_high_view
         if file_name == "siege_workshop_button":
             return self.siege_workshop_button
         if file_name == "silver_chest":
             return self.silver_chest
         if file_name == "silver_chest_tiny":
             return self.silver_chest_tiny
+        if file_name == "slider_captcha":
+            return self.slider_captcha
         if file_name == "speedup_healing":
             return self.speedup_healing
         if file_name == "speed_up_button":
@@ -955,6 +978,8 @@ class ImageSingleton:
             return self.test_read
         if file_name == "title_button":
             return self.title_button
+        if file_name == "training_button_high_view":
+            return self.training_button_high_view
         if file_name == "training_upgrade_button":
             return self.training_upgrade_button
         if file_name == "train_button":
@@ -977,6 +1002,8 @@ class ImageSingleton:
             return self.upgrade_build
         if file_name == "upgrade_button":
             return self.upgrade_button
+        if file_name == "upgrade_button_high_view":
+            return self.upgrade_button_high_view
         if file_name == "upgrade_go":
             return self.upgrade_go
         if file_name == "upgrade_popup_0":

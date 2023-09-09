@@ -10,7 +10,7 @@ from os.path import exists
 from threading import Lock
 from time import perf_counter, sleep
 from datetime import date
-
+from decohints import decohints
 import pyautogui
 import win32gui
 import win32process
@@ -126,6 +126,7 @@ def clean_args(*args):
     return tuple(list_args)
 
 
+@decohints
 def get_name(func):
     @wraps(func)
     def wrapper(self: object, *args: object, **kwargs: object):

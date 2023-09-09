@@ -25,7 +25,7 @@ class Logger(ft.ListView):
         if self.limit_logs and len(self.controls) > 300:
             self.controls.pop(0)
         self.controls.append(text)
-        if self.parent == self.page.controls[-1] and ((self.page is not None) and (self.page.route == '/')):
+        if (self.page is not None) and self.parent == self.page.controls[-1] and ((self.page is not None) and (self.page.route == '/')):
             self.update()
 
     def add_divider(self):

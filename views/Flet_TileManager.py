@@ -14,7 +14,7 @@ class NavigationBar(ft.Row):
         self.button_refresh = ft.OutlinedButton(text="Refresh", icon=ft.icons.REFRESH_ROUNDED,
                                                 on_click=lambda _: self.tileManager.refresh(), style=ButtonStyle(shape={
                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-            })
+            }, bgcolor=None if not self.tileManager.page.UPGRADE else ft.colors.AMBER_100)
                                                 )
         self.controls.append(self.button_refresh)
 

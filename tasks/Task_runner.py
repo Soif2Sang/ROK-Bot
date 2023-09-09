@@ -26,7 +26,7 @@ from tasks.Task_gather_rss_default import GatherRssDefault
 from tasks.Task_gather_rss_zoom import GatherRssZoom
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
-from tasks.Task_maraudeurs import Maraudeurs
+from tasks.Task_maraudeurs import Marauders
 from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
@@ -207,7 +207,9 @@ class TaskRunner(Task):
 
         if profile.get('upgrade_city', False):
             lib_tasks.append(UpgradeCity(self))
-            
+        if ("TroopTraining" in tasks_names) and self.tile.page.UPGRADE:
+            lib_tasks.pop(tasks_names.index("TroopTraining"))
+            lib_tasks.append(TroopTraining(self))
         return lib_tasks
 
     @get_name
