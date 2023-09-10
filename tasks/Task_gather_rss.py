@@ -140,7 +140,7 @@ class GatherRss(Task):
             return False
         except Exception as e:
             traceback.print_exc()
-            self.print("Error sending a new march to the gem node !", "red")
+            self.print("Error sending a new march to the rss node !", "red")
 
     @get_name
     def click_on_node(self) -> bool:
