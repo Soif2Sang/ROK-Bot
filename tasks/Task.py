@@ -632,7 +632,7 @@ class Task():
 
     @get_name
     def save_captcha_slider(self):
-        captcha = self.adb.get_cv2_img()[139:511, 353 + 146:1280 - 353]
+        captcha = self.adb.get_cv2_img()[139:511, 499:1280 - 353]
 
         for y in range(30):
             for i in range(captcha.shape[0]):
@@ -667,7 +667,7 @@ class Task():
             co = string_to_co_slide(result['code'])
             print(co)
             slider_x, slider_y = self.find_img('slider_captcha')
-            self.swipe_arg(slider_x + 25, slider_y, co[0] + 353 + 146 + 25, slider_y, 3000)
+            self.swipe_arg(slider_x + 25, slider_y, co[0] + 499, slider_y, 3000)
             self.better_sleep((2, 3))
         except Exception as e:
             print(e)
@@ -955,7 +955,7 @@ class Task():
                     self.send_discord_message("Captcha detected, Captcha verification off.")
                     while True:
                         self.better_sleep((1,1.1))
-                        
+
             self.better_sleep((0.3,0.3))
         return False
 
@@ -1107,7 +1107,7 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return not self.find_img(target='go_city_button', confidence=0.9)
+        return self.find_img(target='go_outside_city', confidence=0.8)
 
     @get_name
     def close_windows(self):
