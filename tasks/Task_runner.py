@@ -124,7 +124,7 @@ class TaskRunner(Task):
             if self.data[self.sel]['schedules'][profile].get('alliance_help', False):
                 AllianceHelp(self).run()
 
-            if func.task_name() in ["AllianceDonation", "CollectResource", "BuyMerchant", "ClearFog", "HealTroop",
+            if func.task_name() in ["CollectResource", "BuyMerchant", "ClearFog", "HealTroop",
                                     "DailyChest", "AutoUpgrade", "ProduceMaterials", "TroopTraining", "UpgradeCity"]:
                 self.go_city()
             try:
@@ -371,6 +371,7 @@ class TaskRunner(Task):
             trigger_stop += 1
             if trigger_stop == 4:
                 self.close_windows()
+                self.close_upgrade_popup()
                 return self.change_character_param(co_first, nb_chars, fail + 1)
             if fail > 2:
                 self.print("Error in character switch. Bot is now stopped")
