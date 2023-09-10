@@ -113,10 +113,10 @@ class UpgradeCity(Task):
     @get_name
     def help_alliance(self):
         if co := self.find_img(target='help_alliance', confidence=0.8):
-            self.click(co[0] + uniform(0, 5), co[1])
+            self.click(co[0] + uniform(5, 10), co[1] + 20)
             self.better_sleep((0.9, 1.2))
         if co := self.find_img(target="help_alliance_high_view", confidence=0.76):
-            self.click(co[0] + uniform(0, 5), co[1])
+            self.click(co[0] + uniform(10, 20), co[1] + 20)
             self.print("Successfully asked alliance help.")
             self.better_sleep((0.9, 1.2))
 
