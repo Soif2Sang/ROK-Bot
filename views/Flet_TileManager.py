@@ -11,12 +11,43 @@ class NavigationBar(ft.Row):
     def __init__(self, tile_manager, **kwargs):
         super().__init__(**kwargs)
         self.tileManager = tile_manager
+        self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+
         self.button_refresh = ft.OutlinedButton(text="Refresh", icon=ft.icons.REFRESH_ROUNDED,
                                                 on_click=lambda _: self.tileManager.refresh(), style=ButtonStyle(shape={
                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
             }, bgcolor=None if not self.tileManager.page.UPGRADE else ft.colors.AMBER_100)
                                                 )
+
         self.controls.append(self.button_refresh)
+
+        self.controls.append(
+            ft.PopupMenuButton(
+                tooltip="Extend my account",
+                icon=ft.icons.ADD_SHOPPING_CART_ROUNDED,
+                items=[
+                    ft.PopupMenuItem(
+                        content=ft.Row(
+                            [
+                                ft.Icon(ft.icons.LINK),
+                                ft.Text("Pay with Stripe"),
+                            ]
+                        ),
+                        on_click=lambda _: self.page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                    ),
+                    ft.PopupMenuItem(
+                        content=ft.Row(
+                            [
+                                ft.Icon(ft.icons.LINK),
+                                ft.Text("Pay with Cryptos"),
+                            ]
+                        ),
+                        on_click=lambda _: self.page.launch_url(
+                            "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"),
+                    ),
+                ]
+            )
+        )
 
 
 class TileManager(ft.ListView):
@@ -51,14 +82,16 @@ class TileManager(ft.ListView):
 
     def process_is_alive(self):
         while 1:
+            changed = False
             for tile in self.tiles.values():
-                if not tile.tasks_process.is_alive() and (self.page is not None) and (self.page.route == '/'):
+                if (not tile.tasks_process.is_alive() and tile.button_start.icon == ft.icons.PAUSE) and (self.page is not None) and (self.page.route == '/'):
                     tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
                     tile.button_stop.disabled = True
-                    tile.button_start.update()
-                    tile.button_stop.update()
                     tile.set_text("")
+                    changed = True
             sleep(0.1)
+            if changed and self.page is not None:
+                self.page.update()
 
     def update_tiles(self):
         is_alive = threading.Thread(target=self.process_is_alive)
@@ -114,6 +147,7 @@ class TileManager(ft.ListView):
             'auto_reconnect': True,
             'auto_captcha': True,
             'check_donation': False,
+            'gather_alliance_pit': False,
             'use_enhanced_buff': False,
             'gather_rss': False,
             'buy_merchant': False,
@@ -231,4 +265,6 @@ class TileManager(ft.ListView):
                 self.tiles[str(instance[0])].runner.adb.update_port()
             else:
                 self.add_tile(str(instance[0]))
+            self.tiles[str(instance[0])].config_overrider.items = []
+            self.tiles[str(instance[0])].config_overrider.refresh()
         self.update()

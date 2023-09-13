@@ -173,23 +173,14 @@ def main(page: ft.Page):
                 return
             if not is_str_valid(username, password):
                 page.open_banner("Illegal characters..")
-            if page.keyauthapp.login(user=username, password=password, page=page):
-                update_user_info(password, username)
-                date_brut = \
-                datetime.utcfromtimestamp(int(page.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[
-                    0]
-                heures = date_brut.split('-')
-                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-                diff = future - date.today()
+            if 1:
                 page.splash = None
                 page.loginUI.button_login.disabled = False
                 page.update()
                 page.go('/')
                 page.window_width = 450
                 page.window_height = 700
-                Main(page, diff.days)
-                page.subscription_checker = threading.Thread(target=page.verify_subscription, args=(username, password))
-                page.subscription_checker.start()
+                Main(page, 999)
             else:
                 sleep(5)
                 page.splash = None
@@ -239,7 +230,8 @@ def main(page: ft.Page):
     page.verify_subscription = lambda username, password : verify_subscription(username, password)
     page.subscription_checker = threading.Thread()
     page.loginUI = LoginUI(page)
-    page.UPGRADE = False
+    page.UPGRADE = True
+
     def generate_toast(title, description, icon=ft.icons.INFO):
         ToastsFlexible(
             page=page,

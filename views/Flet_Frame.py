@@ -11,7 +11,6 @@ class Frame(ft.Tabs):
         self.number = number
         self.settings = ft.Tabs()
         self.expand = True
-        self.width = 400
         self.logger = Logger(self,page)
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
         self.tabs.append(ft.Tab(content=self.logger, text="Logs"))

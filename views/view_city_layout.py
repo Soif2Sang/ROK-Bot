@@ -8,7 +8,7 @@ def viewCityLayout(page: ft.Page, params: flet_route.Params, basket: flet_route.
     page.tile_manager.tiles[str(params.instance_index)].runner.adb.save_screen("city")
 
     def returnHome():
-        page.window_width = 400
+        page.window_width = 450
         page.window_height = 700
         page.go("/")
 

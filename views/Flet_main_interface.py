@@ -15,7 +15,7 @@ def index(page: ft.Page, params, basket):
 def Main(page: ft.Page, days=950):
     page.title = f"Rok Bot - {days} Days left"
     page.frames = {}
-    page.window_width = 400
+    page.window_width = 450
     page.tile_manager = Flet_TileManager.TileManager(page)
 
     theme = ft.Theme()
@@ -32,7 +32,7 @@ def Main(page: ft.Page, days=950):
 def Main_cod(page: ft.Page, days=950):
     page.title = f"Cod Bot - {days} Days left"
     page.frames = {}
-    page.window_width = 400
+    page.window_width = 450
     page.tile_manager = Flet_TileManager_cod.TileManager(page)
 
     theme = ft.Theme()

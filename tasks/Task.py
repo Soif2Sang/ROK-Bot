@@ -1107,7 +1107,7 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='go_outside_city', confidence=0.8)
+        return self.find_img(target='go_outside_city', source=self.adb.get_cv2_img()[600:,0:200], confidence=0.8)
 
     @get_name
     def close_windows(self):

@@ -13,7 +13,7 @@ from tasks import Task_gather_rss_default
 from tasks.Task_gather_gem_default import GatherGem
 from tasks.Task_gather_rss_default import GatherRss
 from tasks.Task_kingdom_ranking import KingdomRanking
-from tasks.Task_maraudeurs import Maraudeurs
+from tasks.Task_maraudeurs import Marauders
 from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 from taskscod.COD_Task_daily_chest import DailyChest
 from taskscod.COD_Task_gather_rss import GatherRss
@@ -26,6 +26,7 @@ from tasks.Task_daily_vip import DailyVip
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_runner import TaskRunner
 from tasks.Task_upgrade_city import UpgradeCity
+from tasks.Task_alliance_pit import AlliancePit
 from utils.bot_adb import *
 
 #from rkp import *
@@ -66,7 +67,7 @@ class Bot():
         self.upgrade = UpgradeCity(self.main_task)
         self.rss  =  GatherRss(self.main_task)
         # self.rss2  =  GatherRss2(self.main_task)
-
+        self.AlliancePit = AlliancePit(self.main_task)
         self.research = AcademyResearch(self.main_task)
         self.quests = DailyQuests(self.main_task)
         self.vip = DailyVip(self.main_task)
@@ -80,7 +81,7 @@ class Bot():
         self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
         self.code_training = COD_Task_training.TroopTraining(self.main_task)
         self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
-        self.maraudeurs = Maraudeurs(self.main_task)
+        self.maraudeurs = Marauders(self.main_task)
         self.gem = GatherGem(self.main_task)
         # self.title = Title(self.main_task)
         #self.rkp = Rkp(self.adb)
@@ -217,7 +218,8 @@ def create_instance(number:int, master):
     adb = Adb(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
-    bot.task.print = lambda txt: print(txt)
+    bot.task.set_status = lambda text, color=None: print(f"[ {bot.task.name} ] Status = {text}")
+    bot.task.print = lambda text, color=None: print(f"[ {bot.task.name} ] {text}")
     bot.task.current_profile="1"
     frame = object()
     frame.pr_tasks_button = object()
@@ -283,7 +285,7 @@ def upgrade_instance(number:int):
             sleep(60)
             current_sec += 60
             bot.alliance.close_windows()
-            if current_sec>claim_allaince:
+            if current_sec > claim_allaince:
                 bot.alliance.run()
                 sleep(1)
                 current_sec = 0
@@ -464,8 +466,56 @@ def upgrade_all():
 if __name__ == "__main__":
     # upgrade_all()
 
-    bot =  get_bot(1)
+    bot =  get_bot(0)
 
+    print(bot.AlliancePit.run())
+
+    exit()
+    # bot.adb.find_img(source=screen, target='network_disconnected')
+    exit()
+    for i in range(2):
+        bot.adb.click(1225,225)
+        sleep(0.09)
+    exit()
+    while 1:
+        bot.task.recenter()
+        sleep(3)
+    # Load image
+    image = cv2.imread('C://Users//user//Pictures//BlueStacks//screen.png')
+
+
+    # Defining the autocanny function
+    def auto_canny(image, sigma=0.10):
+        # compute median of image thresholds
+        v = np.median(image)
+
+        # apply automatic canny edge detection using the computed median
+        lower = int(max(0, (1.0 - sigma) * v))
+        upper = int(min(255, (1.0 + sigma) * v))
+        edged = cv2.Canny(image, lower, upper)
+
+        # return the edged image
+        return edged
+
+
+    # defining the image, grayscale, blurred
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+
+    # apply Canny edge detection using a wide threshold, tight
+    # threshold, and automatically determined threshold
+    wide = cv2.Canny(blurred, 10, 200)
+    tight = cv2.Canny(blurred, 225, 250)
+    auto = auto_canny(blurred)
+
+    # show the images
+    cv2.imshow("Original", image)
+    cv2.imshow("Edges-wide", wide)
+    cv2.imshow("Edges-tight", tight)
+    cv2.imshow("Edges-auto", auto)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     import cv2
 

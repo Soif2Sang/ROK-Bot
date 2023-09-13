@@ -8,6 +8,7 @@ import win32gui
 import flet as ft
 from PIL import Image
 
+from tasks.Task_alliance_pit import AlliancePit
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
@@ -186,12 +187,18 @@ class TaskRunner(Task):
             ('auto_upgrade', UpgradeCity),
             ('train_troops', TroopTraining),
             ('transfer_enable', RssTransfer),
-            ('kill_marauders', Marauders)
+            ('kill_marauders', Marauders),
+            ('gather_alliance_pit', AlliancePit)
         ]
 
         lib_tasks = [task_class(self) for profile_key, task_class in tasks if profile.get(profile_key, False)]
         shuffle(lib_tasks)
         tasks_names = [task.task_name() for task in lib_tasks]
+
+        if ("AlliancePit" in tasks_names) and ("GatherRss" in tasks_names):
+            alliance_pit_index = tasks_names.index("AlliancePit")
+            gather_index = tasks_names.index("GatherRss")
+            lib_tasks[alliance_pit_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[alliance_pit_index]
 
         if ("HuntBarbarians" in tasks_names) and ("GatherRss" in tasks_names):
             hunt_index = tasks_names.index("HuntBarbarians")
@@ -199,7 +206,7 @@ class TaskRunner(Task):
             lib_tasks[hunt_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[hunt_index]
 
         if "BarbarianFort" in tasks_names:
-            for element in ["GatherRss", "GatherGem", "hunt_barbarians"]:
+            for element in ["GatherRss", "GatherGem", "HuntBarbarians"]:
                 if element in tasks_names:
                     fort_index = tasks_names.index("BarbarianFort")
                     element_index = tasks_names.index(element)

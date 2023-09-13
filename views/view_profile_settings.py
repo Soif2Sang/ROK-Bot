@@ -7,7 +7,7 @@ def viewProfileSettings(page: ft.Page, params: flet_route.Params, basket: flet_r
     page.window_height = 500
 
     def returnHome():
-        page.window_width = 400
+        page.window_width = 450
         page.window_height = 700
         page.go("/")
 

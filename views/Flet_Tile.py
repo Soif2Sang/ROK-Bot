@@ -5,7 +5,59 @@ from tasks.Task import Task
 import flet as ft
 
 from tasks.Task_runner import TaskRunner
-from utils.Task_utils import FileSingleton
+from utils.Task_utils import FileSingleton, get_all_vms_running
+
+
+class ConfigOverrider(ft.PopupMenuButton):
+    def __init__(self, index, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fileSingleton = FileSingleton()
+        self.index = index
+        self.config = self.fileSingleton.get_data()[self.index]
+        self.init()
+
+    def init(self):
+        self.items.append(ft.PopupMenuItem(text="Override Configs"))
+        self.items.append(ft.PopupMenuItem())
+        for vms in get_all_vms_running():
+            if str(vms[0]) != self.index:
+                self.items.append(
+                    ft.PopupMenuItem(
+                        text=vms[1], on_click=self.override_settings, data=vms[0]
+                    )
+                )
+
+    def update_config(self):
+        self.config = self.fileSingleton.get_data()[self.index]
+
+    def refresh(self):
+        self.clean()
+        self.init()
+        self.update()
+
+    def override_settings(self, e):
+        self.update_config()
+        data = self.fileSingleton.get_data()
+
+        instance = data[str(e.control.data)]["instance"]
+        name = data[str(e.control.data)]["name"]
+        host = data[str(e.control.data)]["host"]
+        port = data[str(e.control.data)]["port"]
+
+        data[str(e.control.data)] = self.config
+
+        data[str(e.control.data)]["instance"] = instance
+        data[str(e.control.data)]["name"] = name
+        data[str(e.control.data)]["host"] = host
+        data[str(e.control.data)]["port"] = port
+
+        self.fileSingleton.write_data(data)
+
+        if str(e.control.data) in self.page.frames:
+            for tab in self.page.frames[str(e.control.data)].settings.tabs:
+                tab.content.content.controls = []
+                tab.content.init()
+        self.page.update()
 
 
 class Tile(ft.Row):
@@ -41,15 +93,24 @@ class Tile(ft.Row):
             disabled=True,
             on_click=lambda _: self.stop()
         )
-        self.text_name = ft.Text(value=data[str(number)]['name'], width=70)
-        self.text_status = ft.Text(value="")
 
+        self.config_overrider = ConfigOverrider(number)
+        self.text_name = ft.Text(value=data[str(number)]['name'], width=70)
+        self.text_status = ft.Text(value="", width=120)
+
+        self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         self.controls.extend([
-            self.button_select,
-            self.button_start,
-            self.button_stop,
-            self.text_name,
-            self.text_status,
+            ft.Row(
+                controls=[
+                    self.button_select,
+                    self.button_start,
+                    self.button_stop,
+                    self.text_name,
+                    self.text_status,
+                ]
+            ),
+
+            self.config_overrider
         ]
         )
 

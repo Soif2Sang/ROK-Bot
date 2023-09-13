@@ -54,7 +54,7 @@ class SettingContainer(ft.Container):
         )
 
     def returnHome(self):
-        self.page.window_width = 400
+        self.page.window_width = 450
         self.page.window_height = 700
         self.page.go("/")
 
