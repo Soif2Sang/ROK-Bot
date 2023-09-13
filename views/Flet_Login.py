@@ -131,7 +131,7 @@ class LoginButton(ft.FilledButton):
             future = date(int(heures[0]), int(heures[1]), int(heures[2]))
             diff = future - date.today()
             self.page.clean()
-            self.page.window_width = 400
+            self.page.window_width = 450
             self.page.window_height = 700
             Flet_main_interface.Main(self.page, diff.days)
             threading.Thread(self.login_schedule(username, password))

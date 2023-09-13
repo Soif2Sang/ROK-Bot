@@ -23,7 +23,8 @@ class SettingContainer(ft.Container):
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.color_choice = color_bank[self.profile_index]
-        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300, spacing=3)
+        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=1, spacing=3)
+        self.padding = ft.padding.only(right=10)
         self.init()
 
     def init(self):
@@ -33,6 +34,7 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
         self.create_normal_switch("buy_merchant", "Buy merchant")
         self.create_normal_switch("check_donation", "Alliance donation")
+        self.create_normal_switch("gather_alliance_pit", "Gather Alliance Pit")
         self.create_advanced_switch("material_production", "Material Production", self.page_materials)
         self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")

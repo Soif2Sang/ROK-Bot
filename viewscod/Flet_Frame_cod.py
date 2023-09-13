@@ -52,7 +52,7 @@ class Frame(ft.Tabs):
         self.width = 400
         self.logger = Logger(self,page)
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
-        self.tabs.append(ft.Tab(content=self.logger, text="Logger"))
+        self.tabs.append(ft.Tab(content=self.logger, text="Logs"))
         self.tabs.append(InterfaceSettings(page))
         self.settings.tabs.append(ft.Tab(content=SettingContainer(page,self, int(number),1), text="Profile 1"))
         self.settings.tabs.append(ft.Tab(content=SettingContainer(page,self, int(number),2), text="Profile 2"))
@@ -79,7 +79,7 @@ class FrameUpgrade(ft.Tabs):
         self.width = 400
         self.logger = self.page.logger
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
-        self.tabs.append(ft.Tab(content=self.logger, text="Logger"))
+        self.tabs.append(ft.Tab(content=self.logger, text="Logs"))
         self.tabs.append(InterfaceSettings(page))
         self.settings.tabs.append(ft.Tab(content=SettingContainer(page,self, int(number),1), text="Profile 1"))
         self.settings.tabs.append(ft.Tab(content=SettingContainer(page,self, int(number),2), text="Profile 2"))
