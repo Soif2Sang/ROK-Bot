@@ -24,7 +24,7 @@ class DailyChest(Task):
     @get_name
     def claim_legendary_chest(self):
         try:
-            co = self.find_img(target='legendary_chest')
+            co = self.find_img(target='legendary_chest', confidence=0.85)
 
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))
@@ -66,6 +66,6 @@ class DailyChest(Task):
                 self.better_sleep((1.7, 3))
 
         if entered:
-            self.click(uniform(25, 55), uniform(20, 56))
+            self.close_windows()
             self.better_sleep((1.7, 3))
             self.close_chest_popup()

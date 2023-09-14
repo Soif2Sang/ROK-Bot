@@ -51,6 +51,4 @@ class ClaimCampaign(Task):
                 self.print("Claiming the daily rewards from the expedition.")
                 self.click(co[0] + uniform(0, 149), co[1] + uniform(0, 20))
                 self.better_sleep((1.3, 2.2))
-            for _ in range(2):
-                self.click(uniform(21, 56), uniform(14, 58))
-                self.better_sleep((1.3, 2.2))
+            self.close_windows()
