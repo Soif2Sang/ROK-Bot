@@ -37,7 +37,6 @@ class FletRowMaterial(ft.Row):
         self.data = self.FileSingleton.get_data()
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1",'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            print(self.data[str(self.instance_index)][keyword])
             self.FileSingleton.write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator","defeat_barbarians"]:
