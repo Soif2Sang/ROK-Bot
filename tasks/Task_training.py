@@ -48,7 +48,7 @@ class TroopTraining(Task):
             self.close_windows()
 
     def run(self):
-        if self.tile.page.UPGRADE:
+        if self.tile.initial_page.UPGRADE:
             return self.run_upgrade()
         names = ['infantry', 'cavalry', 'archery', "siege"]
         pos = {
