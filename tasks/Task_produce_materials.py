@@ -53,5 +53,4 @@ class ProduceMaterials(Task):
                         f"Producing {self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}']}")
                     self.click(materials[string][0], materials[string][1])
                     self.better_sleep((0.5, 1.2))
-            self.click(uniform(1080, 1100), uniform(70, 90))
-            self.better_sleep((1, 1.425))
+            self.close_windows()
