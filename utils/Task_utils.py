@@ -1,6 +1,5 @@
 import hashlib
 import json
-import logging
 import os
 import shutil
 import sys
@@ -201,7 +200,8 @@ def get_dic_instances():
             shutil.copy(rf'{path["bluestacks"]}', rf'{string}')
         with open(rf'{string}', 'r', encoding='utf-8') as file:
             data_instance = file.read().split('\n')
-    except:
+    except Exception as e:
+        print(e)
         raise OSError(
             "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'")
 
