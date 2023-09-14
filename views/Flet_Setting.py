@@ -14,20 +14,36 @@ color_bank = {
     3: "#dec433"
 }
 
+
 class SettingContainer(ft.Container):
     def __init__(self, page, tab, instance_index: int, profile_index: int):
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         self.tabs = tab
+        self.initial_page = page
         self.instance_index = instance_index
         self.profile_index = profile_index
-        self.color_choice = color_bank[self.profile_index]
-        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=1, spacing=3)
         self.padding = ft.padding.only(right=10)
         self.init()
 
+        self.theme=ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
+
+    def clean(self):
+        self.content = None
+
+    def update(self):
+        self.initial_page.update()
+
+    def reset(self):
+        self.clean()
+        self.init()
+        self.update()
+
     def init(self):
+        print(self.initial_page.window_height)
+        self.content: ft.ListView = ft.ListView(height=400, expand=1, padding=1, spacing=3)
+
         self.create_advanced_switch("gather_gem", "Gather gems", self.page_gems)
         self.create_advanced_switch("gather_rss", "Gather rss", self.page_rss)
         self.create_normal_switch("collect_ressource", "Collect city rss")
@@ -66,17 +82,10 @@ class SettingContainer(ft.Container):
             ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'],
                          on_change=lambda e: self.submit(e, 'API_KEY', str)))
 
-    def reset(self):
-        self.content.clean()
-        self.init()
-        self.update()
-
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", 'API_KEY']:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            # print(self.data[str(self.instance_index)][keyword])
-            # return self.FileSingleton.write_data(self.data)
         elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
             if e.control.value == '':
                 self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(0)
@@ -187,42 +196,42 @@ class SettingContainer(ft.Container):
             ),
             ft.Switch(
                 label="Spiral path method, \nonly if you gather near your city.",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_spiral_method"] else False,
                 on_change=lambda _: self.reverse_keyword("gather_gem_spiral_method")
             ),
             ft.Switch(
                 label="Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "recenter_feature"] else False,
                 on_change=lambda _: self.reverse_keyword("recenter_feature")
             ),
             ft.Switch(
                 label="Compare march speed (Increase gem gathering\nbut increase number of actions",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_compare_march_duration"] else False,
                 on_change=lambda _: self.reverse_keyword("gather_gem_compare_march_duration")
             ),
             ft.Switch(
                 label="Detect free marches without clicking on the node",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_swipe_check"] else False,
                 on_change=lambda _: self.reverse_keyword("gather_gem_swipe_check")
             ),
             ft.Switch(
                 label="Restart the game randomly",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "restart_game"] else False,
                 on_change=lambda _: self.reverse_keyword("restart_game")
             ),
             ft.Switch(
                 label="Experimental feature",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gem_experimental"] else False,
                 on_change=lambda _: self.reverse_keyword("gem_experimental")
@@ -374,7 +383,7 @@ class SettingContainer(ft.Container):
 
         self.content.controls.append(
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Training camps position",
-                              on_click=lambda _: self.page.go(
+                              on_click=lambda _: self.initial_page.go(
                                   f"/citylayout/{self.instance_index}/{self.profile_index}")))
         self.update()
 
@@ -410,7 +419,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Switch(
                 label="Use Yellow presets as gatherers",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "rss_custom_preset"] else False,
                 on_change=lambda _: self.reverse_keyword("rss_custom_preset")
@@ -419,7 +428,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Switch(
                 label="Use zoom out method\n(the bot won't read node levels but is safer)",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_rss_method"] else False,
                 on_change=lambda _: self.reverse_keyword("gather_rss_method")
@@ -465,7 +474,7 @@ class SettingContainer(ft.Container):
             ),
             ft.Divider(),
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Scout camp position",
-                              on_click=lambda _: self.page.go(
+                              on_click=lambda _: self.initial_page.go(
                                   f"/citylayout/{self.instance_index}/{self.profile_index}")),
 
         ]
@@ -495,7 +504,7 @@ class SettingContainer(ft.Container):
                          ),
             ft.Divider(),
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Hospital position",
-                              on_click=lambda _: self.page.go(
+                              on_click=lambda _: self.initial_page.go(
                                   f"/citylayout/{self.instance_index}/{self.profile_index}")),
 
         ]
@@ -557,7 +566,7 @@ class SettingContainer(ft.Container):
         )
         self.content.controls.append(ft.Divider())
         self.content.controls.append(ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set City Position",
-                                                       on_click=lambda _: self.page.go(
+                                                       on_click=lambda _: self.initial_page.go(
                                                            f"/citylayout/{self.instance_index}/{self.profile_index}")))
         self.update()
 
@@ -685,14 +694,14 @@ class SettingContainer(ft.Container):
 
             ft.Switch(
                 label="Look for Marauders forts",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "mauraudeurs_forts"] else False,
                 on_change=lambda _: self.reverse_keyword("mauraudeurs_forts")
             ),
             ft.Switch(
                 label="Skip commander back",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "rally_skip_back"] else False,
                 on_change=lambda _: self.reverse_keyword("rally_skip_back")
@@ -766,7 +775,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Switch(
                 label="Restart the game after switching\nto a new character (prevent freeze)",
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "leave_game_switch_character"] else False,
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character")
@@ -851,7 +860,7 @@ class SettingContainer(ft.Container):
                         text="Settings",
                         icon_color="#3b8ed0",
                         icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.page.go(f"/profile/{self.instance_index}/1/settings"),
+                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/1/settings"),
                         style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
                     )
                 ],
@@ -870,7 +879,7 @@ class SettingContainer(ft.Container):
                         text="Settings",
                         icon_color="#ba4543",
                         icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.page.go(f"/profile/{self.instance_index}/2/settings"),
+                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/2/settings"),
                         style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
                     )
                 ],
@@ -889,7 +898,7 @@ class SettingContainer(ft.Container):
                         text="Settings",
                         icon_color="#dec433",
                         icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.page.go(f"/profile/{self.instance_index}/3/settings"),
+                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/3/settings"),
                         style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
                     )
                 ],
@@ -969,7 +978,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Switch(
                 label=text,
-                active_track_color=self.color_choice,
+
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     keyword] else False,
                 on_change=lambda _: self.reverse_keyword(keyword)
@@ -984,7 +993,7 @@ class SettingContainer(ft.Container):
                     controls=[
                         ft.Switch(
                             label=text,
-                            active_track_color=self.color_choice,
+
                             value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                 keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
@@ -992,7 +1001,6 @@ class SettingContainer(ft.Container):
                         ),
                         ft.OutlinedButton(
                             text="Settings",
-                            icon_color=self.color_choice,
                             icon=ft.icons.SETTINGS,
                             on_click=lambda _: function()
                             , style=ButtonStyle(shape={
@@ -1009,13 +1017,12 @@ class SettingContainer(ft.Container):
                     controls=[
                         ft.Switch(
                             label=text,
-                            active_track_color=self.color_choice,
+
                             value=True if self.data[str(self.instance_index)][keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
                             text="Settings",
-                            icon_color=self.color_choice,
                             icon=ft.icons.SETTINGS,
                             on_click=lambda _: function(), style=ButtonStyle(shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
@@ -1033,7 +1040,7 @@ class SettingContainer(ft.Container):
             controls=[
                 ft.Switch(
                     label="Kill barbs with AP",
-                    active_track_color=self.color_choice,
+
                     value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                         "defeat_barbarians"] else False,
                     on_change=lambda _: self.reverse_keyword("defeat_barbarians")
@@ -1049,7 +1056,7 @@ class SettingContainer(ft.Container):
             controls=[
                 ft.Switch(
                     label="Reduce bot speed",
-                    active_track_color=self.color_choice,
+
                     value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                         "slow_mode"] else False,
                     on_change=lambda _: self.reverse_keyword("slow_mode")

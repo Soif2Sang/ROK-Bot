@@ -9,10 +9,11 @@ from utils.Task_utils import FileSingleton, get_all_vms_running
 
 
 class ConfigOverrider(ft.PopupMenuButton):
-    def __init__(self, index, *args, **kwargs):
+    def __init__(self, page, index, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fileSingleton = FileSingleton()
         self.index = index
+        self.initial_page = page
         self.config = self.fileSingleton.get_data()[self.index]
         self.init()
 
@@ -31,9 +32,9 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.config = self.fileSingleton.get_data()[self.index]
 
     def refresh(self):
-        self.clean()
+        self.items = []
         self.init()
-        self.update()
+        self.initial_page.update()
 
     def override_settings(self, e):
         self.update_config()
@@ -53,11 +54,11 @@ class ConfigOverrider(ft.PopupMenuButton):
 
         self.fileSingleton.write_data(data)
 
-        if str(e.control.data) in self.page.frames:
-            for tab in self.page.frames[str(e.control.data)].settings.tabs:
+        if str(e.control.data) in self.initial_page.frames:
+            for tab in self.initial_page.frames[str(e.control.data)].settings.tabs:
                 tab.content.content.controls = []
                 tab.content.init()
-        self.page.update()
+        self.initial_page.update()
 
 
 class Tile(ft.Row):
@@ -65,16 +66,15 @@ class Tile(ft.Row):
         super().__init__(**kwargs)
         self.FileSingleton = FileSingleton()
         data = self.FileSingleton.get_data()
-
-        self.page = page
         self.number = number
-
+        self.initial_page = page
         self.paused = False
         self.stopped = False
         self.tasks_process = None
         self.main_task = Task(self)
         self.runner = TaskRunner(self.main_task, self)
-        if self.page.UPGRADE:
+
+        if self.initial_page.UPGRADE:
             self.tasks_process = threading.Thread(target=self.runner.run_update)
         else:
             self.tasks_process = threading.Thread(target=self.runner.run)
@@ -94,7 +94,7 @@ class Tile(ft.Row):
             on_click=lambda _: self.stop()
         )
 
-        self.config_overrider = ConfigOverrider(number)
+        self.config_overrider = ConfigOverrider(self.initial_page, number)
         self.text_name = ft.Text(value=data[str(number)]['name'], width=70)
         self.text_status = ft.Text(value="", width=120)
 
@@ -109,22 +109,22 @@ class Tile(ft.Row):
                     self.text_status,
                 ]
             ),
-
             self.config_overrider
-        ]
+            ]
         )
 
     def select(self):
-        self.page.tile_manager.unselect_all()
+        self.initial_page.tile_manager.unselect_all()
         self.button_select.selected = True
-        # print(f"{len(self.page.controls)>2 =}")
-        if len(self.page.controls) > 2:
-            self.page.controls.pop()
-        if self.number not in self.page.frames:
-            self.page.frames[self.number] = Frame(self.page, self.number)
-        self.page.add(self.page.frames[self.number])
-        # self.page.title = f"{time()}"
-        self.page.update()
+
+        if len(self.initial_page.body.controls) > 2:
+            self.initial_page.body.controls.pop()
+
+        if self.number not in self.initial_page.frames:
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+
+        self.initial_page.body.controls.append(self.initial_page.frames[self.number])
+        self.initial_page.update()
 
     def start(self):
         if not self.tasks_process.is_alive():
@@ -145,8 +145,7 @@ class Tile(ft.Row):
                 self.paused = True
                 self.stopped = False
 
-        self.button_start.update()
-        self.button_stop.update()
+        self.initial_page.update()
 
     def process_is_alive(self):
         self.tasks_process.join()
@@ -154,25 +153,19 @@ class Tile(ft.Row):
         self.stopped = False
         self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
         self.button_stop.disabled = True
-        self.button_start.update()
-        self.button_stop.update()
+        self.initial_page.update()
         self.set_text("")
 
     def start_tasks(self):
-        # print(f"{self.tasks_process.is_alive() = }")
         if not self.tasks_process.is_alive():
-            if self.page.UPGRADE:
+            if self.initial_page.UPGRADE:
                 self.tasks_process = threading.Thread(target=self.runner.run_update)
             else:
                 self.tasks_process = threading.Thread(target=self.runner.run)
             self.tasks_process.start()
-            # asyncio.create_task(run(self.runner.run))
-            # is_alive = threading.Thread(target=self.process_is_alive)
-            # is_alive.deamon = True
-            # is_alive.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
-            self.page.generate_toast('Warning', "Task is frozen, you may need to restart the bot.")
+            self.initial_page.generate_toast('Warning', "Task is frozen, you may need to restart the bot.")
             print("Task is frozen, you may need to restart the bot.")
 
     def stop(self):
@@ -183,26 +176,24 @@ class Tile(ft.Row):
         self.button_stop.disabled = True
 
         self.tasks_process = threading.Thread(target=self.runner.run,daemon=True)
-        self.button_start.update()
-        self.button_stop.update()
+        self.initial_page.update()
         self.set_text("")
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        if (self.page is not None) and (self.page.route == '/'):
-            self.update()
+        self.initial_page.update()
 
     def get_text(self):
         return self.text_status.value
 
     def add_text(self, phrase: str, color=None):
-        if self.number not in self.page.frames:
-            self.page.frames[self.number] = Frame(self.page, self.number)
+        if self.number not in self.initial_page.frames:
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
-        self.page.frames[self.number].add_text(phrase, color)
+        self.initial_page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
-        if self.number not in self.page.frames:
-            self.page.frames[self.number] = Frame(self.page, self.number)
+        if self.number not in self.initial_page.frames:
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
-        self.page.frames[self.number].add_divider()
+        self.initial_page.frames[self.number].add_divider()

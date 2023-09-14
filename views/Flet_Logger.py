@@ -15,7 +15,7 @@ class Logger(ft.ListView):
         self.limit_logs = self.data["interface"].get("limit_logs", False)
 
         self.parent = frame
-        self.page = page
+        self.initial_page = page
 
     def add_text(self, texte:str, color=None):
         if color is None:
@@ -25,15 +25,13 @@ class Logger(ft.ListView):
         if self.limit_logs and len(self.controls) > 300:
             self.controls.pop(0)
         self.controls.append(text)
-        if (self.page is not None) and self.parent == self.page.controls[-1] and ((self.page is not None) and (self.page.route == '/')):
-            self.update()
+        self.initial_page.update()
 
     def add_divider(self):
         if len(self.controls) > 300 and self.limit_logs:
             self.controls.pop(0)
         self.controls.append(ft.Divider())
-        if self.parent == self.page.controls[-1] and ((self.page is not None) and (self.page.route == '/')):
-            self.update()
+        self.initial_page.update()
 
 
 def get_date():
@@ -48,7 +46,7 @@ class LoggerUpgrade(ft.ListView):
             data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
         fileSingleton.write_data(data)
         self.auto_scroll= True
-        self.page= page
+        self.initial_page= page
 
     def add_text(self, texte:str, color=None):
         if color is None:
@@ -56,5 +54,5 @@ class LoggerUpgrade(ft.ListView):
         else:
             text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)
         self.controls.append(text)
-        if not isinstance(self.page.controls[-1],ft.Divider):
+        if not isinstance(self.initial_page.controls[-1],ft.Divider):
             self.update()

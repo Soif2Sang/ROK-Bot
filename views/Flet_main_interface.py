@@ -1,6 +1,10 @@
+import threading
+from time import sleep
+
 import flet as ft
 from flet_route import path, Routing
 
+from views.Flet_body import Body
 from views import Flet_TileManager
 from viewscod import Flet_TileManager_cod
 color_bank ={
@@ -15,19 +19,34 @@ def index(page: ft.Page, params, basket):
 def Main(page: ft.Page, days=950):
     page.title = f"Rok Bot - {days} Days left"
     page.frames = {}
-    page.window_width = 450
-    page.tile_manager = Flet_TileManager.TileManager(page)
 
     theme = ft.Theme()
     theme.page_transitions.windows = ft.PageTransitionTheme.FADE_UPWARDS
     page.theme = theme
     page.update()
 
-    page.add(page.tile_manager)
-    page.add(ft.Divider())
-    page.tile_manager.refresh()
-    page.tile_manager.update_tiles()
+    body = Body(page)
+    page.body = body
+    page.add(body)
 
+    body.tile_manager.refresh()
+
+    def process_is_alive():
+        while 1:
+            changed = False
+            for tile in body.tile_manager.tiles.values():
+                if (not tile.tasks_process.is_alive() and tile.button_start.icon == ft.icons.PAUSE) and (page.route == '/'):
+                    tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+                    tile.button_stop.disabled = True
+                    tile.set_text("")
+                    changed = True
+            sleep(0.1)
+            if changed:
+                page.update()
+
+    is_alive = threading.Thread(target=process_is_alive)
+    is_alive.deamon = True
+    is_alive.start()
 
 def Main_cod(page: ft.Page, days=950):
     page.title = f"Cod Bot - {days} Days left"

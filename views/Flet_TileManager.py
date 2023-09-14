@@ -8,61 +8,107 @@ from views.Flet_Tile import Tile
 from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances
 import re
 class NavigationBar(ft.Row):
-    def __init__(self, tile_manager, **kwargs):
+    def __init__(self, page, tile_manager, **kwargs):
         super().__init__(**kwargs)
+        self.initial_page = page
         self.tileManager = tile_manager
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
         self.button_refresh = ft.OutlinedButton(text="Refresh", icon=ft.icons.REFRESH_ROUNDED,
                                                 on_click=lambda _: self.tileManager.refresh(), style=ButtonStyle(shape={
                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-            }, bgcolor=None if not self.tileManager.page.UPGRADE else ft.colors.AMBER_100)
+            }, bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100)
                                                 )
 
         self.controls.append(self.button_refresh)
 
-        self.controls.append(
-            ft.PopupMenuButton(
-                tooltip="Extend my account",
-                icon=ft.icons.ADD_SHOPPING_CART_ROUNDED,
-                items=[
-                    ft.PopupMenuItem(
-                        content=ft.Row(
-                            [
-                                ft.Icon(ft.icons.LINK),
-                                ft.Text("Pay with Stripe"),
-                            ]
-                        ),
-                        on_click=lambda _: self.page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
-                    ),
-                    ft.PopupMenuItem(
-                        content=ft.Row(
-                            [
-                                ft.Icon(ft.icons.LINK),
-                                ft.Text("Pay with Cryptos"),
-                            ]
-                        ),
-                        on_click=lambda _: self.page.launch_url(
-                            "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"),
-                    ),
-                ]
-            )
+        # self.controls.append(
+        #     ft.PopupMenuButton(
+        #         tooltip="Extend my account",
+        #         icon=ft.icons.ADD_SHOPPING_CART_ROUNDED,
+        #         items=[
+        #             ft.PopupMenuItem(
+        #                 content=ft.Row(
+        #                     [
+        #                         ft.Icon(ft.icons.LINK),
+        #                         ft.Text("Pay with Stripe"),
+        #                     ]
+        #                 ),
+        #                 on_click=lambda _: self.initial_page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+        #             ),
+        #             ft.PopupMenuItem(
+        #                 content=ft.Row(
+        #                     [
+        #                         ft.Icon(ft.icons.LINK),
+        #                         ft.Text("Pay with Cryptos"),
+        #                     ]
+        #                 ),
+        #                 on_click=lambda _: self.initial_page.launch_url(
+        #                     "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"),
+        #             ),
+        #         ]
+        #     )
+        # )
+
+        def close_banner(e):
+            page.banner.open = False
+            page.update()
+
+        page.banner = ft.Banner(
+            bgcolor=ft.colors.WHITE30,
+            content=ft.Column(controls=[
+                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
+                              on_click=lambda _: page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                              ),
+                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
+                              on_click=lambda _: page.launch_url("https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
+
+            ]),
+            actions=[
+                ft.TextButton("Close", on_click=close_banner),
+            ],
+            content_padding=ft.padding.all(5)
         )
 
+        def show_banner_click(e):
+            page.banner.open = True
+            page.update()
+
+        pattern = r'(\d+) Days left'
+        match = re.search(pattern, page.title)
+        days_left_str = match.group(1)
+
+        days_left_int = int(days_left_str)
+
+        if days_left_int > 10:
+            button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
+                                       bgcolor=ft.colors.GREEN_100, color="black")
+        elif 10 >= days_left_int > 5:
+            button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
+                                       bgcolor=ft.colors.ORANGE_300, color="black")
+        else:
+            button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
+                                       bgcolor=ft.colors.RED_200, color="black")
+
+        self.controls.append(ft.OutlinedButton(text="Renew", icon=ft.icons.SHOPPING_CART_OUTLINED,
+                                               on_click=show_banner_click, style=button_style))
 
 class TileManager(ft.ListView):
-    def __init__(self, page, **kwargs):
+    def __init__(self, page: ft.Page, **kwargs):
         super().__init__(**kwargs)
-        self.page = page
+        self.initial_page = page
         self.height = 250
         self.expand = 0
         self.FileSingleton = FileSingleton()
         self.tiles: dict[str, Tile] = {}
-        self.navigation_bar: NavigationBar = NavigationBar(self)
+        self.navigation_bar: NavigationBar = NavigationBar(self.initial_page, self)
         self.controls.append(self.navigation_bar)
 
+    def update(self):
+        self.initial_page.update()
+
     def add_tile(self, number: str):
-        self.tiles[number] = Tile(self.page, number)
+        self.tiles[number] = Tile(self.initial_page, number)
         self.controls.append(self.tiles[number])
         self.update()
 
@@ -84,14 +130,14 @@ class TileManager(ft.ListView):
         while 1:
             changed = False
             for tile in self.tiles.values():
-                if (not tile.tasks_process.is_alive() and tile.button_start.icon == ft.icons.PAUSE) and (self.page is not None) and (self.page.route == '/'):
+                if (not tile.tasks_process.is_alive() and tile.button_start.icon == ft.icons.PAUSE) and (self.initial_page is not None) and (self.initial_page.route == '/'):
                     tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
                     tile.button_stop.disabled = True
                     tile.set_text("")
                     changed = True
             sleep(0.1)
-            if changed and self.page is not None:
-                self.page.update()
+            if changed and self.initial_page is not None:
+                self.initial_page.update()
 
     def update_tiles(self):
         is_alive = threading.Thread(target=self.process_is_alive)

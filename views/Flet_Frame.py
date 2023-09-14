@@ -5,6 +5,12 @@ from views.Flet_Logger import Logger
 from views.Flet_Setting import SettingContainer
 from utils.Task_utils import FileSingleton
 
+color_bank = {
+    1: "#3b8ed0",
+    2: "#ba4543",
+    3: "#dec433"
+}
+
 class Frame(ft.Tabs):
     def __init__(self, page, number: str, **kwargs):
         super().__init__(**kwargs)
@@ -37,12 +43,12 @@ class Frame(ft.Tabs):
 class FrameUpgrade(ft.Tabs):
     def __init__(self, page, number: str, **kwargs):
         super().__init__(**kwargs)
-        self.page = page
+        self.initial_page = page
         self.number = number
         self.settings = ft.Tabs()
         self.expand = True
         self.width = 400
-        self.logger = self.page.logger
+        self.logger = self.initial_page.logger
         self.FileSingleton = FileSingleton()
 
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
