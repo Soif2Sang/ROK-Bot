@@ -214,7 +214,7 @@ class TaskRunner(Task):
 
         if profile.get('upgrade_city', False):
             lib_tasks.append(UpgradeCity(self))
-        if ("TroopTraining" in tasks_names) and self.tile.page.UPGRADE:
+        if ("TroopTraining" in tasks_names) and self.tile.initial_page.UPGRADE:
             lib_tasks.pop(tasks_names.index("TroopTraining"))
             lib_tasks.append(TroopTraining(self))
         return lib_tasks
