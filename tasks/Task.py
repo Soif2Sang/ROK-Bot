@@ -7,7 +7,6 @@ import traceback
 from datetime import date
 from random import uniform, randint
 from time import sleep
-import logging
 import re
 import cv2
 import win32api
@@ -48,13 +47,6 @@ class Task():
         self.pid = get_window_pid(self.adb.name)
         self.language: str | None = None
         self.name: str = self.adb.name
-
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-        self.logger = logging.getLogger(self.name)
-        self.logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler(f'./logs/{self.name}.log')
-        file_handler.setFormatter(formatter)
-        self.logger.addHandler(file_handler)
         self.DEV = False
 
     def herite(self, MainTask):
@@ -311,7 +303,7 @@ class Task():
             return False
 
     def generate_toast(self, title, description, icon=ft.icons.INFO):
-        self.tile.page.generate_toast(title, description, icon=ft.icons.INFO)
+        self.tile.initial_page.generate_toast(title, description, icon=ft.icons.INFO)
 
     @get_name
     def zoom_out_city(self) -> None:
