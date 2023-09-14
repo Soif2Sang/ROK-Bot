@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import sys
+import traceback
 from datetime import datetime, date
 import threading
 from time import sleep
@@ -176,17 +177,18 @@ def main(page: ft.Page):
             if 1:
                 page.splash = None
                 page.loginUI.button_login.disabled = False
-                page.update()
-                page.go('/')
                 page.window_width = 450
                 page.window_height = 700
-                Main(page, 999)
+                Main(page, 15)
+                page.update()
+                page.go('/')
             else:
                 sleep(5)
                 page.splash = None
                 page.loginUI.button_login.disabled = False
                 page.update()
         except Exception as e:
+            traceback.print_exc()
             print(e)
             page.window_close()
             os.system("taskkill /f /im flet.exe >nul 2>&1")
@@ -231,6 +233,7 @@ def main(page: ft.Page):
     page.subscription_checker = threading.Thread()
     page.loginUI = LoginUI(page)
     page.UPGRADE = True
+    page.body = ft.Container()
 
     def generate_toast(title, description, icon=ft.icons.INFO):
         ToastsFlexible(
@@ -256,7 +259,7 @@ def main(page: ft.Page):
         ),
         path(
             url="/",
-            clear=True,
+            clear=False,
             view=index
         ),
         path(url=f"/citylayout/:instance_index/:profile_index",
@@ -277,8 +280,9 @@ def main(page: ft.Page):
     page.go('/login')
     page.update()
 
+
 def index(page: ft.Page, params, basket):
-    return  ft.View("/", controls=page.controls,)
+    return ft.View("/", controls=[page.body],)
 
 def loginView(page: ft.Page, params, basket):
     return page.loginUI
