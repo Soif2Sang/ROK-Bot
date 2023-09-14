@@ -183,11 +183,11 @@ def main(page: ft.Page):
                 diff = future - date.today()
                 page.splash = None
                 page.loginUI.button_login.disabled = False
-                page.update()
-                page.go('/')
                 page.window_width = 450
                 page.window_height = 700
                 Main(page, diff.days)
+                page.update()
+                page.go('/')
                 page.subscription_checker = threading.Thread(target=page.verify_subscription, args=(username, password))
                 page.subscription_checker.start()
             else:
@@ -240,6 +240,8 @@ def main(page: ft.Page):
     page.subscription_checker = threading.Thread()
     page.loginUI = LoginUI(page)
     page.UPGRADE = False
+    page.body = ft.Container()
+
     def generate_toast(title, description, icon=ft.icons.INFO):
         ToastsFlexible(
             page=page,
