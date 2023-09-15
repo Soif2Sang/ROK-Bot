@@ -4,8 +4,8 @@ from os.path import exists
 
 import flet as ft
 
-from views.Flet_TileManager import NavigationBar
-from views.Flet_Tile_upgrade import TileUpgrade
+from tiles.handler.tile_handler import NavigationBar
+from tiles.tile_upgrade import TileUpgrade
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from utils.Task_utils import get_path, get_data, write_data

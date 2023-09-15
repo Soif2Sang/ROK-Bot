@@ -1,8 +1,8 @@
 import flet as ft
 from flet_route import path, Routing
 
-from views.Flet_Logger import LoggerUpgrade
-from views.Flet_TileManager_upgrade import TileManagerUpgrade
+from tiles.handler.logging_handler import LoggerUpgrade
+from tiles.handler.tile_handler_upgrade import TileManagerUpgrade
 
 color_bank ={
     1:"#3b8ed0",

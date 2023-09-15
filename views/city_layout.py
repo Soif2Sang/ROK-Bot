@@ -1,21 +1,40 @@
-import sys
-import multiprocessing
+import base64
 import traceback
 
 import flet as ft
+import flet_route
+from Task_utils import FileSingleton
 
-from utils.Task_utils import FileSingleton
 
-import base64
+def viewCityLayout(page: ft.Page, params: flet_route.Params, basket: flet_route.Basket) -> ft.View:
+    page.window_width = 900
+    page.window_height = 500
+    page.tile_manager.tiles[str(params.instance_index)].runner.adb.save_screen("city")
 
-global sel, profile
+    def returnHome():
+        page.window_width = 450
+        page.window_height = 700
+        page.go("/")
 
+    return ft.View(
+        f"/citylayout/{params.instance_index}/{params.profile_index}",
+        controls=[
+            ft.Container(bgcolor="#ecf0f1",
+                         content=ft.Row(controls=[
+                             ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: returnHome()),
+                             ft.Text(value="Go back")
+                         ]
+                         )
+                         ),
+            ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
+            CityPlacement(params.instance_index, params.profile_index)
+        ]
+    )
 
 def image_to_base64(image_path):
     with open(image_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
         return encoded_string.decode('utf-8')
-
 
 class CityPlacement(ft.Container):
     button = {
@@ -101,12 +120,3 @@ class CityPlacement(ft.Container):
             element.color = "blue"
         self.buttons.page.update()
         self.FileSingleton.write_data(self.data)
-
-
-def main2(page):
-    page.controls.append(CityPlacement(0, 3))
-    page.update()
-
-
-if __name__ == "__main__":
-    ft.app(target=main2)
