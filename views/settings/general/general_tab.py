@@ -1,24 +1,19 @@
+from views.settings.general._general import GeneralSettings
 from utils.Task_utils import FileSingleton
 import flet as ft
 
 class InterfaceSettings(ft.Tab):
-    def __init__(self, page, **kwargs):
+    def __init__(self, page, instance, **kwargs):
         super().__init__(**kwargs)
+        self.text="General Settings"
         self.FileSingleton = FileSingleton()
         data = self.FileSingleton.get_data()
+
         if "interface" not in data:
             data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
             self.FileSingleton.write_data(data)
-        self.content = ft.Column(
-            controls=[
-                ft.Row(controls=[ft.Switch(label="Logger autoscroll",value=data["interface"]["auto_scroll"],on_change=lambda _: self.reverse_keyword("auto_scroll"))]),
-                ft.Row(controls=[ft.Switch(label="Limit Logs to 300 (reduce lags)", value=data["interface"].get("limit_logs",False),
-                                           on_change=lambda _: self.reverse_keyword("limit_logs"))]),
-                ft.Row(controls=[ft.Switch(label="Enable Discord Notifications", value=data["discord"]["enabled"],on_change=lambda _: self.reverse_keyword("enabled"))]),
-                ft.Row(controls=[ft.TextField(label="Your discord ID", value=data["discord"]["user_id"],on_change=self.submit)])
-            ]
-        )
-        self.text="General Settings"
+
+        self.content = GeneralSettings(page, self, int(instance))
 
 
     def reverse_keyword(self, keyword:str):

@@ -1,0 +1,43 @@
+import flet as ft
+from flet_core import ButtonStyle, RoundedRectangleBorder
+from utils.Task_utils import FileSingleton
+
+color_bank = {
+    1: "#3b8ed0",
+    2: "#ba4543",
+    3: "#dec433"
+}
+
+class PageSettings(ft.Container):
+    def __init__(self, page, tab, instance_index: int, profile_index: int):
+        super().__init__()
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
+        self.tabs = tab
+        self.initial_page = page
+        self.instance_index = instance_index
+        self.profile_index = profile_index
+        self.padding = ft.padding.only(right=10, top=5, left=0, bottom=0)
+        self.content: ft.ListView = ft.ListView(height=400, expand=1, padding=1, spacing=3)
+
+        self.theme=ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
+        self.init()
+
+    def add(self, *control):
+        for ctrl in control:
+            self.content.controls.append(ctrl)
+
+    def clean(self):
+        self.content.controls = []
+        self.data = self.FileSingleton.get_data()
+
+    def update(self):
+        self.initial_page.update()
+
+    def reset(self):
+        self.clean()
+        self.init()
+        self.update()
+
+    def init(self):
+        pass

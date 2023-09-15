@@ -1,6 +1,6 @@
 import threading
 
-from views.Flet_Frame import Frame
+from tiles.handler.config_handler import Frame
 from tasks.Task import Task
 import flet as ft
 

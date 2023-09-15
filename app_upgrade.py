@@ -3,16 +3,17 @@ import json
 import os
 import subprocess
 import sys
+import traceback
 from datetime import datetime, date
 import threading
 from time import sleep
 from flet_route import path, Routing
 import flet as ft
 
-from views.view_city_layout import viewCityLayout
-from views.view_profile_settings import viewProfileSettings
-from views.Flet_main_interface import Main
-from views.Flet_Path import find_file_in_all_drives
+from views.city_layout import viewCityLayout
+from views.profile_settings import viewProfileSettings
+from views._main import Main
+from views.config_path import find_file_in_all_drives
 from utils.Task_utils import FileSingleton
 from utils.auth import selfApi
 from utils.flet_toast.toasts_flexible import ToastsFlexible
@@ -173,32 +174,24 @@ def main(page: ft.Page):
                 return
             if not is_str_valid(username, password):
                 page.open_banner("Illegal characters..")
-            if page.keyauthapp.login(user=username, password=password, page=page):
-                update_user_info(password, username)
-                date_brut = \
-                datetime.utcfromtimestamp(int(page.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[
-                    0]
-                heures = date_brut.split('-')
-                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-                diff = future - date.today()
+            if 1:
                 page.splash = None
                 page.loginUI.button_login.disabled = False
                 page.window_width = 450
                 page.window_height = 700
-                Main(page, diff.days)
+                Main(page, 15)
                 page.update()
                 page.go('/')
-                page.subscription_checker = threading.Thread(target=page.verify_subscription, args=(username, password))
-                page.subscription_checker.start()
             else:
                 sleep(5)
                 page.splash = None
                 page.loginUI.button_login.disabled = False
                 page.update()
         except Exception as e:
+            traceback.print_exc()
             print(e)
             page.window_close()
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
+            # os.system("taskkill /f /im flet.exe >nul 2>&1")
             sys.exit()
 
     def verify_subscription(username, password):
@@ -239,7 +232,7 @@ def main(page: ft.Page):
     page.verify_subscription = lambda username, password : verify_subscription(username, password)
     page.subscription_checker = threading.Thread()
     page.loginUI = LoginUI(page)
-    page.UPGRADE = False
+    page.UPGRADE = True
     page.body = ft.Container()
 
     def generate_toast(title, description, icon=ft.icons.INFO):
@@ -266,7 +259,7 @@ def main(page: ft.Page):
         ),
         path(
             url="/",
-            clear=True,
+            clear=False,
             view=index
         ),
         path(url=f"/citylayout/:instance_index/:profile_index",
@@ -287,8 +280,9 @@ def main(page: ft.Page):
     page.go('/login')
     page.update()
 
+
 def index(page: ft.Page, params, basket):
-    return  ft.View("/", controls=page.controls,)
+    return ft.View("/", controls=[page.body],)
 
 def loginView(page: ft.Page, params, basket):
     return page.loginUI

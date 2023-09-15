@@ -4,7 +4,7 @@ from time import sleep
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from views.Flet_Tile import Tile
+from tiles.tile import Tile
 from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances
 import re
 class NavigationBar(ft.Row):
@@ -93,7 +93,7 @@ class NavigationBar(ft.Row):
         self.controls.append(ft.OutlinedButton(text="Renew", icon=ft.icons.SHOPPING_CART_OUTLINED,
                                                on_click=show_banner_click, style=button_style))
 
-class TileManager(ft.ListView):
+class TileHandler(ft.ListView):
     def __init__(self, page: ft.Page, **kwargs):
         super().__init__(**kwargs)
         self.initial_page = page

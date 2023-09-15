@@ -2,10 +2,8 @@ import threading
 from time import sleep
 
 import flet as ft
-from flet_route import path, Routing
 
-from views.Flet_body import Body
-from views import Flet_TileManager
+from views._body import Body
 from viewscod import Flet_TileManager_cod
 color_bank ={
     1:"#3b8ed0",
