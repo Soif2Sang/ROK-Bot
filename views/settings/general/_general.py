@@ -48,7 +48,7 @@ class GeneralSettings(PageSettings):
             ),
         )
         self.create_advanced_switch("loop_task", "Do tasks again", PageRedo)
-        self.create_advanced_switch("scheduler", "Profiles", PageProfiles)
+        self.create_advanced_switch("scheduler", "run Multiple Profile", PageProfiles)
         self.add(
             ft.TextField(label="Custom API key:", value=self.data[str(self.instance_index)]['API_KEY'],
                          on_change=lambda e: self.submit(e, 'API_KEY', str)),
