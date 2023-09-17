@@ -1,22 +1,41 @@
 import hashlib
 import json
-import os
+import re
 import shutil
 import sys
+from datetime import date
 from datetime import datetime
 from functools import wraps
 from os.path import exists
 from threading import Lock
-from time import perf_counter, sleep
-from datetime import date
-from decohints import decohints
+from time import perf_counter
+
 import pyautogui
 import win32gui
 import win32process
 from PIL import Image
-from numpy import ndarray, array
-import re
+from decohints import decohints
+from numpy import ndarray
+
 dir = "./"
+DEBUG = False
+
+def word_to_color(word):
+    hash_object = hashlib.sha256()
+    hash_object.update(word.encode('utf-8'))
+    hex_color = hash_object.hexdigest()[:6]
+    return f"#{hex_color}"
+
+
+def colorize_name(word):
+    hex_color = word_to_color(word)
+    hex_color = hex_color.lstrip('#')
+
+    text_color_code = f"\033[38;2;{int(hex_color[0:2], 16)};{int(hex_color[2:4], 16)};{int(hex_color[4:6], 16)}m"
+    reset_code = "\033[0m"
+
+    return f"{text_color_code}{word}{reset_code}"
+
 
 def custom_key(item):
     parts = item['instance'].split('_')
@@ -24,15 +43,17 @@ def custom_key(item):
         return -1
     return int(parts[1])
 
+
 class FileSingleton:
     __instance = None
     FileLock = Lock()
-    def __new__(cls):
-       if cls.__instance is None:
-           cls.__instance = super().__new__(cls)
-       return cls.__instance
 
-    def write(self,name,text:str):
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def write(self, name, text: str):
         self.FileLock.acquire()
         with open(f"{dir}logs/{name}_logs.txt", "a+", encoding="utf-8") as logger:
             logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
@@ -50,12 +71,12 @@ class FileSingleton:
         with open(f"{dir}path.json", encoding='utf-8') as config_file:
             path = json.load(config_file)
         self.FileLock.release()
-        return  path
+        return path
 
-    def write_data(self,data):
+    def write_data(self, data):
         self.FileLock.acquire()
-        with open(f"{dir}user_settings.json",'w', encoding='utf-8') as config_file:
-            config_file.write(json.dumps(data,indent=2))
+        with open(f"{dir}user_settings.json", 'w', encoding='utf-8') as config_file:
+            config_file.write(json.dumps(data, indent=2))
         self.FileLock.release()
 
     def get_default_config(self):
@@ -65,8 +86,10 @@ class FileSingleton:
         self.FileLock.release()
         return data
 
+
 def current_time():
     return datetime.now().strftime("%H:%M:%S")
+
 
 def string_to_co(string):
     pattern_x = r'x=(\d+)'
@@ -77,6 +100,7 @@ def string_to_co(string):
 
     return [(int(pair[0]) + 441, int(pair[1]) + 101) for pair in list(zip(matches_x, matches_y))]
 
+
 def string_to_co_slide(string):
     pattern_x = r'x=(\d+)'
     pattern_y = r'y=(\d+)'
@@ -86,11 +110,6 @@ def string_to_co_slide(string):
     # print(matches_y.group())
     return (int(matches_x.group(1)), int(matches_y.group(1)))
 
-def get_window_pid(title):
-    hwnd = win32gui.FindWindow(None, title)
-    thread_id, pid = win32process.GetWindowThreadProcessId(hwnd)
-    return pid
-
 
 def get_time(func):
     @wraps(func)
@@ -99,63 +118,81 @@ def get_time(func):
         func_output = func(self, *args, **kwargs)
         end_time = perf_counter()
 
-        if func.__name__ == "check_captcha":
-            print(f'[ {date.today()} {current_time()} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
-            self.set_text(f'[{current_time()}] Verification made in {(end_time - start_time):0.1f}')
-            # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-                # logger.write(f"[ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
-                # logger.write(f"[ {date.today()} ] [ {current_time()} ] [{self.name}] Verification made in {(end_time - start_time):0.1f}\n")
-            self.FileSingleton.write(self.name,f"INFO : Verification made in {(end_time - start_time):0.1f}\n" )
+        if 0 and func.__name__ == "check_captcha":
+            print(f'[ {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
+            self.FileSingleton.write(self.name, f"INFO : Verification made in {(end_time - start_time):0.1f}\n")
         return func_output
 
     return wrapper
 
+def toString(arg):
+    if isinstance(arg, Image.Image) or isinstance(arg, ndarray):
+        return 'Image'
+    if isinstance(arg, dict):
+        return 'Dict'
+    if callable(arg):
+        return arg.__name__
+    return repr(arg)
 
-def clean_args(*args):
-    list_args = []
-    for args2 in args:
-        if isinstance(args2, tuple) or isinstance(args2, list):
-            for arg in args2:
-                if isinstance(arg, Image.Image) or isinstance(arg, ndarray):
-                    list_args.append("Image")
-                else:
-                    list_args.append(arg)
-        else:
-            list_args.append(args2)
-    return tuple(list_args)
+
+def colorize_output(output):
+    if output == repr(True):
+        return f"\033[1;32m{output}\033[0m"  # Green color for True
+    elif output == repr(False):
+        return f"\033[1;31m{output}\033[0m"  # Red color for False
+    elif output == "None":
+        return f"\033[1;33m{output}\033[0m"  # Yellow color for None
+    else:
+        return output  # No color for other values
 
 
 @decohints
 def get_name(func):
     @wraps(func)
     def wrapper(self: object, *args: object, **kwargs: object):
-        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        # self.logger.info(f"FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
-        # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-        #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}\n")
-        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {func.__name__} ARGS : {clean_args(args)}")
+
         func_output = func(self, *args, **kwargs)
+
+        if DEBUG:
+            args_str = [toString(arg) for arg in args] if args is not None else []
+            kwargs_str = [f"{key}={toString(value)}" for key, value in kwargs.items()] if kwargs is not None else []
+            arg_str = ", ".join(args_str + kwargs_str)
+
+            if func_output is True or func_output is False or func_output is None:
+                output_str = colorize_output(repr(func_output))
+            elif type(func_output) in [ndarray, Image.Image, str, int]:
+                output_str = toString(func_output)
+            elif hasattr(func_output, '__iter__'):
+                output_str = ", ".join([toString(arg) for arg in func_output])
+            else:
+                output_str = f"Unexpected, {type(func_output)}"
+
+            timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+            message = f"[ {colorize_name(self.name)} ] {func.__name__}({arg_str}): {colorize_output(output_str)}"
+
+            print(f"{timestamp} {message}")
+
         return func_output
 
     return wrapper
+
 
 def get_class(func):
     @wraps(func)
     def wrapper(self: object, *args: object, **kwargs: object):
-        # logging.basicConfig(filename=f"{self.name}_logs.txt", level=logging.INFO, format="%(asctime)s %(message)s",
-        #                     datefmt="[%Y-%m-%d %H:%M:%S]", filemode="a")
         self.script_pause()
-        # write(self.name, f"FUNCTION : {self.task_name()}\n")
-        # with open(f"{self.name}_logs.txt", "a+", encoding="utf-8") as logger:
-        #     logger.write(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}\n")
-        # logging.info(f"[ {self.name} ] FUNCTION : {self.task_name()}")
-        # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] FUNCTION : {self.task_name()}")
         func_output = func(self, *args, **kwargs)
         return func_output
 
     return wrapper
+
+
+def get_window_pid(title):
+    hwnd = win32gui.FindWindow(None, title)
+    thread_id, pid = win32process.GetWindowThreadProcessId(hwnd)
+    return pid
+
 
 def filter_coordinate(couple: tuple[int, int]):
     if couple[0] < 206:
@@ -170,6 +207,7 @@ def filter_coordinate(couple: tuple[int, int]):
         return False
     return True
 
+
 def change_resource_type(place: str) -> str:
     if place == "First":
         return "Second"
@@ -180,6 +218,7 @@ def change_resource_type(place: str) -> str:
     elif place == "Fourth":
         return "Done"
 
+
 def getchecksum():
     md5_hash = hashlib.md5()
     try:
@@ -189,6 +228,7 @@ def getchecksum():
     md5_hash.update(file.read())
     digest = md5_hash.hexdigest()
     return digest
+
 
 def get_dic_instances():
     try:
@@ -237,11 +277,13 @@ def get_dic_instances():
     transformed_dict = dict(map(lambda idx_item: (str(idx_item[0]), idx_item[1]), enumerate(bluestacks_instances)))
     return transformed_dict
 
+
 def get_index_and_names(data):
     names = []
     for index, value in enumerate(data.values()):
         names.append((index, value['name']))
     return names
+
 
 def get_current_instances(data):
     names = get_index_and_names(data)
@@ -253,14 +295,6 @@ def get_current_instances(data):
     instances_available.sort(key=lambda x: x[0])
     return instances_available
 
+
 def get_all_vms_running():
     return get_current_instances(get_dic_instances())
-
-def string_to_co_slide(string):
-    pattern_x = r'x=(\d+)'
-    pattern_y = r'y=(\d+)'
-
-    matches_x = re.search(pattern_x, string)
-    matches_y = re.search(pattern_y, string)
-    # print(matches_y.group())
-    return (int(matches_x.group(1)), int(matches_y.group(1)))
