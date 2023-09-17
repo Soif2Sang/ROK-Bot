@@ -214,10 +214,11 @@ class BarbFort(Task):
                 while True:
                     self.script_pause()
                     sleep(1)
-            self.click(uniform(1092, 1114), uniform(190, 200))
+            self.click(uniform(1092, 1114), uniform(247, 267))
             self.better_sleep((0.557, 0.796))
             deadstop = deadstop + 1
             self.print("Switching between line-up..")
+
 
     @get_name
     def scan_fort(self):
@@ -322,15 +323,10 @@ class BarbFort(Task):
                                     #     self.better_sleep((0.7, 1.2))
                                     self.click(uniform(657, 680), uniform(96, 117))
                                     self.better_sleep((0.7, 1.2))
-                                    self.click(uniform(1092, 1112), uniform(330, 350))
+                                    self.click(uniform(1092, 1112), uniform(304, 320))
                                     self.better_sleep((2, 3))
-                                    pil_image = self.adb.get_curr_device_screen_img()
-                                    cv_image = self.pil_to_array(pil_image)
-                                    cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)
-                                    cropped_image = cv_image[y + 27:y + 55, x:x + 120]
-                                    cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
+                                    cropped_image = self.adb.get_cv2_img()[y + 27:y + 55, x:x + 120]
 
                                     string = self.extract_text(img=cropped_image, allowlist="1234567890:")
 

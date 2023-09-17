@@ -103,7 +103,6 @@ class Task():
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
             self.better_sleep((1,1))
 
-    @get_name
     def update_data(self):
         self.data = self.FileSingleton.get_data()
         return self.data
@@ -181,7 +180,6 @@ class Task():
         # # Afficher le résultat
         # print(output)
 
-    @get_name
     def print(self, text: str, color=None) -> None:
         # print(f'[ {current_time()} ] [ {self.name} ] {text}')
         if text != "":
@@ -476,7 +474,7 @@ class Task():
             self.click(uniform(24, 91), uniform(625, 680))
         return True
 
-    @get_name
+    # @get_name
     def find_img(self, target: str, source: ndarray = None, confidence=0.9):
         # self.print(f"Loading {target}")
         # print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Loading {target}")
@@ -1099,7 +1097,7 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='go_outside_city', source=self.adb.get_cv2_img()[600:,0:200], confidence=0.8)
+        return self.find_img(target='go_outside_city', source=self.adb.get_cv2_img()[600:,0:200], confidence=0.75) is not None
 
     @get_name
     def close_windows(self):
