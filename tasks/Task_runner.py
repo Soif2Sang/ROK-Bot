@@ -34,7 +34,7 @@ from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.Task_utils import get_name, current_time, get_window_pid, get_dic_instances
 from utils.bot_adb import Adb
-from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
+from views.frametime import is_in_frametime, random_time_in_frametime
 
 import pretty_errors
 
@@ -142,6 +142,7 @@ class TaskRunner(Task):
                     func.run()
                 self.better_sleep((1, 2))
             except Exception as e:
+                traceback.print_exc()
                 self.send_discord_message(f"Something wrong happened when running {func.task_name()}")
                 self.generate_toast("Warning", f"Something wrong happened when running {func.task_name()}", )
 
@@ -198,19 +199,20 @@ class TaskRunner(Task):
         if ("AlliancePit" in tasks_names) and ("GatherRss" in tasks_names):
             alliance_pit_index = tasks_names.index("AlliancePit")
             gather_index = tasks_names.index("GatherRss")
-            lib_tasks[alliance_pit_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[alliance_pit_index]
+            if gather_index < alliance_pit_index:
+                lib_tasks[alliance_pit_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[alliance_pit_index]
 
         if ("HuntBarbarians" in tasks_names) and ("GatherRss" in tasks_names):
             hunt_index = tasks_names.index("HuntBarbarians")
             gather_index = tasks_names.index("GatherRss")
-            lib_tasks[hunt_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[hunt_index]
+            if gather_index < hunt_index:
+                lib_tasks[hunt_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[hunt_index]
 
-        if "BarbarianFort" in tasks_names:
-            for element in ["GatherRss", "GatherGem", "HuntBarbarians"]:
-                if element in tasks_names:
-                    fort_index = tasks_names.index("BarbarianFort")
-                    element_index = tasks_names.index(element)
-                    lib_tasks[fort_index], lib_tasks[element_index] = lib_tasks[element_index], lib_tasks[fort_index]
+        if ("BarbarianFort" in tasks_names) and ("GatherRss" in tasks_names):
+            hunt_index = tasks_names.index("BarbarianFort")
+            gather_index = tasks_names.index("GatherRss")
+            if gather_index < hunt_index:
+                lib_tasks[hunt_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[hunt_index]
 
         if profile.get('upgrade_city', False):
             lib_tasks.append(UpgradeCity(self))
