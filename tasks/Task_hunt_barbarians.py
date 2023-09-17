@@ -169,6 +169,8 @@ class HuntBarbarians(Task):
                             hunters += 1
                     else:
                         self.click(uniform(150, 500), uniform(150, 500))
+                        breakloop = True
+                        break
                     self.better_sleep((1.325, 1.795))
 
                 if self.find_img(target="new_troops_button"):
