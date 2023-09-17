@@ -35,7 +35,7 @@ class DailyChest(Task):
                     while confirm := self.find_img(target="confirm_tavern"):
                         self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
-                self.click(uniform(25, 55), uniform(20, 56))
+                self.close_windows()
                 self.better_sleep((2.5, 5))
                 self.close_chest_popup()
         except Exception as e:
