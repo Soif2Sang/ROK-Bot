@@ -1,5 +1,5 @@
-from settings.profile.rows.Flet_row_material import FletRowMaterial
-from settings.page_base import BasePage
+from views.settings.profile.rows.Flet_row_material import FletRowMaterial
+from views.settings.page_base import BasePage
 
 
 class PageMaterials(BasePage):

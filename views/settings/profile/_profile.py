@@ -1,19 +1,19 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from settings.page_settings import PageSettings
-from settings.profile.page_character import PageCharacter
-from settings.profile.page_logback import PageLogback
-from settings.profile.page_barbs import PageBarbs
-from settings.profile.page_fog import PageFog
-from settings.profile.page_heal import PageHeal
-from settings.profile.page_marauders import PageMarauders
-from settings.profile.page_materials import PageMaterials
-from settings.profile.page_rally import PageRally
-from settings.profile.page_training import PageTraining
-from settings.profile.page_transfer import PageTransfer
-from settings.profile.page_rss import PageRss
-from settings.profile.page_gem import PageGem
+from views.settings.page_settings import PageSettings
+from views.settings.profile.page_character import PageCharacter
+from views.settings.profile.page_logback import PageLogback
+from views.settings.profile.page_barbs import PageBarbs
+from views.settings.profile.page_fog import PageFog
+from views.settings.profile.page_heal import PageHeal
+from views.settings.profile.page_marauders import PageMarauders
+from views.settings.profile.page_materials import PageMaterials
+from views.settings.profile.page_rally import PageRally
+from views.settings.profile.page_training import PageTraining
+from views.settings.profile.page_transfer import PageTransfer
+from views.settings.profile.page_rss import PageRss
+from views.settings.profile.page_gem import PageGem
 from utils.Task_utils import FileSingleton
 
 color_bank = {

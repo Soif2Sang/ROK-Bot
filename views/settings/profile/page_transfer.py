@@ -1,7 +1,7 @@
 import flet as ft
 
-from settings.profile.cols.Flet_col_transfer import FletColumnRss
-from settings.page_base import BasePage
+from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
+from views.settings.page_base import BasePage
 
 
 class PageTransfer(BasePage):

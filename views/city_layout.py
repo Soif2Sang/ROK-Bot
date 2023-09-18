@@ -3,7 +3,7 @@ import traceback
 
 import flet as ft
 import flet_route
-from Task_utils import FileSingleton
+from utils.Task_utils import FileSingleton
 
 
 def viewCityLayout(page: ft.Page, params: flet_route.Params, basket: flet_route.Basket) -> ft.View:

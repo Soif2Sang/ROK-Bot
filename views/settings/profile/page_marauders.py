@@ -1,7 +1,7 @@
 import flet as ft
 
-from settings.profile.rows.Flet_row_presets import FletRowPresets
-from settings.page_base import BasePage
+from views.settings.profile.rows.Flet_row_presets import FletRowPresets
+from views.settings.page_base import BasePage
 
 
 class PageMarauders(BasePage):
