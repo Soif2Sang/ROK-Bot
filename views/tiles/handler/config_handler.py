@@ -1,8 +1,8 @@
 import flet as ft
 
-from settings.general.general_tab import InterfaceSettings
-from tiles.handler.logging_handler import Logger
-from settings.profile._profile import ProfileSettings
+from views.settings.general.general_tab import InterfaceSettings
+from views.tiles.handler.logging_handler import Logger
+from views.settings.profile._profile import ProfileSettings
 from utils.Task_utils import FileSingleton
 
 color_bank = {

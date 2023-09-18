@@ -4,7 +4,7 @@ from time import sleep
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from tiles.tile import Tile
+from views.tiles.tile import Tile
 from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances
 import re
 class NavigationBar(ft.Row):

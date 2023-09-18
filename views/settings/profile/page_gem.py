@@ -1,5 +1,5 @@
 import flet as ft
-from settings.page_base import BasePage
+from views.settings.page_base import BasePage
 
 
 class PageGem(BasePage):

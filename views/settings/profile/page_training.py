@@ -1,7 +1,7 @@
 import flet as ft
 
-from settings.profile.rows.Flet_row_troops import FletRowTraining
-from settings.page_base import BasePage
+from views.settings.profile.rows.Flet_row_troops import FletRowTraining
+from views.settings.page_base import BasePage
 
 
 class PageTraining(BasePage):
