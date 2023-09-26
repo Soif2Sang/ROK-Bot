@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-
+import base64
 import os, sys
 import time
+import cv2
+import numpy as np
 import requests
 from base64 import b64encode
 
@@ -430,8 +432,16 @@ class TwoCaptcha():
 
     def get_method(self, file):
 
-        if not file:
+        if not isinstance(file, np.ndarray) and not file:
             raise ValidationException('File required')
+
+        if isinstance(file, np.ndarray):
+            # Assuming data is an image represented as a NumPy array
+            # Convert the NumPy array to base64
+            _, im_arr = cv2.imencode('.jpg', file)  # im_arr: image in Numpy one-dim array format.
+            im_bytes = im_arr.tobytes()
+            im_b64 = base64.b64encode(im_bytes)
+            return {'method': 'base64', 'body': im_b64}
 
         if not '.' in file and len(file) > 50:
             return {'method': 'base64', 'body': file}

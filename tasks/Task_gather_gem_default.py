@@ -20,6 +20,7 @@ class GatherGemDefault(GatherGem):
         self.herite(MainTask)
         self.end_time = None
         self.block = False
+        self.nodes_gathered = 0
 
     def task_name(self):
         return "GatherGem"
@@ -40,7 +41,6 @@ class GatherGemDefault(GatherGem):
         self.run_game()
         self.check_captcha()
         self.leave_city()
-        # print("premier leave city")
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
         self.better_sleep((1.5, 2))
@@ -50,31 +50,25 @@ class GatherGemDefault(GatherGem):
                                    self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500))
         # print(f"{randomization = }")
 
+        enable_gem_node_limit = self.data[self.sel]['schedules'][self.current_profile]['gather_gem_enable_node_limit']
+        gem_node_limit = self.data[self.sel]['schedules'][self.current_profile]['gather_gem_note_limit']
+
         radius = (self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 50) // 10)
         width = radius + 1
         height = radius + 1
         starting_time = time()
         time_restart = time()
-        # print(self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'))
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') > \
-                self.data[str(self.sel)]['schedules'][
-                    self.current_profile].get('gather_gem_duration2'):
-            self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1'], \
-                self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'] = \
-                self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration2'], \
-                    self.data[self.sel]['schedules'][self.current_profile]['gather_gem_duration1']
 
         if self.end_time is None:
             self.end_time = starting_time + (
                     randint(
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'),
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration2')
-                    ) * 60
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') * 60,
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration2') * 60
+                    )
             )
 
-        # print(f'starting_time : {datetime.fromtimestamp(starting_time).strftime("%H:%M:%S")} , time to beat : {datetime.fromtimestamp(end_time).strftime("%H:%M:%S")} , {starting_time>end_time = }')
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
-        while self.end_time > time():
+        while self.end_time > time() and (enable_gem_node_limit == False or (enable_gem_node_limit and self.nodes_gathered < gem_node_limit)):
             self.run_game()
             if self.data[str(self.sel)]['schedules'][self.current_profile].get("restart_game", True):
                 random_time = uniform(4000, 5800)
@@ -119,16 +113,19 @@ class GatherGemDefault(GatherGem):
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_right)
 
                     self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                     self.swipe_scan(self.scan_gem, self.swipe_down)
 
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_left)
 
                     self.recenter()
@@ -138,6 +135,7 @@ class GatherGemDefault(GatherGem):
                     if y != (width - 2):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_down)
                         self.recenter()
 
@@ -146,16 +144,19 @@ class GatherGemDefault(GatherGem):
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_left)
 
                     self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                     self.swipe_scan(self.scan_gem, self.swipe_up)
 
                     for i in range(width):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_right)
 
                     self.recenter()
@@ -165,6 +166,7 @@ class GatherGemDefault(GatherGem):
                     if y != (width - 2):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_up)
                         self.recenter()
 
@@ -173,16 +175,19 @@ class GatherGemDefault(GatherGem):
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_down)
 
                     self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                     self.swipe_scan(self.scan_gem, self.swipe_left)
 
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_up)
 
                     self.recenter()
@@ -190,6 +195,9 @@ class GatherGemDefault(GatherGem):
                     self.leave_kd_buff()
 
                     if y != (height - 2):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_left)
                         self.recenter()
 
@@ -198,16 +206,19 @@ class GatherGemDefault(GatherGem):
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_up)
 
                     self.recenter()
                     self.check_captcha(False)
                     self.leave_kd_buff()
+                    if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                     self.swipe_scan(self.scan_gem, self.swipe_right)
 
                     for i in range(height):
                         if self.end_time < time(): return
                         if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_down)
 
                     self.recenter()
@@ -215,6 +226,9 @@ class GatherGemDefault(GatherGem):
                     self.leave_kd_buff()
 
                     if y != (height - 2):
+                        if self.end_time < time(): return
+                        if self.block: return
+                        if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                         self.swipe_scan(self.scan_gem, self.swipe_right)
                         self.recenter()
 

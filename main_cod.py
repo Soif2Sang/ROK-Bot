@@ -10,9 +10,9 @@ from time import sleep
 import flet as ft
 from pyautogui import getAllWindows
 
-import views.Flet_main_interface
-from views import Flet_main_interface
-from views.Flet_Path import find_file_in_all_drives
+import views._main
+from views import _main
+from views.config_path import find_file_in_all_drives
 from utils.Task_utils import get_data, get_path, write_data
 from utils.auth import selfApi
 

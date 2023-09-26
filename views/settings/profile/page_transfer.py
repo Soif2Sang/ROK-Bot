@@ -10,7 +10,7 @@ class PageTransfer(BasePage):
 
         self.add(
             ft.Text(
-                value="/!\ This feature require a custom ApiKey /!\ \n""/!\ This feature is on beta and may crash /!\ \n",
+                value="/!\ This feature require a custom ApiKey /!\ \n",
                 size=15,
                 color="red"),
             ft.Divider(),

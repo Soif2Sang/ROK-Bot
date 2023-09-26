@@ -1,6 +1,6 @@
 import flet as ft
 
-from views.Flet_Logger import Logger
+from views.tiles.handler.logging_handler import Logger
 from viewscod.Flet_Setting_cod import SettingContainer
 from utils.Task_utils import FileSingleton
 

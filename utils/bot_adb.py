@@ -4,6 +4,7 @@ from os.path import exists
 from time import sleep
 
 import cv2
+import numpy as np
 from ppadb.client import Client as PPADBClient
 import subprocess
 import traceback
@@ -16,34 +17,36 @@ from PIL import Image
 
 from utils.Task_utils import current_time, FileSingleton, get_dic_instances
 
-Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
 from utils.resources import ImageSingleton
 class Adb:
     def __init__(self, number, host='127.0.0.1', port=5037):
         self.FileSingleton = FileSingleton()
-        data = self.FileSingleton.get_data()
+        self.data = self.FileSingleton.get_data()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
         self.number = number
         # print(data)
-        self.name = data[str(self.number)]['name']
+        self.name = self.data[str(self.number)]['name']
         self.images = ImageSingleton()
+        # data = self.FileSingleton.get_data()
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
         return f"JsonNumber:{self.number} port:{self.port}"
 
     def update_port(self):
-        data = self.FileSingleton.get_data()
         instances = get_dic_instances()
-        data[str(self.number)]['instance'] = instances[str(self.number)]['instance']
-        data[str(self.number)]['name'] = instances[str(self.number)]['name']
-        data[str(self.number)]['port'] = int(instances[str(self.number)]['port'])
-        self.FileSingleton.write_data(data)
 
+        self.data = self.FileSingleton.get_data()
+
+        self.data[str(self.number)]['instance'] = instances[str(self.number)]['instance']
+        self.data[str(self.number)]['name'] = instances[str(self.number)]['name']
+        self.data[str(self.number)]['port'] = int(instances[str(self.number)]['port'])
         self.port = int(instances[str(self.number)]['port'])
+
+        self.FileSingleton.write_data(self.data)
 
     def connect_to_device(self, host='127.0.0.1'):
         path = self.FileSingleton.get_path()
@@ -58,17 +61,11 @@ class Adb:
 
     def get_device(self, host='127.0.0.1'):
         try:
-            data = self.FileSingleton.get_data()
-            self.port = str(data[str(self.number)]['port'])
+            self.port = str(self.data[str(self.number)]['port'])
             device = self.client.device(f'{host}:{self.port}')
             if device is None:
                 self.print(f"INFO : Device is None, trying to reconnect..")
-                self.update_port()
-                path = self.FileSingleton.get_path()
-
-                adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-                cmd = f"{adb_path} connect {host}:{self.port}"
-                subprocess.Popen(cmd)
+                self.connect_to_device()
                 sleep(2)
 
                 if device is None:
@@ -77,6 +74,7 @@ class Adb:
         except Exception as e:
             traceback.print_exc()
             self.print("EXCEPTION : Error in connect to device")
+
             self.update_port()
             path = self.FileSingleton.get_path()
             cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
@@ -86,9 +84,7 @@ class Adb:
             sleep(20)
             self.print(f"Connecting to the device..")
 
-            adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-            cmd = f"{adb_path} connect {host}:{self.port}"
-            subprocess.Popen(cmd)
+            self.connect_to_device()
 
             sleep(5)
             return self.get_device()
@@ -136,10 +132,24 @@ class Adb:
             screen = cvtColor(screen, COLOR_BGR2RGB)
             return screen
 
+    def bench3(self):
+        return cv2.imdecode(np.fromstring(image, np.uint8), cv2.IMREAD_COLOR)
+    def bench2(self):
+        image = Image.open(io.BytesIO(self.get_device().screencap()))
+        image_cv2 = np.array(image)
+        image_cv2 = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2BGR)
+        return image_cv2
+
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
         image.save(f".//{file_name}.png")
         return True
+
+    def bench1(self):
+        image_bytes = self.get_device().screencap()
+        nparr = np.frombuffer(image_bytes, np.uint8)
+        image_cv2 = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        return image_cv2
 
     def find_img_cv(self, img_to_find, confidence=0.9):
         pil_image = self.get_curr_device_screen_img()

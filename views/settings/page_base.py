@@ -8,7 +8,7 @@ class BasePage():
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
-        self.initial_page = profile.page
+        self.initial_page = profile.initial_page
         self.instance_index = profile.instance_index
         self.profile_index = profile.profile_index
         self.profile = profile
@@ -71,8 +71,6 @@ class BasePage():
 
         self.data = data
 
-        print(keyword)
-        print("here")
         self.FileSingleton.write_data(data)
 
     def create_normal_switch(self, keyword: str, text: str):

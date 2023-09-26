@@ -18,7 +18,7 @@ from decohints import decohints
 from numpy import ndarray
 
 dir = "./"
-DEBUG = False
+DEBUG = True
 
 def word_to_color(word):
     hash_object = hashlib.sha256()

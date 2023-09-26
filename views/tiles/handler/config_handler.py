@@ -66,6 +66,7 @@ class FrameUpgrade(ft.Tabs):
             if data[str(number)]['schedules'][profile]['enabled']:
                 self.settings.selected_index=int(profile)-1
                 break
+
     def add_text(self, texte:str):
         self.logger.add_text(texte)
 

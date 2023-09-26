@@ -3,7 +3,7 @@ import flet as ft
 from utils.Task_utils import FileSingleton
 
 
-class FletRowRss(ft.Row):
+class FletRowRss(ft.ResponsiveRow):
     def __init__(self, key, instance_index, profile_index):
         super().__init__()
         self.FileSingleton = FileSingleton()
@@ -11,14 +11,14 @@ class FletRowRss(ft.Row):
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.controls=[
-                    ft.Container(
-                        width=100,
-                        content=ft.Text(f"{key} choice :"),
-                        alignment=ft.alignment.center_right
+                    ft.Column(
+                        controls=[ft.Container(ft.Text(f"{key} choice :"), alignment=ft.alignment.center_right)],
+
+                        col=4,
+                        height=50
                     ),
 
-                    ft.Dropdown(
-                        width=140,                        height=50,
+                    ft.Column(controls=[ft.Dropdown(
                         content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Node Type",
                         options=[
@@ -30,10 +30,10 @@ class FletRowRss(ft.Row):
                         ],
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}"],
                         on_change=lambda e: self.submit(e, f"{key}", str)
-                    ),
+                    )],
+                    col=4,height=50),
 
-                    ft.Dropdown(
-                        width=140,                        height=50,
+                    ft.Column(controls=[ft.Dropdown(
                         content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Node Level",
                         options=[
@@ -49,9 +49,11 @@ class FletRowRss(ft.Row):
                         ],
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                             f"{key}_level"],
-                        on_change=lambda e: self.submit(e, f"{key}_level", int)
+                        on_change=lambda e: self.submit(e, f"{key}_level", int),
+                        disabled=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "gather_rss_method"]
                     ),
-                ]
+                ],                    col=3,height=50)]
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()

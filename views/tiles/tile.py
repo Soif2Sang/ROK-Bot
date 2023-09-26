@@ -1,6 +1,6 @@
 import threading
 
-from tiles.handler.config_handler import Frame
+from views.tiles.handler.config_handler import Frame
 from tasks.Task import Task
 import flet as ft
 
@@ -68,9 +68,11 @@ class Tile(ft.Row):
         data = self.FileSingleton.get_data()
         self.number = number
         self.initial_page = page
+        self.tasks_process = None
+
         self.paused = False
         self.stopped = False
-        self.tasks_process = None
+
         self.main_task = Task(self)
         self.runner = TaskRunner(self.main_task, self)
 
@@ -86,12 +88,12 @@ class Tile(ft.Row):
         )
         self.button_start = ft.IconButton(
             icon=ft.icons.NOT_STARTED_OUTLINED,
-            on_click=lambda _: self.start()
+            on_click=self.start
         )
         self.button_stop = ft.IconButton(
             icon=ft.icons.STOP_OUTLINED,
             disabled=True,
-            on_click=lambda _: self.stop()
+            on_click=self.stop
         )
 
         self.config_overrider = ConfigOverrider(self.initial_page, number)
@@ -110,7 +112,7 @@ class Tile(ft.Row):
                 ]
             ),
             self.config_overrider
-            ]
+        ]
         )
 
     def select(self):
@@ -126,26 +128,45 @@ class Tile(ft.Row):
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
         self.initial_page.update()
 
-    def start(self):
-        if not self.tasks_process.is_alive():
-            self.button_start.icon = ft.icons.PAUSE
-            self.button_stop.disabled = False
-            self.paused = False
-            self.stopped = False
-            self.start_tasks()
-        else:
-            if self.paused:
-                self.button_start.icon = ft.icons.PAUSE
-                self.button_stop.disabled = False
-                self.paused = False
-                self.stopped = False
-            else:
-                self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-                self.button_stop.disabled = False
-                self.paused = True
-                self.stopped = False
+    def start(self, e):
+        self.button_start.icon = ft.icons.PAUSE
+        self.button_stop.disabled = False
 
+        self.paused = False
+        self.stopped = False
+
+        self.start_tasks()
+        self.button_start.on_click = self.pause
+        self.tasks_process.join()
+        self.button_start.on_click = self.start
+        self.paused = False
+        self.stopped = False
+        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_stop.disabled = True
+        self.set_text("")
+
+    def resume(self, e):
+        self.paused = False
+
+        self.button_start.icon = ft.icons.PAUSE
         self.initial_page.update()
+        self.button_start.on_click = self.pause
+
+    def pause(self, e):
+        self.paused = True
+
+        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.initial_page.update()
+        self.button_start.on_click = self.resume
+
+    def stop(self, e):
+        self.paused = False
+        self.stopped = True
+
+        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_stop.disabled = True
+        self.initial_page.update()
+
 
     def process_is_alive(self):
         self.tasks_process.join()
@@ -153,7 +174,6 @@ class Tile(ft.Row):
         self.stopped = False
         self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
         self.button_stop.disabled = True
-        self.initial_page.update()
         self.set_text("")
 
     def start_tasks(self):
@@ -167,17 +187,6 @@ class Tile(ft.Row):
             self.add_text("Task is frozen, you may need to restart the bot.")
             self.initial_page.generate_toast('Warning', "Task is frozen, you may need to restart the bot.")
             print("Task is frozen, you may need to restart the bot.")
-
-    def stop(self):
-        self.paused = False
-        self.stopped = True
-
-        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-        self.button_stop.disabled = True
-
-        self.tasks_process = threading.Thread(target=self.runner.run,daemon=True)
-        self.initial_page.update()
-        self.set_text("")
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase

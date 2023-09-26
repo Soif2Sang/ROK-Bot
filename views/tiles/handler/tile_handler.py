@@ -126,24 +126,6 @@ class TileHandler(ft.ListView):
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
 
-    def process_is_alive(self):
-        while 1:
-            changed = False
-            for tile in self.tiles.values():
-                if (not tile.tasks_process.is_alive() and tile.button_start.icon == ft.icons.PAUSE) and (self.initial_page is not None) and (self.initial_page.route == '/'):
-                    tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-                    tile.button_stop.disabled = True
-                    tile.set_text("")
-                    changed = True
-            sleep(0.1)
-            if changed and self.initial_page is not None:
-                self.initial_page.update()
-
-    def update_tiles(self):
-        is_alive = threading.Thread(target=self.process_is_alive)
-        is_alive.deamon = True
-        is_alive.start()
-
     def refresh(self):
         data = self.FileSingleton.get_data()
         # try:
@@ -219,6 +201,9 @@ class TileHandler(ft.ListView):
             'gather_gem_spiral_method': True,
             'gather_gem_swipe_check': True,
             'gather_gem_compare_march_duration': True,
+            'gather_gem_enable_node_limit': False,
+            'claim_mails': False,
+            'gather_gem_note_limit': 0,
             'restart_game': False,
             'switch_character': False,
             'leave_game_switch_character': False,

@@ -23,11 +23,7 @@ with open(file, 'w') as f:
     f.write("from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode, \
         IMREAD_COLOR, COLOR_BGR2HSV, inRange\n")
     f.write("import os\n")
-    f.write("if os.path.isdir('../resources'):\n")
-    f.write("    dir = '../resources'\n")
-    f.write("else:\n")
-    f.write("    dir = './resources'\n")
-    f.write("\n")
+    f.write("dir = './resources'\n")
     f.write("class ImageSingleton:\n")
     f.write("    __instance = None")
     f.write("\n")

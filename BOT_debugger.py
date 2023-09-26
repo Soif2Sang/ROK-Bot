@@ -2,21 +2,23 @@ import datetime
 import json
 from random import randint, uniform
 from threading import Thread
+from time import time
 
 import cv2
 import flet as ft
 import numpy as np
 
 import taskscod.COD_Task_daily_vip
+from tasks.Task_claim_mail import ClaimMail
 # from tasks.Task_title import Title
 from tasks import Task_gather_rss_default
 from tasks.Task_gather_gem_default import GatherGem
 from tasks.Task_gather_rss_default import GatherRss
 from tasks.Task_kingdom_ranking import KingdomRanking
 from tasks.Task_maraudeurs import Marauders
-from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
-from taskscod.COD_Task_daily_chest import DailyChest
-from taskscod.COD_Task_gather_rss import GatherRss
+# from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
+# from taskscod.COD_Task_daily_chest import DailyChest
+# from taskscod.COD_Task_gather_rss import GatherRss
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
@@ -76,11 +78,12 @@ class Bot():
         self.trade = RssTransfer(self.main_task)
         self.cod_rss = GatherRss(self.main_task)
         self.ranks = KingdomRanking(self.main_task)
-        self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
-        self.cod_chest = DailyChest(self.main_task)
-        self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
-        self.code_training = COD_Task_training.TroopTraining(self.main_task)
-        self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
+        self.mails = ClaimMail(self.main_task)
+        # self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
+        # self.cod_chest = DailyChest(self.main_task)
+        # self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
+        # self.code_training = COD_Task_training.TroopTraining(self.main_task)
+        # self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
         self.maraudeurs = Marauders(self.main_task)
         self.gem = GatherGem(self.main_task)
         # self.title = Title(self.main_task)
@@ -466,154 +469,36 @@ def upgrade_all():
 if __name__ == "__main__":
     # upgrade_all()
 
-    bot =  get_bot(0)
+    bot =  get_bot(3)
+    template = cv2.imread('./barb_icon2.png')
 
-    print(bot.AlliancePit.run())
 
+    result = cv2.matchTemplate(bot.adb.get_cv2_img(), template, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc =  cv2.minMaxLoc(result)
+
+    print(max_val)
+    print(max_loc)
     exit()
-    # bot.adb.find_img(source=screen, target='network_disconnected')
-    exit()
-    for i in range(2):
-        bot.adb.click(1225,225)
-        sleep(0.09)
-    exit()
-    while 1:
-        bot.task.recenter()
-        sleep(3)
-    # Load image
-    image = cv2.imread('C://Users//user//Pictures//BlueStacks//screen.png')
 
+    image = cv2.imread('notification.png')[:86,:]
 
-    # Defining the autocanny function
-    def auto_canny(image, sigma=0.10):
-        # compute median of image thresholds
-        v = np.median(image)
+    lower_red = np.array([45, 45, 195])  # Adjust these values as needed
+    upper_red = np.array([80, 80, 255])  # Adjust these values as needed
 
-        # apply automatic canny edge detection using the computed median
-        lower = int(max(0, (1.0 - sigma) * v))
-        upper = int(min(255, (1.0 + sigma) * v))
-        edged = cv2.Canny(image, lower, upper)
+    # Get the shape of the image
+    height, width, _ = image.shape
 
-        # return the edged image
-        return edged
+    # Initialize a list to store the coordinates of red pixels
+    red_pixel_coordinates = []
 
-
-    # defining the image, grayscale, blurred
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (3, 3), 0)
-
-    # apply Canny edge detection using a wide threshold, tight
-    # threshold, and automatically determined threshold
-    wide = cv2.Canny(blurred, 10, 200)
-    tight = cv2.Canny(blurred, 225, 250)
-    auto = auto_canny(blurred)
-
-    # show the images
-    cv2.imshow("Original", image)
-    cv2.imshow("Edges-wide", wide)
-    cv2.imshow("Edges-tight", tight)
-    cv2.imshow("Edges-auto", auto)
-
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-    import cv2
-
-    import numpy as np
-
-    # Read image.
-    while 1:
-        print("get screen")
-        # img = bot.adb.get_curr_device_screen_img()
-        # print("got screen")
-
-        img = bot.adb.get_cv2_img()[120:508, 650:]
-        print("got screen")
-        # Convert to grayscale.
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        # Blur using 3 * 3 kernel.
-        gray_blurred = cv2.blur(gray, (3, 3))
-
-        # Apply Hough transform on the blurred image.
-        detected_circles = cv2.HoughCircles(gray_blurred,
-                                            cv2.HOUGH_GRADIENT, 1, 50, param1=50,
-                                            param2=30, minRadius=30, maxRadius=100)
-        print(detected_circles)
-        # Draw circles that are detected.
-        if detected_circles is not None:
-
-            # Convert the circle parameters a, b and r to integers.
-            detected_circles = np.uint16(np.around(detected_circles))
-
-            for pt in detected_circles[0, :]:
-                a, b, r = pt[0], pt[1], pt[2]
-
-                # Draw the circumference of the circle.
-                cv2.circle(img, (a, b), r, (0, 255, 0), 2)
-
-                # Draw a small circle (of radius 1) to show the center.
-                cv2.circle(img, (a, b), 1, (0, 0, 255), 3)
-                cv2.imshow("Detected Circle", img)
-                print(a, b)
-                bot.adb.click(650 + a, 120 + b)
-                sleep(0.3)
-    # img = bot.adb.get_cv2_img()
-    # # convert to grayscale
-    # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # # resize for the visualization purposes
-    # img = cv2.resize(img, None, img, fx=0.4, fy=0.4)
-    # # find edges with Canny
-    # edges = cv2.Canny(img, 10, 20, apertureSize=3)
-    # # show and save the result
-    # cv2.imshow("edges", edges)
-    # cv2.waitKey(0)
-    # cv2.imwrite("result.png", edges)
-
-    # top, left=  130, 700
-    # for i in range(700,1160, 10):
-    #     for y in range(top, 500,10):
-    #         bot.adb.click(i,y)
-
-    exit()
-    screen =   bot.adb.get_cv2_img()
-    for second_string in ["left", "mid", "right"]:
-        for first_string in ["up", "mid", "down"]:
-
-            co = bot.gem.validate_co(
-                bot.task.find_img(source=screen, target=f"gem_icon_day_{first_string}_{second_string}",
-                              confidence=0.82))
-            if co is None:
-                co = bot.gem.validate_co(
-                    bot.task.find_img(source=screen, target=f"gem_icon_night_{first_string}_{second_string}",
-                                  confidence=0.82))
-            if co is not None:
-                bot.task.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
-                if bot.gem.already_mining(co[0], co[1], screen):
-                    bot.task.print(f"Already mining this gem node")
-                    x,y = co
-                    x_min = max(0, x - 40)
-                    x_max = min(screen.shape[1] - 1, x + 60)
-                    y_min = max(0, y - 40)
-                    y_max = min(screen.shape[0] - 1, y + 50)
-
-                    cropped_image = screen[y_min:y_max, x_min:x_max]
-                    cv2.imshow('Upscaled Gray Image', cropped_image)
-                    cv2.waitKey(0)
-                    cv2.destroyAllWindows()
-    # Affichage de l'image
-
-    # print(bot.trade.get_capacity())
-    # from paddleocr import PaddleOCR, draw_ocr
-    #
-    # # Paddleocr supports Chinese, English, French, German, Korean and Japanese.
-    # # You can set the parameter `lang` as `ch`, `en`, `fr`, `german`, `korean`, `japan`
-    # # to switch the language model in order.
-    # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
-    # img_path = bot.adb.get_cv2_img()
-    # result = ocr.ocr(img_path, cls=False)
-    # for idx in range(len(result)):
-    #     print(idx)
-    #     res = result[idx]
-    #     for line in res:
-    #         print(line[-1])
+    # Iterate through the image pixels
+    start = time()
+    for y in range(height):
+        for x in range(width):
+            pixel = image[y, x]
+            if np.all(pixel >= lower_red) and np.all(pixel <= upper_red):
+                red_pixel_coordinates.append((x, y))
+    print(time() - start)
+    # Print the coordinates of red pixels
+    # for x, y in red_pixel_coordinates:
+        # print(f"Red Pixel at X = {x}, Y = {y}")
