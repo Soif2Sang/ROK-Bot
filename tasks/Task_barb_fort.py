@@ -438,9 +438,7 @@ class BarbFort(Task):
                             default_image = self.adb.get_cv2_img()
                             default_color = default_image[231, 383]
                             while (default_color == self.adb.get_cv2_img()[231, 383]).all():
-                                for i in range(30):
-                                    self.script_pause()
-                                    sleep(0.1)
+                                self.better_sleep((3,3))
                             self.close_windows()
                             # return self.heal_troops()
                             return True

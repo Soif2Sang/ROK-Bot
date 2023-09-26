@@ -10,7 +10,7 @@ from taskscod.COD_Task_academy_research import AcademyResearch
 from taskscod.COD_Task_alliance_donation import AllianceDonation
 from taskscod.COD_Task_clear_fog import ClearFog
 from taskscod.COD_Task_training import TroopTraining
-from views.Flet_time_allower import is_in_frametime, random_time_in_frametime
+from views.frametime import is_in_frametime, random_time_in_frametime
 from taskscod.COD_Task_claim_campaign import ClaimCampaign
 from taskscod.COD_Task_claim_daily_quests import DailyQuests
 from taskscod.COD_Task_collect_resource import CollectResource

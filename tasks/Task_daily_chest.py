@@ -24,7 +24,7 @@ class DailyChest(Task):
     @get_name
     def claim_legendary_chest(self):
         try:
-            co = self.find_img(target='legendary_chest', confidence=0.85)
+            co = self.find_img(target='legendary_chest', confidence=0.83)
 
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))

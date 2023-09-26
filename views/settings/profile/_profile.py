@@ -55,6 +55,7 @@ class ProfileSettings(PageSettings):
         self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
         self.create_normal_switch("claim_campaign", "Claim Expedition Rewards")
         self.create_normal_switch("alliance_help", "Alliance Help")
+        self.create_normal_switch("claim_mails", "Claim Mails")
         self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", PageBarbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", PageRally)
         self.create_advanced_switch("kill_marauders", "Kill marauders", PageMarauders)
@@ -222,7 +223,7 @@ class ProfileSettings(PageSettings):
             self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not \
                 self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
         else:
-            print(keyword, self.data[str(self.instance_index)][keyword])
+            # print(keyword, self.data[str(self.instance_index)][keyword])
 
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)

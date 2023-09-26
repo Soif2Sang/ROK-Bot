@@ -18,6 +18,7 @@ class GatherGemSpiral(GatherGem):
         self.herite(MainTask)
         self.end_time = None
         self.block = False
+        self.nodes_gathered = 0
 
     def task_name(self):
         return "GatherGem"
@@ -97,6 +98,9 @@ class GatherGemSpiral(GatherGem):
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
 
+        enable_gem_node_limit = self.data[self.sel]['schedules'][self.current_profile]['gather_gem_enable_node_limit']
+        gem_node_limit = self.data[self.sel]['schedules'][self.current_profile]['gather_gem_note_limit']
+
         starting_time = time()
         if self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1') > \
                 self.data[str(self.sel)]['schedules'][
@@ -127,7 +131,7 @@ class GatherGemSpiral(GatherGem):
             self.swipe_left: self.swipe_up
         }
 
-        while self.end_time > time():
+        while self.end_time > time() and (enable_gem_node_limit == False or (enable_gem_node_limit and self.nodes_gathered < gem_node_limit)):
             self.scan_gem()
 
             random_function = choice(list(swipes.keys()))
@@ -145,6 +149,7 @@ class GatherGemSpiral(GatherGem):
                 for y in range(loop):
                     if self.end_time < time(): return
                     if self.block: return
+                    if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit: return
                     self.swipe_scan(self.scan_gem, current_swipe)
 
                 current += 1

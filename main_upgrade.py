@@ -12,7 +12,7 @@ from pyautogui import getAllWindows
 
 from utils.Task_utils import get_data, get_path, write_data
 from utils.auth import selfApi
-from views import Flet_secret_interface
+from views import _main_upgrade
 
 
 def getchecksum():
@@ -115,7 +115,7 @@ class LoginButton(ft.FilledButton):
                 print(diff)
                 print("Login successful")
                 self.page.clean()
-                self.page.window_width = 400
+                self.page.window_width = 450
                 self.page.window_height = 700
                 Flet_secret_interface.Main(self.page, diff.days)
                 threading.Thread(self.login_schedule(username, password))

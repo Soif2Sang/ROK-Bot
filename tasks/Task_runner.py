@@ -8,6 +8,7 @@ import win32gui
 import flet as ft
 from PIL import Image
 
+from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_alliance_pit import AlliancePit
 from tasks.Task import Task
 from tasks.Task_alliance_donation import AllianceDonation
@@ -219,6 +220,9 @@ class TaskRunner(Task):
         if ("TroopTraining" in tasks_names) and self.tile.initial_page.UPGRADE:
             lib_tasks.pop(tasks_names.index("TroopTraining"))
             lib_tasks.append(TroopTraining(self))
+
+        if profile.get("claim_mails", False):
+            lib_tasks.append(ClaimMail(self))
         return lib_tasks
 
     @get_name
@@ -357,6 +361,7 @@ class TaskRunner(Task):
     def change_character_param(self, co_first, nb_chars=0, fail=0):
         self.print("Switching Character")
         self.set_status(f"Switching Character")
+        self.close_windows()
         self.enter_profile()
         self.better_sleep((1.925, 2.795))
         self.enter_setting()
@@ -680,6 +685,8 @@ class TaskRunner(Task):
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
                                                                                               False):
                         co_first = self.get_first_character()
+                        if self.data.get(self.sel).get('schedules').get(self.current_profile).get("leave_game_switch_character",False):
+                            self.leave_game()
                         self.wait_until_connected()
                         # Characters remaining
                         boolean = True
@@ -692,6 +699,9 @@ class TaskRunner(Task):
                             self.better_sleep((1.2, 4))
 
                             boolean = self.change_character_param(co_first, nb_characters)
+                            if self.data.get(self.sel).get('schedules').get(self.current_profile).get(
+                                    "leave_game_switch_character", False):
+                                self.leave_game()
                             self.wait_until_connected()
                     if not self.data[self.sel]['scheduler']:
                         break

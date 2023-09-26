@@ -72,9 +72,9 @@ class GatherRssZoom(GatherRss):
                 co = self.validate_co(
                     self.find_img(source=screen, target=icon, confidence=0.82))
             if co is not None:
-                self.print(f"Gem node Found - x: {co[0]} y:{co[1]}")
+                self.print(f"Node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
-                    self.print(f"Already mining this gem node")
+                    self.print(f"Already mining this node")
                     co = None
             if co:
                 break
@@ -111,8 +111,12 @@ class GatherRssZoom(GatherRss):
 
             if self.send_troop():
                 self.node_type = self.next_resource_type(self.node_type)
-                print(self.node_type)
-            return self.zoom_out_city()
+                self.better_sleep((1.3, 2))
+                self.check_captcha()
+                self.zoom_out_city()
+            else:
+                return "STOP"
+
 
     @get_name
     def check_if_interrupt(self, screen = None):
@@ -202,11 +206,12 @@ class GatherRssZoom(GatherRss):
         for i in range(max_distance):
             for y in range(i):
 
-                if self.data[str(self.sel)]['schedules'][self.current_profile][
-                    self.node_type] == 'nothing' or self.node_type == 'Done' or (not self.free_troop_commander_list()):
+                if self.data[str(self.sel)]['schedules'][self.current_profile].get(
+                    self.node_type, 'nothing') == 'nothing' or self.node_type == 'Done' or (not self.free_troop_commander_list()):
                     return
 
-                self.swipe_scan(self.scan_node, current_swipe)
+                if self.swipe_scan(self.scan_node, current_swipe) == "STOP":
+                    return
 
             current_swipe = swipes[current_swipe]
         return self.run(node_type=self.next_resource_type(self.node_type))

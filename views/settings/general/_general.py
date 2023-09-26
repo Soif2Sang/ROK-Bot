@@ -74,8 +74,6 @@ class GeneralSettings(PageSettings):
             ft.TextField(label="Your discord ID", value=self.data["discord"]["user_id"], on_change=lambda e: self.submit(e, 'user_id', int))
         )
 
-        print(len(self.content.controls))
-
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
         if keyword == 'API_KEY':

@@ -155,9 +155,9 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.85)
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.85))
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.85))
+        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.8)
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.8))
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.8))
         upgrades_final = list(filter(lambda co: co[1] < 480, upgrades_brut))
         return upgrades_final
 

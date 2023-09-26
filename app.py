@@ -1,3 +1,4 @@
+# coding=UTF-8
 import hashlib
 import json
 import os
@@ -75,18 +76,50 @@ def is_str_valid(username, password):
 class LoginUI(ft.View):
     def __init__(self, page, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.page = page
+        self.initial_page = page
         self.fileSingleton = FileSingleton()
         self.data = self.fileSingleton.get_data()
         self.route = '/login'
         self.init()
 
+    def show_banner(self, e):
+        def close_banner(e):
+            self.initial_page.banner.open = False
+            self.initial_page.update()
+
+        self.initial_page.banner = ft.Banner(
+            bgcolor=ft.colors.AMBER_100,
+            content=ft.Column(controls=[
+                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
+                              on_click=lambda _: self.initial_page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                              ),
+                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
+                              on_click=lambda _: self.initial_page.launch_url(
+                                  "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
+
+            ]),
+            actions=[
+                ft.TextButton("Close", on_click=close_banner),
+            ],
+            content_padding=ft.padding.all(5)
+        )
+
+        self.initial_page.banner.open = True
+        self.initial_page.update()
+
     def init(self):
         self.textfield_username = ft.TextField(label="Username", width=300, value=self.data.get("user",{}).get("username",""))
         self.textfield_password = ft.TextField(label="Password", password=True, can_reveal_password=True, width=300, value=self.data.get("user",{}).get("password",""))
-        self.button_login = ft.OutlinedButton(text="Login", on_click=self.page.login, width=100)
+        self.button_login = ft.OutlinedButton(text="Login", on_click=self.initial_page.login)
+        self.subscribe_button = ft.FilledTonalButton(text="Subscribe", on_click=self.show_banner)
 
-        return self.controls.extend([self.textfield_username, self.textfield_password, self.button_login])
+
+
+        return self.controls.extend([self.textfield_username, self.textfield_password,
+                                     ft.Row(
+                                         controls=[ft.Column(controls=[self.button_login], col=4),ft.Column(controls=[self.subscribe_button], col=6),], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                                     )
+                                     ])
 
 
 def main(page: ft.Page):
@@ -222,9 +255,10 @@ def main(page: ft.Page):
                 return page.verify_subscription(username, password)
             else:
                 page.clean()
-                for element in page.tile_manager.tiles.values():
+                for element in page.body.tile_manager.tiles.values():
                     element.paused = False
                     element.stopped = True
+                page.body = page.loginUI
                 page.go('/login')
                 page.update()
         except Exception as e:
@@ -266,7 +300,7 @@ def main(page: ft.Page):
         ),
         path(
             url="/",
-            clear=True,
+            clear=False,
             view=index
         ),
         path(url=f"/citylayout/:instance_index/:profile_index",

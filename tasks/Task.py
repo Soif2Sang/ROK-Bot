@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 import traceback
-from datetime import date
+from datetime import date, datetime
 from random import uniform, randint
 from time import sleep
 import re
@@ -26,12 +26,12 @@ from utils.discord_utils import send_discord_message
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 # from utils import discord_bot
-from utils.Task_utils import get_window_pid, get_name, current_time, get_time, string_to_co, FileSingleton, string_to_co_slide
+from utils.Task_utils import get_window_pid, get_name, current_time, get_time, string_to_co, FileSingleton, \
+    string_to_co_slide, colorize_name, toString, colorize_output
 from utils.bot_adb import Adb
 # from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-
 
 class Task():
     def __init__(self, tile):
@@ -40,11 +40,7 @@ class Task():
         self.current_profile: str = '1'
         self.tile = tile
         self.sel: int = tile.number
-        # print(self.sel)
         self.adb: Adb = Adb(self.sel)
-        # print(self.sel)
-        self.ppid = os.getppid()
-        self.pid = get_window_pid(self.adb.name)
         self.language: str | None = None
         self.name: str = self.adb.name
         self.DEV = False
@@ -52,36 +48,38 @@ class Task():
     def herite(self, MainTask):
         self.data = MainTask.data
         self.current_profile = MainTask.current_profile
-        self.frame = MainTask.tile
+        self.tile = MainTask.tile
         self.adb = MainTask.adb
-        self.ppid = MainTask.ppid
-        self.pid = MainTask.pid
         self.language = MainTask.language
         self.name = MainTask.name
         self.sel = MainTask.sel
         self.DEV = MainTask.DEV
 
+    def debug(self, arg):
+
+        timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+        message = f"[ {colorize_name(self.name)} ] {colorize_output(arg)}"
+
+        print(f"{timestamp} {message}")
+
     def script_pause(self):
         said = False
 
-        while self.tile.paused and not self.tile.stopped:
+        while self.tile.paused:
             if not said:
-                # self.print(f"You is paused.","Yellow")
                 self.set_text(f"[{current_time()}] Script is paused.", "orange")
-                print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Script is paused.")
+                self.debug("Script is paused.")
                 said = True
-                # self.set_text("Script paused.")
 
         if self.tile.stopped:
-            self.tile.stopped = False
             self.set_text(f"[{current_time()}] You stopped the bot", "Red")
-            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot")
             self.set_divider()
+            self.debug("You stopped the bot")
             sys.exit(1)
 
         if said:
             self.set_text(f"[{current_time()}] You resumed the script.", "Green")
-            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You resumed the script.")
+            self.debug("You resumed the script.")
 
 
     def set_text(self, text, color=None):
@@ -93,6 +91,7 @@ class Task():
     def set_status(self, text):
         return self.tile.set_text(text)
 
+    @get_name
     def set_timer(self, seconds: int):
         condition = True
         while seconds and condition:
@@ -121,14 +120,6 @@ class Task():
     @get_name
     def extract_all_text(self, img, allowlist=None):
         return self.extract_text(img, allowlist)
-        # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
-        # result = ocr.ocr(img, cls=False)
-        # returning_values = []
-        # for idx in range(len(result)):
-        #     res = result[idx]
-        #     for line in res:
-        #         returning_values.append(line[-1][0])
-        # return  returning_values
 
     @get_name
     def extract_text(self, img, allowlist=None):
@@ -142,46 +133,7 @@ class Task():
 
         return pytesseract.image_to_string(self.modify_image(enhanced_image), config=config).replace("\n", "")
 
-        # ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
-        # result = ocr.ocr(img, cls=False)
-        # for idx in range(len(result)):
-        #     res = result[idx]
-        #     for line in res:
-        #         return line[-1][0] if line[-1][0] else ''
-        # return ''
-        # exit()
-        # reader = Reader()
-        # native_text, _ = reader.extract_text(img=img, allowlist=allowlist)
-        # if native_text:
-        #     return native_text[0]
-        # return ''
-        # reader_script_path = r'.\utils\easyOcr.py'
-        #
-        # # Paramètres pour la méthode extract_text
-        # allowlist = None  # Liste des caractères autorisés (facultatif)
-        # show_text = False  # Afficher le texte sur l'image (True ou False)
-        # show_confidence = False  # Afficher la confiance de détection sur l'image (True ou False)
-        # use_cuda = False  # Utiliser CUDA (GPU) pour EasyOCR (True ou False)
-        #
-        # # Construire la commande à exécuter
-        # command = ['py', '-3.11', reader_script_path, img]
-        # if allowlist:
-        #     command.extend(['--allowlist'] + allowlist)
-        # if show_text:
-        #     command.append('--show_text')
-        # if show_confidence:
-        #     command.append('--show_confidence')
-        # if use_cuda:
-        #     command.append('--cuda')
-        #
-        # # Exécuter la commande et récupérer le résultat
-        # output = subprocess.check_output(command, universal_newlines=True)
-        #
-        # # Afficher le résultat
-        # print(output)
-
     def print(self, text: str, color=None) -> None:
-        # print(f'[ {current_time()} ] [ {self.name} ] {text}')
         if text != "":
             self.set_text(f"[{current_time()}] {text}", color)
         else:
@@ -365,7 +317,7 @@ class Task():
             #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
 
             string = self.extract_text(img=cv_image, allowlist="level:1234567890")
-            print(f"[ {self.name} ] {string =}")
+            self.debug(string)
             string = string.replace("\n", "")
             string = string.split(":")
 
@@ -556,7 +508,7 @@ class Task():
                     self.script_pause()
                     sleep(1)
 
-    @get_name
+    # @get_name
     def better_sleep(self, limits: tuple[float, float]):
         a = limits[0]
         b = limits[1]
@@ -589,6 +541,8 @@ class Task():
             self.print(f"{result = }\n")
             return result
         except Exception as e:
+            self.debug(e)
+
             if e == 'ERROR_CAPTCHA_UNSOLVABLE':
                 if self.refresh_captcha():
                     return self.check_captcha()
@@ -607,8 +561,8 @@ class Task():
         while self.find_img('slider_captcha', confidence=0.83) and deadstop != 5:
             if deadstop == 0:
                 self.print("Captcha detected !", )
-            self.save_captcha_slider()
-            self.solve_slider()
+            captcha = self.save_captcha_slider()
+            self.solve_slider(captcha)
             deadstop +=1
             self.better_sleep((2,3))
         if deadstop == 5:
@@ -636,13 +590,18 @@ class Task():
         captcha = cv2.putText(captcha, 'Click in center of puzzle hole', org, font,
                               fontScale, color, thickness, cv2.LINE_AA)
 
-        captcha = cv2.cvtColor(captcha, cv2.COLOR_BGR2RGB)
-        im_pil = Image.fromarray(captcha)
-        im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
-        return cv2.imread(f"captcha{self.sel}.jpg")
+        # captcha = cv2.cvtColor(captcha, cv2.COLOR_BGR2RGB)
+        # im_pil = Image.fromarray(captcha)
+        # im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
+        # return cv2.imread(f"captcha{self.sel}.jpg")
+        return captcha
 
     @get_name
-    def solve_slider(self):
+    def solve_slider(self, file = None):
+        if file is None:
+            file = f"captcha{self.sel}.jpg"
+
+
         if self.data[self.sel]['API_KEY']:
             api_key = self.data[self.sel]['API_KEY']
         else:
@@ -650,17 +609,17 @@ class Task():
 
         solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
         try:
-            result = solver.coordinates(f"captcha{self.sel}.jpg", lang='en', hintText="Please locate the CENTER of the puzzle hole")
+            result = solver.coordinates(file, lang='en', hintText="Please locate the CENTER of the puzzle hole")
 
-            print(result)
+            self.debug(result)
 
             co = string_to_co_slide(result['code'])
-            print(co)
+            self.debug(co)
             slider_x, slider_y = self.find_img('slider_captcha')
             self.swipe_arg(slider_x + 25, slider_y, co[0] + 499, slider_y, 3000)
             self.better_sleep((2, 3))
         except Exception as e:
-            print(e)
+            self.debug(e)
             self.print("Cannot resolve this captcha slider!")
 
 
@@ -689,9 +648,9 @@ class Task():
             captcha = self.save_captcha()
             solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
 
-            result = solver.coordinates(f"captcha{self.sel}.jpg", lang='en')
+            result = solver.coordinates(captcha, lang='en')
 
-            print(result)
+            self.debug(result)
 
             co = string_to_co(result['code'])
             if self.adb.find_img_cv(captcha) is not None:
@@ -721,23 +680,19 @@ class Task():
             return self.resolve_captcha(compteur=compteur + 1)
 
     def save_captcha(self):
-        pil_image = self.adb.get_curr_device_screen_img()
-        try:
-            cv_image = array(pil_image)
-        except OSError:
-            self.better_sleep((1,1))
+        cv_image = self.adb.get_cv2_img()
 
-            return self.save_captcha()
         cropped_image = cv_image[100:560, 440:840]
-        cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
-        im_pil = Image.fromarray(cropped_image)
-        im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
-        self.better_sleep((0.5,0.5))
-        size = os.path.getsize(rf"{os.getcwd()}\captcha{self.sel}.jpg")
-        if size > 99999:
-            self.print(f"Captcha is too big ({size}), refreshing it..")
-            self.refresh_captcha()
-            return self.save_captcha()
+        # cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
+        # im_pil = Image.fromarray(cropped_image)
+        # im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
+        # self.better_sleep((0.5,0.5))
+        # size = os.path.getsize(rf"{os.getcwd()}\captcha{self.sel}.jpg")
+        # if size > 99999:
+        #     self.print(f"Captcha is too big ({size}), refreshing it..")
+        #     self.refresh_captcha()
+        #     return self.save_captcha()
+        #
         return cropped_image
 
     def refresh_captcha(self):
@@ -852,7 +807,7 @@ class Task():
             if co is not None:
                 self.click(uniform(co[0] + 5, co[0] + 20), uniform(co[1] + 5, co[1] + 20))
                 condition = False
-            self.better_sleep((10, 15))
+            self.better_sleep((5, 5))
             self.check_captcha_slider()
             self.check_reconnect()
             self.check_log_back()
@@ -887,16 +842,6 @@ class Task():
             self.better_sleep((1,1))
 
             return self.pil_to_array(image)
-
-    # @get_name
-    def check_if_kill(self):
-        """
-        Kill the process if his ppid is dead
-        :exemple: leave python would kill the process
-        """
-        if not pid_exists(self.ppid):
-            self.print("pPid not found, killing the thread")
-            sys.exit(1)
 
     #
     # @get_name
@@ -1000,7 +945,7 @@ class Task():
             captcha = self.save_captcha()
             solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
 
-            result = solver.coordinates(f"captcha{self.sel}.jpg", lang='en')
+            result = solver.coordinates(captcha, lang='en')
 
             print(result)
 
@@ -1350,14 +1295,14 @@ class Task():
             source = self.adb.get_cv2_img()[230:480, 441:814]
         img = Image.fromarray(source)
 
-        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255)]
+        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255), (4, 144, 199), (5, 201, 2)]
         occupied_colors = [
             (2, 4, 183), (233, 233, 233), (247, 156, 47), (207, 131, 40), (248, 157, 48),
             (239, 205, 165), (0, 0, 178), (2, 204, 2), (195, 142, 0), (0, 154, 14),
             (0, 154, 13), (1, 186, 0), (0, 142, 193), (12, 154, 1), (1, 215, 0),
             (1, 216, 0), (253, 253, 253), (49, 161, 255), (2, 197, 2), (247, 210, 167),
             (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167), (92, 157, 246), (246, 157, 92,), (101, 200, 43), (43, 200, 101), (106, 209, 46), (46, 209, 106), (2, 189, 2), (57, 159, 35), (35, 159, 24), (6, 187, 5),
-            (107, 211, 46), (46, 211, 107), (49, 161, 255), (255, 161, 49),
+            (107, 211, 46), (46, 211, 107), (49, 161, 255), (255, 161, 49),(14, 154, 0), (0, 154, 14)
         ]
 
         for i in range(img.size[0]):

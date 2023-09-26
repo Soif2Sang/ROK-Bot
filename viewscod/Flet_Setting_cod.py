@@ -2,16 +2,14 @@ import multiprocessing
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from flet_route import path, Routing
 
-import views.Flet_time_allower
-from views import Flet_time_allower
-from views.Flet_row_material import FletRowMaterial
-from views.Flet_row_presets import FletRowPresets
+from views import frametime
+from views.settings.profile.rows.Flet_row_material import FletRowMaterial
+from views.settings.profile.rows.Flet_row_presets import FletRowPresets
 from viewscod.Flet_row_rss_cod import FletRowRss
-from views.Flet_col_transfer import FletColumnRss
-from views.Flet_row_troops import FletRowTraining
-from viewscod.Flet_city_layout_cod import start, main2, CityPlacement
+from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
+from views.settings.profile.rows.Flet_row_troops import FletRowTraining
+from viewscod.Flet_city_layout_cod import CityPlacement
 from utils.Task_utils import FileSingleton
 
 color_bank = {
@@ -726,7 +724,7 @@ class SettingContainer(ft.Container):
         if keyword not in ["loop_task", "scheduler","leave_game_loop"]:
             self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
         else:
-            print(keyword,self.data[str(self.instance_index)][keyword])
+            # print(keyword,self.data[str(self.instance_index)][keyword])
 
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)

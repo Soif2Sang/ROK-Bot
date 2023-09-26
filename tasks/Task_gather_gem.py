@@ -21,6 +21,7 @@ class GatherGem(Task):
         self.herite(MainTask)
         self.end_time = None
         self.block = False
+        self.nodes_gathered = 0
 
     def task_name(self):
         return "GatherGem"
@@ -150,6 +151,7 @@ class GatherGem(Task):
                         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
                         self.better_sleep((0.5, 0.7))
                         self.print("New Troop sent !", "green")
+                        self.nodes_gathered += 1
                         return True
 
                 co = self.find_img(target="troops_march_button")
@@ -159,6 +161,8 @@ class GatherGem(Task):
                 self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
                 self.better_sleep((0.5, 0.7))
                 self.print("New Troop sent !", "green")
+
+                self.nodes_gathered += 1
                 return True
 
             if (self.find_img(target="march_bar") is not None) and self.free_troop_selection():
@@ -199,6 +203,8 @@ class GatherGem(Task):
                     self.better_sleep((0.9, 1.3))
                     return self.send_new_troop()
                 self.print("Troop sent to the node.", "green")
+
+                self.nodes_gathered += 1
                 return True
 
             timer = []
@@ -249,7 +255,9 @@ class GatherGem(Task):
                 self.click(x=uniform(1110, 1127), y=uniform(30, 55))
                 self.better_sleep((0.9, 1.3))
                 return self.send_new_troop()
-            self.print("Nearest troop sent to the node..", "green")
+            self.print("Nearest troop sent to the node.", "green")
+
+            self.nodes_gathered += 1
             return True
         except Exception as e:
             traceback.print_exc()
@@ -370,7 +378,7 @@ class GatherGem(Task):
             # if co is None:
             #     co = self.validate_co(
             #         self.find_img(source=screen, target=icon[1], confidence=0.77))
-            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.81))
+            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.795))
             if (co is not None) and ((co[0], co[1]) not in already_verified):
                 if self.already_mining(co[0], co[1], screen):
                     self.print(f"Node is occupied - x: {co[0]} y:{co[1]}")

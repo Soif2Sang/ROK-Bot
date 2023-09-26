@@ -12,7 +12,7 @@ color_bank ={
 }
 
 def index(page: ft.Page, params, basket):
-    return  ft.View("/", controls=page.controls,)
+    return ft.View("/", controls=page.controls,)
 
 def Main(page: ft.Page, days=950):
     page.title = f"Rok Bot - {days} Days left"
@@ -42,9 +42,9 @@ def Main(page: ft.Page, days=950):
             if changed:
                 page.update()
 
-    is_alive = threading.Thread(target=process_is_alive)
-    is_alive.deamon = True
-    is_alive.start()
+    # is_alive = threading.Thread(target=process_is_alive)
+    # is_alive.deamon = True
+    # is_alive.start()
 
 def Main_cod(page: ft.Page, days=950):
     page.title = f"Cod Bot - {days} Days left"

@@ -41,3 +41,13 @@ class PageRss(BasePage):
 
 
         self.profile.initial_page.update()
+
+    def reverse_keyword(self, keyword: str):
+        super().reverse_keyword(keyword)
+
+        self.data = self.FileSingleton.get_data()
+        if keyword == 'gather_rss_method':
+            for control in self.profile.content.controls[-7:]:
+                control.controls[2].controls[0].disabled = self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
+                    "gather_rss_method"]
+        self.initial_page.update()

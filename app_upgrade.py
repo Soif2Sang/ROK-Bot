@@ -157,11 +157,6 @@ def main(page: ft.Page):
         page.update()
 
     def login(e):
-        # page.update()
-        # page.go('/')
-        # page.window_width = 400
-        # page.window_height = 700
-        # return Main(page, 120)
         try:
             page.splash = ft.ProgressBar()
             page.loginUI.button_login.disabled = True
@@ -215,7 +210,7 @@ def main(page: ft.Page):
                 return page.verify_subscription(username, password)
             else:
                 page.clean()
-                for element in page.tile_manager.tiles.values():
+                for element in page.body.tile_manager.tiles.values():
                     element.paused = False
                     element.stopped = True
                 page.go('/login')
@@ -259,7 +254,7 @@ def main(page: ft.Page):
         ),
         path(
             url="/",
-            clear=False,
+            clear=True,
             view=index
         ),
         path(url=f"/citylayout/:instance_index/:profile_index",

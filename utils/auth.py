@@ -140,9 +140,59 @@ class selfApi:
             return True
         else:
             if self.page is not None:
-                self.page.open_banner("Invalid credentials")
+                def close_banner(e):
+                    self.page.banner.open = False
+                    self.page.update()
+
+                self.page.banner = ft.Banner(
+                    bgcolor=ft.colors.AMBER_100,
+                    content=ft.Column(controls=[
+                        ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
+                                      on_click=lambda _: self.page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                                      ),
+                        ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
+                                      on_click=lambda _: self.page.launch_url(
+                                          "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
+
+                    ]),
+                    actions=[
+                        ft.TextButton("Close", on_click=close_banner),
+                    ],
+                    content_padding=ft.padding.all(5)
+                )
+
+                self.page.banner.open = True
+                self.page.update()
+                print("here")
             print("Invalid credentials")
             return False
+
+    def license(self, key, hwid=None):
+        self.checkinit()
+        if hwid is None:
+            hwid = others.get_hwid()
+
+        post_data = {
+            "type": "license",
+            "key": key,
+            "hwid": hwid,
+            "sessionid": self.sessionid,
+            "name": self.name,
+            "ownerid": self.ownerid
+        }
+
+        print(self.ownerid)
+        response = self.__do_request(post_data)
+
+        json = jsond.loads(response)
+
+        if json["success"]:
+            self.__load_user_data(json["info"])
+            print(json["message"])
+        else:
+            print(json["message"])
+            time.sleep(3)
+            os._exit(1)
 
     def var(self, name):
         self.checkinit()
