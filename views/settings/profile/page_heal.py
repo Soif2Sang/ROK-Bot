@@ -12,7 +12,7 @@ class PageHeal(BasePage):
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                              "healing_count"],
                          width=300,
-                         on_change=lambda e: self.submit(e, "healing_count", int),
+                         on_change=lambda e: self.submit(e, "healing_count", int), content_padding=ft.padding.all(10)
                          ),
             ft.Divider(),
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Hospital position",

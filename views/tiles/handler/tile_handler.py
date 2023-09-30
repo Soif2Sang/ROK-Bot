@@ -289,13 +289,31 @@ class TileHandler(ft.ListView):
         instances = get_all_vms_running()
         for i in range(len(self.controls) - 1):
             self.controls.pop()
-        for instance in instances:
-            if str(instance[0]) in self.tiles:
-                self.controls.append(self.tiles[str(instance[0])])
-                self.tiles[str(instance[0])].main_task.adb.update_port()
-                self.tiles[str(instance[0])].runner.adb.update_port()
-            else:
-                self.add_tile(str(instance[0]))
-            self.tiles[str(instance[0])].config_overrider.items = []
-            self.tiles[str(instance[0])].config_overrider.refresh()
+        if instances:
+            for instance in instances:
+                if str(instance[0]) in self.tiles:
+                    self.controls.append(self.tiles[str(instance[0])])
+                    self.tiles[str(instance[0])].main_task.adb.update_port()
+                    self.tiles[str(instance[0])].runner.adb.update_port()
+                else:
+                    self.add_tile(str(instance[0]))
+                self.tiles[str(instance[0])].config_overrider.items = []
+                self.tiles[str(instance[0])].config_overrider.refresh()
+        else:
+
+            self.controls.append(ft.Container(
+                content=ft.Column(
+                    controls=[
+                        ft.Icon(ft.icons.INFO_OUTLINED, size=60),
+                        ft.Text(
+                            "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)",
+                            text_align=ft.TextAlign.CENTER)
+                    ],
+                    alignment=ft.MainAxisAlignment.START,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+
+                ),
+                margin=ft.margin.only(top=40)
+            ))
+
         self.update()

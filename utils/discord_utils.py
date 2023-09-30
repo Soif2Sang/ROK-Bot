@@ -10,6 +10,7 @@ async def send_discord_message(message):
     user_id = data['discord']['user_id']
     if not user_id:
         return
+
     intents = discord.Intents.default()
     intents.messages = True  # Enable the messages intent
 
@@ -33,5 +34,3 @@ async def send_discord_message(message):
             print(f"Failed to send the message: {e}")
 
     await client.start(token)
-
-# Run the async function

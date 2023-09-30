@@ -15,14 +15,14 @@ class PageFog(BasePage):
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "scout_duration1"],
                                  width=80,
-                                 on_change=lambda e: self.submit(e, "scout_duration1", int)
+                                 on_change=lambda e: self.submit(e, "scout_duration1", int),content_padding=ft.padding.all(10)
                                  ),
                     ft.Text("~"),
                     ft.TextField(label="Maximum",
                                  value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                      "scout_duration2"],
                                  width=90,
-                                 on_change=lambda e: self.submit(e, "scout_duration2", int)),
+                                 on_change=lambda e: self.submit(e, "scout_duration2", int),content_padding=ft.padding.all(10)),
                 ]
             ),
             ft.Divider(),

@@ -1044,6 +1044,9 @@ class Task():
         """
         return self.find_img(target='go_outside_city', source=self.adb.get_cv2_img()[600:,0:200], confidence=0.75) is not None
 
+    def get_config(self):
+        return self.data.get(self.sel).get('schedules').get(self.current_profile)
+
     @get_name
     def close_windows(self):
         image = self.adb.get_cv2_img()[0:322, 0:1280]
@@ -1295,7 +1298,7 @@ class Task():
             source = self.adb.get_cv2_img()[230:480, 441:814]
         img = Image.fromarray(source)
 
-        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255), (4, 144, 199), (5, 201, 2)]
+        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255), (4, 144, 199), (5, 201, 2), (2, 143, 197)]
         occupied_colors = [
             (2, 4, 183), (233, 233, 233), (247, 156, 47), (207, 131, 40), (248, 157, 48),
             (239, 205, 165), (0, 0, 178), (2, 204, 2), (195, 142, 0), (0, 154, 14),

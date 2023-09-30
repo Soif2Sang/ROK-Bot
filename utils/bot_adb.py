@@ -38,7 +38,8 @@ class Adb:
 
     def update_port(self):
         instances = get_dic_instances()
-
+        if str(self.number) not in instances:
+            return
         self.data = self.FileSingleton.get_data()
 
         self.data[str(self.number)]['instance'] = instances[str(self.number)]['instance']

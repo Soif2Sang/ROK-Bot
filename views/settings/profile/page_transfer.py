@@ -12,7 +12,7 @@ class PageTransfer(BasePage):
             ft.Text(
                 value="/!\ This feature require a custom ApiKey /!\ \n",
                 size=15,
-                color="red"),
+                color="red", height=20, weight="w500"),
             ft.Divider(),
             self.create_normal_switch('fast_rss_transfer', 'Enable faster rss transfer\nmay be riskier'),
             FletColumnRss(self.instance_index, self.profile_index),
