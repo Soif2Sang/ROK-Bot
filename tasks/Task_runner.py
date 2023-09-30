@@ -38,6 +38,8 @@ from utils.bot_adb import Adb
 from views.frametime import is_in_frametime, random_time_in_frametime
 
 import pretty_errors
+from datetime import timedelta
+
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
@@ -103,6 +105,7 @@ class TaskRunner(Task):
         return names.get(name, name)
 
     def execute_tasks(self, lib_tasks, profile):
+        self.adb.connect_to_device()
         self.run_game()
         screen = self.adb.get_cv2_img()
         co = self.find_img(target="hide_quests", source=screen)
@@ -386,6 +389,7 @@ class TaskRunner(Task):
             if trigger_stop == 4:
                 self.close_windows()
                 self.close_upgrade_popup()
+                self.check_captcha()
                 return self.change_character_param(co_first, nb_chars, fail + 1)
             if fail > 2:
                 self.print("Error in character switch. Bot is now stopped")
@@ -465,21 +469,16 @@ class TaskRunner(Task):
 
     @get_name
     def run(self):
-        # self.start_emulator()
-        print("starting")
-        self.adb.connect_to_device()
         self.data = self.update_data()
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
         starting_time = time()
+
         for i in range(loop_task):
             loop_time = time()
             self.set_status("Starting..")
             self.print("Script is starting ! ".center(20, "-"), "green")
             self.data = self.update_data()
-            # first_profile_first_instance = True
-            #
-            # co_first = []
-            # nb_profile = 0
+
             can_go = None
             when_go = None
             if not (self.data[self.sel]['schedules']["1"]['enabled'] or self.data[self.sel]['schedules']["2"][
@@ -498,6 +497,7 @@ class TaskRunner(Task):
                             if is_in_frametime(t[0], t[1]):
                                 can_go = True
                                 when_go = random_time_in_frametime(t[0], t[1])
+                                print(f"{when_go=}")
                                 self.print(f"Profile {profile} able to run")
                                 break
                         if not can_go:
@@ -512,13 +512,13 @@ class TaskRunner(Task):
                     self.current_profile = profile
                     self.print(f"Profile n°{profile} enabled ! ", "blue")
 
-                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character"):
+                    if self.get_config().get("switch_character"):
                         self.print(f"Character n°1", "blue")
                     # First character
                     self.execute_tasks(self.get_available_task(profile), profile)
 
-                    if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
-                                                                                              False):
+                    if self.get_config().get("switch_character", False):
+                        self.check_captcha()
                         co_first = self.get_first_character()
                         self.wait_until_connected()
                         # Characters remaining
@@ -530,6 +530,7 @@ class TaskRunner(Task):
                             self.execute_tasks(self.get_available_task(profile), profile)
                             self.better_sleep((1.2, 4))
 
+                            self.check_captcha()
                             boolean = self.change_character_param(co_first, nb_characters)
                             self.wait_until_connected()
                     if not self.data[self.sel]['scheduler']:
@@ -538,13 +539,12 @@ class TaskRunner(Task):
             if self.data.get(self.sel).get("loop_task"):
                 ttw1 = self.data.get(self.sel).get("time_to_wait_loop1", 60)
                 ttw2 = self.data.get(self.sel).get("time_to_wait_loop2", 90)
-                heures, minutes = divmod((int(time()) - loop_time), 60)
-                minutes, secondes = divmod(int(minutes), 60)
-                self.print(f"Run nb°{i} took {int(heures):02d}:{int(minutes):02d}:{int(secondes):02d} to complete.")
+
+                self.print(f"Run nb°{i} took {timedelta(seconds=int(time() - loop_time))} to complete.")
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes", "#f5b400")
+                self.print(f"Script is paused for {timedelta(seconds=time_before_redo_tasks)}", "#f5b400")
 
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     if time_before_redo_tasks < 600:
@@ -555,7 +555,7 @@ class TaskRunner(Task):
                 self.set_timer(time_before_redo_tasks)
 
         self.print(
-            f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.",
+            f"The bot took {timedelta(seconds=starting_time)} to complete all the tasks, bot is waiting for your instructions.",
             "green")
         self.set_divider()
         return
@@ -709,24 +709,22 @@ class TaskRunner(Task):
             if self.data.get(self.sel).get("loop_task"):
                 ttw1 = self.data.get(self.sel).get("time_to_wait_loop1", 60)
                 ttw2 = self.data.get(self.sel).get("time_to_wait_loop2", 90)
-                heures, minutes = divmod((int(time()) - loop_time), 60)
-                minutes, secondes = divmod(int(minutes), 60)
-                self.print(f"Run nb°{i} took {int(heures):02d}:{int(minutes):02d}:{int(secondes):02d} to complete.")
+
+                self.print(f"Run nb°{i} took {timedelta(seconds=int(time() - loop_time))} to complete.")
+
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes", "#f5b400")
+
+                self.print(f"Script is paused for {timedelta(seconds=time_before_redo_tasks)}", "#f5b400")
 
                 if self.data.get(self.sel).get("leave_game_loop", False):
-                    if time_before_redo_tasks < 600:
-                        self.leave_game(force=True)
-                    else:
-                        self.leave_game(force=False)
+                    self.leave_game(force=False)
 
                 self.set_timer(time_before_redo_tasks)
 
         self.print(
-            f"The bot took {(time() - starting_time) // 60} minutes to complete all the tasks, bot is waiting for your instructions.",
+            f"The bot took {timedelta(seconds=int(time() - starting_time))} minutes to complete all the tasks, bot is waiting for your instructions.",
             "green")
         # self.set_divider()
         return

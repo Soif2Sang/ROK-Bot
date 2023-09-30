@@ -67,10 +67,7 @@ class GatherRssZoom(GatherRss):
         co = None
         for icon in list_nodes:
             co = self.validate_co(
-                self.find_img(source=screen, target=icon, confidence=0.82))
-            if co is None:
-                co = self.validate_co(
-                    self.find_img(source=screen, target=icon, confidence=0.82))
+                self.find_img(source=screen, target=icon, confidence=0.8))
             if co is not None:
                 self.print(f"Node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
@@ -78,44 +75,33 @@ class GatherRssZoom(GatherRss):
                     co = None
             if co:
                 break
-        if co:
-            self.print(f"Node x:{co[0]}, y:{co[1]}")
-            self.click(co[0], co[1])
-            x_click = co[0]
-            y_click = co[1]
-            self.better_sleep((2, 2.5))
-            self.check_captcha()
-            self.check_download_page()
-            self.leave_kd_buff()
-            if self.check_log_back():
-                self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
-                return self.run(self.end_time)
-            screen = self.adb.get_cv2_img()
-            cv_image = screen[0:100, 0:800]
-            if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
-                self.print("Bot detected the block icon, now cancelling the function..")
-                self.block = True
-                return
+        if not co:
+            return
 
-            if self.find_cross():
-                return self.adjusted_leave_city(x_click, y_click)
+        self.click(co[0], co[1])
+        x_click = co[0]
+        y_click = co[1]
+        self.better_sleep((2, 2.5))
+        self.check_captcha()
+        self.check_download_page()
+        self.leave_kd_buff()
+        if self.check_log_back():
+            self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
+            return self.run(self.end_time)
 
-            if not self.click_on_node():
-                return self.adjusted_leave_city(x_click, y_click)
+        if self.find_cross():
+            return self.adjusted_leave_city(x_click, y_click)
 
-            if self.free_troop_selection():
-                self.click(uniform(1172, 1222), uniform(77, 112))
-                # self.better_sleep((0.6, 1))
+        if not self.click_on_node():
+            return self.adjusted_leave_city(x_click, y_click)
 
+        if self.send_troop():
+            self.node_type = self.next_resource_type(self.node_type)
             self.better_sleep((1.3, 2))
-
-            if self.send_troop():
-                self.node_type = self.next_resource_type(self.node_type)
-                self.better_sleep((1.3, 2))
-                self.check_captcha()
-                self.zoom_out_city()
-            else:
-                return "STOP"
+            self.check_captcha()
+            self.zoom_out_city()
+        else:
+            return "STOP"
 
 
     @get_name

@@ -73,13 +73,12 @@ def is_str_valid(username, password):
             return False
     return True
 
-class LoginUI(ft.View):
+class LoginUI(ft.Column):
     def __init__(self, page, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initial_page = page
         self.fileSingleton = FileSingleton()
         self.data = self.fileSingleton.get_data()
-        self.route = '/login'
         self.init()
 
     def show_banner(self, e):
@@ -107,10 +106,84 @@ class LoginUI(ft.View):
         self.initial_page.banner.open = True
         self.initial_page.update()
 
+    def login(self, e):
+        try:
+            self.initial_page.splash = ft.ProgressBar()
+            self.button_login.disabled = True
+            self.initial_page.update()
+
+            username = self.textfield_username.value
+            password = self.textfield_password.value
+
+            if username == '' or password == '':
+                return
+            if not is_str_valid(username, password):
+                self.initial_page.open_banner("Illegal characters..")
+            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
+                update_user_info(password, username)
+
+                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
+
+                current_date = datetime.utcnow()
+                days_remaining = (target_date - current_date).days
+
+                self.initial_page.splash = None
+                self.button_login.disabled = False
+
+                Main(self.initial_page, days_remaining)
+
+                self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
+                self.initial_page.subscription_checker.start()
+            else:
+                sleep(5)
+                self.initial_page.splash = None
+                self.initial_page.loginUI.button_login.disabled = False
+                self.initial_page.update()
+        except Exception as e:
+            print(e)
+            self.initial_page.window_close()
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
+            sys.exit()
+
+    def verify_subscription(self, username, password):
+        try:
+            self.initial_page.keyauthapp = selfApi(
+                name="Rokbd",
+                ownerid="7oofxdj8uH",
+                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+                version="1.0",
+                hash_to_check=getchecksum()
+            )
+
+            if self.initial_page.keyauthapp.login(user=username, password=password,page=self.initial_page):
+                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
+
+                current_date = datetime.utcnow()
+                days_remaining = (target_date - current_date).days
+
+                self.initial_page.title = f"Rok Bot - {days_remaining} Days left"
+                self.initial_page.update()
+                sleep(6 * 3600)
+                return self.verify_subscription(username, password)
+            else:
+                for element in self.initial_page.tile_manager.tiles.values():
+                    element.paused = False
+                    element.stopped = True
+                self.initial_page.window_width = 330
+                self.initial_page.window_height = 330
+                self.initial_page.clean()
+                self.initial_page.add(self.initial_page.loginUI)
+                self.initial_page.update()
+        except Exception as e:
+            print(e)
+            self.initial_page.window_close()
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
+            sys.exit()
+
     def init(self):
         self.textfield_username = ft.TextField(label="Username", width=300, value=self.data.get("user",{}).get("username",""))
         self.textfield_password = ft.TextField(label="Password", password=True, can_reveal_password=True, width=300, value=self.data.get("user",{}).get("password",""))
-        self.button_login = ft.OutlinedButton(text="Login", on_click=self.initial_page.login)
+        self.button_login = ft.OutlinedButton(text="Login", on_click=self.login)
         self.subscribe_button = ft.FilledTonalButton(text="Subscribe", on_click=self.show_banner)
 
 
@@ -188,89 +261,8 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def login(e):
-        # page.update()
-        # page.go('/')
-        # page.window_width = 400
-        # page.window_height = 700
-        # return Main(page, 120)
-        try:
-            page.splash = ft.ProgressBar()
-            page.loginUI.button_login.disabled = True
-            page.update()
-
-            username = page.loginUI.textfield_username.value
-            password = page.loginUI.textfield_password.value
-
-            if username == '' or password == '':
-                return
-            if not is_str_valid(username, password):
-                page.open_banner("Illegal characters..")
-            if page.keyauthapp.login(user=username, password=password, page=page):
-                update_user_info(password, username)
-                date_brut = \
-                datetime.utcfromtimestamp(int(page.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[
-                    0]
-                heures = date_brut.split('-')
-                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-                diff = future - date.today()
-                page.splash = None
-                page.loginUI.button_login.disabled = False
-                page.window_width = 450
-                page.window_height = 700
-                Main(page, diff.days)
-                page.update()
-                page.go('/')
-                page.subscription_checker = threading.Thread(target=page.verify_subscription, args=(username, password))
-                page.subscription_checker.start()
-            else:
-                sleep(5)
-                page.splash = None
-                page.loginUI.button_login.disabled = False
-                page.update()
-        except Exception as e:
-            print(e)
-            page.window_close()
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            sys.exit()
-
-    def verify_subscription(username, password):
-        try:
-            page.keyauthapp = selfApi(
-                name="Rokbd",
-                ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
-                version="1.0",
-                hash_to_check=getchecksum()
-            )
-
-            if page.keyauthapp.login(user=username, password=password,page=page):
-                date_brut = datetime.utcfromtimestamp(int(page.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-                heures = date_brut.split('-')
-                future = date(int(heures[0]), int(heures[1]), int(heures[2]))
-                diff = future - date.today()
-                page.title = f"Rok Bot - {diff.days} Days left"
-                page.update()
-                sleep(12 * 3600)
-                return page.verify_subscription(username, password)
-            else:
-                page.clean()
-                for element in page.body.tile_manager.tiles.values():
-                    element.paused = False
-                    element.stopped = True
-                page.body = page.loginUI
-                page.go('/login')
-                page.update()
-        except Exception as e:
-            print(e)
-            page.window_close()
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            sys.exit()
-
     page.close_banner = close_banner
     page.open_banner = lambda text: open_banner(text)
-    page.login = login
-    page.verify_subscription = lambda username, password : verify_subscription(username, password)
     page.subscription_checker = threading.Thread()
     page.loginUI = LoginUI(page)
     page.UPGRADE = False
@@ -294,13 +286,8 @@ def main(page: ft.Page):
 
     page.app_routes = [
         path(
-            url="/login",
-            clear=False,
-            view=loginView
-        ),
-        path(
             url="/",
-            clear=False,
+            clear=True,
             view=index
         ),
         path(url=f"/citylayout/:instance_index/:profile_index",
@@ -318,15 +305,14 @@ def main(page: ft.Page):
         app_routes=page.app_routes,
     )
 
-    page.go('/login')
+    page.add(page.loginUI)
+
     page.update()
 
+
+
 def index(page: ft.Page, params, basket):
-    return  ft.View("/", controls=page.controls,)
-
-def loginView(page: ft.Page, params, basket):
-    return page.loginUI
-
+    return ft.View(route="/", controls=page.controls)
 
 if __name__ == '__main__':
     ft.app(target=main)

@@ -40,40 +40,36 @@ class ProfileSettings(PageSettings):
 
     def init(self):
 
-
-        self.create_advanced_switch("gather_gem", "Gather gems", PageGem)
-        self.create_advanced_switch("gather_rss", "Gather rss", PageRss)
-        self.create_normal_switch("collect_ressource", "Collect city rss")
-        self.create_normal_switch("use_enhanced_buff", "Use enhanced buff")
-        self.create_normal_switch("buy_merchant", "Buy merchant")
-        self.create_normal_switch("check_donation", "Alliance donation")
-        self.create_normal_switch("gather_alliance_pit", "Gather Alliance Pit")
-        self.create_advanced_switch("material_production", "Material Production", PageMaterials)
-        self.create_advanced_switch("train_troops", "Train troops", PageTraining)
+        self.create_advanced_switch("gather_gem", "Gem Gathering", PageGem)
+        self.create_advanced_switch("gather_rss", "Resources Gathering", PageRss)
+        self.create_normal_switch("collect_ressource", "Collect City Resources")
+        self.create_normal_switch("use_enhanced_buff", "Apply Enhanced Buff")
+        self.create_normal_switch("buy_merchant", "Buy Mysterious Merchant")
+        self.create_normal_switch("check_donation", "Donate to Alliance")
+        self.create_normal_switch("gather_alliance_pit", "Alliance Pit Gathering")
+        self.create_advanced_switch("material_production", "Produce Materials", PageMaterials)
+        self.create_advanced_switch("train_troops", "Troops Training", PageTraining)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
         self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
         self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
         self.create_normal_switch("claim_campaign", "Claim Expedition Rewards")
-        self.create_normal_switch("alliance_help", "Alliance Help")
         self.create_normal_switch("claim_mails", "Claim Mails")
+        self.create_normal_switch("alliance_help", "Help Alliance")
         self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", PageBarbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", PageRally)
-        self.create_advanced_switch("kill_marauders", "Kill marauders", PageMarauders)
-        self.create_advanced_switch("scout_fog", "Clear fog", PageFog)
-        self.create_normal_switch("upgrade_city", "Upgrade City (light)")
-        self.create_advanced_switch("heal_troop", "Troops healing", PageHeal)
-        self.create_advanced_switch("transfer_enable", "Rss Transfer", PageTransfer)
+        self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
+        self.create_advanced_switch("scout_fog", "Explore Fog", PageFog)
+        self.create_normal_switch("upgrade_city", "Upgrade City (Light)")
+        self.create_advanced_switch("heal_troop", "Troops Healing", PageHeal)
+        self.create_advanced_switch("transfer_enable", "Transfer Resources", PageTransfer)
         #
         self.content.controls.append(ft.Divider())
         #
-        self.create_normal_switch("auto_reconnect", "Log back from network issues)")
-        self.create_advanced_switch("auto_log_back", "Log back from device switch", PageLogback)
-
-        self.create_normal_switch("auto_captcha", "Resolve captcha")
+        self.create_normal_switch("auto_reconnect", "Reconnect on Network Issues")
+        self.create_advanced_switch("auto_log_back", "Log Back on Device Switch", PageLogback)
+        self.create_normal_switch("auto_captcha", "Solve Captcha")
         self.create_slow_mode()
-        self.create_advanced_switch("switch_character", "Characters switching", PageCharacter)
-
-
+        self.create_advanced_switch("switch_character", "Switch Characters", PageCharacter)
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()

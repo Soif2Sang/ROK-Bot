@@ -4,6 +4,7 @@ from random import randint
 import flet as ft
 
 from utils.Task_utils import FileSingleton
+from datetime import datetime, timedelta
 
 
 color_bank = {
@@ -13,43 +14,51 @@ color_bank = {
 }
 
 
-def is_valid_time(time: str):
-    if len(time) != 5:
-        return False
-    if ":" not in time:
-        return False
-    hours, minutes = time.split(":")
-    if not str(hours).isnumeric() or not str(minutes).isnumeric():
-        return False
-    if int(hours) > 24 or int(minutes) > 60:
-        return False
-    return True
-
-def is_in_frametime(first,second):
-    import time
-    year, month, day, hour, min = map(int, time.strftime("%Y %m %d %H %M").split())
-    if not is_valid_time(first) or not is_valid_time(second):
+def is_valid_time(time_str):
+    try:
+        hours, minutes = map(int, time_str.split(':'))
+        if 0 <= hours <= 23 and 0 <= minutes <= 59:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e)
         return False
 
-    current = hour * 60 + min
-    start = int(first.split(":")[0]) * 60 + int(first.split(":")[1])
-    end = int(second.split(":")[0]) * 60 + int(second.split(":")[1])
+def is_in_frametime(first, second):
+    current_time = datetime.now().time()
+    start_time = datetime.strptime(first, "%H:%M").time()
+    end_time = datetime.strptime(second, "%H:%M").time()
 
-    return start < current < end
+    if start_time < end_time:
+        return start_time <= current_time <= end_time
+    else:
+        now = datetime.now()
+        midnight = datetime.combine(now.date(), datetime.min.time()) + timedelta(days=1)
+        time_remaining = midnight - now
 
-def random_time_in_frametime(first,second):
-    if not is_valid_time(first) or not is_valid_time(second):
-        return 9_999_999
-    import time
-    year, month, day, hour, min = map(int, time.strftime("%Y %m %d %H %M").split())
-    current = hour * 3600 + min * 60
-    start = int(first.split(":")[0]) * 3600 + int(first.split(":")[1]) * 60
-    end = int(second.split(":")[0]) * 3600 + int(second.split(":")[1]) * 60
-    if end > current > start:
-        start = current
-    start = start - current
-    end = end - current
-    return randint(start,end)
+        # Calculate the end_time adjusted for the remaining time until the next day
+        adjusted_end_time = (midnight + timedelta(seconds=time_remaining.seconds)).time()
+
+        return start_time <= current_time <= adjusted_end_time
+
+def random_time_in_frametime(first, second):
+    if is_valid_time(first) and is_valid_time(second):
+        start_time = datetime.strptime(first, "%H:%M").time()
+        end_time = datetime.strptime(second, "%H:%M").time()
+
+        if start_time < end_time:
+            time_diff = (datetime.combine(datetime.min, end_time) - datetime.combine(datetime.min, start_time)).total_seconds()
+        else:
+            time_diff = (datetime.combine(datetime.min, end_time) + timedelta(days=1) - datetime.combine(datetime.min, start_time)).total_seconds()
+
+        random_seconds = randint(0, int(time_diff))
+
+        new_time = (datetime.combine(datetime.min, start_time) + timedelta(seconds=random_seconds)).time()
+
+        return random_seconds
+
+    return "Invalid Time"
 
 class RowTimezone(ft.Row):
     def __init__(self,instance,profile,parent,start ="00:00",end="00:00",default=True,**kwargs):
@@ -97,7 +106,7 @@ class RowTimezone(ft.Row):
     def sub(self):
         self.data = self.FileSingleton.get_data()
         i = self.data[self.instance]['schedules'][self.profile]["timing"].index([self.start,self.stop])
-        print(self.data[self.instance]['schedules'][self.profile]["timing"])
+
         self.data[self.instance]['schedules'][self.profile]["timing"][i] = [self.field_start.value,self.field_stop.value]
         if not is_valid_time(self.field_start.value) or not is_valid_time(self.field_stop.value):
             self.pop_banner("Wrong format, please fix")
@@ -113,7 +122,7 @@ class ManagerTimezone(ft.ListView):
         self.instance = str(instance)
         self.profile = str(profile)
         self.spacing = 10
-        print(self.data[self.instance]['schedules'][self.profile]["timing"])
+
         self.controls.append(ft.Text(value="Welcome to Profile Activation Settings!\n"
                                            "You have the flexibility to set multiple activation frametimes for your profile.\n"
                                            "When entering the time, please use the 'hours:minutes' format, following a 24-hour clock notation.\nFor example, 02:00 pm should be entered as 14:00, aligning with your computer's 24-hour clock time.\n"
@@ -141,18 +150,13 @@ class ManagerTimezone(ft.ListView):
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
             index = self.profile
-        print(f"{keyword = }, {index = }, {self.instance =}")
         self.data[str(self.instance)]['schedules'][str(index)][keyword] = not \
             self.data[str(self.instance)]['schedules'][str(index)][keyword]
         self.FileSingleton.write_data(self.data)
 
     def init(self):
-        print(self.instance,self.profile)
-
         for tup in self.data[self.instance]['schedules'][self.profile]["timing"]:
-            start = tup[0]
-            stop = tup[1]
-            self.controls.append(RowTimezone(self.instance,self.profile,self,start=start,end=stop,default=False))
+            self.controls.append(RowTimezone(self.instance,self.profile,self,start=tup[0],end=tup[1],default=False))
 
     def add_tile(self,refresh=True):
         self.data = self.FileSingleton.get_data()
@@ -187,4 +191,5 @@ def start(sel_param="1",profile_param="1"):
     ft.app(target=main)
 
 if __name__ == "__main__":
-    start()
+    # start()
+    print(random_time_in_frametime('19:50', '6:36'))

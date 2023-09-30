@@ -28,6 +28,8 @@ class AlliancePit(Task):
     def is_pit_ready(self):
         screen = self.adb.get_cv2_img()
         alliance_pits = self.find_img(target="alliance_pits", source=screen, confidence=0.79)
+        if not alliance_pits:
+            return False
 
         is_alliance_pit_expended = self.find_img(target="is_alliance_pit_expended", source=screen[alliance_pits[1]+15:alliance_pits[1] + 40,1076:1151], confidence=0.75)
         if not is_alliance_pit_expended:

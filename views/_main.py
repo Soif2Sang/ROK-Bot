@@ -3,6 +3,7 @@ from time import sleep
 
 import flet as ft
 
+from views.tiles.handler.tile_handler import TileHandler
 from views._body import Body
 from viewscod import Flet_TileManager_cod
 color_bank ={
@@ -11,36 +12,55 @@ color_bank ={
     3:"#dec433"
 }
 
-def index(page: ft.Page, params, basket):
-    return ft.View("/", controls=page.controls,)
+class BodyView(ft.View):
+    def __init__(self, initial_page, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial_page = initial_page
+        self.expand = True
+        self.tile_manager = TileHandler(self.initial_page)
+        self.initial_page.tile_manager = self.tile_manager
+        self.current_frame = ft.Container()
+
+        self.controls = [
+            self.tile_manager,
+            ft.Divider(),
+            self.current_frame
+        ]
 
 def Main(page: ft.Page, days=950):
     page.title = f"Rok Bot - {days} Days left"
     page.frames = {}
+
+    page.window_width = 450
+    page.window_height = 700
+    page.clean()
 
     theme = ft.Theme()
     theme.page_transitions.windows = ft.PageTransitionTheme.FADE_UPWARDS
     page.theme = theme
     page.update()
 
-    body = Body(page)
-    page.body = body
-    page.add(body)
+    page.tile_manager = TileHandler(page)
 
-    body.tile_manager.refresh()
+    page.add(
+        page.tile_manager,
+        ft.Divider(height=0,)
+    )
 
-    def process_is_alive():
-        while 1:
-            changed = False
-            for tile in body.tile_manager.tiles.values():
-                if (not tile.tasks_process.is_alive() and tile.button_start.icon == ft.icons.PAUSE) and (page.route == '/'):
-                    tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-                    tile.button_stop.disabled = True
-                    tile.set_text("")
-                    changed = True
-            sleep(0.1)
-            if changed:
-                page.update()
+    page.tile_manager.refresh()
+
+    # def process_is_alive():
+    #     while 1:
+    #         changed = False
+    #         for tile in body.tile_manager.tiles.values():
+    #             if (not tile.tasks_process.is_alive() and tile.button_start.icon == ft.icons.PAUSE) and (page.route == '/'):
+    #                 tile.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+    #                 tile.button_stop.disabled = True
+    #                 tile.set_text("")
+    #                 changed = True
+    #         sleep(0.1)
+    #         if changed:
+    #             page.update()
 
     # is_alive = threading.Thread(target=process_is_alive)
     # is_alive.deamon = True

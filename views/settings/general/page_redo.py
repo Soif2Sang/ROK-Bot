@@ -25,13 +25,16 @@ class PageRedo(BasePage):
                     ft.TextField(label="Minimum",
                                  value=self.data[str(self.instance_index)]["time_to_wait_loop1"],
                                  width=80,
-                                 on_change=lambda e: self.submit(e, "time_to_wait_loop1", int)
+                                 on_change=lambda e: self.submit(e, "time_to_wait_loop1", int),
+                                 content_padding=ft.padding.all(10),
+
                                  ),
                     ft.Text("~"),
                     ft.TextField(label="Maximum",
                                  value=self.data[str(self.instance_index)]["time_to_wait_loop2"],
                                  width=90,
-                                 on_change=lambda e: self.submit(e, "time_to_wait_loop2", int)
+                                 on_change=lambda e: self.submit(e, "time_to_wait_loop2", int),
+                                 content_padding=ft.padding.all(10),
                                  )
                 ]
             ),

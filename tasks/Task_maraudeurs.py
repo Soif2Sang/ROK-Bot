@@ -32,17 +32,24 @@ class Marauders(Task):
         # print(nb_troop)
         x, y = uniform(1170, 1183), uniform(160, 175)
         self.click(x, y)
-        self.better_sleep((1.595, 2))
+        self.better_sleep((2,3))
         nb_to_go = nb_troop
         if nb_troop == -1:
             nb_troop = self.nb_hunter
         breakint = 0
         while nb_to_go > 0 and breakint != 4:
+            print(nb_to_go)
             co = self.adb.find_multiple_img(target="return_button")
             # print(co)
-            while (co is None and co != []) and breakint != 4:
-                print(
-                    f'[ {current_time()} ] [ {self.name} ] Return button not found')
+
+            if (co):
+                co = co[0]
+                self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
+                self.better_sleep((1.695, 2))
+                nb_to_go = nb_to_go - 1
+
+            while not co and breakint != 4:
+                print(f'[ {current_time()} ] [ {self.name} ] Return button not found')
 
                 y, x = uniform(290, 480), uniform(460, 560)
                 x2, y2 = x + uniform(-30, 30), y + uniform(-200, -100)
@@ -50,15 +57,9 @@ class Marauders(Task):
                 self.better_sleep((2, 3))
                 co = self.adb.find_multiple_img(target="return_button")
                 breakint += 1
-            if (co is not None and co != []):
-                co = co[0]
-                self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
-                self.better_sleep((1.695, 2))
-                nb_to_go = nb_to_go - 1
-            self.better_sleep((1.695, 2))
+
         sleep(0.5)
-        x, y = uniform(1080, 1093), uniform(72, 88)
-        self.click(x, y)
+        self.close_windows()
         self.better_sleep((1.595, 2))
         if wait:
             said = False
@@ -303,6 +304,17 @@ class Marauders(Task):
         return randomization
 
     @get_name
+    def check_if_interrupt(self, screen = None):
+        if not self.adb.is_game_alive():
+            return True
+        self.check_download_page(screen)
+        self.leave_kd_buff(screen)
+        self.check_reconnect(screen)
+        if self.check_log_back(screen):
+            return True
+        return False
+
+    @get_name
     def swipe_scan(self, scan, direction):
         self.script_pause()
         # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
@@ -312,18 +324,14 @@ class Marauders(Task):
         info_screen = screen[470:700, 0:115]
         cropped_image = screen[420:540, 480:810]
 
-        if random() > 0.7:
-            co = self.find_img(source=screen, target="verification_button", confidence=0.8)
-            if co is not None:
-                self.check_captcha()
-            self.check_reconnect(cropped_image)
-
-        if random() > 0.4:
-            self.check_download_page(screen)
-            self.leave_kd_buff(screen)
-
         if random() > 0.9:
             self.close_windows()
+
+        if random() > 0.7:
+            self.check_if_interrupt(screen)
+            co = self.find_img(source=screen, target="verification_button", confidence=0.6)
+            if co is not None:
+                self.check_captcha()
 
         cropped_image = screen[616:710, 1168:1270]
 
@@ -342,7 +350,7 @@ class Marauders(Task):
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
-        self.better_sleep((0.5, 0.7))
+        self.better_sleep((0.7, 0.9))
         return scan()
 
     @get_name
@@ -639,6 +647,8 @@ class Marauders(Task):
             # self.leave_city()
             # print("second leave cit")
             self.click(700, 400)
+            self.better_sleep((1.525, 2.795))
+
             randomization = self.go_to(self.data[str(self.sel)]['schedules'][self.current_profile].get('city_x', 500),
                                        self.data[str(self.sel)]['schedules'][self.current_profile].get('city_y', 500),
                                        randomization)
@@ -646,5 +656,8 @@ class Marauders(Task):
             self.better_sleep((0.525, 0.795))
             self.zoom_out_city()
             # self.better_sleep((0.525, 0.795))
+
+        self.click(700, 400)
+        self.better_sleep((1.525, 2.795))
         self.recall(self.nb_hunter)
         self.print("Maraudeurs time elapsed !")

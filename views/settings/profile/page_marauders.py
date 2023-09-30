@@ -38,45 +38,55 @@ class PageMarauders(BasePage):
                 ]
             ),
             ft.Divider(),
-            ft.TextField(label="Your kingdom :",
-                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kingdom"],
-                         width=300,
-                         content_padding=ft.padding.all(10),
-                         on_change=lambda e: self.submit(e, "kingdom", str)),
-            ft.Divider(),
-            ft.TextField(label="Area location X coordinates :",
-                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_x"],
-                         width=300,
-                         content_padding=ft.padding.all(10),
-                         on_change=lambda e: self.submit(e, "city_x", int)
-                         ),
-            ft.Divider(),
-            ft.TextField(label="Area location Y coordinates :",
-                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_y"],
-                         width=300,
-                         content_padding=ft.padding.all(10),
-                         on_change=lambda e: self.submit(e, "city_y", int),
-                         ),
-            ft.Divider(),
-            ft.Row(
+
+            ft.Container(content=ft.ResponsiveRow(controls=[
+                ft.Column(controls=[ft.TextField(label="Your kingdom :",
+                                                 value=
+                                                 self.data[str(self.instance_index)]['schedules'][
+                                                     str(self.profile_index)][
+                                                     "kingdom"],
+                                                 content_padding=ft.padding.all(10),
+                                                 on_change=lambda e: self.submit(e, "kingdom", str),
+                                                 )], col=4),
+                ft.Column(controls=[ft.TextField(label="Area location X coordinates :",
+                                                 value=
+                                                 self.data[str(self.instance_index)]['schedules'][
+                                                     str(self.profile_index)][
+                                                     "city_x"],
+                                                 content_padding=ft.padding.all(10),
+                                                 on_change=lambda e: self.submit(e, "city_x", int),
+
+                                                 )], col=4),
+                ft.Column(controls=[ft.TextField(label="Area location Y coordinates :",
+                                                 value=
+                                                 self.data[str(self.instance_index)]['schedules'][
+                                                     str(self.profile_index)][
+                                                     "city_y"],
+                                                 content_padding=ft.padding.all(10),
+                                                 on_change=lambda e: self.submit(e, "city_y", int),
+                                                 )], col=4)
+            ], vertical_alignment=ft.CrossAxisAlignment.CENTER
+            ), margin=ft.margin.only(bottom=10))
+            ,
+            ft.ResponsiveRow(
                 controls=[
-                    ft.Text("Killing duration (mins)"),
-                    ft.TextField(label="Minimum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "kill_marauders_duration"][0],
-                                 width=80,
-                                 content_padding=ft.padding.all(10),
-                                 on_change=lambda e: self.submit_marauders(e, 0)
-                                 ),
-                    ft.Text("~"),
-                    ft.TextField(label="Maximum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "kill_marauders_duration"][1],
-                                 width=90,
-                                 content_padding=ft.padding.all(10),
-                                 on_change=lambda e: self.submit_marauders(e, 1)),
+                    ft.Column(controls=[ft.TextField(label="Minimum Killing Duration (mins)",
+                                                     value=self.data[str(self.instance_index)]['schedules'][
+                                                         str(self.profile_index)][
+                                                         "kill_marauders_duration"][0],
+                                                     content_padding=ft.padding.all(10),
+                                                     on_change=lambda e: self.submit_marauders(e, 0)
+                                                     )], col=6),
+                    ft.Column(controls=[ft.TextField(label="Maximum Killing Duration (mins)",
+                                                     value=self.data[str(self.instance_index)]['schedules'][
+                                                         str(self.profile_index)][
+                                                         "kill_marauders_duration"][1],
+                                                     content_padding=ft.padding.all(10),
+                                                     on_change=lambda e: self.submit_marauders(e, 1)
+                                                     )], col=6),
                 ]
             ),
+
             ft.Divider(),
             ft.Text(value="Peacekeeper presets"),
             ft.Column(

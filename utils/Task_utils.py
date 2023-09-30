@@ -55,33 +55,33 @@ class FileSingleton:
 
     def write(self, name, text: str):
         self.FileLock.acquire()
-        with open(f"{dir}logs/{name}_logs.txt", "a+", encoding="utf-8") as logger:
+        with open(f"./logs/{name}_logs.txt", "a+", encoding="utf-8") as logger:
             logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
         self.FileLock.release()
 
     def get_data(self):
         self.FileLock.acquire()
-        with open(f"{dir}user_settings.json", encoding='utf-8') as config_file:
+        with open(f"./user_settings.json", encoding='utf-8') as config_file:
             data = json.load(config_file)
         self.FileLock.release()
         return data
 
     def get_path(self):
         self.FileLock.acquire()
-        with open(f"{dir}path.json", encoding='utf-8') as config_file:
+        with open(f"./path.json", encoding='utf-8') as config_file:
             path = json.load(config_file)
         self.FileLock.release()
         return path
 
     def write_data(self, data):
         self.FileLock.acquire()
-        with open(f"{dir}user_settings.json", 'w', encoding='utf-8') as config_file:
+        with open(f"./user_settings.json", 'w', encoding='utf-8') as config_file:
             config_file.write(json.dumps(data, indent=2))
         self.FileLock.release()
 
     def get_default_config(self):
         self.FileLock.acquire()
-        with open(f"{dir}default_profile.json", encoding='utf-8') as config_file:
+        with open(f"./default_profile.json", encoding='utf-8') as config_file:
             data = json.load(config_file)
         self.FileLock.release()
         return data
@@ -151,6 +151,16 @@ def get_name(func):
     @wraps(func)
     def wrapper(self: object, *args: object, **kwargs: object):
         self.script_pause()
+
+        if func.__name__ == "set_timer":
+            args_str = [toString(arg) for arg in args] if args is not None else []
+            kwargs_str = [f"{key}={toString(value)}" for key, value in kwargs.items()] if kwargs is not None else []
+            arg_str = ", ".join(args_str + kwargs_str)
+
+            timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+            message = f"[ {colorize_name(self.name)} ] {func.__name__}({arg_str})"
+
+            print(f"{timestamp} {message}")
 
         func_output = func(self, *args, **kwargs)
 

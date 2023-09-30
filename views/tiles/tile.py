@@ -119,13 +119,13 @@ class Tile(ft.Row):
         self.initial_page.tile_manager.unselect_all()
         self.button_select.selected = True
 
-        if len(self.initial_page.body.controls) > 2:
-            self.initial_page.body.controls.pop()
+        if len(self.initial_page.controls) > 2:
+            self.initial_page.controls.pop()
 
         if self.number not in self.initial_page.frames:
             self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
-        self.initial_page.body.controls.append(self.initial_page.frames[self.number])
+        self.initial_page.controls.append(self.initial_page.frames[self.number])
         self.initial_page.update()
 
     def start(self, e):
