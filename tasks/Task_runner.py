@@ -231,45 +231,63 @@ class TaskRunner(Task):
     @get_name
     def enter_profile(self):
         self.click(uniform(28, 64), uniform(24, 52))
-        self.better_sleep((1.925, 2.795))
 
     @get_name
     def enter_setting(self):
         self.click(uniform(991, 1026), uniform(570, 600))
-        self.better_sleep((1.925, 2.795))
 
     @get_name
     def enter_characters(self):
         self.click(uniform(312, 374), uniform(333, 400))
 
     @get_name
-    def get_first_character(self, fail = 0) -> tuple[float, float]:
+    def switch_character(self, co_first = None, nb_chars=0, fail = 0) -> tuple[float, float]:
         self.print("Switching Character")
         self.set_status(f"Switching Character")
+        self.close_windows()
+
         self.enter_profile()
         self.better_sleep((1.925, 2.795))
         self.enter_setting()
         self.better_sleep((1.925, 2.795))
+
         first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344,326))
         self.enter_characters()
+        self.better_sleep((0.925, 1.795))
+
         stop = 0
-        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color and stop != 6:
+        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color:
             self.better_sleep((1, 2))
             stop += 1
+
+            if stop == 10:
+                self.print("It seems the game is unable to load the characters menu..")
+                return self.change_character_param(self, co_first, nb_chars, fail)
+
+
         self.better_sleep((1.925, 2.795))
         trigger_stop = 0
+
         while self.find_img(target="logged_icon", confidence=0.7) is None:
             self.check_captcha()
             self.check_captcha_slider()
-            print(f'[ {current_time()} ] [ {self.name} ] while get_first_character')
+
+            self.print("Looking for current character")
+
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
+
             self.swipe(x, y, x2, y2)
             self.better_sleep((1.925, 2.795))
+
             trigger_stop += 1
             if trigger_stop == 4:
                 self.close_windows()
-                return self.get_first_character(fail+1)
+                self.close_upgrade_popup()
+                self.check_captcha()
+                print("Cannot locate the current user, trying to restart the task")
+                return self.change_character_param(co_first, nb_chars, fail + 1)
+
             if fail > 2:
                 self.print("Error in character switch. Bot is now stopped")
                 self.set_status("Error.")
@@ -277,56 +295,45 @@ class TaskRunner(Task):
                 while True:
                     self.script_pause()
                     sleep(0.1)
+
         x, y = self.find_img(target="logged_icon", confidence=0.7)
-        co = self.find_img(target="logged_icon", confidence=0.7)
+        default = self.find_img(target="logged_icon", confidence=0.7)
         self.print("Current character detected.")
-        if x < 1280 // 2:
-            x2 = x + uniform(480, 780)
-            y2 = y + uniform(-20, 0)
-            self.click(x2, y2)
-            self.better_sleep((2.425, 2.795))
-        elif y > 520 and x > 1280 // 2:
+
+        if y > 520 and x > 1280 // 2:
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
             self.better_sleep((2.425, 2.795))
-            x, y = self.find_img(target="logged_icon", confidence=0.7)
-            self.better_sleep((2.025, 2.795))
-            x2 = x - uniform(100, 320)
-            y2 = y + uniform(80, 100)
-            self.click(x2, y2)
-            self.better_sleep((2.425, 2.795))
-        elif x > 1280 // 2:
-            x2 = x - uniform(100, 320)
-            y2 = y + uniform(80, 100)
-            self.click(x2, y2)
-            self.better_sleep((2.425, 2.795))
-            # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] test login" + str(
-            #     self.find_img(target="character_login_confirm")))
-            # print(f'[ {current_time()} ] [ {self.name} ] TEST Login')
+
         self.better_sleep((2.425, 2.795))
-        # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] character login" + str(
-        #     self.find_img(target="character_login_confirm")))
-        if self.find_img(target="character_login_confirm") is not None:
-            self.print("Switching between character")
-            x, y = uniform(700, 900), uniform(490, 527)
-            self.click(x, y)
-            # self.better_sleep((10, 15))
-            # self.check_crash()
-            # self.run_game()
-            return co[0] + uniform(0, 5), co[1] + uniform(0, 5),
+
+        if self.click_next_prefered_character():
+            self.print("Switching to the next character")
+            self.click(**self.find_img(target="character_login_confirm"))
+            return default
+        elif co_first is None:
+            self.print("Unable to find more characters, the current character is maybe the last favorite or there's simply no favorite characters", "yellow")
+            self.close_windows()
+            return False
         else:
             self.print("No more characters, going back to the first character")
             x, y = uniform(400, 800), uniform(200, 250)
-            x2, y2 = x + uniform(-20, 20), uniform(580, 645)
-            self.swipe(x, y, x2, y2)
-            self.better_sleep((3.5, 4.7))
-            x, y = uniform(660, 1000), uniform(215, 280)
-            self.click(x, y)
+            if nb_chars // 6 == 0:
+                rounds = 1
+            else:
+                rounds = nb_chars // 6
+            if rounds == 0:
+                rounds = +1
+            for _ in range(rounds):
+                x2, y2 = x + uniform(-20, 20), uniform(580, 645)
+                self.swipe(x, y, x2, y2)
+                self.better_sleep((3.5, 4.7))
+            self.click(co_first[0] + uniform(30, 300), co_first[1] + uniform(-30, 0))
             self.better_sleep((1.8, 2.7))
             x, y = uniform(700, 910), uniform(491, 522)
             self.click(x, y)
-            return uniform(660, 1000), uniform(215, 280)
+            return False
 
     @get_name
     def click_next_prefered_character(self):
@@ -358,7 +365,11 @@ class TaskRunner(Task):
                 cleaned_next_characters.pop(0)
         if cleaned_next_characters:
             cleaned_next_characters = cleaned_next_characters[0]
-            self.click(cleaned_next_characters[0] + uniform(-100, -50), cleaned_next_characters[1] + uniform(-5, 5))
+
+            cords = cleaned_next_characters[0] + uniform(-100, -50), cleaned_next_characters[1] + uniform(-5, 5)
+            self.click(**cords)
+            return cords
+        return False
 
     @get_name
     def change_character_param(self, co_first, nb_chars=0, fail=0):
@@ -372,25 +383,39 @@ class TaskRunner(Task):
         first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344,326))
         self.enter_characters()
         stop = 0
-        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color and stop != 6:
+
+        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color:
             self.better_sleep((1, 2))
             stop += 1
+
+            if stop == 10:
+                self.print("It seems the game is unable to load the characters menu..")
+                return self.change_character_param(self, co_first, nb_chars, fail)
+
         self.better_sleep((1.925, 2.795))
         trigger_stop = 0
+
         while self.find_img(target="logged_icon", confidence=0.7) is None:
+
             self.check_captcha()
             self.check_captcha_slider()
-            print(f'[ {current_time()} ] [ {self.name} ] while get_first_character')
+
+            self.print("Looking for current character")
+
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
+
             self.swipe(x, y, x2, y2)
             self.better_sleep((1.925, 2.795))
+
             trigger_stop += 1
             if trigger_stop == 4:
                 self.close_windows()
                 self.close_upgrade_popup()
                 self.check_captcha()
+                print("Cannot locate the current user, trying to restart the task")
                 return self.change_character_param(co_first, nb_chars, fail + 1)
+
             if fail > 2:
                 self.print("Error in character switch. Bot is now stopped")
                 self.set_status("Error.")
@@ -398,28 +423,22 @@ class TaskRunner(Task):
                 while True:
                     self.script_pause()
                     sleep(0.1)
+
         x, y = self.find_img(target="logged_icon", confidence=0.7)
         self.print('Current character detected.')
-        if x < 1280 // 2:
-            # self.print(f"x < 1280 // 2")
-            self.click(x + uniform(480, 780), y + uniform(-20, 0))
-            self.better_sleep((2.425, 2.795))
-        elif y > 520 and x > 1280 // 2:
+
+        if y > 520 and x > 1280 // 2:
             # self.print("y > 520 and x > 1280 // 2")
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
             self.swipe(x, y, x2, y2)
             self.better_sleep((2.425, 2.795))
-            x, y = self.find_img(target="logged_icon", confidence=0.7)
-            self.better_sleep((2.025, 2.795))
-            self.click_next_prefered_character()
-        elif x > 1280 // 2:
-            self.click_next_prefered_character()
-        self.better_sleep((3.425, 3.995))
 
-        if self.find_img(target="character_login_confirm") is not None:
+        self.better_sleep((2.425, 2.795))
+
+        if self.click_next_prefered_character():
             self.print("Switching to the next character")
-            self.click(uniform(700, 900), uniform(490, 527))
+            self.click(**self.find_img(target="character_login_confirm"))
             return True
         else:
             self.print("No more characters, going back to the first character")
@@ -519,19 +538,19 @@ class TaskRunner(Task):
 
                     if self.get_config().get("switch_character", False):
                         self.check_captcha()
-                        co_first = self.get_first_character()
+                        co_first = self.switch_character()
                         self.wait_until_connected()
                         # Characters remaining
                         boolean = True
                         nb_characters = 2
-                        while boolean:
+                        while co_first and boolean:
                             self.print(f"Character n°{nb_characters}", "blue")
                             nb_characters += 1
                             self.execute_tasks(self.get_available_task(profile), profile)
                             self.better_sleep((1.2, 4))
 
                             self.check_captcha()
-                            boolean = self.change_character_param(co_first, nb_characters)
+                            boolean = self.switch_character(co_first, nb_characters)
                             self.wait_until_connected()
                     if not self.data[self.sel]['scheduler']:
                         break
@@ -611,7 +630,7 @@ class TaskRunner(Task):
                     self.run_game()
                     # Characters remaining
                     nb_characters = 2
-                    while boolean:
+                    while co_first and boolean:
                         self.print(f"---- Character n°{nb_characters} ----".center(60))
                         self.run_game()
                         self.check_log_back()
