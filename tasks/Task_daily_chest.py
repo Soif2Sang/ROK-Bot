@@ -16,9 +16,8 @@ class DailyChest(Task):
     @get_name
     def close_chest_popup(self):
         for i in range(3):
-            co = self.find_img(target=f"popup{i}", confidence=0.8)
-            if co is not None:
-                self.click(uniform(1102, 1030), uniform(92, 118))
+            while self.find_img(target=f"popup{i}", confidence=0.7):
+                self.click(uniform(1102, 1130), uniform(92, 118))
                 self.better_sleep((2, 4))
 
     @get_name
