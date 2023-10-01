@@ -37,7 +37,6 @@ from utils.Task_utils import get_name, current_time, get_window_pid, get_dic_ins
 from utils.bot_adb import Adb
 from views.frametime import is_in_frametime, random_time_in_frametime
 
-import pretty_errors
 from datetime import timedelta
 
 
