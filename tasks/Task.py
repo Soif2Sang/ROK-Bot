@@ -523,39 +523,6 @@ class Task():
         for _ in range(num_intervals):
             sleep(interval_duration)
             self.script_pause()
-
-    @get_name
-    def solve(self, path, sel, defaultApiKey=True):
-        # print(sel, type(sel))
-        if defaultApiKey:
-            api_key = '4805a29997857b110ef26530c7f39db1'
-        else:
-            api_key = self.data[sel]['API_KEY']
-            if api_key == "":
-                return self.print("This feature require a custom ApiKey")
-
-        solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
-        try:
-            self.print("Trying to resolve the captcha")
-            result = solver.coordinates(path, lang='en')
-            self.print(f"{result = }\n")
-            return result
-        except Exception as e:
-            self.debug(e)
-
-            if e == 'ERROR_CAPTCHA_UNSOLVABLE':
-                if self.refresh_captcha():
-                    return self.check_captcha()
-            if e == 'ERROR_NO_SLOT_AVAILABLE':
-                self.print(
-                    "Captcha service is out of capacity right now, waiting few minutes until the service is back again",
-                    "yellow")
-                self.better_sleep((4 * 60, 6 * 60))
-                if self.refresh_captcha():
-                    return self.check_captcha()
-            self.print(f"EXCEPTION : Exception raised during the resolving of the captcha :\n{e}\n", "red")
-            return {'error': e}
-
     @get_name
     def check_captcha_slider(self, deadstop=0):
         while self.find_img('slider_captcha', confidence=0.83) and deadstop != 5:
@@ -621,63 +588,6 @@ class Task():
         except Exception as e:
             self.debug(e)
             self.print("Cannot resolve this captcha slider!")
-
-
-    @get_name
-    def resolve_captcha(self, compteur=0, defaultApiKey=True):
-        """
-        Resolve verification
-        """
-        self.print(f"Resolve count = {compteur}")
-        if compteur > 5:
-            self.print("Error in resolving the captcha, human action needed.")
-            self.set_status("Error")
-            self.send_discord_message("Error in resolving the captcha, human action required.")
-            while True:
-                self.better_sleep((1,1))
-        try:
-            if defaultApiKey:
-                api_key = '4805a29997857b110ef26530c7f39db1'
-            else:
-                api_key = self.data[self.sel]['API_KEY']
-                if api_key == "":
-                    return self.print("This feature require a custom ApiKey")
-
-            self.print("Trying to resolve the captcha")
-
-            captcha = self.save_captcha()
-            solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
-
-            result = solver.coordinates(captcha, lang='en')
-
-            self.debug(result)
-
-            co = string_to_co(result['code'])
-            if self.adb.find_img_cv(captcha) is not None:
-                for x, y in co:
-                    self.click(x, y)
-                    self.better_sleep((0.4, 0.795))
-                self.click(uniform(700, 830), uniform(570, 600))
-                self.better_sleep((1, 1.795))
-
-            return result['captchaId']
-        except Exception as e:
-            traceback.print_exc()
-            print(
-                f"[ {current_time()} ] [ {self.name} ] Exception raised during the resolving of the captcha (task.py related) :\n{e}")
-            self.FileSingleton.write(
-                self.name,
-                f"EXCEPTION : Exception raised during the resolving of the captcha (task.py related) :\n{e}\n")
-
-            if e == 'ERROR_CAPTCHA_UNSOLVABLE':
-                if self.refresh_captcha():
-                    return self.resolve_captcha()
-                else:
-                    return None
-            self.refresh_captcha()
-            self.print("Refreshing the captcha.", "red")
-            self.better_sleep((4, 7))
-            return self.resolve_captcha(compteur=compteur + 1)
 
     def save_captcha(self):
         cv_image = self.adb.get_cv2_img()
@@ -903,14 +813,18 @@ class Task():
         if chest:
             self.check_chest()
             self.better_sleep((1,1.1))
+
         co = self.find_img(target="verification_button")
+
         if co is not None:
             self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
+            self.better_sleep((2,2.1))
             while self.find_img(target="close_refresh_ok", confidence=0.75) is None:
                 co = self.find_img(target="verification_button")
                 if co is not None:
                     self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
-                self.better_sleep((1.4,3))
+                self.better_sleep((2.4,3))
+
         i = 0
         resolved = False
         previous_text = self.get_text()
@@ -918,11 +832,13 @@ class Task():
         while self.find_img(target="close_refresh_ok", confidence=0.75) is not None:
             self.solve_captcha(i, DefaultApiKey)
             i += 1
-            if i == 5:
+            if i == 6:
                 self.print("Error, unable to resolve the captcha for 5 times in a row !")
-                self.set_status(previous_text)
-                return False
+                self.send_discord_message("Error, unable to resolve the captcha for 5 times in a row !")
+                while 1:
+                    self.better_sleep((1,1))
             resolved = True
+
         self.set_status(previous_text)
         return resolved
 
@@ -943,6 +859,7 @@ class Task():
             self.print("Trying to resolve the captcha")
 
             captcha = self.save_captcha()
+
             solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
 
             result = solver.coordinates(captcha, lang='en')
@@ -966,6 +883,34 @@ class Task():
 
             if captchaId is not None:
                 self.report_feedback(captchaId, resolved, solver)
+
+        except NetworkException as e:
+            self.print(e)
+            print(e)
+            self.print("An error occurred with your network, waiting for few seconds before retrying")
+            self.better_sleep((10 * max(1, compteur+1),15 * max(1, compteur+1)))
+
+            if compteur < 5:
+                return self.solve_captcha(compteur + 1)
+
+        except TimeoutException as e:
+            self.print(e)
+            print(e)
+            self.print("Request timeout, waiting for few seconds before retrying")
+            self.better_sleep((10 * max(1, compteur+1),15 * max(1, compteur+1)))
+
+            if compteur < 5:
+                return self.solve_captcha(compteur + 1)
+
+        except ApiException as e:
+            self.print(e)
+            print(e)
+            self.print("An error occurred with 2captcha.com, waiting for few seconds before retrying")
+            self.better_sleep((10 * max(1, compteur+1),15 * max(1, compteur+1)))
+            if self.refresh_captcha():
+                if compteur < 5:
+                    return self.solve_captcha(compteur + 1)
+
         except Exception as e:
             traceback.print_exc()
             self.print(f"Exception raised :\n{e}\n")
