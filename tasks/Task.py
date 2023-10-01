@@ -263,26 +263,17 @@ class Task():
 
         self.script_pause()
         try:
-            self.print("Zooming out..")
-            if self.find_img(target='gem_search_button'):
-                hwnd = win32gui.FindWindow(None, self.adb.name)
-                hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-                self.script_pause()
-                if self.find_img(target="gem_search_button"):
-                    self.script_pause()
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.5, 0.5))
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                    self.better_sleep((1.4, 2))
-                    self.script_pause()
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.17, 0.17))
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                    self.better_sleep((1.4, 2))
+            hwnd = win32gui.FindWindow(None, self.adb.name)
+            hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+            while self.find_img(target='gem_search_button'):
+                self.print("Zooming out..")
+                win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                self.better_sleep((0.5, 0.5))
+                win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                self.better_sleep((1.4, 2))
+
 
         except Exception as e:
             print(e)
