@@ -208,6 +208,8 @@ class AlliancePit(Task):
             self.print("Unable to send a new troop", "red")
             return False
         except Exception as e:
+            print(e)
+            self.print(e)
             self.print("Error sending a new march to the rss node !", "red")
 
     @get_class
