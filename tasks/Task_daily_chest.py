@@ -38,6 +38,7 @@ class DailyChest(Task):
                 self.better_sleep((2.5, 5))
                 self.close_chest_popup()
         except Exception as e:
+            self.print(e)
             traceback.print_exc()
 
     @get_class

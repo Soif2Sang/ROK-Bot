@@ -158,8 +158,10 @@ class TaskRunner(Task):
                 self.leave_game()
                 self.better_sleep((5, 10))
                 self.run_game()
-            self.close_windows()
-            current_task += 1
+            finally:
+
+                self.close_windows()
+                current_task += 1
             # if ('BuyMerchant' in func.task_name()) or ('GatherRss' in func.task_name()):
             #     self.check_captcha()
             #     self.better_sleep((0.795, 1.2))

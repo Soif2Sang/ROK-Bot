@@ -174,6 +174,7 @@ class GatherGem(Task):
             return False
         except Exception as e:
             traceback.print_exc()
+            self.print(e)
             self.print("Error sending a new march to the gem node !", "red")
 
     @get_name
@@ -260,6 +261,7 @@ class GatherGem(Task):
             self.nodes_gathered += 1
             return True
         except Exception as e:
+            self.print(e)
             traceback.print_exc()
             self.better_sleep((5, 10))
             if deadstop == 2:

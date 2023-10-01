@@ -139,6 +139,7 @@ class GatherRss(Task):
             self.print("Unable to send a new troop", "red")
             return False
         except Exception as e:
+            self.print(e)
             traceback.print_exc()
             self.print("Error sending a new march to the rss node !", "red")
 
