@@ -107,7 +107,10 @@ class TaskRunner(Task):
         self.adb.connect_to_device()
         self.run_game()
         screen = self.adb.get_cv2_img()
-        co = self.find_img(target="hide_quests", source=screen)
+
+        self.close_windows()
+
+        co = self.find_img(target="hide_quests", source=screen[:300, :300])
         if co is not None:
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         current_task = 1
@@ -261,7 +264,7 @@ class TaskRunner(Task):
 
             if stop == 10:
                 self.print("It seems the game is unable to load the characters menu..")
-                return self.change_character_param(self, co_first, nb_chars, fail)
+                return self.switch_character(self, co_first, nb_chars, fail)
 
 
         self.better_sleep((1.925, 2.795))
@@ -284,8 +287,8 @@ class TaskRunner(Task):
                 self.close_windows()
                 self.close_upgrade_popup()
                 self.check_captcha()
-                print("Cannot locate the current user, trying to restart the task")
-                return self.change_character_param(co_first, nb_chars, fail + 1)
+                self.print("Cannot locate the current user, trying to restart the task")
+                return self.switch_character(co_first, nb_chars, fail + 1)
 
             if fail > 2:
                 self.print("Error in character switch. Bot is now stopped")
@@ -309,7 +312,9 @@ class TaskRunner(Task):
 
         if self.click_next_prefered_character():
             self.print("Switching to the next character")
-            self.click(**self.find_img(target="character_login_confirm"))
+            self.better_sleep((2.425, 2.795))
+            x,y = self.find_img(target="character_login_confirm")
+            self.click(x, y)
             return default
         elif co_first is None:
             self.print("Unable to find more characters, the current character is maybe the last favorite or there's simply no favorite characters", "yellow")
@@ -366,8 +371,8 @@ class TaskRunner(Task):
             cleaned_next_characters = cleaned_next_characters[0]
 
             cords = cleaned_next_characters[0] + uniform(-100, -50), cleaned_next_characters[1] + uniform(-5, 5)
-            self.click(**cords)
-            return cords
+            self.click(cords[0], cords[1])
+            return cords[0], cords[1]
         return False
 
     @get_name
@@ -622,7 +627,7 @@ class TaskRunner(Task):
                 if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
                                                                                           False):
 
-                    co_first = self.get_first_character()
+                    co_first = self.switch_character()
                     boolean = True
                     self.wait_until_connected()
 
@@ -642,7 +647,7 @@ class TaskRunner(Task):
                         self.better_sleep((2.2, 4))
 
                         nb_characters += 1
-                        boolean = self.change_character_param(co_first, nb_characters)
+                        boolean = self.switch_character(co_first, nb_characters)
                         self.wait_until_connected()
 
                 self.leave_game()
@@ -702,7 +707,7 @@ class TaskRunner(Task):
                     # self.zoom_out_city()
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
                                                                                               False):
-                        co_first = self.get_first_character()
+                        co_first = self.switch_character()
                         if self.data.get(self.sel).get('schedules').get(self.current_profile).get("leave_game_switch_character",False):
                             self.leave_game()
                         self.wait_until_connected()
@@ -716,7 +721,7 @@ class TaskRunner(Task):
                             self.execute_tasks(tasks, profile)
                             self.better_sleep((1.2, 4))
 
-                            boolean = self.change_character_param(co_first, nb_characters)
+                            boolean = self.switch_character(co_first, nb_characters)
                             if self.data.get(self.sel).get('schedules').get(self.current_profile).get(
                                     "leave_game_switch_character", False):
                                 self.leave_game()
