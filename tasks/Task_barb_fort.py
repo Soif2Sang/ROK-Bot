@@ -34,15 +34,6 @@ class BarbFort(Task):
             return
 
     @get_name
-    def adjusted_leave_city(self, x_click: int, y_click: int) -> None:
-
-        self.zoom_out_city()
-
-        self.better_sleep((1, 2))
-        self.little_zoom_from_x_y(x_click, y_click)
-        return self.better_sleep((0.7, 1.4))
-
-    @get_name
     def enough_action_points(self) -> bool:
         cv_image = self.adb.get_cv2_img()
         img = Image.fromarray(cv_image)

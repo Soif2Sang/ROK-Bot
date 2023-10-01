@@ -1166,9 +1166,11 @@ class Task():
     def adjusted_leave_city(self, x_click: int, y_click: int) -> None:
 
         self.zoom_out_city()
-
         self.better_sleep((1, 2))
-        self.little_zoom_from_x_y(x_click, y_click)
+
+        ##self.little_zoom_from_x_y(x_click, y_click)
+        self.swipe(1280 - x_click,720 - y_click , 1280 // 2, 720 // 2)
+
         return self.better_sleep((0.7, 1.4))
 
     @get_name
