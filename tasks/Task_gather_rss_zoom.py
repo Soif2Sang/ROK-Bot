@@ -189,15 +189,25 @@ class GatherRssZoom(GatherRss):
                   self.swipe_left: self.swipe_up}
         current_swipe = self.swipe_up
 
+        has_to_hit = 2
+        loop = 1
+        current = 0
+
         for i in range(max_distance):
+
+            if has_to_hit == current:
+                loop += 1
+                current = 0
+
             for y in range(i):
 
                 if self.data[str(self.sel)]['schedules'][self.current_profile].get(
                     self.node_type, 'nothing') == 'nothing' or self.node_type == 'Done' or (not self.free_troop_commander_list()):
-                    return
+                    return self.click(700, 400)
 
                 if self.swipe_scan(self.scan_node, current_swipe) == "STOP":
-                    return
+                    return self.click(700, 400)
 
+            current += 1
             current_swipe = swipes[current_swipe]
         return self.run(node_type=self.next_resource_type(self.node_type))
