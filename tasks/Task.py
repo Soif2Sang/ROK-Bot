@@ -18,6 +18,9 @@ from psutil import pid_exists
 from pytesseract import pytesseract
 from statistics import median
 import flet as ft
+
+from utils.twocaptcha import TimeoutException
+from utils.twocaptcha.api import NetworkException, ApiException
 from utils.discord_utils import send_discord_message
 
 # import discord_bot
@@ -31,7 +34,9 @@ from utils.Task_utils import get_window_pid, get_name, current_time, get_time, s
 from utils.bot_adb import Adb
 # from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 
 class Task():
     def __init__(self, tile):
@@ -81,7 +86,6 @@ class Task():
             self.set_text(f"[{current_time()}] You resumed the script.", "Green")
             self.debug("You resumed the script.")
 
-
     def set_text(self, text, color=None):
         return self.tile.add_text(text, color)
 
@@ -100,7 +104,7 @@ class Task():
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             seconds -= 1
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
-            self.better_sleep((1,1))
+            self.better_sleep((1, 1))
 
     def update_data(self):
         self.data = self.FileSingleton.get_data()
@@ -138,7 +142,6 @@ class Task():
             self.set_text(f"[{current_time()}] {text}", color)
         else:
             self.set_text("")
-
 
     @get_name
     def send_discord_message(self, message):
@@ -247,7 +250,8 @@ class Task():
             print(
                 f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
             self.print(
-                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial", "red")
+                "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial",
+                "red")
             for _ in range(5):
                 self.print("/!\ FIX IT !! /!\ ", "red")
             return False
@@ -345,8 +349,7 @@ class Task():
         x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
         x2 = x1 - uniform(710, 710)
 
-
-        self.swipe(980 , 360 , 300 , 360 )
+        self.swipe(980, 360, 300, 360)
 
     def swipe_left(self) -> None:
         """
@@ -354,7 +357,7 @@ class Task():
         """
         x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
         x2 = x1 - uniform(710, 710)
-        self.swipe(300 , 360 , 980 , 360 )
+        self.swipe(300, 360, 980, 360)
 
     def swipe_up(self) -> None:
         """
@@ -363,7 +366,7 @@ class Task():
         x1, y1 = uniform(600, 680), uniform(540, 560)
         x2 = x1 + uniform(0, 30)
         y2 = y1 - uniform(390, 397)
-        self.swipe(640 , 150 , 640 , 570 )
+        self.swipe(640, 150, 640, 570)
 
     def swipe_down(self) -> None:
         """
@@ -372,7 +375,7 @@ class Task():
         x1, y1 = uniform(600, 680), uniform(540, 560)
         x2 = x1 + uniform(0, 30)
         y2 = y1 - uniform(390, 397)
-        self.swipe(640 , 570 , 640 , 150 )
+        self.swipe(640, 570, 640, 150)
 
     def swipe_right_low(self) -> None:
         """
@@ -413,7 +416,7 @@ class Task():
             self.better_sleep((1.5, 2))
         else:
             self.click(uniform(24, 91), uniform(625, 680))
-            self.better_sleep((2.5,3.5))
+            self.better_sleep((2.5, 3.5))
             self.click(uniform(24, 91), uniform(625, 680))
         return True
 
@@ -436,7 +439,7 @@ class Task():
             co = self.find_img(target="rokicon", confidence=0.8)
             if co is not None:
                 self.click(co[0] + 10, co[1] + 10)
-                self.better_sleep((3,3))
+                self.better_sleep((3, 3))
                 return self.wait_until_connected()
             else:
                 if count == 0:
@@ -514,6 +517,7 @@ class Task():
         for _ in range(num_intervals):
             sleep(interval_duration)
             self.script_pause()
+
     @get_name
     def check_captcha_slider(self, deadstop=0):
         while self.find_img('slider_captcha', confidence=0.83) and deadstop != 5:
@@ -521,14 +525,14 @@ class Task():
                 self.print("Captcha detected !", )
             captcha = self.save_captcha_slider()
             self.solve_slider(captcha)
-            deadstop +=1
-            self.better_sleep((2,3))
+            deadstop += 1
+            self.better_sleep((2, 3))
         if deadstop == 5:
-            self.print("Unable to resolve the slider captcha","red")
+            self.print("Unable to resolve the slider captcha", "red")
             self.set_status("Error")
             self.send_discord_message("Error in resolving the slider captcha.")
             while True:
-                self.better_sleep((1,1))
+                self.better_sleep((1, 1))
         elif deadstop != 0:
             self.print("Captcha successfully resolved!")
 
@@ -555,10 +559,9 @@ class Task():
         return captcha
 
     @get_name
-    def solve_slider(self, file = None):
+    def solve_slider(self, file=None):
         if file is None:
             file = f"captcha{self.sel}.jpg"
-
 
         if self.data[self.sel]['API_KEY']:
             api_key = self.data[self.sel]['API_KEY']
@@ -606,7 +609,6 @@ class Task():
             return True
         return False
 
-
     @get_name
     def check_log_back(self, cv_image=None):
         # self.data = self.update_data()
@@ -631,7 +633,7 @@ class Task():
                                 self.data.get(self.sel).get('schedules').get(self.current_profile).get(
                                     'log_back2')) * 60 + randint(0, 59)
                 self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
-                self.better_sleep((value,value))
+                self.better_sleep((value, value))
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(-10, 20))
                 self.print("Reconnection..")
                 self.better_sleep((5, 10))
@@ -681,7 +683,7 @@ class Task():
                     a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                     print(a)
                     self.click(a[0], a[1])
-                self.better_sleep((10,10))
+                self.better_sleep((10, 10))
                 self.wait_until_connected()
                 return self.adb.get_cv2_img()
             else:
@@ -740,7 +742,7 @@ class Task():
             return cv_image
         except OSError:
             self.print("Cannot load the image..")
-            self.better_sleep((1,1))
+            self.better_sleep((1, 1))
 
             return self.pil_to_array(image)
 
@@ -783,16 +785,16 @@ class Task():
                 if self.data[self.sel]['schedules'][self.current_profile]['auto_captcha']:
                     # print(co)
                     self.click(chest[0] + uniform(0, 30), chest[1] + uniform(35, 50))
-                    self.better_sleep((3,4))
+                    self.better_sleep((3, 4))
                     return True
                 else:
                     self.set_text(f"[{current_time()}] Captcha verification is Off")
                     self.set_status("Captcha is Off")
                     self.send_discord_message("Captcha detected, Captcha verification off.")
                     while True:
-                        self.better_sleep((1,1.1))
+                        self.better_sleep((1, 1.1))
 
-            self.better_sleep((0.3,0.3))
+            self.better_sleep((0.3, 0.3))
         return False
 
     @get_name
@@ -803,18 +805,18 @@ class Task():
         # self.print(f"Scanning the screen for verification..")
         if chest:
             self.check_chest()
-            self.better_sleep((1,1.1))
+            self.better_sleep((1, 1.1))
 
         co = self.find_img(target="verification_button")
 
         if co is not None:
             self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
-            self.better_sleep((2,2.1))
+            self.better_sleep((2, 2.1))
             while self.find_img(target="close_refresh_ok", confidence=0.75) is None:
                 co = self.find_img(target="verification_button")
                 if co is not None:
                     self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
-                self.better_sleep((2.4,3))
+                self.better_sleep((2.4, 3))
 
         i = 0
         resolved = False
@@ -827,7 +829,7 @@ class Task():
                 self.print("Error, unable to resolve the captcha for 5 times in a row !")
                 self.send_discord_message("Error, unable to resolve the captcha for 5 times in a row !")
                 while 1:
-                    self.better_sleep((1,1))
+                    self.better_sleep((1, 1))
             resolved = True
 
         self.set_status(previous_text)
@@ -879,7 +881,7 @@ class Task():
             self.print(e)
             print(e)
             self.print("An error occurred with your network, waiting for few seconds before retrying")
-            self.better_sleep((10 * max(1, compteur+1),15 * max(1, compteur+1)))
+            self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
 
             if compteur < 5:
                 return self.solve_captcha(compteur + 1)
@@ -888,7 +890,7 @@ class Task():
             self.print(e)
             print(e)
             self.print("Request timeout, waiting for few seconds before retrying")
-            self.better_sleep((10 * max(1, compteur+1),15 * max(1, compteur+1)))
+            self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
 
             if compteur < 5:
                 return self.solve_captcha(compteur + 1)
@@ -897,7 +899,7 @@ class Task():
             self.print(e)
             print(e)
             self.print("An error occurred with 2captcha.com, waiting for few seconds before retrying")
-            self.better_sleep((10 * max(1, compteur+1),15 * max(1, compteur+1)))
+            self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
             if self.refresh_captcha():
                 if compteur < 5:
                     return self.solve_captcha(compteur + 1)
@@ -939,9 +941,9 @@ class Task():
         """
         self.print(f"Leaving the game..")
         self.adb.shell("input keyevent KEYCODE_APP_SWITCH")
-        self.better_sleep((2,2.1))
+        self.better_sleep((2, 2.1))
         self.click(920, 62)
-        self.better_sleep((2,2.1))
+        self.better_sleep((2, 2.1))
 
     @get_name
     def kill_game(self) -> None:
@@ -978,7 +980,8 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='go_outside_city', source=self.adb.get_cv2_img()[600:,0:200], confidence=0.75) is not None
+        return self.find_img(target='go_outside_city', source=self.adb.get_cv2_img()[600:, 0:200],
+                             confidence=0.75) is not None
 
     def get_config(self):
         return self.data.get(self.sel).get('schedules').get(self.current_profile)
@@ -1004,7 +1007,7 @@ class Task():
     def get_text(self):
         return self.tile.get_text()
 
-    def modify_image(self,re_open):
+    def modify_image(self, re_open):
         img = cv2.resize(re_open, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
 
         if len(img.shape) == 2:
@@ -1032,7 +1035,7 @@ class Task():
         return image[min_y:max_y, min_x:max_x]
 
     @get_name
-    def recenter(self, deadstop = 0):
+    def recenter(self, deadstop=0):
         print("recenter")
         image = self.adb.get_cv2_img()
 
@@ -1041,8 +1044,8 @@ class Task():
             if (250 > co[0] > 130) and (co[1] > 560):
                 return
             if deadstop == 10:
-                self.click(co[0],co[1])
-                self.better_sleep((2,3))
+                self.click(co[0], co[1])
+                self.better_sleep((2, 3))
                 return
             x, y = co[0] - 10, co[1] - 10
             x2, y2 = co[0] + 50, co[1] + 50
@@ -1065,8 +1068,8 @@ class Task():
                 word = first
             if re.match(r'\d+KM', word):
                 print(word)
-            # print(distances)
-            # if distances:
+                # print(distances)
+                # if distances:
                 if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
                         self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
                     if co[0] < 500 and co[1] < 220:
@@ -1100,7 +1103,7 @@ class Task():
                     return self.recenter(deadstop=deadstop + 1)
 
     @get_name
-    def go_back_to_city(self, deadstop = 0):
+    def go_back_to_city(self, deadstop=0):
         image = self.adb.get_cv2_img()
 
         if (co := self.find_img(source=image, target="green_home_button")):
@@ -1128,7 +1131,7 @@ class Task():
 
             self.better_sleep((1, 2))
 
-            return self.go_back_to_city(deadstop = deadstop +1)
+            return self.go_back_to_city(deadstop=deadstop + 1)
 
     @get_name
     def little_zoom_from_x_y(self, x_click: int, y_click: int) -> None:
@@ -1169,7 +1172,10 @@ class Task():
         self.better_sleep((1, 2))
 
         ##self.little_zoom_from_x_y(x_click, y_click)
-        self.swipe(1280 - x_click,720 - y_click , 1280 // 2, 720 // 2)
+        if self.validate_co((1280 - x_click, 720 - y_click)):
+            self.swipe(1280 - x_click, 720 - y_click, 1280 // 2, 720 // 2)
+        else:
+            self.little_zoom_from_x_y(x_click, y_click)
 
         return self.better_sleep((0.7, 1.4))
 
@@ -1205,7 +1211,6 @@ class Task():
         # cv2.imwrite("gem_node.png", cropped_image)
         return self.find_cross_source(cropped_image)
 
-
     @get_name
     def leave_city_simple(self) -> bool:
         """
@@ -1225,7 +1230,7 @@ class Task():
         return True
 
     @get_name
-    def find_cross(self, source=None, notify = True) -> bool:
+    def find_cross(self, source=None, notify=True) -> bool:
         """
         :return: True if node is occupied or someone is coming to the node
         :return: False if node is free to gather
@@ -1242,8 +1247,10 @@ class Task():
             (239, 205, 165), (0, 0, 178), (2, 204, 2), (195, 142, 0), (0, 154, 14),
             (0, 154, 13), (1, 186, 0), (0, 142, 193), (12, 154, 1), (1, 215, 0),
             (1, 216, 0), (253, 253, 253), (49, 161, 255), (2, 197, 2), (247, 210, 167),
-            (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167), (92, 157, 246), (246, 157, 92,), (101, 200, 43), (43, 200, 101), (106, 209, 46), (46, 209, 106), (2, 189, 2), (57, 159, 35), (35, 159, 24), (6, 187, 5),
-            (107, 211, 46), (46, 211, 107), (49, 161, 255), (255, 161, 49),(14, 154, 0), (0, 154, 14)
+            (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167), (92, 157, 246), (246, 157, 92,),
+            (101, 200, 43), (43, 200, 101), (106, 209, 46), (46, 209, 106), (2, 189, 2), (57, 159, 35), (35, 159, 24),
+            (6, 187, 5),
+            (107, 211, 46), (46, 211, 107), (49, 161, 255), (255, 161, 49), (14, 154, 0), (0, 154, 14)
         ]
 
         for i in range(img.size[0]):
@@ -1256,24 +1263,24 @@ class Task():
                       (img.getpixel((i, y))[1] != 4) and
                       (img.getpixel((i, y))[2] != 183))) or
 
-                        ((img.getpixel((i, y))[2] < 179) and
-                         (img.getpixel((i, y))[2] > 175) and
-                         (img.getpixel((i, y))[1] > 116) and
-                         (img.getpixel((i, y))[1] < 119) and
-                         (img.getpixel((i, y))[0] < 2))
-                        or
-                        ((img.getpixel((i, y))[0] < 5) and
-                         (img.getpixel((i, y))[1] > 142) and
-                         (img.getpixel((i, y))[1] < 150) and
-                         (img.getpixel((i, y))[2] < 200) and
-                         (img.getpixel((i, y))[2] > 190))
-                        or
-                        ((img.getpixel((i, y))[0] < 10) and
-                         (img.getpixel((i, y))[1] > 187) and
-                         (img.getpixel((i, y))[2] < 10)
-                        )
-                        or
-                        (img.getpixel((i, y)) in occupied_colors)) and (img.getpixel((i, y)) not in whitelist):
+                    ((img.getpixel((i, y))[2] < 179) and
+                     (img.getpixel((i, y))[2] > 175) and
+                     (img.getpixel((i, y))[1] > 116) and
+                     (img.getpixel((i, y))[1] < 119) and
+                     (img.getpixel((i, y))[0] < 2))
+                    or
+                    ((img.getpixel((i, y))[0] < 5) and
+                     (img.getpixel((i, y))[1] > 142) and
+                     (img.getpixel((i, y))[1] < 150) and
+                     (img.getpixel((i, y))[2] < 200) and
+                     (img.getpixel((i, y))[2] > 190))
+                    or
+                    ((img.getpixel((i, y))[0] < 10) and
+                     (img.getpixel((i, y))[1] > 187) and
+                     (img.getpixel((i, y))[2] < 10)
+                    )
+                    or
+                    (img.getpixel((i, y)) in occupied_colors)) and (img.getpixel((i, y)) not in whitelist):
                     self.print(f"Node occupied {img.getpixel((i, y))}")
                     return True
         return False
@@ -1305,4 +1312,3 @@ class Task():
 
     def run(self):
         pass
-
