@@ -115,7 +115,7 @@ class TaskRunner(Task):
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
         current_task = 1
         self.check_captcha()
-        
+
         for func in lib_tasks:
             self.print(f"Task {current_task}/{len(lib_tasks)}", "blue")
             self.print(f"Currently executing : {self.get_current_task(func.task_name())}", "blue")
@@ -176,7 +176,7 @@ class TaskRunner(Task):
             profile = self.data.get(self.sel).get('schedules').get(profile)
         # print(profile)
         lib_tasks = []
-        
+
         tasks = [
             ('claim_campaign', ClaimCampaign),
             ('collect_ressource', CollectResource),
@@ -208,7 +208,8 @@ class TaskRunner(Task):
             alliance_pit_index = tasks_names.index("AlliancePit")
             gather_index = tasks_names.index("GatherRss")
             if gather_index < alliance_pit_index:
-                lib_tasks[alliance_pit_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[alliance_pit_index]
+                lib_tasks[alliance_pit_index], lib_tasks[gather_index] = lib_tasks[gather_index], lib_tasks[
+                    alliance_pit_index]
 
         if ("HuntBarbarians" in tasks_names) and ("GatherRss" in tasks_names):
             hunt_index = tasks_names.index("HuntBarbarians")
@@ -245,7 +246,7 @@ class TaskRunner(Task):
         self.click(uniform(312, 374), uniform(333, 400))
 
     @get_name
-    def switch_character(self, co_first = None, nb_chars=0, fail = 0) -> tuple[float, float]:
+    def switch_character(self, co_first=None, nb_chars=0, fail=0) -> tuple[float, float] or bool:
         self.print("Switching Character")
         self.set_status(f"Switching Character")
         self.close_windows()
@@ -255,7 +256,7 @@ class TaskRunner(Task):
         self.enter_setting()
         self.better_sleep((1.925, 2.795))
 
-        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344,326))
+        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326))
         self.enter_characters()
         self.better_sleep((0.925, 1.795))
 
@@ -267,7 +268,6 @@ class TaskRunner(Task):
             if stop == 10:
                 self.print("It seems the game is unable to load the characters menu..")
                 return self.switch_character(self, co_first, nb_chars, fail)
-
 
         self.better_sleep((1.925, 2.795))
         trigger_stop = 0
@@ -315,11 +315,13 @@ class TaskRunner(Task):
         if self.click_next_prefered_character():
             self.print("Switching to the next character")
             self.better_sleep((2.425, 2.795))
-            x,y = self.find_img(target="character_login_confirm")
+            x, y = self.find_img(target="character_login_confirm")
             self.click(x, y)
             return default
         elif co_first is None:
-            self.print("Unable to find more characters, the current character is maybe the last favorite or there's simply no favorite characters", "yellow")
+            self.print(
+                "Unable to find more characters, the current character is maybe the last favorite or there's simply no favorite characters",
+                "yellow")
             self.close_windows()
             return False
         else:
@@ -347,7 +349,7 @@ class TaskRunner(Task):
         logged_icon = self.find_img(source=screen, target="logged_icon", confidence=0.7)
         all_prefered_characters = self.adb.find_multiple_img(source=screen, target="star")
         next_prefered_characters = []
-        
+
         for star in all_prefered_characters:
             if logged_icon[0] > 640:
                 minus = 0
@@ -355,7 +357,7 @@ class TaskRunner(Task):
                 minus = 40
             if logged_icon[1] - minus < star[1]:
                 next_prefered_characters.append(star)
-                
+
         next_prefered_characters.sort(key=lambda co: co[1])
         cleaned_next_characters = []
         for star in next_prefered_characters:
@@ -386,7 +388,7 @@ class TaskRunner(Task):
         self.better_sleep((1.925, 2.795))
         self.enter_setting()
         self.better_sleep((1.925, 2.795))
-        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344,326))
+        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326))
         self.enter_characters()
         stop = 0
 
@@ -508,8 +510,11 @@ class TaskRunner(Task):
             when_go = None
             if not (self.data[self.sel]['schedules']["1"]['enabled'] or self.data[self.sel]['schedules']["2"][
                 'enabled'] or self.data[self.sel]['schedules']["3"]['enabled']):
-                self.print("No active profiles found! Navigate to the profile settings and enable at least one option.", "red")
-                self.generate_toast("Warning ", "No active profiles found! Navigate to the profile settings and enable at least one option.", ft.icons.INFO)
+                self.print("No active profiles found! Navigate to the profile settings and enable at least one option.",
+                           "red")
+                self.generate_toast("Warning ",
+                                    "No active profiles found! Navigate to the profile settings and enable at least one option.",
+                                    ft.icons.INFO)
 
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
@@ -532,6 +537,7 @@ class TaskRunner(Task):
                         if when_go:
                             self.print("In order to mimic a player, the bot will wait a random time")
                             self.set_timer(randint(0, 60 * 10))
+                            self.set_status("Starting..")
                     else:
                         print(f"Profile {profile} no rules set")
                     self.current_profile = profile
@@ -556,7 +562,7 @@ class TaskRunner(Task):
                             self.better_sleep((1.2, 4))
 
                             self.check_captcha()
-                            boolean = self.switch_character(co_first, nb_characters)
+                            boolean = self.switch_character(co_first, nb_characters, 0)
                             self.wait_until_connected()
                     if not self.data[self.sel]['scheduler']:
                         break
@@ -569,7 +575,7 @@ class TaskRunner(Task):
                 if ttw1 > ttw2:
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                self.print(f"Script is paused for {timedelta(seconds=time_before_redo_tasks)}", "#f5b400")
+                self.print(f"Script is paused for {timedelta(seconds=int(time_before_redo_tasks))}", "#f5b400")
 
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     if time_before_redo_tasks < 600:
@@ -580,7 +586,7 @@ class TaskRunner(Task):
                 self.set_timer(time_before_redo_tasks)
 
         self.print(
-            f"The bot took {timedelta(seconds=starting_time)} to complete all the tasks, bot is waiting for your instructions.",
+            f"The bot took {timedelta(seconds=int(time() - starting_time))} to complete all the tasks, bot is waiting for your instructions.",
             "green")
         self.set_divider()
         return
@@ -710,7 +716,8 @@ class TaskRunner(Task):
                     if self.data.get(self.sel).get('schedules').get(self.current_profile).get("switch_character",
                                                                                               False):
                         co_first = self.switch_character()
-                        if self.data.get(self.sel).get('schedules').get(self.current_profile).get("leave_game_switch_character",False):
+                        if self.data.get(self.sel).get('schedules').get(self.current_profile).get(
+                                "leave_game_switch_character", False):
                             self.leave_game()
                         self.wait_until_connected()
                         # Characters remaining
@@ -741,7 +748,7 @@ class TaskRunner(Task):
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
 
-                self.print(f"Script is paused for {timedelta(seconds=time_before_redo_tasks)}", "#f5b400")
+                self.print(f"Script is paused for {timedelta(seconds=int(time_before_redo_tasks))}", "#f5b400")
 
                 if self.data.get(self.sel).get("leave_game_loop", False):
                     self.leave_game(force=False)
@@ -751,5 +758,5 @@ class TaskRunner(Task):
         self.print(
             f"The bot took {timedelta(seconds=int(time() - starting_time))} minutes to complete all the tasks, bot is waiting for your instructions.",
             "green")
-        # self.set_divider()
+        self.set_divider()
         return
