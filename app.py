@@ -26,8 +26,8 @@ try:
     if not os.path.exists("./user_settings.json"):
         fileSingleton.write_data({})
         print("User settings created")
-except:
-    pass
+except Exception as e:
+    print(e)
 try:
     if not os.path.exists("./path.json"):
         fileSingleton.write_data(
@@ -37,8 +37,8 @@ try:
             }
         )
         print("User settings created")
-except:
-    pass
+except Exception as e:
+    print(e)
 
 data = fileSingleton.get_data()
 
