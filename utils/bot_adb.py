@@ -98,7 +98,8 @@ class Adb:
     def get_curr_device_screen_img_byte_array(self):
         try:
             return self.get_device().screencap()
-        except:
+        except Exception as e:
+            print(e)
             sleep(1)
             return self.get_device().screencap()
 
@@ -275,7 +276,7 @@ class Adb:
         try:
             return device.shell(string)
         except RuntimeError:
-            print(RuntimeError)
+            print("Cannot use shell")
             sleep(3)
             self.connect_to_device()
             return self.shell(string)
