@@ -18,7 +18,7 @@ from decohints import decohints
 from numpy import ndarray
 
 dir = "./"
-DEBUG = True
+DEBUG = False
 
 def word_to_color(word):
     hash_object = hashlib.sha256()
@@ -273,31 +273,35 @@ def get_dic_instances():
         elif pattern_status_adb.search(line):
             matched_lines.append(pattern_for_value.search(line).group(1))
 
-    bluestacks_instances = []
+    bluestacks_instances = {}
     for i in range(0, len(matched_lines), 3):
-        bluestacks_instances.append(
-            {
+        bluestacks_instances[str(matched_lines[i])] = {
                 'instance': str(matched_lines[i]),
                 'name': matched_lines[i + 1],
                 'port': int(matched_lines[i + 2]),
             }
-        )
 
-    bluestacks_instances.sort(key=custom_key)
-    transformed_dict = dict(map(lambda idx_item: (str(idx_item[0]), idx_item[1]), enumerate(bluestacks_instances)))
-    return transformed_dict
+
+    # bluestacks_instances.sort(key=custom_key)
+    print(bluestacks_instances)
+
+    # transformed_dict = dict(map(lambda idx_item: (str(idx_item[0]), idx_item[1]), enumerate(bluestacks_instances)))
+    # print(transformed_dict)
+    return bluestacks_instances
 
 
 def get_index_and_names(data):
     names = []
-    for index, value in enumerate(data.values()):
-        names.append((index, value['name']))
+    for key in data.keys():
+        names.append((key, data[key]['name']))
     return names
 
 
 def get_current_instances(data):
     names = get_index_and_names(data)
+
     instances_available = []
+
     for win in pyautogui.getAllWindows():
         for name in names:
             if win.title == name[1]:

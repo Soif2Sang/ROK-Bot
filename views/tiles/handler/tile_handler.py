@@ -7,6 +7,8 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 from views.tiles.tile import Tile
 from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances
 import re
+import copy
+
 class NavigationBar(ft.Row):
     def __init__(self, page, tile_manager, **kwargs):
         super().__init__(**kwargs)
@@ -128,12 +130,6 @@ class TileHandler(ft.ListView):
 
     def refresh(self):
         data = self.FileSingleton.get_data()
-        # try:
-        #     default_config = self.FileSingleton.get_default_config()
-        #     default_config_here = True
-        # except:
-        #     print("There is no default profile")
-        #     default_config_here = False
         instances = get_dic_instances()
 
         default_dic = {
@@ -265,21 +261,21 @@ class TileHandler(ft.ListView):
         }
 
         for i in range(1, 4):
-            default_dic['schedules'][i] = default_profile
+            default_dic['schedules'][i] = copy.deepcopy(default_profile)
         default_dic['schedules'][1]['enabled'] = True
 
         for instance in instances:
             if str(instance) not in data:
-                print("Default config set !")
-                data[str(instance)] = default_dic
+                data[str(instance)] = copy.deepcopy(default_dic)
             else:
                 for key in default_dic:
                     if key not in data[str(instance)]:
-                        data[str(instance)][key] = default_dic[key]
+                        data[str(instance)][key] = copy.deepcopy(default_dic[key])
+
                 for key in default_profile:
                     for i in range(1, 4):
                         if key not in data[str(instance)]['schedules'][str(i)]:
-                            data[str(instance)]['schedules'][str(i)][key] = default_profile[key]
+                            data[str(instance)]['schedules'][str(i)][key] = copy.deepcopy(default_profile[key])
 
             data[str(instance)]['instance'] = instances[str(instance)]['instance']
             data[str(instance)]['name'] = instances[str(instance)]['name']
@@ -289,6 +285,7 @@ class TileHandler(ft.ListView):
         instances = get_all_vms_running()
         for i in range(len(self.controls) - 1):
             self.controls.pop()
+        # print(instances)
         if instances:
             for instance in instances:
                 if str(instance[0]) in self.tiles:
