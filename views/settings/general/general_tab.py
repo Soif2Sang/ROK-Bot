@@ -13,7 +13,7 @@ class InterfaceSettings(ft.Tab):
             data["interface"] = {'auto_scroll' : True, 'auto_refresh' : True}
             self.FileSingleton.write_data(data)
 
-        self.content = GeneralSettings(page, self, int(instance))
+        self.content = GeneralSettings(page, self, instance)
 
 
     def reverse_keyword(self, keyword:str):

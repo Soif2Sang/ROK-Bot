@@ -18,7 +18,7 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.init()
 
     def init(self):
-        self.items.append(ft.PopupMenuItem(text="Override Configs"))
+        self.items.append(ft.PopupMenuItem(text="Export Config"))
         self.items.append(ft.PopupMenuItem())
         for vms in get_all_vms_running():
             if str(vms[0]) != self.index:
