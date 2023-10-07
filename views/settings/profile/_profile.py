@@ -24,7 +24,7 @@ color_bank = {
 
 
 class ProfileSettings(PageSettings):
-    def __init__(self, page, tab, instance_index: int, profile_index: int):
+    def __init__(self, page, tab, instance_index: str, profile_index: int):
         super().__init__(page, tab, instance_index, profile_index)
 
     def clean(self):
@@ -47,6 +47,8 @@ class ProfileSettings(PageSettings):
         self.create_normal_switch("buy_merchant", "Buy Mysterious Merchant")
         self.create_normal_switch("check_donation", "Donate to Alliance")
         self.create_normal_switch("gather_alliance_pit", "Alliance Pit Gathering")
+
+        # ##
         self.create_advanced_switch("material_production", "Produce Materials", PageMaterials)
         self.create_advanced_switch("train_troops", "Troops Training", PageTraining)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
@@ -55,6 +57,7 @@ class ProfileSettings(PageSettings):
         self.create_normal_switch("claim_campaign", "Claim Expedition Rewards")
         self.create_normal_switch("claim_mails", "Claim Mails")
         self.create_normal_switch("alliance_help", "Help Alliance")
+        #
         self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", PageBarbs)
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", PageRally)
         self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
