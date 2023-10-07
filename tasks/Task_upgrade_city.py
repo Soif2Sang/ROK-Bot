@@ -1,3 +1,4 @@
+import random
 from random import uniform
 from time import sleep
 
@@ -70,24 +71,26 @@ class UpgradeCity(Task):
     @get_name
     def recursive_upgrade(self):
         stones = self.find_img(target="upgrade_build", confidence=0.7)
+
         if stones is not None:
             self.click(stones[0] + uniform(0, 20), stones[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
-            if co := self.find_img(target="upgrade_go"):
+            if cos := self.adb.find_multiple_img(target="upgrade_go"):
+                co = random.choice(cos)
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(0, 20))
                 self.better_sleep((0.9, 1.2))
                 return self.recursive_upgrade()
             else:
                 self.click(uniform(916, 1050), uniform(530, 560))
                 self.better_sleep((1.7, 2.2))
-                if (co := self.find_img(target="hire_constructor")) is not None or (
-                co := self.find_img(target="hire_constructor2")):
-                    self.click(co[0] + uniform(0, 110), co[1] + uniform(0, 40))
-                    self.better_sleep((1.7, 2.2))
-                    self.click(uniform(916, 1050), uniform(530, 560))
-                    self.better_sleep((1.7, 2.2))
+                # if (co := self.find_img(target="hire_constructor")) is not None or (
+                # co := self.find_img(target="hire_constructor2")):
+                #     self.click(co[0] + uniform(0, 110), co[1] + uniform(0, 40))
+                #     self.better_sleep((1.7, 2.2))
+                #     self.click(uniform(916, 1050), uniform(530, 560))
+                #     self.better_sleep((1.7, 2.2))
                 self.close_windows()
-            self.better_sleep((1.7, 2.2))
+            # self.better_sleep((1.7, 2.2))
             self.help_build()
             self.better_sleep((1.7, 2.2))
 
@@ -105,7 +108,8 @@ class UpgradeCity(Task):
 
     @get_name
     def is_city_hall_upgradable(self):
-        co = self.find_img(target="upgrade_build")
+        co = self.find_img(target="upgrade_build", confidence=0.7
+                           )
         if co is not None:
             return True
         return False
@@ -151,6 +155,18 @@ class UpgradeCity(Task):
             self.better_sleep((0.9, 1.2))
         self.better_sleep((10, 15))
         self.help_alliance()
+        self.better_sleep((0.9, 1.2))
+
+    @get_class
+    def run1(self):
+        x, y = 1280/2, 720/2
+        self.click(x, y)
+        self.better_sleep((1.7, 2.5))
+
+        if self.is_city_hall_upgradable():
+            self.recursive_upgrade()
+        else:
+            self.print("Already upgrading..")
         self.better_sleep((0.9, 1.2))
 
     @get_name
