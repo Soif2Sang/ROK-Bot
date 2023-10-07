@@ -83,9 +83,5 @@ class ClearFog(Task):
                 self.better_sleep((3, 4.5))
                 count = False
             else:
-                time_to_sleep = randint(5, 10)
-                self.print(f"All scout seems occupied, waiting for {time_to_sleep:0.1f} seconds")
                 count = True
-                for _ in range(time_to_sleep * 10):
-                    self.script_pause()
-                    sleep(0.1)
+                self.better_sleep((5, 10))
