@@ -72,7 +72,7 @@ class UpgradeCity(Task):
     def recursive_upgrade(self):
         stones = self.find_img(target="upgrade_build", confidence=0.7)
 
-        if stones is not None:
+        if stones is not None and self.find_img('building_speedups') is None:
             self.click(stones[0] + uniform(0, 20), stones[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
             if cos := self.adb.find_multiple_img(target="upgrade_go"):
@@ -133,33 +133,10 @@ class UpgradeCity(Task):
 
     @get_class
     def run1(self):
-        for x, y in [self.pass_coordinates(), self.barracks_coordinates(), self.archery_coordinates(),
-                     self.stable_coordinates(),
-                     self.siege_coordinates(), self.tavern_coordinates(), self.ch_coordinates(),
-                     self.hospital_coordinates(),
-                     self.academy_coordinates(), self.alliance_center_coordinates(), self.scout_coordinates()]:
-            self.setup_view()
-            if not self.free_constructor():
-                break
-            self.better_sleep((0.9, 1.2))
-            for i in range(2):
-                self.click(x, y)
-                self.better_sleep((0.9, 1.2))
-            if self.is_city_hall_upgradable():
-                self.recursive_upgrade()
-            else:
-                self.print("Already upgrading..")
-            self.better_sleep((0.9, 1.2))
-        for i in range(2):
-            self.help_build()
-            self.better_sleep((0.9, 1.2))
-        self.better_sleep((10, 15))
-        self.help_alliance()
-        self.better_sleep((0.9, 1.2))
-
-    @get_class
-    def run1(self):
-        x, y = 1280/2, 720/2
+        ch_position = self.data[str(self.sel)]['schedules'][self.current_profile].get('city_hall_position', [])
+        if not ch_position:
+            return
+        x, y = ch_position
         self.click(x, y)
         self.better_sleep((1.7, 2.5))
 
@@ -179,6 +156,10 @@ class UpgradeCity(Task):
 
     @get_class
     def run(self):
+        print(self.data[str(self.sel)]['schedules'][self.current_profile].get('upgrade_city_method'))
+
+        if self.data[str(self.sel)]['schedules'][self.current_profile].get('upgrade_city_method', 'normal'):
+            return self.run1()
         self.setup_view()
         for i in range(2):
             if (upgrades_final := self.free_worker()):
