@@ -1,6 +1,7 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from views.settings.profile.page_upgrade_city import PageUpgradeCity
 from views.settings.page_settings import PageSettings
 from views.settings.profile.page_character import PageCharacter
 from views.settings.profile.page_logback import PageLogback
@@ -62,7 +63,7 @@ class ProfileSettings(PageSettings):
         self.create_advanced_switch("start_fort", "Launch Barbarian Rally", PageRally)
         self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
         self.create_advanced_switch("scout_fog", "Explore Fog", PageFog)
-        self.create_normal_switch("upgrade_city", "Upgrade City (Light)")
+        self.create_advanced_switch("upgrade_city", "Upgrade City", PageUpgradeCity)
         self.create_advanced_switch("heal_troop", "Troops Healing", PageHeal)
         self.create_advanced_switch("transfer_enable", "Transfer Resources", PageTransfer)
         #

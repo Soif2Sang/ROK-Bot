@@ -1,0 +1,44 @@
+import flet as ft
+
+from views.settings.profile.rows.Flet_row_presets import FletRowPresets
+from views.settings.page_base import BasePage
+
+
+class PageUpgradeCity(BasePage):
+    def __init__(self, profile):
+        super().__init__(profile)
+
+        self.add(
+            ft.Text(
+                spans=[
+                    ft.TextSpan(
+                        "*REQUIREMENT* ",
+                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
+                    ),
+                    ft.TextSpan(
+                        "If you use the normal way to upgrade the city, you have to configure the city hall position!\n",
+                        style=ft.TextStyle(size=15, color="red"),
+                    )
+                ]
+            ),
+            ft.Divider(),
+
+            ft.Switch(
+                label="Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the pass but \nit is a safer way to upgrade the city)",
+                on_change=self.submit_upgrade_mode,
+                value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["upgrade_city_method"] == "normal",
+                width=300
+            )
+        )
+
+        self.add(
+            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set City Hall Position",
+                              on_click=lambda _: self.initial_page.go(
+                                  f"/citylayout/{self.instance_index}/{self.profile_index}")))
+
+        self.profile.initial_page.update()
+
+    def submit_upgrade_mode(self, e):
+        self.data = self.FileSingleton.get_data()
+        self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["upgrade_city_method"] = "normal" if e.control.value else "safest"
+        self.FileSingleton.write_data(self.data)
