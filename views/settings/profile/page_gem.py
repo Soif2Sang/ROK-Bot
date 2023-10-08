@@ -189,4 +189,5 @@ class PageGem(BasePage):
         if keyword == 'gather_gem_enable_node_limit':
             is_disabled = not self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword]
             self.number_of_nodes.content.controls[0].controls[0].disabled = is_disabled
+
         self.update()

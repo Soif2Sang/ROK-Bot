@@ -25,6 +25,4 @@ class PageCharacter(BasePage):
         self.profile.initial_page.update()
 
     def reverse_keyword(self, keyword: str):
-        print(self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                    "leave_game_switch_character"])
         super().reverse_keyword(keyword)

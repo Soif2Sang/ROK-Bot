@@ -1,3 +1,4 @@
+import copy
 import threading
 
 from views.tiles.handler.config_handler import Frame
@@ -45,7 +46,7 @@ class ConfigOverrider(ft.PopupMenuButton):
         host = data[str(e.control.data)]["host"]
         port = data[str(e.control.data)]["port"]
 
-        data[str(e.control.data)] = self.config
+        data[str(e.control.data)] = copy.deepcopy(self.config)
 
         data[str(e.control.data)]["instance"] = instance
         data[str(e.control.data)]["name"] = name

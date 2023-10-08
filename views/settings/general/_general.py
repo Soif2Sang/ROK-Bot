@@ -84,8 +84,7 @@ class GeneralSettings(PageSettings):
         self.FileSingleton.write_data(self.data)
 
     def reverse_keyword(self, keyword: str, index=None):
-        if index is None:
-            index = self.profile_index
+        self.data = self.FileSingleton.get_data()
 
         if keyword in ["auto_scroll", "auto_refresh", "limit_logs"]:
             self.data["interface"][keyword] = not self.data["interface"][keyword]
