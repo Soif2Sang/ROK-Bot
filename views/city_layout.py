@@ -45,6 +45,7 @@ class CityPlacement(ft.Container):
         "hospital": 4,
         "scout_camp": 5,
         "city_transfer": 6,
+        "city_hall_position": 7
     }
 
     def __init__(self, instance, profile, **kwargs):
@@ -67,7 +68,7 @@ class CityPlacement(ft.Container):
         )
         self.clickable_city = ft.Column()
         self.clickable_city.controls = [ft.Stack([self.main_container, self.gesture], width=1280 / 2, height=720 / 2)]
-        self.buttons = ft.Column()
+        self.buttons = ft.ListView(height=720 / 2, expand=True)
         self.content = ft.Row(controls=[self.clickable_city, self.buttons])
 
         self.buttons.controls.extend([
@@ -78,17 +79,18 @@ class CityPlacement(ft.Container):
             , ft.ElevatedButton(text="Set Hospital", on_click=lambda _: self.setCurrentBuild("hospital"))
             , ft.ElevatedButton(text="Set Scout camp", on_click=lambda _: self.setCurrentBuild("scout_camp"))
             , ft.ElevatedButton(text="Set City to transfer", on_click=lambda _: self.setCurrentBuild("city_transfer"))
+            , ft.ElevatedButton(text="Set City Hall", on_click=lambda _: self.setCurrentBuild("city_hall_position"))
         ]
         )
         for co in ["infantry_camp", "cavalry_camp", "archery_camp", "siege_camp", "hospital", "scout_camp",
-                   "city_transfer"]:
+                   "city_transfer", "city_hall_position"]:
             if self.data[str(self.instance)]["schedules"][str(self.profile)][co]:
                 if "✓" not in self.buttons.controls[self.button[co]].text:
                     self.buttons.controls[self.button[co]].text = self.buttons.controls[self.button[co]].text + " ✓"
 
     def updateButtons(self):
         for co in ["infantry_camp", "cavalry_camp", "archery_camp", "siege_camp", "hospital", "scout_camp",
-                   "city_transfer"]:
+                   "city_transfer", "city_hall_position"]:
             if self.data[str(self.instance)]["schedules"][str(self.profile)][co]:
                 if "✓" not in self.buttons.controls[self.button[co]].text:
                     self.buttons.controls[self.button[co]].text = self.buttons.controls[self.button[co]].text + " ✓"
