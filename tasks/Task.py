@@ -267,17 +267,26 @@ class Task():
 
         self.script_pause()
         try:
-            hwnd = win32gui.FindWindow(None, self.adb.name)
-            hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-            while self.find_img(target='gem_search_button'):
-                self.print("Zooming out..")
-                win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                self.better_sleep((0.5, 0.5))
-                win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                self.better_sleep((1.4, 2))
-
+            self.print("Zooming out..")
+            if self.find_img(target='gem_search_button'):
+                hwnd = win32gui.FindWindow(None, self.adb.name)
+                hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+                self.script_pause()
+                while self.find_img(target="gem_search_button"):
+                    self.script_pause()
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    self.better_sleep((0.5, 0.5))
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    self.better_sleep((1.4, 2))
+                    self.script_pause()
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    self.better_sleep((0.17, 0.17))
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    self.better_sleep((1.4, 2))
 
         except Exception as e:
             print(e)
@@ -319,7 +328,7 @@ class Task():
             try:
                 self.print(f'Current level : {string[1]}')
                 # self.set_text(f"[{current_time()}] Current level : {string[1]}")
-                level_to_go = level - int(string[1])
+                level_to_go = level - int(string[1].replace("l", "1"))
             except:
                 x, y = self.find_img(target='minus_button')
                 for i in range(6):
@@ -980,8 +989,8 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='go_outside_city', source=self.adb.get_cv2_img()[600:, 0:200],
-                             confidence=0.75) is not None
+        return self.find_img(target='checkpoint_star', source=self.adb.get_cv2_img()[:100, 0:600],
+                             confidence=0.9) is None
 
     def get_config(self):
         return self.data.get(self.sel).get('schedules').get(self.current_profile)
