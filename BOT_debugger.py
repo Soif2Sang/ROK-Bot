@@ -469,8 +469,8 @@ def upgrade_all():
 if __name__ == "__main__":
     # upgrade_all()
 
-    bot =  get_bot(0)
-    bot.maraudeurs.recall(5)
+    bot =  get_bot("Nougat64")
+    bot.alliance.run()
     exit()
     template = cv2.imread('./barb_icon2.png')
 

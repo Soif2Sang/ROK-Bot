@@ -108,7 +108,7 @@ class GatherRssDefault(GatherRss):
                 f"{node_type}_level") - level_decrease)
             self.better_sleep((0.925, 2.795))
             self.click_search_adapted_node(node_type)
-            self.better_sleep((5, 9))
+            self.better_sleep((5, 8))
 
             # Tant que la node trouvée n'est pas minable (pas de cross, plus dans le menu des rss)
             # if not self.minable():
@@ -134,7 +134,6 @@ class GatherRssDefault(GatherRss):
                 self.click(uniform(200, 900), uniform(300, 500))
                 self.better_sleep((2.325, 5.795))
                 return "Done"
-            self.better_sleep((1, 2.895))
             if not resolved:
                 resolved = self.check_captcha()
             node_type = self.next_resource_type(node_type)

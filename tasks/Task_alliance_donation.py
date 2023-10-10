@@ -52,7 +52,7 @@ class AllianceDonation(Task):
             donation_logo = self.adb.find_multiple_img(target="tech_2", confidence=0.97)
             # if donation_logo is None:
             # donation_logo = self.find_img(target="tech_2",confidence=0.97)
-            if donation_logo is not None:
+            if donation_logo:
                 donation_logo = random.choice(donation_logo)
                 self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
                 self.better_sleep((1, 2))

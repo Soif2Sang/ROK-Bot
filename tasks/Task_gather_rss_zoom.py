@@ -206,7 +206,7 @@ class GatherRssZoom(GatherRss):
                     return self.click(700, 400)
 
                 if self.swipe_scan(self.scan_node, current_swipe) == "STOP":
-                    return self.click(700, 400)
+                    return self.click(600, 400)
 
             current += 1
             current_swipe = swipes[current_swipe]

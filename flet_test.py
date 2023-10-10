@@ -1,35 +1,173 @@
+import sys
+import threading
+from time import sleep
+
 import flet as ft
-import os
+
+color_bank = {
+    1: "#3b8ed0",
+    2: "#ba4543",
+    3: "#dec433"
+}
+
+
+class Logger(ft.ListView):
+    def __init__(self, frame, page, **kwargs):
+        super().__init__(**kwargs)
+        self.auto_scroll = True
+        self.parent = frame
+        self.initial_page = page
+
+    def add_text(self, texte: str, color=None):
+        if color is None:
+            text = ft.Text(value=texte, weight=ft.FontWeight.W_600, selectable=True)
+        else:
+            text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color, selectable=True)
+        self.controls.append(text)
+        self.initial_page.update()
+
+    def add_divider(self):
+        self.controls.append(ft.Divider())
+        self.initial_page.update()
+
+
+class Frame(ft.Tabs):
+    def __init__(self, page, number: str, **kwargs):
+        super().__init__(**kwargs)
+        self.number = number
+        self.settings = ft.Tabs()
+        self.expand = True
+        self.logger = Logger(self, page)
+
+        self.tabs.append(ft.Tab(content=self.logger, text="Logs"))
+
+    def add_text(self, texte: str, color=None):
+        self.logger.add_text(texte, color)
+
+    def add_divider(self):
+        self.logger.add_divider()
+
+
+class Task:
+    def __init__(self, tile):
+        self.tile = tile
+
+    def script_pause(self):
+        said = False
+
+        while self.tile.paused:
+            if not said:
+                self.set_text(f"Script is paused.", "orange")
+                said = True
+
+        if self.tile.stopped:
+            self.set_text(f"You stopped the bot", "Red")
+            self.set_divider()
+            sys.exit()
+
+        if said:
+            self.set_text(f"You resumed the script.", "Green")
+
+    def run(self):
+        while 1:
+            self.script_pause()
+            sleep(0.001)
+
+    def set_text(self, param, param1):
+        self.tile.logs.controls.append(ft.Text(value=param, color=param1))
+        self.tile.initial_page.update()
+
+    def set_divider(self):
+        self.tile.logs.controls.append(ft.Divider())
+        self.tile.initial_page.update()
+
+
+class Tile(ft.Row):
+    def __init__(self, page, logs, **kwargs):
+        super().__init__(**kwargs)
+        self.initial_page = page
+        self.tasks_process = None
+        self.logs = logs
+        self.paused = False
+        self.stopped = False
+
+        self.main_task = Task(self)
+
+        self.tasks_process = threading.Thread(target=self.main_task.run)
+
+        self.button_start = ft.IconButton(
+            icon=ft.icons.NOT_STARTED_OUTLINED,
+            on_click=self.start
+        )
+        self.button_stop = ft.IconButton(
+            icon=ft.icons.STOP_OUTLINED,
+            disabled=True,
+            on_click=self.stop
+        )
+
+        self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.controls.extend([
+            ft.Row(
+                controls=[
+                    self.button_start,
+                    self.button_stop
+                ]
+            ),
+        ]
+        )
+
+    def start(self, e):
+        self.button_start.icon = ft.icons.PAUSE
+        self.button_stop.disabled = False
+
+        self.paused = False
+        self.stopped = False
+
+        self.initial_page.update()
+        self.start_tasks()
+        self.button_start.on_click = self.pause
+        self.tasks_process.join()
+        self.button_start.on_click = self.start
+        self.paused = False
+        self.stopped = False
+        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_stop.disabled = True
+        self.initial_page.update()
+
+    def resume(self, e):
+        self.paused = False
+
+        self.button_start.icon = ft.icons.PAUSE
+        self.initial_page.update()
+        self.button_start.on_click = self.pause
+
+    def pause(self, e):
+        self.paused = True
+
+        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.initial_page.update()
+        self.button_start.on_click = self.resume
+
+    def stop(self, e):
+        self.stopped = True
+        self.paused = False
+        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_stop.disabled = True
+        self.initial_page.update()
+
+    def start_tasks(self):
+        if not self.tasks_process.is_alive():
+            self.tasks_process = threading.Thread(target=self.main_task.run)
+            self.tasks_process.start()
+        else:
+            print("Task is frozen, you may need to restart the bot.")
 
 
 def main(page: ft.Page):
-    def check_text_fields(e):
-        username_value = len(username.value)
-        password_value = len(password.value)
+    frame = Frame(page, '1')
+    tile = Tile(page, frame.logger)
 
-        if username_value >= 3 and password_value >= 3:
-            login.disabled = False
-        else:
-            login.disabled = True
-
-        # Update the page after changing the login button's disabled attribute
-        page.update()
-
-    username = ft.TextField(value="")
-    password = ft.TextField(value="")
-
-    login = ft.FilledButton(disabled=True)
-
-    # Assign the on_change callback function to the text fields
-    username.on_change = check_text_fields
-    password.on_change = check_text_fields
-
-    # Add the elements to the page
-    page.add(username)
-    page.add(password)
-    page.add(login)
-
-    # Initial page update
+    page.add(tile, frame)
     page.update()
 
 
