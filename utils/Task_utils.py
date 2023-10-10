@@ -283,8 +283,6 @@ def get_dic_instances():
 
 
     # bluestacks_instances.sort(key=custom_key)
-    print(bluestacks_instances)
-
     # transformed_dict = dict(map(lambda idx_item: (str(idx_item[0]), idx_item[1]), enumerate(bluestacks_instances)))
     # print(transformed_dict)
     return bluestacks_instances

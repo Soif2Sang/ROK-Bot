@@ -1,4 +1,5 @@
 # coding=UTF-8
+import copy
 import hashlib
 import json
 import os
@@ -45,6 +46,15 @@ data = fileSingleton.get_data()
 if "discord" not in data:
     data["discord"] = {"user_id":0, "enabled":False}
     fileSingleton.write_data(data)
+
+old_data = copy.deepcopy(data)
+
+for element in old_data.keys():
+    if element.isdigit():
+        data[data[element]['instance']] = copy.deepcopy(data[element])
+        del data[element]
+
+fileSingleton.write_data(data)
 
 def update_user_info(password, username):
     data = fileSingleton.get_data()
@@ -161,7 +171,7 @@ class LoginUI(ft.Column):
                 current_date = datetime.utcnow()
                 days_remaining = (target_date - current_date).days
 
-                self.initial_page.title = f"Rok Bot - {days_remaining} Days left"
+                self.initial_page.title = f"RokNet - {days_remaining} Days left"
                 self.initial_page.update()
                 sleep(6 * 3600)
                 return self.verify_subscription(username, password)

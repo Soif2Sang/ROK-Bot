@@ -28,7 +28,7 @@ class BodyView(ft.View):
         ]
 
 def Main(page: ft.Page, days=950):
-    page.title = f"Rok Bot - {days} Days left"
+    page.title = f"RokNet - {days} Days left"
     page.frames = {}
 
     page.window_width = 450
