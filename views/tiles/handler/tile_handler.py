@@ -106,24 +106,21 @@ class TileHandler(ft.ListView):
         self.navigation_bar: NavigationBar = NavigationBar(self.initial_page, self)
         self.controls.append(self.navigation_bar)
 
-    def update(self):
-        self.initial_page.update()
-
     def add_tile(self, number: str):
         self.tiles[number] = Tile(self.initial_page, number)
         self.controls.append(self.tiles[number])
-        self.update()
+        self.initial_page.update()
 
     def delete_tile(self, number: str):
         # index = self.controls.index(self.tiles[number])
         self.controls.remove(self.tiles[number])
         self.tiles.pop(number)
-        self.update()
+        self.initial_page.update()
 
     def unselect_all(self):
         for tile in self.controls[1:]:
             tile.button_select.selected = False
-        self.update()
+        self.initial_page.update()
 
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
@@ -315,4 +312,4 @@ class TileHandler(ft.ListView):
                 margin=ft.margin.only(top=40)
             ))
 
-        self.update()
+        self.initial_page.update()

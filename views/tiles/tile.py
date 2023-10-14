@@ -16,6 +16,7 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.index = index
         self.initial_page = page
         self.config = self.fileSingleton.get_data()[self.index]
+        self.icon = ft.icons.FILE_UPLOAD_OUTLINED
         self.init()
 
     def init(self):
@@ -83,16 +84,16 @@ class Tile(ft.Row):
             self.tasks_process = threading.Thread(target=self.runner.run)
 
         self.button_select = ft.IconButton(
-            icon=ft.icons.SETTINGS_OUTLINED,
+            icon=ft.icons.SETTINGS,
             selected_icon=ft.icons.SETTINGS,
             on_click=lambda _: self.select()
         )
         self.button_start = ft.IconButton(
-            icon=ft.icons.NOT_STARTED_OUTLINED,
+            icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED,
             on_click=self.start
         )
         self.button_stop = ft.IconButton(
-            icon=ft.icons.STOP_OUTLINED,
+            icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED,
             disabled=True,
             on_click=self.stop
         )
@@ -126,7 +127,7 @@ class Tile(ft.Row):
         if self.number not in self.initial_page.frames:
             self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
-        self.initial_page.controls.append(self.initial_page.frames[self.number])
+        self.initial_page.add(self.initial_page.frames[self.number])
         self.initial_page.update()
 
     def start(self, e):
@@ -142,7 +143,7 @@ class Tile(ft.Row):
         self.button_start.on_click = self.start
         self.paused = False
         self.stopped = False
-        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.set_text("")
 
@@ -156,15 +157,16 @@ class Tile(ft.Row):
     def pause(self, e):
         self.paused = True
 
-        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
-        self.initial_page.update()
+        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_start.on_click = self.resume
+        self.initial_page.update()
+
 
     def stop(self, e):
         self.paused = False
         self.stopped = True
 
-        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.initial_page.update()
 
@@ -173,7 +175,7 @@ class Tile(ft.Row):
         self.tasks_process.join()
         self.paused = False
         self.stopped = False
-        self.button_start.icon = ft.icons.NOT_STARTED_OUTLINED
+        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.set_text("")
 

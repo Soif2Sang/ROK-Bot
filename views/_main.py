@@ -36,7 +36,7 @@ def Main(page: ft.Page, days=950):
     page.clean()
 
     theme = ft.Theme()
-    theme.page_transitions.windows = ft.PageTransitionTheme.FADE_UPWARDS
+    theme.page_transitions.windows = ft.PageTransitionTheme.CUPERTINO
     page.theme = theme
     page.update()
 

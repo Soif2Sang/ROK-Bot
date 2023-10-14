@@ -31,13 +31,10 @@ class ProfileSettings(PageSettings):
     def clean(self):
         self.content.controls = []
 
-    def update(self):
-        self.initial_page.update()
-
     def reset(self):
         self.clean()
         self.init()
-        self.update()
+        self.initial_page.update()
 
     def init(self):
 
@@ -115,7 +112,7 @@ class ProfileSettings(PageSettings):
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character")
             )
         )
-        self.update()
+        self.initial_page.update()
 
     def page_logback(self):
         self.data = self.FileSingleton.get_data()
@@ -161,7 +158,7 @@ class ProfileSettings(PageSettings):
         ]
         )
 
-        self.update()
+        self.initial_page.update()
 
     def page_redo(self):
         self.data = self.FileSingleton.get_data()
@@ -214,7 +211,7 @@ class ProfileSettings(PageSettings):
                       on_change=lambda _: self.reverse_keyword('leave_game_loop'))
         ]
         )
-        self.update()
+        self.initial_page.update()
 
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:

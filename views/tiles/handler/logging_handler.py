@@ -55,4 +55,4 @@ class LoggerUpgrade(ft.ListView):
             text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)
         self.controls.append(text)
         if not isinstance(self.initial_page.controls[-1],ft.Divider):
-            self.update()
+            self.initial_page.update()
