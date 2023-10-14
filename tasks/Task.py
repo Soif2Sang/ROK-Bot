@@ -75,6 +75,7 @@ class Task():
                 self.set_text(f"[{current_time()}] Script is paused.", "orange")
                 self.debug("Script is paused.")
                 said = True
+            sleep(0.001)
 
         if self.tile.stopped:
             self.set_text(f"[{current_time()}] You stopped the bot", "Red")
@@ -558,7 +559,7 @@ class Task():
         fontScale = 1
         color = (0, 0, 0)
         thickness = 2
-        captcha = cv2.putText(captcha, 'Click in center of puzzle hole', org, font,
+        captcha = cv2.putText(captcha, 'Click in center of puzzle', org, font,
                               fontScale, color, thickness, cv2.LINE_AA)
 
         # captcha = cv2.cvtColor(captcha, cv2.COLOR_BGR2RGB)
@@ -726,6 +727,9 @@ class Task():
             self.check_captcha()
             self.close_windows()
             self.close_upgrade_popup()
+            if co := self.find_img(target="chest_confirm_button"):
+                self.click(*co)
+                self.better_sleep((1, 2))
 
     @get_name
     def close_upgrade_popup(self):

@@ -262,12 +262,15 @@ class TaskRunner(Task):
 
         stop = 0
         while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color:
-            self.better_sleep((1, 2))
+            self.better_sleep((2, 3))
             stop += 1
 
             if stop == 10:
                 self.print("It seems the game is unable to load the characters menu..")
-                return self.switch_character(self, co_first, nb_chars, fail)
+                return self.switch_character(co_first, nb_chars, fail)
+            if co := self.find_img(target="chest_confirm_button"):
+                self.click(*co)
+                self.better_sleep((1, 2))
 
         self.better_sleep((1.925, 2.795))
         trigger_stop = 0
