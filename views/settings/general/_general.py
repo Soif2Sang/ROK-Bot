@@ -19,13 +19,10 @@ class GeneralSettings(PageSettings):
     def clean(self):
         self.content.controls = []
 
-    def update(self):
-        self.initial_page.update()
-
     def reset(self):
         self.clean()
         self.init()
-        self.update()
+        self.initial_page.update()
 
     def add(self, *controls):
         for control in controls:

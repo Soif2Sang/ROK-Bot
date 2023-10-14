@@ -61,7 +61,7 @@ class BasePage():
             if keyword == 'auto_scroll':
                 for frame in self.profile.initial_page.frames:
                     self.profile.initial_page.frames[frame].logger.auto_scroll = data["interface"][keyword]
-                self.update()
+                self.initial_page.update()
         elif keyword == "enabled":
             data["discord"]["enabled"] = not data["discord"].get(keyword, False)
         elif keyword == "leave_game_loop":

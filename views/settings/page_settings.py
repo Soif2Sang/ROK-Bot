@@ -31,13 +31,10 @@ class PageSettings(ft.Container):
         self.content.controls = []
         self.data = self.FileSingleton.get_data()
 
-    def update(self):
-        self.initial_page.update()
-
     def reset(self):
         self.clean()
         self.init()
-        self.update()
+        self.initial_page.update()
 
     def init(self):
         pass

@@ -50,4 +50,4 @@ class PageRss(BasePage):
             for control in self.profile.content.controls[-7:]:
                 control.controls[2].controls[0].disabled = self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_rss_method"]
-        self.initial_page.update()
+        self.update()
