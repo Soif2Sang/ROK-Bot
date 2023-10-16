@@ -3,7 +3,7 @@ import os
 from utils.Task_utils import FileSingleton
 
 def main():
-    fileSingleton = FileSingleton
+    fileSingleton = FileSingleton()
     try:
         if not os.path.exists("./user_settings.json"):
             fileSingleton.write_data({})

@@ -9,12 +9,12 @@ import subprocess  # needed for mac device
 import flet as ft
 import requests
 import win32security
-from utils.Crypto.Cipher import AES
-from utils.Crypto.Hash import SHA256
-from utils.Crypto.Util.Padding import pad, unpad
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
+from Crypto.Util.Padding import pad, unpad
 from utils.Task_utils import FileSingleton
 
-fileSingleton = FileSingleton
+fileSingleton = FileSingleton()
 
 def update_user_info(password, username):
     data = fileSingleton.get_data()
