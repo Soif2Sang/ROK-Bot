@@ -156,8 +156,6 @@ class UpgradeCity(Task):
 
     @get_class
     def run(self):
-        print(self.data[str(self.sel)]['schedules'][self.current_profile].get('upgrade_city_method'))
-
         if self.data[str(self.sel)]['schedules'][self.current_profile].get('upgrade_city_method', 'normal'):
             return self.run1()
         self.setup_view()

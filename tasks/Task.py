@@ -148,7 +148,8 @@ class Task():
     def send_discord_message(self, message):
         if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
             # loop = asyncio.get_event_loop()
-            asyncio.run(send_discord_message(f"[ {self.name} ]" + message))
+            self.adb.save_screen(f"{self.name}_error")
+            asyncio.run(send_discord_message(self.name, message, f"{self.name}_error.png"))
 
     @get_name
     def click(self, x, y):
@@ -196,14 +197,14 @@ class Task():
         # imwrite("commander_list.png",cropped_image)
         native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
 
-        print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
+        # print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
         if "/" in native_text:
             # list_text = text0.split("/")
             enhanced_text = native_text.split("/")[0] + native_text.split("/")[1]
         else:
             enhanced_text = native_text
         enhanced_text = enhanced_text.replace("\n", "")
-        print(f"[ {current_time()} ] [ {self.name} ] {enhanced_text =}")
+        # print(f"[ {current_time()} ] [ {self.name} ] {enhanced_text =}")
         if len(enhanced_text) < 2:
             return True
         if len(enhanced_text) == 2:
@@ -727,9 +728,10 @@ class Task():
             self.check_captcha()
             self.close_windows()
             self.close_upgrade_popup()
-            if co := self.find_img(target="chest_confirm_button"):
-                self.click(*co)
-                self.better_sleep((1, 2))
+            self.check_download_page()
+            if self.find_img(target="reconnect_sdk"):
+                self.leave_game()
+                self.run_game()
 
     @get_name
     def close_upgrade_popup(self):

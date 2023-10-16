@@ -1,5 +1,5 @@
 import traceback
-from random import uniform
+from random import uniform, choice
 from time import sleep
 
 from PIL import Image
@@ -30,9 +30,11 @@ class GatherRss(Task):
             x, y = uniform(wood_icon[0][0], wood_icon[0][1]), uniform(wood_icon[1][0], wood_icon[1][1])
         elif self.data[str(self.sel)]['schedules'][self.current_profile].get(place) == "stone":
             x, y = uniform(stone_icon[0][0], stone_icon[0][1]), uniform(stone_icon[1][0], stone_icon[1][1])
-        else:  # Gold
+        elif self.data[str(self.sel)]['schedules'][self.current_profile].get(place) == "gold":
             x, y = uniform(gold_icon[0][0], gold_icon[0][1]), uniform(gold_icon[1][0], gold_icon[1][1])
-        # print(f'[ {current_time()} ] [ {self.name} ] chance rss type call')
+        elif self.data[str(self.sel)]['schedules'][self.current_profile].get(place) == "random":
+            random_choice = choice([food_icon, wood_icon, stone_icon, gold_icon])
+            x, y = uniform(random_choice[0][0], random_choice[0][1]), uniform(random_choice[1][0], random_choice[1][1])
         return x, y
 
     @get_name
@@ -216,12 +218,12 @@ class GatherRss(Task):
             return "Done"
 
     @get_class
-    def run1(self, node_type=None, resolved=False, level_decrease=0):
+    def run1(self, node_place=None, resolved=False, level_decrease=0):
         if not resolved:
             resolved = self.check_captcha()
-        if node_type is None:
-            node_type = "First"
-        if node_type == "Done":
+        if node_place is None:
+            node_place = "First"
+        if node_place == "Done":
             self.click(uniform(600, 700), (uniform(250, 400)))
             self.better_sleep((2, 4))
             return
@@ -236,24 +238,24 @@ class GatherRss(Task):
             self.check_log_back()
             self.check_reconnect()
             self.click_loop()
-            x, y = self.select_resource_type(node_type)
+            x, y = self.select_resource_type(node_place)
             # self.better_sleep((1.325, 1.795))
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get(
-                    f"{node_type}_level") - level_decrease <= 0:
-                node_type = self.next_resource_type(node_type)
-                print(f"{level_decrease = }, {node_type = }")
-                return self.run(node_type, resolved, level_decrease)
+                    f"{node_place}_level") - level_decrease <= 0:
+                node_place = self.next_resource_type(node_place)
+                print(f"{level_decrease = }, {node_place = }")
+                return self.run(node_place, resolved, level_decrease)
 
             if level_verified is False:
                 self.set_search_level(self.data.get(self.sel).get('schedules').get(self.current_profile).get(
-                    f"{node_type}_level") - level_decrease)
+                    f"{node_place}_level") - level_decrease)
                 self.better_sleep((0.925, 2.795))
                 level_verified = True
-            print(f"{node_type =}")
-            self.click_search_adapted_node(node_type)
+            print(f"{node_place =}")
+            self.click_search_adapted_node(node_place)
             self.better_sleep((5, 9))
 
             # Tant que la node trouvée n'est pas minable (pas de cross, plus dans le menu des rss)
@@ -267,11 +269,11 @@ class GatherRss(Task):
                     self.better_sleep((0.425, 1.495))
                     if level_decrease >= 2:
                         self.print("No node matched the requirements, changing node type..")
-                        return self.run(self.next_resource_type(node_type), resolved, 0)
+                        return self.run(self.next_resource_type(node_place), resolved, 0)
                     else:
-                        self.print(f"{level_decrease+1 = }, {node_type = }")
+                        self.print(f"{level_decrease+1 = }, {node_place = }")
                         self.print("No node matched the requirements, reducing the level..")
-                        return self.run(node_type, resolved, level_decrease + 1)
+                        return self.run(node_place, resolved, level_decrease + 1)
 
                 # Si y'a une cross
                 # self.better_sleep((2, 5.5))
@@ -285,18 +287,18 @@ class GatherRss(Task):
 
                         if level_decrease >= 2:
                             self.print("No node matched the requirements, changing node type..")
-                            return self.run(self.next_resource_type(node_type), resolved, 0)
+                            return self.run(self.next_resource_type(node_place), resolved, 0)
                         else:
-                            self.print(f"{level_decrease+1 = }, {node_type = }")
+                            self.print(f"{level_decrease+1 = }, {node_place = }")
                             self.print("No node matched the requirements, reducing the level..")
-                            return self.run(node_type, resolved, level_decrease + 1)
+                            return self.run(node_place, resolved, level_decrease + 1)
                     else:
                         nbsearch += 1
                         self.print("nbsearch != 2")
                         self.print("Looking for a new node")
                         self.click_loop()
                         self.better_sleep((0.625, 1.995))
-                        self.click_search_adapted_node(node_type)
+                        self.click_search_adapted_node(node_place)
                 self.better_sleep((5, 9))
             self.check_reconnect()
             if self.click_on_node() and not self.send_troop():
@@ -305,25 +307,25 @@ class GatherRss(Task):
                 return "Done"
             self.better_sleep((1, 2.895))
             resolved = self.check_captcha()
-            node_type = self.next_resource_type(node_type)
+            node_place = self.next_resource_type(node_place)
         self.click(uniform(22, 90), uniform(625, 675))
         return "Done"
 
     @get_class
-    def run(self, node_type=None, resolved=False, level_decrease=0):
+    def run(self, node_place=None, resolved=False, level_decrease=0):
         self.run_game()
         if not resolved:
             resolved = self.check_captcha()
         self.check_reconnect()
         self.check_log_back()
         self.check_download_page()
-        if node_type is None:
-            node_type = "First"
-        if node_type == "Done":
+        if node_place is None:
+            node_place = "First"
+        if node_place == "Done":
             self.click(uniform(600, 700), (uniform(250, 400)))
             self.better_sleep((2, 4))
             return
-        if self.data[str(self.sel)]['schedules'][self.current_profile][node_type] == 'nothing':
+        if self.data[str(self.sel)]['schedules'][self.current_profile][node_place] == 'nothing':
             return
         self.leave_city_simple()
         # self.better_sleep((2, 4))
@@ -332,21 +334,21 @@ class GatherRss(Task):
             self.check_log_back()
             self.check_reconnect()
             self.click_loop()
-            x, y = self.select_resource_type(node_type)
+            x, y = self.select_resource_type(node_place)
             # self.better_sleep((1.325, 1.795))
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
             if self.data.get(self.sel).get('schedules').get(self.current_profile).get(
-                    f"{node_type}_level") - level_decrease <= 0:
-                node_type = self.next_resource_type(node_type)
-                self.print(f"Cannot decrease the current level.. Too low ! next type : {node_type}")
-                return self.run(node_type, resolved, 0)
+                    f"{node_place}_level") - level_decrease <= 0:
+                node_place = self.next_resource_type(node_place)
+                self.print(f"Cannot decrease the current level.. Too low ! next type : {node_place}")
+                return self.run(node_place, resolved, 0)
 
             self.set_search_level(self.data.get(self.sel).get('schedules').get(self.current_profile).get(
-                f"{node_type}_level") - level_decrease)
+                f"{node_place}_level") - level_decrease)
             self.better_sleep((0.925, 2.795))
-            self.click_search_adapted_node(node_type)
+            self.click_search_adapted_node(node_place)
             self.better_sleep((5, 9))
 
             # Tant que la node trouvée n'est pas minable (pas de cross, plus dans le menu des rss)
@@ -361,11 +363,11 @@ class GatherRss(Task):
                 self.better_sleep((1.325, 3.795))
                 if level_decrease >= 1:
                     self.print("No node matched the requirements, changing node type..")
-                    return self.run(self.next_resource_type(node_type), resolved, 0)
+                    return self.run(self.next_resource_type(node_place), resolved, 0)
                 else:
-                    self.print(f"{level_decrease+1 = }, {node_type = }")
+                    self.print(f"{level_decrease+1 = }, {node_place = }")
                     self.print("No node matched the requirements, reducing the level..")
-                    return self.run(node_type, resolved, level_decrease + 1)
+                    return self.run(node_place, resolved, level_decrease + 1)
                 # self.better_sleep((5, 9))
             self.check_reconnect()
             self.check_log_back()
@@ -376,7 +378,7 @@ class GatherRss(Task):
             self.better_sleep((1, 2.895))
             if not resolved:
                 resolved = self.check_captcha()
-            node_type = self.next_resource_type(node_type)
-            return self.run(node_type, resolved, 0)
+            node_place = self.next_resource_type(node_place)
+            return self.run(node_place, resolved, 0)
         # self.click(uniform(22, 90), uniform(625, 675))
         return "Done"
