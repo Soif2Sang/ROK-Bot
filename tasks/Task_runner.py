@@ -268,7 +268,11 @@ class TaskRunner(Task):
             if stop == 10:
                 self.print("It seems the game is unable to load the characters menu..")
                 return self.switch_character(co_first, nb_chars, fail)
+
             if co := self.find_img(target="chest_confirm_button"):
+                self.click(*co)
+                self.better_sleep((1, 2))
+            if co := self.find_img(target="reconnect_sdk"):
                 self.click(*co)
                 self.better_sleep((1, 2))
 
@@ -706,6 +710,27 @@ class TaskRunner(Task):
 
             for profile in self.data[self.sel]['schedules']:
                 if self.data[self.sel]['schedules'][profile]['enabled']:
+                    if self.data[self.sel]['schedules'][profile]["enable_timing"]:
+
+                        can_go = False
+                        when_go = 0
+                        for t in self.data[self.sel]['schedules'][profile]["timing"]:
+                            if is_in_frametime(t[0], t[1]):
+                                can_go = True
+                                when_go = random_time_in_frametime(t[0], t[1])
+                                print(f"{when_go=}")
+                                self.print(f"Profile {profile} able to run")
+                                break
+                        if not can_go:
+                            print(f"The current time does not match the rules you set")
+                            sleep(5)
+                            continue
+                        if when_go:
+                            self.print("In order to mimic a player, the bot will wait a random time")
+                            self.set_timer(randint(0, 60 * 10))
+                            self.set_status("Starting..")
+                    else:
+                        print(f"Profile {profile} no rules set")
                     print(f"Profile {profile} enabled")
                     self.current_profile = profile
                     self.print(f"Profile n°{profile} enabled ! ", "blue")

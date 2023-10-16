@@ -1,5 +1,5 @@
 import traceback
-from random import uniform, random
+from random import uniform, random, choice
 from time import sleep
 
 from PIL import Image
@@ -60,10 +60,15 @@ class GatherRssZoom(GatherRss):
         """
         self.restart_if_game_crashed()
         screen = self.adb.get_cv2_img()
-        list_nodes = [f"{self.data[str(self.sel)]['schedules'][self.current_profile][self.node_type]}_icon_zoom"]
+        if self.data[str(self.sel)]['schedules'][self.current_profile][self.node_place] == "random":
+            node_type = choice(["food", "wood", "stone", "gold"])
+        else:
+            node_type = self.data[str(self.sel)]['schedules'][self.current_profile][self.node_place]
+
+        list_nodes = [f"{node_type}_icon_zoom"]
         for element  in ['down','up']:
             for element2 in ['left','right']:
-                list_nodes.append(f"{self.data[str(self.sel)]['schedules'][self.current_profile][self.node_type]}_{element}_{element2}_icon_zoom")
+                list_nodes.append(f"{node_type}_{element}_{element2}_icon_zoom")
         co = None
         for icon in list_nodes:
             co = self.validate_co(
@@ -86,7 +91,7 @@ class GatherRssZoom(GatherRss):
         self.check_download_page()
         self.leave_kd_buff()
         if self.check_log_back():
-            self.print("You interrupted gem gathering by connecting from an other device, bot is restarting it")
+            self.print("You interrupted rss gathering by connecting from an other device, bot is restarting it")
             return self.run(self.end_time)
 
         if self.find_cross():
@@ -96,7 +101,7 @@ class GatherRssZoom(GatherRss):
             return self.adjusted_leave_city(x_click, y_click)
 
         if self.send_troop():
-            self.node_type = self.next_resource_type(self.node_type)
+            self.node_place = self.next_resource_type(self.node_place)
             self.better_sleep((1.3, 2))
             self.check_captcha()
             self.zoom_out_city()
@@ -125,7 +130,6 @@ class GatherRssZoom(GatherRss):
         screen = self.adb.get_cv2_img()
 
         info_screen = screen[470:700, 0:115]
-        cropped_image = screen[420:540, 480:810]
 
         if random() > 0.9:
             self.close_windows()
@@ -158,10 +162,10 @@ class GatherRssZoom(GatherRss):
         return scan()
 
     @get_class
-    def run(self, node_type=None):
-        if node_type == "Done":
+    def run(self, node_place=None):
+        if node_place == "Done":
             return self.click(700,400)
-        self.node_type = node_type
+        self.node_place = node_place
         self.run_game()
         if not self.random_macro():
             return
@@ -170,16 +174,16 @@ class GatherRssZoom(GatherRss):
         self.check_log_back()
         self.leave_kd_buff()
 
-        if node_type is None:
+        if node_place is None:
             self.leave_city()
         else:
             self.go_back_to_city()
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
 
-        if self.node_type is None:
-            self.node_type = "First"
-        print(self.node_type)
+        if self.node_place is None:
+            self.node_place = "First"
+
         self.scan_node()
 
         max_distance = 5
@@ -202,7 +206,7 @@ class GatherRssZoom(GatherRss):
             for y in range(i):
 
                 if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                    self.node_type, 'nothing') == 'nothing' or self.node_type == 'Done' or (not self.free_troop_commander_list()):
+                    self.node_place, 'nothing') == 'nothing' or self.node_place == 'Done' or (not self.free_troop_commander_list()):
                     return self.click(600, 400)
 
                 if self.swipe_scan(self.scan_node, current_swipe) == "STOP":
@@ -210,4 +214,4 @@ class GatherRssZoom(GatherRss):
 
             current += 1
             current_swipe = swipes[current_swipe]
-        return self.run(node_type=self.next_resource_type(self.node_type))
+        return self.run(node_place=self.next_resource_type(self.node_place))
