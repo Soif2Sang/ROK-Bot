@@ -1,7 +1,8 @@
 import flet as ft
 
-from views.settings.profile.rows.Flet_row_presets import FletRowPresets
 from views.settings.page_base import BasePage
+from views.settings.profile.rows.Flet_row_presets import FletRowPresets
+from utils.flet_utils import GenerateCard
 
 
 class PageMarauders(BasePage):
@@ -9,36 +10,7 @@ class PageMarauders(BasePage):
         super().__init__(profile)
 
         self.add(
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*REQUIREMENT* ",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Pre-configure red-lineups with commanders with the same march speed!\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    )
-                ]
-            ),
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "I also recommend having it running up to maximum",
-                        style=ft.TextStyle(size=15),
-                    ),
-                    ft.TextSpan(
-                        " 3-4 hours ",
-                        style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "with re-do tasks enabled so the marches can come back to the city and heal.",
-                        style=ft.TextStyle(size=15)
-                    )
-                ]
-            ),
-            ft.Divider(),
-
+            GenerateCard(level="tips", margin=ft.margin.only(bottom=20), subtitle="Pre-configure your red lineups with commanders who have the same march speed.\nIf you intend to use this feature extensively, I recommend running it for 3-4 hours and enabling the option to redo tasks. This will allow your troops to return to the city for healing."),
             ft.Container(content=ft.ResponsiveRow(controls=[
                 ft.Column(controls=[ft.TextField(label="Your kingdom :",
                                                  value=

@@ -57,7 +57,7 @@ class ProfileSettings(PageSettings):
         self.create_normal_switch("alliance_help", "Help Alliance")
         #
         self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", PageBarbs)
-        self.create_advanced_switch("start_fort", "Launch Barbarian Rally", PageRally)
+        self.create_advanced_switch("start_fort", "Start Fort Rally", PageRally)
         self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
         self.create_advanced_switch("scout_fog", "Explore Fog", PageFog)
         self.create_advanced_switch("upgrade_city", "Upgrade City", PageUpgradeCity)
@@ -134,7 +134,7 @@ class ProfileSettings(PageSettings):
                 spans=[
                     ft.TextSpan(
                         "Time to wait before the bot log  back from your connection(minutes):\n",
-                        style=ft.TextStyle(size=15, color="black"),
+                        style=ft.TextStyle(size=15),
                     )
                 ]
             ),
@@ -158,59 +158,6 @@ class ProfileSettings(PageSettings):
         ]
         )
 
-        self.initial_page.update()
-
-    def page_redo(self):
-        self.data = self.FileSingleton.get_data()
-        self.clean()
-        self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        # self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.append(ft.Divider(), )
-        self.content.controls.extend([
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*Randomise it as much as possible*\n",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Time to wait before the bot re-do the tasks selected (minutes):\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    )
-                ]
-            ),
-            ft.Row(
-                controls=[
-                    ft.TextField(label="Minimum",
-                                 value=self.data[str(self.instance_index)]["time_to_wait_loop1"],
-                                 width=80,
-                                 on_change=lambda e: self.submit(e, "time_to_wait_loop1", int)
-                                 ),
-                    ft.Text("~"),
-                    ft.TextField(label="Maximum",
-                                 value=self.data[str(self.instance_index)]["time_to_wait_loop2"],
-                                 width=90,
-                                 on_change=lambda e: self.submit(e, "time_to_wait_loop2", int)
-                                 )
-                ]
-            ),
-            ft.Switch(label="Close the game after all the tasks are done",
-                      value=self.data[str(self.instance_index)]["leave_game_loop"],
-                      on_change=lambda _: self.reverse_keyword('leave_game_loop'))
-        ]
-        )
         self.initial_page.update()
 
     def reverse_keyword(self, keyword: str, index=None):

@@ -2,6 +2,7 @@ import flet as ft
 
 from views.settings.profile.rows.Flet_row_rss import FletRowRss
 from views.settings.page_base import BasePage
+from utils.flet_utils import GenerateCard
 
 
 class PageRss(BasePage):
@@ -19,6 +20,7 @@ class PageRss(BasePage):
         ]
 
         self.add(
+            GenerateCard(level="tips", subtitle="If you plan on having the safest configuration, take a look at 'Zoom out method' and 'random' node choice!"),
             ft.Switch(
                 label="Use Yellow presets as gatherers",
 

@@ -12,7 +12,7 @@ class PageLogback(BasePage):
                 spans=[
                     ft.TextSpan(
                         "Time to wait before the bot log  back from your connection(minutes):\n",
-                        style=ft.TextStyle(size=15, color="black"),
+                        style=ft.TextStyle(size=15),
                     )
                 ]
             ),

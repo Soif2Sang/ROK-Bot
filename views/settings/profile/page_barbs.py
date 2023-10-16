@@ -2,6 +2,7 @@ import flet as ft
 
 from views.settings.profile.rows.Flet_row_presets import FletRowPresets
 from views.settings.page_base import BasePage
+from utils.flet_utils import GenerateCard
 
 
 class PageBarbs(BasePage):
@@ -9,41 +10,7 @@ class PageBarbs(BasePage):
         super().__init__(profile)
 
         self.add(
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*REQUIREMENT*\n",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Pre-configure red-lineups with PeaceKeeper commanders !\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                    ft.TextSpan(
-                        "Avoid AOE ",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "if you're using this function on low accounts\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                    ft.TextSpan(
-                        "The bot is",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                    ft.TextSpan(
-                        " unable ",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-
-                    ft.TextSpan(
-                        "to see the troops health",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                ]
-            ),
-            ft.Text("You should only use this with natural AP bar.", color="orange", size=15),
-            ft.Divider(),
+            GenerateCard(level="warning",margin=ft.margin.only(bottom=10), title="*WARNING*", subtitle="Pre-configure red-lineups with PeaceKeeper commanders!\nThe bot is unable to see the troops health.\nYou should only use this with natural AP bar."),
             ft.Row(
                 controls=[
                     ft.Text(value="Barbarian Level"),

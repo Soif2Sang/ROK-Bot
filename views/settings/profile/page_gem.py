@@ -1,4 +1,6 @@
 import flet as ft
+
+from utils.flet_utils import GenerateCard
 from views.settings.page_base import BasePage
 
 
@@ -64,33 +66,27 @@ class PageGem(BasePage):
         ], vertical_alignment=ft.CrossAxisAlignment.CENTER
         ), margin=ft.margin.only(left=50))
 
-
         self.number_of_nodes = ft.Container(
             content=ft.ResponsiveRow(controls=[
                 ft.Column(controls=[ft.TextField(label="Fixed number of nodes to gather :",
-                                             value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["gather_gem_note_limit"],
-                                             content_padding=ft.padding.all(10),
-                                             on_change=lambda e: self.submit(e, "gather_gem_note_limit", int),
-                                             disabled=not self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["gather_gem_enable_node_limit"]
-                                             )], col=12)
-                ], vertical_alignment=ft.CrossAxisAlignment.CENTER
+                                                 value=self.data[str(self.instance_index)]['schedules'][
+                                                     str(self.profile_index)]["gather_gem_note_limit"],
+                                                 content_padding=ft.padding.all(10),
+                                                 on_change=lambda e: self.submit(e, "gather_gem_note_limit", int),
+                                                 disabled=not self.data[str(self.instance_index)]['schedules'][
+                                                     str(self.profile_index)]["gather_gem_enable_node_limit"]
+                                                 )], col=12)
+            ], vertical_alignment=ft.CrossAxisAlignment.CENTER
             ),
             margin=ft.margin.only(left=50)
         )
 
         self.add(
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*REQUIREMENT* ",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Pre-configure yellow-lineups with gathering gem commanders !\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    )
-                ]
-            ),
+            GenerateCard(level="warning",
+                         title="*REQUIREMENT*",
+                         subtitle="Pre-configure yellow-lineups with gathering gem commanders !",
+                         margin=ft.margin.only(bottom=20),
+                         ),
             ft.ResponsiveRow(
                 controls=[
                     ft.Column(controls=[ft.TextField(label="Minimum running duration (mins)",

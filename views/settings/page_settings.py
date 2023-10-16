@@ -17,7 +17,7 @@ class PageSettings(ft.Container):
         self.initial_page = page
         self.instance_index = instance_index
         self.profile_index = profile_index
-        self.padding = ft.padding.only(right=10, top=5, left=0, bottom=0)
+        self.padding = ft.padding.only(top=5, left=0, bottom=0)
         self.content: ft.ListView = ft.ListView(height=400, expand=1, padding=1, spacing=6)
 
         self.theme=ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))

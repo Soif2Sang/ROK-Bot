@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_utils import GenerateCard
 from views.settings.page_base import BasePage
 
 
@@ -8,6 +9,28 @@ class PageFog(BasePage):
         super().__init__(profile)
 
         self.add(
+            # ft.Card(
+            #     content=ft.Container(
+            #         content=ft.Column(
+            #             [
+            #                 ft.ListTile(
+            #                     leading=ft.Icon(ft.icons.TIPS_AND_UPDATES, color=ft.colors.AMBER_500),
+            #                     subtitle=ft.Text(
+            #                         value="If you plan on having the safest configuration, do not use this functionality extensively throughout the day.",
+            #                         size=12,
+            #                         weight=ft.FontWeight.W_700
+            #                     ),
+            #
+            #                 )
+            #             ]
+            #         ),
+            #         width=400,
+            #         padding=10,
+            #         height=90
+            #     ),
+            #     # color=ft.colors.INDIGO_300,
+            # ),
+            GenerateCard(level="tips", subtitle="If you plan on having the safest configuration, do not use this functionality extensively throughout the day."),
             ft.Row(
                 controls=[
                     ft.Text("Scout duration (mins)"),

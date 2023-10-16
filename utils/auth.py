@@ -163,8 +163,6 @@ class selfApi:
 
                 self.page.banner.open = True
                 self.page.update()
-                print("here")
-            print("Invalid credentials")
             return False
 
     def license(self, key, hwid=None):
