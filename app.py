@@ -1,5 +1,4 @@
 # coding=UTF-8
-import copy
 import hashlib
 import json
 import os
@@ -10,56 +9,8 @@ import threading
 from time import sleep
 from flet_route import path, Routing
 import flet as ft
-
-from views.city_layout import viewCityLayout
-from views.profile_settings import viewProfileSettings
-from views._main import Main
-from views.config_path import find_file_in_all_drives
-from utils.Task_utils import FileSingleton
-from utils.auth import selfApi
-from utils.flet_toast.toasts_flexible import ToastsFlexible
-from utils.flet_toast.core import Position
-
-toasts_history = {}
-fileSingleton = FileSingleton()
-
-try:
-    if not os.path.exists("./user_settings.json"):
-        fileSingleton.write_data({})
-        print("User settings created")
-except Exception as e:
-    print(e)
-try:
-    if not os.path.exists("./path.json"):
-        fileSingleton.write_data(
-            {
-                "bluestacks": "C:\\ProgramData\\BlueStacks_nxt\\bluestacks.conf",
-                "HD-Player": "C:\\Program Files\\BlueStacks_nxt\\HD-Player.exe"
-            }
-        )
-        print("User settings created")
-except Exception as e:
-    print(e)
-
-data = fileSingleton.get_data()
-
-if "discord" not in data:
-    data["discord"] = {"user_id":0, "enabled":False}
-    fileSingleton.write_data(data)
-
-old_data = copy.deepcopy(data)
-
-for element in old_data.keys():
-    if element.isdigit():
-        data[data[element]['instance']] = copy.deepcopy(data[element])
-        del data[element]
-
-fileSingleton.write_data(data)
-
-def update_user_info(password, username):
-    data = fileSingleton.get_data()
-    data["user"] = {'username': username, 'password': password}
-    fileSingleton.write_data(data)
+from utils.auth import selfApi, update_user_info
+from utils.handle_files import main as HandleFiles
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -70,6 +21,40 @@ def getchecksum():
     md5_hash.update(file.read())
     digest = md5_hash.hexdigest()
     return digest
+try:
+    from views.city_layout import viewCityLayout
+    from views.profile_settings import viewProfileSettings
+    from views._main import Main
+    from views.config_path import find_file_in_all_drives
+    from utils.Task_utils import FileSingleton
+    from utils.flet_toast.toasts_flexible import ToastsFlexible
+    from utils.flet_toast.core import Position
+except Exception as e:
+
+    def handleError(page: ft.Page):
+        page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        page.vertical_alignment = ft.MainAxisAlignment.CENTER
+        page.add(ft.Text("An error occurred, a log message have been sent to the developer"))
+        page.add(ft.Text(value=e, color="red"))
+        page.update()
+
+    keyauthapp = selfApi(
+        name="Rokbd",
+        ownerid="7oofxdj8uH",
+        secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+        version="1.0",
+        hash_to_check=getchecksum()
+    )
+
+    keyauthapp.log(str(e))
+
+    ft.app(target=handleError)
+    exit()
+
+toasts_history = {}
+fileSingleton = FileSingleton()
+
+HandleFiles()
 
 def is_str_valid(username, password):
     for element in ['#', "$", "&", "|", "\0",

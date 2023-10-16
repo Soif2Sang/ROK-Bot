@@ -593,6 +593,10 @@ class Task():
         except Exception as e:
             self.debug(e)
             self.print("Cannot resolve this captcha slider!")
+            try:
+                self.tile.initial_page.keyauthapp.log(str(e))
+            except:
+                pass
 
     def save_captcha(self):
         cv_image = self.adb.get_cv2_img()
@@ -914,6 +918,10 @@ class Task():
             self.print(e)
             print(e)
             self.print("An error occurred with 2captcha.com, waiting for few seconds before retrying")
+            try:
+                self.tile.initial_page.keyauthapp.log(str(e))
+            except:
+                pass
             self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
             if self.refresh_captcha():
                 if compteur < 5:
@@ -922,6 +930,10 @@ class Task():
         except Exception as e:
             traceback.print_exc()
             self.print(f"Exception raised :\n{e}\n")
+            try:
+                self.tile.initial_page.keyauthapp.log(str(e))
+            except:
+                pass
             if self.refresh_captcha():
                 if compteur < 5:
                     return self.solve_captcha(compteur + 1)
