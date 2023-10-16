@@ -5,7 +5,7 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime, date
+from datetime import datetime
 import threading
 from time import sleep
 from flet_route import path, Routing
@@ -198,11 +198,17 @@ class LoginUI(ft.Column):
 
 
 
-        return self.controls.extend([self.textfield_username, self.textfield_password,
-                                     ft.Row(
-                                         controls=[ft.Column(controls=[self.button_login], col=4),ft.Column(controls=[self.subscribe_button], col=6),], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-                                     )
-                                     ])
+        return self.controls.extend([
+            self.textfield_username,
+            self.textfield_password,
+             ft.Row(
+                 controls=[
+                     ft.Column(controls=[self.button_login], col=4),
+                     ft.Column(controls=[self.subscribe_button], col=6),
+                 ],
+                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+             )
+         ])
 
 
 def main(page: ft.Page):
@@ -318,8 +324,6 @@ def main(page: ft.Page):
     page.add(page.loginUI)
 
     page.update()
-
-
 
 def index(page: ft.Page, params, basket):
     return ft.View(route="/", controls=page.controls)

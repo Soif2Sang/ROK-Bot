@@ -26,6 +26,7 @@ class FletRowRss(ft.ResponsiveRow):
                             ft.dropdown.Option("wood"),
                             ft.dropdown.Option("stone"),
                             ft.dropdown.Option("gold"),
+                            ft.dropdown.Option("random"),
                             ft.dropdown.Option('nothing')
                         ],
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}"],

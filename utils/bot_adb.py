@@ -60,7 +60,7 @@ class Adb:
     def get_client_devices(self):
         return self.client.devices()
 
-    def get_device(self, host='127.0.0.1'):
+    def get_device(self, host='127.0.0.1', fail = 0):
         try:
             self.port = str(self.data[str(self.number)]['port'])
             device = self.client.device(f'{host}:{self.port}')
@@ -69,8 +69,11 @@ class Adb:
                 self.connect_to_device()
                 sleep(2)
 
+                if device is None and fail > 45:
+                    return
                 if device is None:
                     return self.get_device()
+
             return device
         except Exception as e:
             traceback.print_exc()
@@ -103,6 +106,14 @@ class Adb:
             sleep(1)
             return self.get_device().screencap()
 
+    def get_curr_device_screen_img_bytesIO(self):
+        try:
+            return io.BytesIO(self.get_device().screencap())
+        except Exception as e:
+            print(e)
+            sleep(1)
+            return io.BytesIO(self.get_device().screencap())
+
 
     def get_curr_device_screen_img(self):
         try:
@@ -134,24 +145,10 @@ class Adb:
             screen = cvtColor(screen, COLOR_BGR2RGB)
             return screen
 
-    def bench3(self):
-        return cv2.imdecode(np.fromstring(image, np.uint8), cv2.IMREAD_COLOR)
-    def bench2(self):
-        image = Image.open(io.BytesIO(self.get_device().screencap()))
-        image_cv2 = np.array(image)
-        image_cv2 = cv2.cvtColor(image_cv2, cv2.COLOR_RGB2BGR)
-        return image_cv2
-
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
         image.save(f".//{file_name}.png")
         return True
-
-    def bench1(self):
-        image_bytes = self.get_device().screencap()
-        nparr = np.frombuffer(image_bytes, np.uint8)
-        image_cv2 = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        return image_cv2
 
     def find_img_cv(self, img_to_find, confidence=0.9):
         pil_image = self.get_curr_device_screen_img()
@@ -180,7 +177,6 @@ class Adb:
             # bot.adb.get_cv2_img()
             result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = minMaxLoc(result)
-
             if max_val > confidence:
                 if target == "new_troops_button":
                     return max_loc[0] + 800, max_loc[1]

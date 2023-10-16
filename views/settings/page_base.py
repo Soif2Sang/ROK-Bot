@@ -26,6 +26,9 @@ class BasePage():
             ft.Divider(),
         )
 
+        self.profile.content.scroll_to(delta=-1000, duration=1)
+        self.initial_page.update()
+
     def add(self, *control):
         for ctrl in control:
             self.profile.add(ctrl)

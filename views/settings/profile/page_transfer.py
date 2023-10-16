@@ -2,6 +2,7 @@ import flet as ft
 
 from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
 from views.settings.page_base import BasePage
+from utils.flet_utils import GenerateCard
 
 
 class PageTransfer(BasePage):
@@ -9,12 +10,8 @@ class PageTransfer(BasePage):
         super().__init__(profile)
 
         self.add(
-            ft.Text(
-                value="/!\ This feature require a custom ApiKey /!\ \n",
-                size=15,
-                color="red", height=20, weight="w500"),
-            ft.Divider(),
-            self.create_normal_switch('fast_rss_transfer', 'Enable faster rss transfer\nmay be riskier'),
+            GenerateCard(level="warning", subtitle="In order to use this feature, you have to purchase a API key on 2captcha.com (this is very cheap!)"),
+            self.create_normal_switch('fast_rss_transfer', 'Enable faster rss transfer may be riskier'),
             FletColumnRss(self.instance_index, self.profile_index),
             ft.Divider(),
             ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP,

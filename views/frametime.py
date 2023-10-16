@@ -192,4 +192,8 @@ def start(sel_param="1",profile_param="1"):
 
 if __name__ == "__main__":
     # start()
-    print(random_time_in_frametime('19:50', '6:36'))
+    timings = [
+            "9:00",
+            "23:00"
+          ]
+    print(random_time_in_frametime(*timings))

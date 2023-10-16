@@ -1,5 +1,6 @@
 from views.settings.profile.rows.Flet_row_material import FletRowMaterial
 from views.settings.page_base import BasePage
+from utils.flet_utils import GenerateCard
 
 
 class PageMaterials(BasePage):
@@ -17,6 +18,5 @@ class PageMaterials(BasePage):
         for i in range(1, 6):
             self.add(
                 FletRowMaterial(keys=keys, i=i, instance_index=self.instance_index, profile_index=self.profile_index))
-
 
         self.profile.initial_page.update()
