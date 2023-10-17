@@ -4,13 +4,17 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime
 import threading
+import traceback
+from datetime import datetime
 from time import sleep
-from flet_route import path, Routing
+
 import flet as ft
+from flet_route import path, Routing
+
 from utils.auth import selfApi, update_user_info
 from utils.handle_files import main as HandleFiles
+
 
 def getchecksum():
     md5_hash = hashlib.md5()
@@ -21,6 +25,8 @@ def getchecksum():
     md5_hash.update(file.read())
     digest = md5_hash.hexdigest()
     return digest
+
+
 try:
     from views.city_layout import viewCityLayout
     from views.profile_settings import viewProfileSettings
@@ -28,15 +34,20 @@ try:
     from views.config_path import find_file_in_all_drives
     from utils.Task_utils import FileSingleton
     from utils.flet_toast.toasts_flexible import ToastsFlexible
-    from utils.flet_toast.core import Position
+    from utils.flet_toast.core import Positio
 except Exception as e:
+
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
+    traceback_str = ''.join(traceback_list)
 
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
         page.add(ft.Text("An error occurred, a log message have been sent to the developer"))
-        page.add(ft.Text(value=e, color="red"))
+        page.add(ft.Text(value=traceback_str, color="red"))
         page.update()
+
 
     keyauthapp = selfApi(
         name="Rokbd",
@@ -46,7 +57,7 @@ except Exception as e:
         hash_to_check=getchecksum()
     )
 
-    keyauthapp.log(str(e))
+    keyauthapp.log(traceback_str)
 
     ft.app(target=handleError)
     exit()
@@ -55,6 +66,7 @@ toasts_history = {}
 fileSingleton = FileSingleton()
 
 HandleFiles()
+
 
 def is_str_valid(username, password):
     for element in ['#', "$", "&", "|", "\0",
@@ -67,6 +79,7 @@ def is_str_valid(username, password):
         if element in username or element in password:
             return False
     return True
+
 
 class LoginUI(ft.Column):
     def __init__(self, page, *args, **kwargs):
@@ -85,7 +98,8 @@ class LoginUI(ft.Column):
             bgcolor=ft.colors.AMBER_100,
             content=ft.Column(controls=[
                 ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                              on_click=lambda _: self.initial_page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                              on_click=lambda _: self.initial_page.launch_url(
+                                  "https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
                               ),
                 ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
                               on_click=lambda _: self.initial_page.launch_url(
@@ -127,7 +141,8 @@ class LoginUI(ft.Column):
 
                 Main(self.initial_page, days_remaining)
 
-                self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
+                self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription,
+                                                                          args=(username, password))
                 self.initial_page.subscription_checker.start()
             else:
                 sleep(5)
@@ -150,7 +165,7 @@ class LoginUI(ft.Column):
                 hash_to_check=getchecksum()
             )
 
-            if self.initial_page.keyauthapp.login(user=username, password=password,page=self.initial_page):
+            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
                 target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
 
                 current_date = datetime.utcnow()
@@ -176,29 +191,27 @@ class LoginUI(ft.Column):
             sys.exit()
 
     def init(self):
-        self.textfield_username = ft.TextField(label="Username", width=300, value=self.data.get("user",{}).get("username",""))
-        self.textfield_password = ft.TextField(label="Password", password=True, can_reveal_password=True, width=300, value=self.data.get("user",{}).get("password",""))
+        self.textfield_username = ft.TextField(label="Username", width=300,
+                                               value=self.data.get("user", {}).get("username", ""))
+        self.textfield_password = ft.TextField(label="Password", password=True, can_reveal_password=True, width=300,
+                                               value=self.data.get("user", {}).get("password", ""))
         self.button_login = ft.OutlinedButton(text="Login", on_click=self.login)
         self.subscribe_button = ft.FilledTonalButton(text="Subscribe", on_click=self.show_banner)
-
-
 
         return self.controls.extend([
             self.textfield_username,
             self.textfield_password,
-             ft.Row(
-                 controls=[
-                     ft.Column(controls=[self.button_login], col=4),
-                     ft.Column(controls=[self.subscribe_button], col=6),
-                 ],
-                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-             )
-         ])
+            ft.Row(
+                controls=[
+                    ft.Column(controls=[self.button_login], col=4),
+                    ft.Column(controls=[self.subscribe_button], col=6),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+            )
+        ])
 
 
 def main(page: ft.Page):
-
-
     # return Main(page, 500)
 
     page.window_width = 330
@@ -240,7 +253,7 @@ def main(page: ft.Page):
             page.keyauthapp = None
             print("Problem in the database loading..Wait a bit please..")
             sleep(5)
-        if ready:break
+        if ready: break
     if not ready:
         page.window_close()
 
@@ -294,11 +307,11 @@ def main(page: ft.Page):
         path(url=f"/citylayout/:instance_index/:profile_index",
              clear=False,
              view=viewCityLayout
-        ),
+             ),
         path(url=f"/profile/:instance_index/:profile_index/settings",
              clear=False,
              view=viewProfileSettings
-        )
+             )
     ]
 
     page.routing = Routing(
@@ -310,8 +323,10 @@ def main(page: ft.Page):
 
     page.update()
 
+
 def index(page: ft.Page, params, basket):
-    return ft.View(route="/", controls=page.controls)
+    return ft.View(route="/", controls=page.body.controls)
+
 
 if __name__ == '__main__':
     ft.app(target=main)
