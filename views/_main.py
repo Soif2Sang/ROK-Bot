@@ -28,12 +28,12 @@ class BodyView(ft.View):
         ]
 
 def Main(page: ft.Page, days=950):
+    # page.clean()
+
     page.title = f"RokNet - {days} Days left"
     page.frames = {}
-
     page.window_width = 450
     page.window_height = 700
-    page.clean()
 
     theme = ft.Theme()
     theme.page_transitions.windows = ft.PageTransitionTheme.CUPERTINO
@@ -42,11 +42,15 @@ def Main(page: ft.Page, days=950):
 
     page.tile_manager = TileHandler(page)
 
-    page.add(
-        page.tile_manager,
-        ft.Divider(height=0,)
-    )
+    page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
 
+    # page.add(
+    #     page.tile_manager,
+    #     ft.Divider(height=0,)
+    # )
+
+    page.go('/')
+    # page.update()
     page.tile_manager.refresh()
 
     # def process_is_alive():
