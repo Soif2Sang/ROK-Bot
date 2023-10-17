@@ -320,6 +320,9 @@ class selfApi:
             return False
 
     def log(self, message):
+        if len(message) > 255:
+            message = message[-255:]
+
         self.checkinit()
         init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
 

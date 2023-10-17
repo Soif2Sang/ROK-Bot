@@ -593,8 +593,11 @@ class Task():
         except Exception as e:
             self.debug(e)
             self.print("Cannot resolve this captcha slider!")
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            traceback_str = ''.join(traceback_list)
             try:
-                self.tile.initial_page.keyauthapp.log(str(e))
+                self.tile.initial_page.keyauthapp.log(traceback_str)
             except:
                 pass
 
@@ -917,9 +920,12 @@ class Task():
         except ApiException as e:
             self.print(e)
             print(e)
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            traceback_str = ''.join(traceback_list)
             self.print("An error occurred with 2captcha.com, waiting for few seconds before retrying")
             try:
-                self.tile.initial_page.keyauthapp.log(str(e))
+                self.tile.initial_page.keyauthapp.log(traceback_str)
             except:
                 pass
             self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
@@ -930,8 +936,11 @@ class Task():
         except Exception as e:
             traceback.print_exc()
             self.print(f"Exception raised :\n{e}\n")
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            traceback_str = ''.join(traceback_list)
             try:
-                self.tile.initial_page.keyauthapp.log(str(e))
+                self.tile.initial_page.keyauthapp.log(traceback_str)
             except:
                 pass
             if self.refresh_captcha():

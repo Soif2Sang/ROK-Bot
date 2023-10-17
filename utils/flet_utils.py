@@ -32,8 +32,8 @@ def GenerateCard(level=None, title=None, subtitle=None, margin=None, height=None
             ),
             width=400,
             padding=10,
-            height=height
-
+            height=height,
         ),
-        margin=margin
+        margin=margin,
+        color=ft.colors.SURFACE_VARIANT
     )

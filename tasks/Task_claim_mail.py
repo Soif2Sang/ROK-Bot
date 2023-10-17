@@ -22,7 +22,7 @@ class ClaimMail(Task):
         lower_red = np.array([0, 0, 200])  # Adjust these values as needed
         upper_red = np.array([10, 10, 255])  # Adjust these values as needed
 
-        if not (np.all(screen[541, 1257] >= lower_red) and np.all(screen[541, 1257] <= upper_red)):
+        if not (np.all(screen[551, 1263] >= lower_red) and np.all(screen[551, 1263] <= upper_red)):
             return
 
         self.click(1230, 570)

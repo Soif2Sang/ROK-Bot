@@ -75,15 +75,11 @@ class RssTransfer(Task):
         self.better_sleep((1, 2))
 
     @get_name
-    def solve(self, path, sel, defaultApiKey=False):
-        return super().solve(path, sel, defaultApiKey)
-
-    @get_name
     def check_captcha(self, chest=True):
         if not chest:
-            super().check_captcha(chest)
+            super().check_captcha(chest=chest, DefaultApiKey=False)
             sleep(1)
-        super().check_captcha(chest)
+        super().check_captcha(chest=chest, DefaultApiKey=False)
 
     @get_name
     def send_rss(self, type):
