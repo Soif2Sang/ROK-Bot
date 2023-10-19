@@ -3,6 +3,7 @@ from random import randint
 
 import flet as ft
 
+from utils.flet_utils import GenerateCard
 from utils.Task_utils import FileSingleton
 from datetime import datetime, timedelta
 
@@ -122,13 +123,22 @@ class ManagerTimezone(ft.ListView):
         self.instance = str(instance)
         self.profile = str(profile)
         self.spacing = 10
-
-        self.controls.append(ft.Text(value="Welcome to Profile Activation Settings!\n"
-                                           "You have the flexibility to set multiple activation frametimes for your profile.\n"
-                                           "When entering the time, please use the 'hours:minutes' format, following a 24-hour clock notation.\nFor example, 02:00 pm should be entered as 14:00, aligning with your computer's 24-hour clock time.\n"
-                                           "It's essential to adjust your re-do task timings carefully to avoid unintentionally running the profile twice during the same frametime.\n\n"
-                                           "Enjoy the power of customizing your profile activation schedule!"))
-
+        self.expand = True
+        # self.controls.append(ft.Text(value="Welcome to Profile Activation Settings!\n"
+        #                                    "You have the flexibility to set multiple activation frametimes for your profile.\n"
+        #                                    "When entering the time, please use the 'hours:minutes' format, following a 24-hour clock notation.\nFor example, 02:00 pm should be entered as 14:00, aligning with your computer's 24-hour clock time.\n"
+        #                                    "It's essential to adjust your re-do task timings carefully to avoid unintentionally running the profile twice during the same frametime.\n\n"
+        #                                    "Enjoy the power of customizing your profile activation schedule!"))
+        val = "" + \
+        "The time format should be 'hh:mm' and work on a 24-hour clock and on your computer clock.\n" + \
+        "exemple:\n     - start : 02:00 / end : 04:00 means the script will start exclusively between 02:00 and 04:00."
+        self.controls.append(
+            GenerateCard(
+                subtitle=val,
+                level="notice",
+                height=None
+            )
+        )
         self.controls.append(
             ft.Row(
                 controls=[

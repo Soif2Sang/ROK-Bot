@@ -39,7 +39,7 @@ class GeneralSettings(PageSettings):
                             style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
                         ),
                     ]
-                ), bgcolor=ft.colors.GREY_400,
+                ), bgcolor=ft.colors.SURFACE_VARIANT,
                 padding=ft.padding.all(10),
                 margin=ft.margin.only(top=5, bottom=3)
             ),
@@ -58,7 +58,7 @@ class GeneralSettings(PageSettings):
                         ),
                     ]
                 ),
-                bgcolor=ft.colors.GREY_400,
+                bgcolor=ft.colors.SURFACE_VARIANT,
                 padding=ft.padding.all(10),
                 margin=ft.margin.only(top=5, bottom=3)
             ),
