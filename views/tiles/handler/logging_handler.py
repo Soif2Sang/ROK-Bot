@@ -19,9 +19,10 @@ class Logger(ft.ListView):
 
     def add_text(self, texte:str, color=None):
         if color is None:
-            text = ft.Text(value=texte,weight=ft.FontWeight.W_600, selectable=True)
+            text = ft.Text(value=texte,weight=ft.FontWeight.W_600)
         else:
-            text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color, selectable=True)
+            text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)
+            
         if self.limit_logs and len(self.controls) > 300:
             self.controls.pop(0)
         self.controls.append(text)
