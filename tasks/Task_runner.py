@@ -33,7 +33,7 @@ from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
-from utils.Task_utils import get_name, current_time, get_window_pid, get_dic_instances
+from utils.Task_utils import get_name, current_time, get_window_pid, get_dic_instances, ApiSingleton
 from utils.bot_adb import Adb
 from views.frametime import is_in_frametime, random_time_in_frametime
 

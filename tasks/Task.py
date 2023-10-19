@@ -30,7 +30,7 @@ pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 # from utils import discord_bot
 from utils.Task_utils import get_window_pid, get_name, current_time, get_time, string_to_co, FileSingleton, \
-    string_to_co_slide, colorize_name, toString, colorize_output
+    string_to_co_slide, colorize_name, toString, colorize_output, ApiSingleton
 from utils.bot_adb import Adb
 # from utils.easyOcr import Reader
 from utils.twocaptcha import TwoCaptcha
@@ -577,7 +577,7 @@ class Task():
         if self.data[self.sel]['API_KEY']:
             api_key = self.data[self.sel]['API_KEY']
         else:
-            api_key = '4805a29997857b110ef26530c7f39db1'
+            api_key = ApiSingleton().getApiKey()
 
         solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
         try:
@@ -864,7 +864,7 @@ class Task():
             self.set_status("Resolving captcha")
 
             if DefaultApiKey:
-                api_key = '4805a29997857b110ef26530c7f39db1'
+                api_key = ApiSingleton().getApiKey()
             else:
                 api_key = self.data[self.sel]['API_KEY']
                 if api_key == "":
@@ -959,16 +959,6 @@ class Task():
             solver.report(captchaId, True)
             self.print("Captcha successfully solved !", "green")
         return resolved
-
-    @get_name
-    def getSolver(self):
-        if self.data[self.sel]['API_KEY'] != "":
-            key = self.data[self.sel]['API_KEY']
-        else:
-            key = '4805a29997857b110ef26530c7f39db1'
-        api_key = os.getenv('APIKEY_2CAPTCHA', key)
-        solver = TwoCaptcha(api_key)
-        return solver
 
     @get_name
     def leave_game(self, force=False) -> None:
