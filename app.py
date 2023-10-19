@@ -32,9 +32,9 @@ try:
     from views.profile_settings import viewProfileSettings
     from views._main import Main
     from views.config_path import find_file_in_all_drives
-    from utils.Task_utils import FileSingleton
+    from utils.Task_utils import FileSingleton, ApiSingleton
     from utils.flet_toast.toasts_flexible import ToastsFlexible
-    from utils.flet_toast.core import Positio
+    from utils.flet_toast.core import Position
 except Exception as e:
 
     exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -138,7 +138,7 @@ class LoginUI(ft.Column):
 
                 self.initial_page.splash = None
                 self.button_login.disabled = False
-
+                ApiSingleton().setApiKey(self.initial_page.keyauthapp.var('2captcha'))
                 Main(self.initial_page, days_remaining)
 
                 self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription,
