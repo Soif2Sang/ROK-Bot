@@ -43,6 +43,22 @@ def custom_key(item):
         return -1
     return int(parts[1])
 
+class ApiSingleton:
+    __instance = None
+    FileLock = Lock()
+    apikey = ""
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def getApiKey(self) -> str :
+        with self.FileLock:
+            return self.apikey
+
+    def setApiKey(self, key:str) :
+        with self.FileLock:
+            self.apikey = key
 
 class FileSingleton:
     __instance = None
