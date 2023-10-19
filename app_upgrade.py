@@ -313,7 +313,7 @@ def main(page: ft.Page):
 
 
 def index(page: ft.Page, params, basket):
-    return ft.View(route="/", controls=page.controls)
+    return ft.View(route="/", controls=page.body.controls)
 
 if __name__ == '__main__':
     ft.app(target=main)
