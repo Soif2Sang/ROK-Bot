@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_utils import GenerateCard
 from views.settings.page_base import BasePage
 
 
@@ -8,29 +9,7 @@ class PageRedo(BasePage):
         super().__init__(profile)
 
         self.add(
-            ft.Card(
-                content=ft.Container(
-                    content=ft.Column(
-                        [
-                            ft.ListTile(
-                                leading=ft.Icon(ft.icons.WARNING),
-                                title=ft.Text(
-                                    value="Time to wait until the bot do the task again.",
-                                    size=14
-                                ),
-                                subtitle=ft.Text(
-                                    "You need to be aware that using tight timings can lead to unwanted behaviors.",
-                                    size=12
-                                ),
-                            )
-                        ]
-                    ),
-                    width=400,
-                    padding=10,
-                    height=90
-                ),
-                color=ft.colors.INDIGO_300
-            ),
+            GenerateCard(level="warning", title="Time to wait until the bot do the task again.", subtitle="You need to be aware that using tight timings can lead to unwanted behaviors."),
             ft.Switch(label="Close the game after all the tasks are done",
                       value=self.data[str(self.instance_index)]["leave_game_loop"],
                       on_change=lambda _: self.reverse_keyword('leave_game_loop')
