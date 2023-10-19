@@ -24,7 +24,9 @@ def update_user_info(password, username):
 
 try:  # Connection check
     s = requests.Session()  # Session
-    s.get('https://google.com')
+    response = s.get("https://httpbin.org/ip")
+    data = response.json()
+    public_ip = data["origin"]
 except requests.exceptions.RequestException as e:
     print(e)
     os.system("taskkill /f /im flet.exe >nul 2>&1")
@@ -127,6 +129,7 @@ class selfApi:
         response = self.__do_request(post_data)
         response = encryption.decrypt(response, self.enckey, init_iv)
 
+        self.log(f"Trying to login IP : {public_ip}; HWID : {hwid}")
         json = jsond.loads(response)
         wid1 = self.getvar("HWID1")
         wid2 = self.getvar("HWID2")
