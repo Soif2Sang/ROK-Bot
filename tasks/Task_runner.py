@@ -250,6 +250,7 @@ class TaskRunner(Task):
         self.print("Switching Character")
         self.set_status(f"Switching Character")
         self.close_windows()
+        self.check_captcha()
 
         self.enter_profile()
         self.better_sleep((1.925, 2.795))
