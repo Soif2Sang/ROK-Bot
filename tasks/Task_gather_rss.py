@@ -187,11 +187,11 @@ class GatherRss(Task):
             x, y = x + uniform(0, 160), y + uniform(0, 30)
             self.click(x, y)
             self.better_sleep((2.325, 2.795))
-            x, y = self.find_img(target="troops_march_button")
+            x, y = self.find_img(target="troops_march_button", confidence=0.7)
             x, y = x + uniform(0, 80), y + uniform(0, 20)
             self.click(x, y)
             self.better_sleep((1.1, 2))
-        if self.find_img(target="troops_march_button") is not None:
+        if self.find_img(target="troops_march_button", confidence=0.7) is not None:
             self.click(uniform(1106, 1123), uniform(36, 55))
             self.better_sleep((1.1, 1.5))
             self.print("Cannot send the troop")
