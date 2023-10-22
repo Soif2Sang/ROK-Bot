@@ -9,6 +9,7 @@ class PageCharacter(BasePage):
         super().__init__(profile)
 
         self.add(
+            GenerateCard("notice", subtitle="It only works with favorite characters(stars)."),
             ft.Switch(
                 label="Restart the game after switching\nto a new character (prevent freeze)",
 
