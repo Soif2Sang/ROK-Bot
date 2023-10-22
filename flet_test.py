@@ -167,8 +167,35 @@ def main(page: ft.Page):
     frame = Frame(page, '1')
     tile = Tile(page, frame.logger)
 
-    page.add(tile, frame)
+    # page.add(tile, frame)
+    # page.add(
+    #
+    # )
+
+def main(page: ft.Page):
+    page.window_width = 450
+    page.window_height = 700
+
+    page.add(
+    ft.Switch(
+        label="Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the pass but \nit is a safer way to upgrade the city)",
+        width=300
+    )
+    )
+
+    page.add(
+        ft.ResponsiveRow(
+            controls=[
+                ft.Switch(col=2),
+                ft.Text(col=10, value="Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the pass but it is a safer way to upgrade the city)", text_align=ft.TextAlign.JUSTIFY)
+            ],
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER
+        )
+    )
     page.update()
+
+
 
 
 if __name__ == "__main__":
