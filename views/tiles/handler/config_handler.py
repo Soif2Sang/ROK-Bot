@@ -1,5 +1,6 @@
 import flet as ft
 
+from views.Flet_Setting import SettingContainer
 from views.settings.general.general_tab import InterfaceSettings
 from views.tiles.handler.logging_handler import Logger
 from views.settings.profile._profile import ProfileSettings
@@ -26,6 +27,11 @@ class Frame(ft.Tabs):
         self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 1), text="Profile 1"))
         self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 2), text="Profile 2"))
         self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 3), text="Profile 3"))
+
+
+        # self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 1), text="Profile 1"))
+        # self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 2), text="Profile 2"))
+        # self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 3), text="Profile 3"))
 
         self.FileSingleton = FileSingleton()
 
@@ -56,10 +62,14 @@ class FrameUpgrade(ft.Tabs):
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
         self.tabs.append(ft.Tab(content=self.logger, text="Logs"))
         self.tabs.append(InterfaceSettings(page, number))
-        self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 1), text="Profile 1"))
-        self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 2), text="Profile 2"))
-        self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 3), text="Profile 3"))
-        
+        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 1), text="Profile 1"))
+        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 2), text="Profile 2"))
+        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 3), text="Profile 3"))
+
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 1), text="Profile 1"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 2), text="Profile 2"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 3), text="Profile 3"))
+
         data = self.FileSingleton.get_data()
         for profile in data[str(number)]['schedules']:
             # print(self.settings.selected_index)
