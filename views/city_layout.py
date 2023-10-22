@@ -55,7 +55,8 @@ class CityPlacement(ft.Container):
         "hospital": 4,
         "scout_camp": 5,
         "city_transfer": 6,
-        "city_hall_position": 7
+        "city_hall_position": 7,
+        "academy_position" : 8
     }
 
     def __init__(self, image64, instance, profile, **kwargs):
@@ -93,6 +94,7 @@ class CityPlacement(ft.Container):
             , ft.ElevatedButton(text="Set Scout camp", on_click=lambda _: self.setCurrentBuild("scout_camp"))
             , ft.ElevatedButton(text="Set City to transfer", on_click=lambda _: self.setCurrentBuild("city_transfer"))
             , ft.ElevatedButton(text="Set City Hall", on_click=lambda _: self.setCurrentBuild("city_hall_position"))
+            , ft.ElevatedButton(text="Set Academy Research", on_click=lambda _: self.setCurrentBuild("academy_position"))
         ]
         )
         for co in ["infantry_camp", "cavalry_camp", "archery_camp", "siege_camp", "hospital", "scout_camp",
@@ -103,7 +105,7 @@ class CityPlacement(ft.Container):
 
     def updateButtons(self):
         for co in ["infantry_camp", "cavalry_camp", "archery_camp", "siege_camp", "hospital", "scout_camp",
-                   "city_transfer", "city_hall_position"]:
+                   "city_transfer", "city_hall_position", "academy_position"]:
             if self.data[str(self.instance)]["schedules"][str(self.profile)][co]:
                 if "✓" not in self.buttons.controls[self.button[co]].text:
                     self.buttons.controls[self.button[co]].text = self.buttons.controls[self.button[co]].text + " ✓"
