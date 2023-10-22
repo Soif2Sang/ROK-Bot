@@ -1,6 +1,8 @@
-from random import uniform
+from random import uniform, random, choice
 
 from tasks.Task import Task, get_name
+from tasks.Task_alliance_help import AllianceHelp
+
 from utils.Task_utils import get_class
 
 
@@ -14,7 +16,7 @@ class AcademyResearch(Task):
 
     @get_name
     def academy_coordinates(self):
-        return uniform(760, 780), uniform(270, 280)
+        return self.data[str(self.sel)]['schedules'][self.current_profile].get('academy_position', [])
 
     @get_name
     def enter_academy(self):
@@ -34,22 +36,30 @@ class AcademyResearch(Task):
             return False
 
     @get_name
-    def help_build(self):
-        if co := self.adb.find_img(target='help_build'):
-            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
-            self.better_sleep((0.9, 1.2))
-        if co := self.adb.find_img(target='help_build2'):
-            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
-            self.better_sleep((0.9, 1.2))
-
-    @get_name
-    def select_tech(self):
+    def select_tech(self, swipes = 0):
         i = 0
-        if (co := self.adb.find_img("academy_tech")) is not None:
+        source = self.adb.get_cv2_img()
+        techs = self.adb.find_multiple_img(target="research_tech", source=source, confidence=0.7)
+        cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
+
+        duos = set()
+        for card in cards:
+            for tech in techs:
+                if (tech[1] > card[1] and tech[1] < card[1] + 100) and (tech[0] > card[0] - 150 and tech[0] < card[0]):
+                    duos.add(card)
+
+        if duos:
+            co = choice(list(duos))
             self.click(co[0] + uniform(-5, 5), co[1] + uniform(-5, 5))
             self.better_sleep((0.9, 1.2))
             self.research_tech()
             self.better_sleep((0.9, 1.2))
+        else:
+            if swipes < 5:
+                self.swipe_right_low()
+                return self.select_tech(swipes + 1)
+            else:
+                return
 
     @get_name
     def research_tech(self):
@@ -58,11 +68,12 @@ class AcademyResearch(Task):
 
     @get_class
     def run(self):
-        if self.enter_academy():
+        if self.academy_coordinates() and self.enter_academy():
             self.better_sleep((0.9, 1.2))
             if self.adb.find_img("tech_speedup") is None:
+                self.click(73, 178)
+                self.better_sleep((0.9, 1.2))
                 self.select_tech()
-                co = self.adb.find_img("cross")
-                self.click(co[0] + uniform(0, 5), co[1] + uniform(0, 5))
-        self.better_sleep((5, 9))
-        self.help_build()
+            self.close_windows()
+            self.better_sleep((5, 9))
+            AllianceHelp(self).run()

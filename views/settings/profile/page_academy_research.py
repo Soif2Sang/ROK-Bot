@@ -1,0 +1,16 @@
+import flet as ft
+
+from views.settings.profile.rows.Flet_row_troops import FletRowTraining
+from views.settings.page_base import BasePage
+
+
+class PageAcademyResearch(BasePage):
+    def __init__(self, profile):
+        super().__init__(profile)
+
+        self.add(
+            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Academy Research",
+                              on_click=lambda _: self.initial_page.go(
+                                  f"/citylayout/{self.instance_index}/{self.profile_index}")))
+
+        self.profile.initial_page.update()
