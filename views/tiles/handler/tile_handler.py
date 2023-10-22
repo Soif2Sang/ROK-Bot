@@ -256,7 +256,9 @@ class TileHandler(ft.ListView):
             "gather_rss_method": False,
             "fast_rss_transfer": False,
             "city_hall_position": [],
-            "upgrade_city_method": "normal"
+            "upgrade_city_method": "normal",
+            "academic_research": False,
+            "academy_position": []
         }
 
         for i in range(1, 4):
