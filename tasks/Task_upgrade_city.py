@@ -6,6 +6,7 @@ import win32api
 import win32con
 import win32gui
 
+from tasks.Task_alliance_help import AllianceHelp
 from tasks.Task import Task
 from utils.Task_utils import get_class, get_name
 
@@ -69,7 +70,7 @@ class UpgradeCity(Task):
             self.better_sleep((0.9, 1.2))
 
     @get_name
-    def recursive_upgrade(self):
+    def recursive_upgrade(self, type="normal"):
         stones = self.find_img(target="upgrade_build", confidence=0.7)
 
         if stones is not None and self.find_img('building_speedups') is None:
@@ -94,6 +95,7 @@ class UpgradeCity(Task):
             self.help_build()
             self.better_sleep((1.7, 2.2))
 
+
     @get_name
     def setup_view(self):
         hwnd = win32gui.FindWindow(None, self.adb.name)
@@ -116,13 +118,11 @@ class UpgradeCity(Task):
 
     @get_name
     def help_alliance(self):
-        if co := self.find_img(target='help_alliance', confidence=0.8):
-            self.click(co[0] + uniform(5, 10), co[1] + 20)
-            self.better_sleep((0.9, 1.2))
         if co := self.find_img(target="help_alliance_high_view", confidence=0.76):
             self.click(co[0] + uniform(10, 20), co[1] + 20)
             self.print("Successfully asked alliance help.")
             self.better_sleep((0.9, 1.2))
+        AllianceHelp(self).run()
 
 
     @get_name
@@ -148,16 +148,16 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.8)
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.8))
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.8))
+        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.78)
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.78))
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.78))
         upgrades_final = list(filter(lambda co: co[1] < 480, upgrades_brut))
         return upgrades_final
 
     @get_class
     def run(self):
         if self.data[str(self.sel)]['schedules'][self.current_profile].get('upgrade_city_method', 'normal'):
-            return self.run1()
+            self.run1()
         self.setup_view()
         for i in range(2):
             if (upgrades_final := self.free_worker()):
