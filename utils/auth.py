@@ -16,10 +16,17 @@ from utils.Task_utils import FileSingleton
 
 fileSingleton = FileSingleton()
 
+
 def update_user_info(password, username):
     data = fileSingleton.get_data()
     data["user"] = {'username': username, 'password': password}
     fileSingleton.write_data(data)
+
+
+def kill_app():
+    os.system("taskkill /f /im flet.exe >nul 2>&1")
+    time.sleep(3)
+    os._exit(1)
 
 
 try:  # Connection check
@@ -29,15 +36,13 @@ try:  # Connection check
     public_ip = data["origin"]
 except requests.exceptions.RequestException as e:
     print(e)
-    os.system("taskkill /f /im flet.exe >nul 2>&1")
-    time.sleep(3)
-    os._exit(1)
+    kill_app()
 
 
 class selfApi:
     name = ownerid = secret = version = hash_to_check = ""
 
-    def __init__(self, name, ownerid, secret, version, hash_to_check, page = None):
+    def __init__(self, name, ownerid, secret, version, hash_to_check, page=None):
         self.name = name
 
         self.ownerid = ownerid
@@ -57,9 +62,7 @@ class selfApi:
 
         if self.sessionid != "":
             print("You've already initialized!")
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            time.sleep(2)
-            os._exit(1)
+            kill_app()
         init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
 
         self.enckey = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
@@ -78,8 +81,7 @@ class selfApi:
 
         if response == "KeyAuth_Invalid":
             print("The application doesn't exist")
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            os._exit(1)
+            self.kill_app()
 
         response = encryption.decrypt(response, self.secret, init_iv)
         json = jsond.loads(response)
@@ -89,17 +91,14 @@ class selfApi:
                 print("New Version Available")
                 download_link = json["download"]
                 os.system(f"start {download_link}")
-                os.system("taskkill /f /im flet.exe >nul 2>&1")
-                os._exit(1)
+                self.kill_app()
             else:
                 print("Invalid Version, Contact owner to add download link to latest app version")
-                os.system("taskkill /f /im flet.exe >nul 2>&1")
-                os._exit(1)
+                self.kill_app()
 
         if not json["success"]:
             print(json["message"])
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            os._exit(1)
+            self.kill_app()
 
         self.sessionid = json["sessionid"]
         self.initialized = True
@@ -135,14 +134,15 @@ class selfApi:
         wid2 = self.getvar("HWID2")
 
         if wid1 == "None":
-            self.setvar("HWID1",hwid)
+            self.setvar("HWID1", hwid)
             wid1 = hwid
         if wid2 == "None" and (wid1 != hwid):
             self.setvar("HWID2", hwid)
             wid2 = hwid
 
-        if (wid1 != hwid) and (wid2 !=hwid):
+        if (wid1 != hwid) and (wid2 != hwid):
             if self.page is not None:
+                self.log(f"user :{user} tried connecting on {public_ip}")
                 self.page.open_banner("Hardware id doesn't match, contact the admin")
             print("Hardware id doesn't match")
             return False
@@ -160,7 +160,8 @@ class selfApi:
                     bgcolor=ft.colors.AMBER_100,
                     content=ft.Column(controls=[
                         ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                                      on_click=lambda _: self.page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                                      on_click=lambda _: self.page.launch_url(
+                                          "https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
                                       ),
                         ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
                                       on_click=lambda _: self.page.launch_url(
@@ -227,9 +228,7 @@ class selfApi:
             return json["message"]
         else:
             print(json["message"])
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            time.sleep(5)
-            os._exit(1)
+            kill_app()
 
     def getvar(self, var_name):
         self.checkinit()
@@ -298,9 +297,7 @@ class selfApi:
             return json["message"]
         else:
             print(json["message"])
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            time.sleep(5)
-            os._exit(1)
+            kill_app()
 
     def check(self):
         self.checkinit()
@@ -370,11 +367,9 @@ class selfApi:
     def checkinit(self):
         if not self.initialized:
             print("Initialize first, in order to use the functions")
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            time.sleep(2)
-            os._exit(1)
+            kill_app()
 
-    def __do_request(self, post_data, deadstop = 0):
+    def __do_request(self, post_data, deadstop=0):
         try:
             rq_out = s.post(
                 "https://keyauth.win/api/1.0/", data=post_data, timeout=30
@@ -388,7 +383,7 @@ class selfApi:
         except requests.exceptions.ConnectionError:
             if deadstop < 5:
                 time.sleep(30)
-                return self.__do_request(post_data, deadstop+1)
+                return self.__do_request(post_data, deadstop + 1)
 
     class application_data_c:
         numUsers = numKeys = app_ver = customer_panel = onlineUsers = ""
@@ -428,11 +423,13 @@ class others:
                 return hwid
         elif platform.system() == 'Windows':
             winuser = os.getlogin()
-            sid = win32security.LookupAccountName(None, winuser)[0]  # You can also use WMIC (better than SID, some users had problems with WMIC)
+            sid = win32security.LookupAccountName(None, winuser)[
+                0]  # You can also use WMIC (better than SID, some users had problems with WMIC)
             hwid = win32security.ConvertSidToStringSid(sid)
             return hwid
         elif platform.system() == 'Darwin':
-            output = subprocess.Popen("ioreg -l | grep IOPlatformSerialNumber", stdout=subprocess.PIPE, shell=True).communicate()[0]
+            output = subprocess.Popen("ioreg -l | grep IOPlatformSerialNumber", stdout=subprocess.PIPE,
+                                      shell=True).communicate()[0]
             serial = output.decode().split('=', 1)[1].replace(' ', '')
             hwid = serial[1:-2]
             return hwid
@@ -468,9 +465,9 @@ class encryption:
 
             return encryption.encrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
         except:
-            print("Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            os._exit(1)
+            print(
+                "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
+            raise Exception
 
     @staticmethod
     def decrypt(message, enc_key, iv):
@@ -481,6 +478,6 @@ class encryption:
 
             return encryption.decrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
         except:
-            print("Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            os._exit(1)
+            print(
+                "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
+            raise Exception
