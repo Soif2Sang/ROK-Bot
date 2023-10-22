@@ -9,6 +9,7 @@ import flet as ft
 import numpy as np
 
 import taskscod.COD_Task_daily_vip
+from Task_training import TroopTraining
 from tasks.Task_claim_mail import ClaimMail
 # from tasks.Task_title import Title
 from tasks import Task_gather_rss_default
@@ -38,12 +39,17 @@ file  =  FileSingleton()
 data = file.get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 
+class Page():
+    def __init__(self):
+        self.UPGRADE = False
+
 class Frame():
     def __init__(self,sel):
         self.started = True
         self.stopped = False
         self.paused = False
         self.number = sel
+        self.initial_page = Page()
 
     def add_text(self,phrase, color="black"):
         print(phrase)
@@ -59,6 +65,7 @@ class Frame():
 
 class Bot():
     def __init__(self,adb):
+
         self.adb: Adb =adb
         self.device= adb.get_device()
         self.main_task= Task(Frame(adb.number)) #tasksGEM / tasks
@@ -79,6 +86,9 @@ class Bot():
         self.cod_rss = GatherRss(self.main_task)
         self.ranks = KingdomRanking(self.main_task)
         self.mails = ClaimMail(self.main_task)
+        from tasks.Task_alliance_help import AllianceHelp
+        self.help = AllianceHelp(self.main_task)
+        self.training = TroopTraining(self.main_task)
         # self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
         # self.cod_chest = DailyChest(self.main_task)
         # self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
@@ -430,6 +440,8 @@ def get_bot(number):
     bot = Bot(adb)
     bot.adb.connect_to_device()
 
+
+    bot.adb.pause = False
     bot.main_task.print = lambda txt: print(txt)
     bot.main_task.set_text = lambda txt: print(txt)
     bot.main_task.status = lambda txt: print(txt)
@@ -465,42 +477,28 @@ def upgrade_all():
     # Thread(target=lambda: upgrade_instance(12)).start()
     # Thread(target=lambda: upgrade_instance(13)).start()
 
+import warnings
+
+# Suppress OpenCV warnings about sRGB profile
+warnings.filterwarnings("ignore", category=UserWarning, module="cv2")
+
 
 if __name__ == "__main__":
     # upgrade_all()
 
     bot =  get_bot("Nougat64")
-    bot.alliance.run()
+    bot.research.zoom_out_city()
     exit()
-    template = cv2.imread('./barb_icon2.png')
-
-
-    result = cv2.matchTemplate(bot.adb.get_cv2_img(), template, cv2.TM_CCOEFF_NORMED)
-    min_val, max_val, min_loc, max_loc =  cv2.minMaxLoc(result)
-
-    print(max_val)
-    print(max_loc)
+    print(bot.task.find_img("building_speedups", confidence=0.7))
     exit()
-
-    image = cv2.imread('notification.png')[:86,:]
-
-    lower_red = np.array([45, 45, 195])  # Adjust these values as needed
-    upper_red = np.array([80, 80, 255])  # Adjust these values as needed
-
-    # Get the shape of the image
-    height, width, _ = image.shape
-
-    # Initialize a list to store the coordinates of red pixels
-    red_pixel_coordinates = []
-
-    # Iterate through the image pixels
-    start = time()
-    for y in range(height):
-        for x in range(width):
-            pixel = image[y, x]
-            if np.all(pixel >= lower_red) and np.all(pixel <= upper_red):
-                red_pixel_coordinates.append((x, y))
-    print(time() - start)
-    # Print the coordinates of red pixels
-    # for x, y in red_pixel_coordinates:
-        # print(f"Red Pixel at X = {x}, Y = {y}")
+    techs = bot.task.adb.find_multiple_img(target="research_tech", confidence=0.7)
+    cards = bot.task.adb.find_multiple_img(target="research_card", confidence=0.9)
+    print(techs)
+    print(cards)
+    duos = set()
+    for card in cards:
+        for tech in techs:
+            if (tech[1] > card[1] and tech[1] < card[1] +100) and (tech[0] > card[0] - 150 and tech[0] < card[0]):
+                duos.add(card)
+    print(duos)
+    exit()

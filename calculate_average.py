@@ -2,7 +2,7 @@ import re
 import pyautogui
 import icecream
 
-from resources import ImageSingleton
+from utils.resources import ImageSingleton
 #
 with open('average.txt', 'r') as file:
     lines = file.readlines()
