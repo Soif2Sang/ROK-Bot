@@ -278,7 +278,7 @@ class Task():
                     self.script_pause()
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.5, 0.5))
+                    self.better_sleep((0.45, 0.45))
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
                     self.better_sleep((1.4, 2))
@@ -829,7 +829,7 @@ class Task():
             self.check_chest()
             self.better_sleep((1, 1.1))
 
-        co = self.find_img(target="verification_button")
+        co = self.find_img(target="verification_button", confidence=0.8)
 
         if co is not None:
             self.click(co[0] + uniform(0, 80), co[1] + uniform(0, 20))
