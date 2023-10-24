@@ -678,6 +678,15 @@ class Task():
         return cv_image
 
     @get_name
+    def close_osiris_popup(self):
+        if self.find_img(target="osiris_invitation"):
+            self.click(1280/2, 720/2)
+            self.better_sleep((3.5, 4.7))
+            self.click(960, 108)
+            self.better_sleep((1.8, 2.7))
+
+
+    @get_name
     def check_reconnect(self, cv_image=None, cropped=False):
         """
         Check and reconnect
@@ -736,6 +745,8 @@ class Task():
             self.close_windows()
             self.close_upgrade_popup()
             self.check_download_page()
+            self.close_osiris_popup()
+
             if self.find_img(target="reconnect_sdk"):
                 self.leave_game()
                 self.run_game()
