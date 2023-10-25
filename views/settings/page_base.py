@@ -12,7 +12,7 @@ class BasePage():
         self.instance_index = profile.instance_index
         self.profile_index = profile.profile_index
         self.profile = profile
-        self.profile.clean()
+        self.profile.content.controls = []
         self.add(
             ft.Row(
                 controls=[
@@ -31,14 +31,14 @@ class BasePage():
 
     def add(self, *control):
         for ctrl in control:
-            self.profile.add(ctrl)
+            self.profile.content.controls.append(ctrl)
 
     def clean(self):
-        self.profile.clean()
-        self.profile.update()
+        self.profile.content.controls = []
+        self.initial_page.update()
 
     def update(self):
-        self.profile.update()
+        self.profile.initial_page.update()
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
