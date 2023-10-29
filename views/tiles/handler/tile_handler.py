@@ -5,7 +5,7 @@ import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from views.tiles.tile import Tile
-from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances
+from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances, BREZILIAN
 import re
 import copy
 
@@ -56,21 +56,22 @@ class NavigationBar(ft.Row):
             page.banner.open = False
             page.update()
 
-        page.banner = ft.Banner(
-            bgcolor=ft.colors.WHITE30,
-            content=ft.Column(controls=[
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                              on_click=lambda _: page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
-                              ),
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
-                              on_click=lambda _: page.launch_url("https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
+        if not BREZILIAN:
+            page.banner = ft.Banner(
+                bgcolor=ft.colors.WHITE30,
+                content=ft.Column(controls=[
+                    ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
+                                  on_click=lambda _: page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                                  ),
+                    ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
+                                  on_click=lambda _: page.launch_url("https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
 
-            ]),
-            actions=[
-                ft.TextButton("Close", on_click=close_banner),
-            ],
-            content_padding=ft.padding.all(5)
-        )
+                ]),
+                actions=[
+                    ft.TextButton("Close", on_click=close_banner),
+                ],
+                content_padding=ft.padding.all(5)
+            )
 
         def show_banner_click(e):
             page.banner.open = True
@@ -92,8 +93,9 @@ class NavigationBar(ft.Row):
             button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
                                        bgcolor=ft.colors.RED_200, color="black")
 
-        self.controls.append(ft.OutlinedButton(text="Renew", icon=ft.icons.SHOPPING_CART_OUTLINED,
-                                               on_click=show_banner_click, style=button_style))
+        if not BREZILIAN:
+            self.controls.append(ft.OutlinedButton(text="Renew", icon=ft.icons.SHOPPING_CART_OUTLINED,
+                                                   on_click=show_banner_click, style=button_style))
 
 class TileHandler(ft.ListView):
     def __init__(self, page: ft.Page, **kwargs):
@@ -110,17 +112,23 @@ class TileHandler(ft.ListView):
         self.tiles[number] = Tile(self.initial_page, number)
         self.controls.append(self.tiles[number])
         self.initial_page.update()
+                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
+
 
     def delete_tile(self, number: str):
         # index = self.controls.index(self.tiles[number])
         self.controls.remove(self.tiles[number])
         self.tiles.pop(number)
         self.initial_page.update()
+                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
+
 
     def unselect_all(self):
         for tile in self.controls[1:]:
             tile.button_select.selected = False
         self.initial_page.update()
+                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
+
 
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
@@ -315,3 +323,5 @@ class TileHandler(ft.ListView):
             ))
 
         self.initial_page.update()
+                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
+
