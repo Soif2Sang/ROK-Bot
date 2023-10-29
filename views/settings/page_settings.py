@@ -13,7 +13,6 @@ class PageSettings(ft.Container):
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
-        self.tabs = tab
         self.initial_page = page
         self.instance_index = instance_index
         self.profile_index = profile_index
