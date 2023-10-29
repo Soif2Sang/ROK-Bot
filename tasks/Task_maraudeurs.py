@@ -425,48 +425,112 @@ class Marauders(Task):
         self.print("Unable to send a new troop")
         return False
 
+    # @get_name
+    # def deploy_hunter(self):
+    #     full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if
+    #                  not (795 > i > 490 and 210 < y < 490)]
+    #
+    #     {
+    #         "1": 260,
+    #         "2": 314,
+    #         "3": 370,
+    #         "4": true,
+    #         "5": true,
+    #         "6": false,
+    #         "7": false
+    #     }
+    #
+    #     260
+    #     hunters = 0
+    #     breakloop = False
+    #     for preset in self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"]:
+    #         if not self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"][preset]:
+    #             continue
+    #         sent = False
+    #         if breakloop:
+    #             break
+    #         while not sent:
+    #             self.print(f"{hunters =}, {preset =}")
+    #             if not full_area:
+    #                 breakloop = True
+    #                 break
+    #             co = choice(full_area)
+    #             self.print(f"Choice {co}")
+    #             for i in range(-65, 80, 5):
+    #                 for y in range(-65, 70, 5):
+    #                     if (co[0] + i, co[1] + y) in full_area:
+    #                         full_area.remove((co[0] + i, co[1] + y))
+    #             self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
+    #             self.better_sleep((1.325, 1.795))
+    #             co = self.find_img(target="deploy_march_button")
+    #             if co is not None:
+    #                 self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
+    #                 self.better_sleep((1.325, 1.795))
+    #                 if self.find_img(target="new_troops_button", confidence=0.7):
+    #                     if not self.send_new_troop(preset=preset):
+    #                         breakloop = True
+    #                         break
+    #                     else:
+    #                         sent = True
+    #                         hunters += 1
+    #                 else:
+    #                     self.click(uniform(150, 500), uniform(150, 500))
+    #                 self.better_sleep((1.325, 1.795))
+    #
+    #             if self.find_img(target="new_troops_button"):
+    #                 self.close_windows()
+    #     return hunters
+
     @get_name
     def deploy_hunter(self):
         full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if
                      not (795 > i > 490 and 210 < y < 490)]
-        hunters = 0
-        breakloop = False
-        for preset in self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"]:
-            if not self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"][preset]:
-                continue
-            sent = False
-            if breakloop:
-                break
-            while not sent:
-                self.print(f"{hunters =}, {preset =}")
-                if not full_area:
-                    breakloop = True
-                    break
-                co = choice(full_area)
-                self.print(f"Choice {co}")
-                for i in range(-65, 80, 5):
-                    for y in range(-65, 70, 5):
-                        if (co[0] + i, co[1] + y) in full_area:
-                            full_area.remove((co[0] + i, co[1] + y))
-                self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
-                self.better_sleep((1.325, 1.795))
-                co = self.find_img(target="deploy_march_button")
-                if co is not None:
-                    self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
-                    self.better_sleep((1.325, 1.795))
-                    if self.find_img(target="new_troops_button", confidence=0.7):
-                        if not self.send_new_troop(preset=preset):
-                            breakloop = True
-                            break
-                        else:
-                            sent = True
-                            hunters += 1
-                    else:
-                        self.click(uniform(150, 500), uniform(150, 500))
-                    self.better_sleep((1.325, 1.795))
 
-                if self.find_img(target="new_troops_button"):
-                    self.close_windows()
+        hunters = 0
+
+        entered = False
+        while not entered:
+            co = choice(full_area)
+            self.print(f"Choice {co}")
+            for i in range(-65, 80, 5):
+                for y in range(-65, 70, 5):
+                    if (co[0] + i, co[1] + y) in full_area:
+                        full_area.remove((co[0] + i, co[1] + y))
+            self.swipe_arg(co[0], co[1], co[0], co[1], randint(2500, 3475))
+            self.better_sleep((1.325, 1.795))
+            co = self.find_img(target="deploy_march_button")
+            if co is not None:
+                self.click(co[0] + uniform(0, 140), co[1] + uniform(0, 4))
+                self.better_sleep((1.525, 1.995))
+                if co:=self.find_img(target="new_troops_button", confidence=0.7):
+                    self.click(co[0], co[1])
+                    self.better_sleep((1.525, 1.995))
+                    entered = True
+                else:
+                    self.click(uniform(150, 500), uniform(150, 500))
+                    self.better_sleep((1.525, 1.995))
+
+            if self.find_img(target="new_troops_button"):
+                self.close_windows()
+
+        self.select_lineup_color(color="red")
+
+        self.click(1100, 640)
+        self.better_sleep((1.525, 1.995))
+
+        for preset in self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"]:
+            if self.data[str(self.sel)]['schedules'][str(self.current_profile)]["barbarians_preset"][preset]:
+                hunters += 1
+                continue
+            else:
+                self.click(1000, 205 + int(preset) * 55)
+                self.better_sleep((1.325, 1.795))
+
+        self.click(930, 630)
+        self.better_sleep((1.325, 1.795))
+
+        for _ in range(hunters):
+            self.better_sleep((3,3))
         return hunters
 
     def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
