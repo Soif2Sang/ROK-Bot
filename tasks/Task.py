@@ -429,6 +429,8 @@ class Task():
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((2.5, 3.5))
             self.click(uniform(24, 91), uniform(625, 680))
+            self.better_sleep((2.5, 3.5))
+
         return True
 
     # @get_name
@@ -1113,7 +1115,7 @@ class Task():
                 # print(distances)
                 # if distances:
                 if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) * 1.5:
+                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) + 15:
                     if co[0] < 500 and co[1] < 220:
                         self.swipe(co[0] + 90, co[1] + 90, 640, 360)
                         # self.swipe(330, 160, 760, 530)
