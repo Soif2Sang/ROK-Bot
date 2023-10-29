@@ -186,4 +186,4 @@ class PageGem(BasePage):
             is_disabled = not self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword]
             self.number_of_nodes.content.controls[0].controls[0].disabled = is_disabled
 
-        self.update()
+        self.profile.initial_page.update()

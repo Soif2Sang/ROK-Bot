@@ -1,6 +1,7 @@
 import flet as ft
-from utils.Task_utils import FileSingleton
 from flet_core import ButtonStyle, RoundedRectangleBorder
+
+from utils.Task_utils import FileSingleton
 
 
 class BasePage():
@@ -14,14 +15,18 @@ class BasePage():
         self.profile = profile
         self.profile.content.controls = []
         self.add(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.profile.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
+            ft.Container(
+                content=ft.Row(
+                    controls=[
+                        ft.IconButton(
+                            icon=ft.icons.ARROW_BACK,
+                            on_click=lambda _: self.profile.reset()
+                        ),
+                        ft.Text("Settings", size=20),
+                    ],
+                ),
+                padding = ft.padding.only(top=5, left=0, bottom=0)
+
             ),
             ft.Divider(),
         )
@@ -70,7 +75,8 @@ class BasePage():
         elif keyword == "leave_game_loop":
             data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         else:
-            data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = not self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword]
+            data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = not \
+            self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword]
 
         self.data = data
 

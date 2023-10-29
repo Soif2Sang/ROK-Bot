@@ -9,7 +9,7 @@ class PageCharacter(BasePage):
         super().__init__(profile)
 
         self.add(
-            GenerateCard("notice", subtitle="It only works with favorite characters(stars)."),
+            GenerateCard("notice", subtitle="Keep in mind that it well iterate on all of your favorite characters, it goes from top to bottom"),
             ft.Switch(
                 label="Restart the game after switching\nto a new character (prevent freeze)",
 
