@@ -207,10 +207,10 @@ class GatherRssZoom(GatherRss):
 
                 if self.data[str(self.sel)]['schedules'][self.current_profile].get(
                     self.node_place, 'nothing') == 'nothing' or self.node_place == 'Done' or (not self.free_troop_commander_list()):
-                    return self.click(600, 400)
+                    return self.click(500, 400)
 
                 if self.swipe_scan(self.scan_node, current_swipe) == "STOP":
-                    return self.click(600, 400)
+                    return self.click(500, 400)
 
             current += 1
             current_swipe = swipes[current_swipe]
