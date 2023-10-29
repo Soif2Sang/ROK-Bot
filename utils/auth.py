@@ -12,7 +12,7 @@ import win32security
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
-from utils.Task_utils import FileSingleton
+from utils.Task_utils import FileSingleton, BREZILIAN
 
 fileSingleton = FileSingleton()
 
@@ -156,9 +156,8 @@ class selfApi:
                     self.page.banner.open = False
                     self.page.update()
 
-                self.page.banner = ft.Banner(
-                    bgcolor=ft.colors.AMBER_100,
-                    content=ft.Column(controls=[
+                if not BREZILIAN:
+                    content = ft.Column(controls=[
                         ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
                                       on_click=lambda _: self.page.launch_url(
                                           "https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
@@ -167,7 +166,12 @@ class selfApi:
                                       on_click=lambda _: self.page.launch_url(
                                           "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
 
-                    ]),
+                    ])
+                else:
+                    content = ft.Column([ft.Text("Invalid credentials")])
+
+                self.page.banner = ft.Banner(
+                    content=content,
                     actions=[
                         ft.TextButton("Close", on_click=close_banner),
                     ],
@@ -192,16 +196,13 @@ class selfApi:
             "ownerid": self.ownerid
         }
 
-        print(self.ownerid)
         response = self.__do_request(post_data)
 
         json = jsond.loads(response)
 
         if json["success"]:
             self.__load_user_data(json["info"])
-            print(json["message"])
         else:
-            print(json["message"])
             time.sleep(3)
             os._exit(1)
 
