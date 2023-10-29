@@ -68,6 +68,12 @@ class UpgradeCity(Task):
         if co := self.find_img(target='help_build', confidence=0.75):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
+        if co := self.find_img(target='help_build2', confidence=0.75):
+            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
+            self.better_sleep((0.9, 1.2))
+        if co := self.find_img(target='help_build3', confidence=0.75):
+            self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
+            self.better_sleep((0.9, 1.2))
 
     @get_name
     def recursive_upgrade(self, type="normal"):
