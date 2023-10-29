@@ -18,20 +18,21 @@ class Frame(ft.Tabs):
         self.number = number
         self.settings = ft.Tabs()
         self.expand = True
+        self.initial_page = page
         self.logger = Logger(self,page)
 
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
         self.tabs.append(ft.Tab(content=self.logger, text="Logs"))
         self.tabs.append(InterfaceSettings(page, number))
 
-        self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 1), text="Profile 1"))
-        self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 2), text="Profile 2"))
-        self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 3), text="Profile 3"))
+        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 1), text="Profile 1"))
+        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 2), text="Profile 2"))
+        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 3), text="Profile 3"))
 
 
-        # self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 1), text="Profile 1"))
-        # self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 2), text="Profile 2"))
-        # self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 3), text="Profile 3"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 1), text="Profile 1"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 2), text="Profile 2"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, self, number, 3), text="Profile 3"))
 
         self.FileSingleton = FileSingleton()
 
