@@ -8,7 +8,7 @@ import flet as ft
 
 from views._main import Main
 from utils.auth import selfApi, update_user_info
-from utils.Task_utils import FileSingleton, ApiSingleton, getchecksum
+from utils.Task_utils import FileSingleton, ApiSingleton, getchecksum, BREZILIAN
 
 
 def is_str_valid(username, password):
@@ -101,9 +101,9 @@ class LoginUI(ft.Column):
     def verify_subscription(self, username, password):
         try:
             self.initial_page.keyauthapp = selfApi(
-                name="Rokbd",
+                name="Rokbd"  if not BREZILIAN else "RokbdBR",
                 ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0" if not BREZILIAN else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
                 version="1.0",
                 hash_to_check=getchecksum()
             )
@@ -155,14 +155,19 @@ class LoginUI(ft.Column):
             on_click=self.show_banner
         )
 
+        r = ft.Row(
+            controls=[
+                ft.Column(controls=[self.button_login], col=4),
+
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+        )
+
+        if not BREZILIAN:
+            r.controls.append(ft.Column(controls=[self.subscribe_button], col=6))
+
         return self.controls.extend([
             self.textfield_username,
             self.textfield_password,
-            ft.Row(
-                controls=[
-                    ft.Column(controls=[self.button_login], col=4),
-                    ft.Column(controls=[self.subscribe_button], col=6),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            )
+            r
         ])

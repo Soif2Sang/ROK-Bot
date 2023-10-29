@@ -9,8 +9,9 @@ from time import sleep
 
 import flet as ft
 from flet_route import path, Routing
+from flet_translator import TranslateFletPage, GoogleTranslateLanguage
 
-from utils.Task_utils import getchecksum
+from utils.Task_utils import getchecksum, BREZILIAN
 from utils.auth import selfApi
 from utils.handle_files import main as HandleFiles
 from views.login.login import LoginUI
@@ -29,6 +30,7 @@ except Exception as e:
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
     traceback_str = ''.join(traceback_list)
 
+
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -38,9 +40,9 @@ except Exception as e:
 
 
     keyauthapp = selfApi(
-        name="Rokbd",
+        name="Rokbd" if not BREZILIAN else "RokbdBR",
         ownerid="7oofxdj8uH",
-        secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+        secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0" if not BREZILIAN else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
         version="1.0",
         hash_to_check=getchecksum()
     )
@@ -55,9 +57,13 @@ fileSingleton = FileSingleton()
 
 HandleFiles()
 
+
 def main(page: ft.Page):
     # return Main(page, 500)
+    # Create a TranslateFletPage instance
+    # tp = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.french, use_internet=True, skiped_classes=[ft.Dropdown])
 
+    # This will update the translations and page at the same time.
     page.window_width = 330
     page.window_height = 330
     page.FileSingleton = FileSingleton()
@@ -90,9 +96,9 @@ def main(page: ft.Page):
         ready = False
         try:
             page.keyauthapp = selfApi(
-                name="Rokbd",
+                name="Rokbd"  if not BREZILIAN else "RokbdBR",
                 ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
+                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0" if not BREZILIAN else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
                 version="1.0",
                 hash_to_check=getchecksum()
             )
@@ -181,12 +187,12 @@ def main(page: ft.Page):
             url=f"/citylayout/:instance_index/:profile_index",
             clear=True,
             view=viewCityLayout
-         ),
+        ),
         path(
             url=f"/profile/:instance_index/:profile_index/settings",
             clear=True,
             view=viewProfileSettings
-         )
+        )
     ]
 
     page.routing = Routing(
@@ -196,14 +202,19 @@ def main(page: ft.Page):
 
     page.go("/login")
     page.update()
+    # page.tp = tp
+    # tp.update()
+
 
 
 def index(page: ft.Page, params, basket):
     return ft.View(route="/", controls=page.body.controls)
+
 
 def login(page: ft.Page, params, basket):
     return ft.View(route="/login", controls=[page.loginUI])
 
 
 if __name__ == '__main__':
+
     ft.app(target=main)
