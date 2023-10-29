@@ -19,6 +19,7 @@ from numpy import ndarray
 
 dir = "./"
 DEBUG = False
+BREZILIAN = False
 
 def word_to_color(word):
     hash_object = hashlib.sha256()
