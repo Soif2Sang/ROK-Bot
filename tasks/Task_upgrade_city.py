@@ -178,7 +178,3 @@ class UpgradeCity(Task):
                 self.better_sleep((10, 15))
                 self.help_alliance()
                 self.better_sleep((0.9, 1.2))
-
-        if not self.DEV:
-            self.leave_city()
-            self.go_city()
