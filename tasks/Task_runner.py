@@ -268,6 +268,7 @@ class TaskRunner(Task):
 
             if stop == 10:
                 self.print("It seems the game is unable to load the characters menu..")
+                self.run_game()
                 return self.switch_character(co_first, nb_chars, fail)
 
             if co := self.find_img(target="chest_confirm_button"):
