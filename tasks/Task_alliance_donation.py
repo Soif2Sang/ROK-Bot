@@ -49,11 +49,20 @@ class AllianceDonation(Task):
         if alliance_tech_logo is not None:
             self.click(alliance_tech_logo[0] + uniform(0, 30), alliance_tech_logo[1] + uniform(0, 15))
             self.better_sleep((2, 3))
-            donation_logo = self.adb.find_multiple_img(target="tech_2", confidence=0.97)
-            # if donation_logo is None:
-            # donation_logo = self.find_img(target="tech_2",confidence=0.97)
-            if donation_logo:
-                donation_logo = random.choice(donation_logo)
+
+            source = self.adb.get_cv2_img()
+            techs = self.adb.find_multiple_img(target="tech", source=source, confidence=0.7)
+            cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
+
+            duos = set()
+            for card in cards:
+                for tech in techs:
+                    if (tech[1] > card[1] and tech[1] < card[1] + 100) and (
+                            tech[0] > card[0] - 150 and tech[0] < card[0]):
+                        duos.add(card)
+
+            if duos:
+                donation_logo = random.choice(list(duos))
                 self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
                 self.better_sleep((1, 2))
                 # Holding click on the donation button
