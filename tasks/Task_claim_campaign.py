@@ -23,7 +23,7 @@ class ClaimCampaign(Task):
         cropped_image = cv_image[630:655, 841:865]
 
         number = self.extract_text(img=cropped_image, allowlist="12345670.")
-        print(number)
+
         if '.' in number:
             return True
         try:
