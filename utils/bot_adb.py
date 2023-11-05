@@ -16,21 +16,20 @@ import pytesseract as tess
 from PIL import Image
 
 from utils.Task_utils import current_time, FileSingleton, get_dic_instances
+from utils.resources import ImageSingleton
 
 bridge = None
-from utils.resources import ImageSingleton
+
 class Adb:
-    def __init__(self, number, host='127.0.0.1', port=5037):
+    def __init__(self, number: str, host='127.0.0.1', port=5037):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
         self.number = number
-        # print(data)
         self.name = self.data[str(self.number)]['name']
         self.images = ImageSingleton()
-        # data = self.FileSingleton.get_data()
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
@@ -38,16 +37,17 @@ class Adb:
 
     def update_port(self):
         instances = get_dic_instances()
+
         if str(self.number) not in instances:
             return
-        self.data = self.FileSingleton.get_data()
 
-        self.data[str(self.number)]['instance'] = instances[str(self.number)]['instance']
-        self.data[str(self.number)]['name'] = instances[str(self.number)]['name']
-        self.data[str(self.number)]['port'] = int(instances[str(self.number)]['port'])
-        self.port = int(instances[str(self.number)]['port'])
-
-        self.FileSingleton.write_data(self.data)
+        if self.port != int(instances[str(self.number)]['port']):
+            self.data = self.FileSingleton.get_data()
+            self.data[str(self.number)]['instance'] = instances[str(self.number)]['instance']
+            self.data[str(self.number)]['name'] = instances[str(self.number)]['name']
+            self.data[str(self.number)]['port'] = int(instances[str(self.number)]['port'])
+            self.port = int(instances[str(self.number)]['port'])
+            self.FileSingleton.write_data(self.data)
 
     def connect_to_device(self, host='127.0.0.1'):
         path = self.FileSingleton.get_path()
@@ -115,7 +115,7 @@ class Adb:
             return io.BytesIO(self.get_device().screencap())
 
 
-    def get_curr_device_screen_img(self):
+    def get_curr_device_screen_img(self, deadstop=0):
         try:
             device = self.get_device()
             if device is None:
@@ -128,9 +128,11 @@ class Adb:
             return image
         except Exception as e:
             self.print(f"EXCEPTION : get_screen_device")
+            if deadstop == 30:
+                raise e
             sleep(1)
             self.connect_to_device()
-            return self.get_curr_device_screen_img()
+            return self.get_curr_device_screen_img(deadstop+1)
 
     def get_cv2_img(self):
         try:
