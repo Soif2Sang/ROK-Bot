@@ -9,9 +9,11 @@ from time import sleep
 
 import flet as ft
 from flet_route import path, Routing
-from flet_translator import TranslateFletPage, GoogleTranslateLanguage
 
-from utils.Task_utils import getchecksum, BREZILIAN
+import views.tiles.tile
+# from flet_translator import TranslateFletPage, GoogleTranslateLanguage
+
+from utils.Task_utils import getchecksum, BREZILIAN, LinkSingleton, toasts_history
 from utils.auth import selfApi
 from utils.handle_files import main as HandleFiles
 from views.login.login import LoginUI
@@ -52,7 +54,6 @@ except Exception as e:
     ft.app(target=handleError)
     exit()
 
-toasts_history = {}
 fileSingleton = FileSingleton()
 
 HandleFiles()
@@ -61,7 +62,7 @@ HandleFiles()
 def main(page: ft.Page):
     # return Main(page, 500)
     # Create a TranslateFletPage instance
-    # tp = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.french, use_internet=True, skiped_classes=[ft.Dropdown])
+    # tp = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.english, use_internet=True, skiped_classes=[ft.Dropdown, views.tiles.tile.Tile, views.tiles.handler.logging_handler.Logger])
 
     # This will update the translations and page at the same time.
     page.window_width = 330
@@ -96,7 +97,7 @@ def main(page: ft.Page):
         ready = False
         try:
             page.keyauthapp = selfApi(
-                name="Rokbd"  if not BREZILIAN else "RokbdBR",
+                name="Rokbd" if not BREZILIAN else "RokbdBR",
                 ownerid="7oofxdj8uH",
                 secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0" if not BREZILIAN else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
                 version="1.0",
@@ -130,7 +131,6 @@ def main(page: ft.Page):
 
         while 1:
             sleep(1)
-
     def close_banner(e):
         page.banner.open = False
         page.update()
@@ -156,7 +156,7 @@ def main(page: ft.Page):
     page.UPGRADE = False
     page.body = ft.Column()
 
-    def generate_toast(title, description, icon=ft.icons.INFO):
+    def generate_toast(title, description, icon=ft.icons.INFO, bgcolor_title="AMBER"):
         ToastsFlexible(
             page=page,
             icon=icon,
@@ -167,10 +167,10 @@ def main(page: ft.Page):
             width=360,
             set_history=toasts_history,
             position=Position.TOP_RIGHT,
-            bgcolor_title="AMBER"
+            bgcolor_title=bgcolor_title
         )
 
-    page.generate_toast = lambda title, description, icon=ft.icons.INFO: generate_toast(title, description, icon)
+    page.generate_toast = lambda title, description, icon=ft.icons.INFO, bgcolor_title="AMBER": generate_toast(title, description, icon, bgcolor_title)
 
     page.app_routes = [
         path(
@@ -202,9 +202,10 @@ def main(page: ft.Page):
 
     page.go("/login")
     page.update()
-    # page.tp = tp
-    # tp.update()
 
+    if not BREZILIAN:
+        LinkSingleton().setStripeLink(page.keyauthapp.var('stripe'))
+        LinkSingleton().setSellixLink(page.keyauthapp.var('sellix'))
 
 
 def index(page: ft.Page, params, basket):
