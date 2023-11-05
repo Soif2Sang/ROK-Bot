@@ -105,7 +105,7 @@ class HuntBarbarians(Task):
                     breakloop = True
                     break
                 co = choice(full_area)
-                self.print(f"Choice {co}")
+                # self.print(f"Choice {co}")
                 for i in range(-65, 80, 5):
                     for y in range(-65, 70, 5):
                         if (co[0] + i, co[1] + y) in full_area:
@@ -141,7 +141,7 @@ class HuntBarbarians(Task):
         entered = False
         while not entered:
             co = choice(full_area)
-            self.print(f"Choice {co}")
+            # self.print(f"Choice {co}")
             for i in range(-65, 80, 5):
                 for y in range(-65, 70, 5):
                     if (co[0] + i, co[1] + y) in full_area:
