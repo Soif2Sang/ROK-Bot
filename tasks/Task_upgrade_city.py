@@ -77,9 +77,12 @@ class UpgradeCity(Task):
 
     @get_name
     def recursive_upgrade(self, type="normal"):
-        stones = self.find_img(target="upgrade_build", confidence=0.7)
+        screen = self.adb.get_cv2_img()
+        stones = self.find_img(target="upgrade_build", confidence=0.7, source=screen)
+        if not stones:
+            stones = self.find_img(target="city_hall_change_age", confidence=0.7, source=screen)
 
-        if stones is not None and self.find_img('building_speedups') is None:
+        if stones is not None and self.find_img('building_speedups', source=screen) is None:
             self.click(stones[0] + uniform(0, 20), stones[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
             if cos := self.adb.find_multiple_img(target="upgrade_go"):
@@ -116,9 +119,8 @@ class UpgradeCity(Task):
 
     @get_name
     def is_city_hall_upgradable(self):
-        co = self.find_img(target="upgrade_build", confidence=0.7
-                           )
-        if co is not None:
+        screen = self.adb.get_cv2_img()
+        if self.find_img(target='city_hall_change_age', confidence=0.7, source=screen) or self.find_img(target="upgrade_build", confidence=0.7, source=screen):
             return True
         return False
 
@@ -142,7 +144,16 @@ class UpgradeCity(Task):
         ch_position = self.data[str(self.sel)]['schedules'][self.current_profile].get('city_hall_position', [])
         if not ch_position:
             return
+
         x, y = ch_position
+
+        already_upgrading = self.adb.find_multiple_img("already_upgrading", confidence=0.7)
+        print(ch_position)
+        print(already_upgrading)
+        for co in already_upgrading:
+            if x - 120 < co[0] < x + 10 and y - 20 < co[1] < y + 90:
+                return
+
         self.click(x, y)
         self.better_sleep((1.7, 2.5))
 
