@@ -20,6 +20,8 @@ from numpy import ndarray
 dir = "./"
 DEBUG = False
 BREZILIAN = False
+VERSION = '1'
+toasts_history = {}
 
 def word_to_color(word):
     hash_object = hashlib.sha256()
