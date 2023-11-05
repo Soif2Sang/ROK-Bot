@@ -61,6 +61,32 @@ class ApiSingleton:
         with self.FileLock:
             self.apikey = key
 
+class LinkSingleton:
+    __instance = None
+    FileLock = Lock()
+    sellix = ""
+    stripe = ""
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def getStripeLink(self) -> str :
+        with self.FileLock:
+            return self.stripe
+
+    def setStripeLink(self, link: str):
+        with self.FileLock:
+            self.stripe = link
+
+    def getSellixLink(self) -> str :
+        with self.FileLock:
+            return self.sellix
+
+    def setSellixLink(self, link: str):
+        with self.FileLock:
+            self.sellix = link
+
 class FileSingleton:
     __instance = None
     FileLock = Lock()
