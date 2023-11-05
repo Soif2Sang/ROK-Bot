@@ -862,9 +862,9 @@ class Task():
             i += 1
             if i == 6:
                 self.print("Error, unable to resolve the captcha for 5 times in a row !")
-                self.send_discord_message("Error, unable to resolve the captcha for 5 times in a row !")
-                while 1:
-                    self.better_sleep((1, 1))
+                self.send_discord_message("Error, unable to resolve the captcha for 5 times in a row. You have to solve it manually.")
+                while self.find_img(target="close_refresh_ok", confidence=0.75):
+                    self.better_sleep((10, 10))
             resolved = True
 
         self.set_status(previous_text)
@@ -892,7 +892,7 @@ class Task():
 
             result = solver.coordinates(captcha, lang='en')
 
-            print(result)
+            self.debug(result)
 
             co = string_to_co(result['code'])
             if self.adb.find_img_cv(captcha) is not None:
