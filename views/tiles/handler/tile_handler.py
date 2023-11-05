@@ -302,7 +302,7 @@ class TileHandler(ft.ListView):
                     self.tiles[str(instance[0])].runner.adb.update_port()
                 else:
                     self.add_tile(str(instance[0]))
-                    self.controls.append(ft.Divider(height=1, color="grey", opacity=0.5))
+                    # self.controls.append(ft.Divider(height=1, color="grey", opacity=0.5))
                 self.tiles[str(instance[0])].config_overrider.items = []
                 self.tiles[str(instance[0])].config_overrider.refresh()
         else:
