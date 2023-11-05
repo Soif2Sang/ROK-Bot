@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.Task_utils import FileSingleton
 
 
@@ -11,20 +12,20 @@ class FletColumnRss(ft.Column):
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.controls=[
-            ft.TextField(label=f"Million of Food to transfer :",
+            ft.TextField(label=translate("Million of Food to transfer :"),
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["transfer_food"]
                          ,on_change=lambda e: self.submit(e, f"transfer_food", int),content_padding=ft.padding.all(10),
                          ),
-            ft.TextField(label=f"Million of Wood to transfer :",
+            ft.TextField(label=translate("Million of Wood to transfer :"),
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["transfer_wood"]
                          , on_change=lambda e: self.submit(e, f"transfer_wood", int),content_padding=ft.padding.all(10),
                          ),
-            ft.TextField(label=f"Million of Stone to transfer :",
+            ft.TextField(label=translate("Million of Stone to transfer :"),
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["transfer_stone"]
                          , on_change=lambda e: self.submit(e, f"transfer_stone", int),content_padding=ft.padding.all(10),
                          ),
 
-            ft.TextField(label=f"Million of Gold to transfer :",
+            ft.TextField(label=translate("Million of Gold to transfer :"),
                          value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["transfer_gold"]
                          , on_change=lambda e: self.submit(e, f"transfer_gold", int),content_padding=ft.padding.all(10),
                          )

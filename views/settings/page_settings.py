@@ -8,6 +8,7 @@ color_bank = {
     3: "#dec433"
 }
 
+
 class PageSettings(ft.Container):
     def __init__(self, page, tab, instance_index: str, profile_index: int):
         super().__init__()
@@ -19,19 +20,16 @@ class PageSettings(ft.Container):
         self.padding = ft.padding.only(top=5, left=0, bottom=0)
         self.content: ft.ListView = ft.ListView(height=400, expand=1, padding=1, spacing=6)
 
-        self.theme=ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
+        self.theme = ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
         self.init()
 
     def add(self, *control):
         for ctrl in control:
             self.content.controls.append(ctrl)
 
-    def clean(self):
+    def goBack(self):
         self.content.controls = []
         self.data = self.FileSingleton.get_data()
-
-    def reset(self):
-        self.clean()
         self.init()
         self.initial_page.update()
 

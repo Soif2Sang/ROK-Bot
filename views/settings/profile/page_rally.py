@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 from utils.flet_utils import GenerateCard
 
@@ -8,17 +9,17 @@ class PageRally(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
 
-        self.add(
-            GenerateCard(level="warning", title="*REQUIREMENT*", subtitle="Pre-configure the first red slot from the commanders presets with a rally leader!"),
+        self.add_control(
+            GenerateCard(level=translate("warning"), title=translate("*REQUIREMENT*"), subtitle=translate("Pre-configure the first red slot from the commanders presets with a rally leader!")),
             ft.Switch(
-                label="Look for Marauders forts (only pre-kvk)",
+                label=translate("Look for Marauders forts (only pre-kvk)"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "mauraudeurs_forts"] else False,
                 on_change=lambda _: self.reverse_keyword("mauraudeurs_forts")
             ),
             ft.Switch(
-                label="Don't wait for the rally leader to come back.",
+                label=translate("Don't wait for the rally leader to come back."),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "rally_skip_back"] else False,
@@ -29,14 +30,14 @@ class PageRally(BasePage):
                     controls=[
                         ft.Container(
                             width=100,
-                            content=ft.Text(f"Mobilisation time (minutes):"),
+                            content=ft.Text(value=translate(f"Mobilisation time (minutes):")),
                             alignment=ft.alignment.center_right
                         ),
 
                         ft.Dropdown(
                             width=140, height=50,
                             content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                            label="Minutes",
+                            label=translate("Minutes"),
                             options=[
                                 ft.dropdown.Option("5"),
                                 ft.dropdown.Option("10"),
@@ -54,14 +55,14 @@ class PageRally(BasePage):
                     controls=[
                         ft.Container(
                             width=100,
-                            content=ft.Text(f"Rally Type :"),
+                            content=ft.Text(value=translate("Rally Type :")),
                             alignment=ft.alignment.center_right
                         ),
 
                         ft.Dropdown(
                             width=140, height=50,
                             content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                            label="Type",
+                            label=translate("Type"),
                             options=[
                                 ft.dropdown.Option("cav"),
                                 ft.dropdown.Option("inf"),
@@ -76,4 +77,3 @@ class PageRally(BasePage):
             )
 
         )
-        self.profile.initial_page.update()

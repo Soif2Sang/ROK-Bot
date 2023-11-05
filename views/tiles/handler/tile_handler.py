@@ -4,8 +4,9 @@ from time import sleep
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from utils.flet_translations import translate
 from views.tiles.tile import Tile
-from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances, BREZILIAN
+from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances, BREZILIAN, LinkSingleton
 import re
 import copy
 
@@ -16,7 +17,7 @@ class NavigationBar(ft.Row):
         self.tileManager = tile_manager
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-        self.button_refresh = ft.OutlinedButton(text="Refresh", icon=ft.icons.REFRESH_ROUNDED,
+        self.button_refresh = ft.OutlinedButton(text=translate("Refresh"), icon=ft.icons.REFRESH_ROUNDED,
                                                 on_click=lambda _: self.tileManager.refresh(), style=ButtonStyle(shape={
                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
             }, bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100)
@@ -61,10 +62,10 @@ class NavigationBar(ft.Row):
                 bgcolor=ft.colors.WHITE30,
                 content=ft.Column(controls=[
                     ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                                  on_click=lambda _: page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                                  on_click=lambda _: page.launch_url(LinkSingleton().getStripeLink()),
                                   ),
                     ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
-                                  on_click=lambda _: page.launch_url("https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
+                                  on_click=lambda _: page.launch_url(LinkSingleton().getSellixLink()))
 
                 ]),
                 actions=[
@@ -72,7 +73,7 @@ class NavigationBar(ft.Row):
                 ],
                 content_padding=ft.padding.all(5)
             )
-
+            
         def show_banner_click(e):
             page.banner.open = True
             page.update()
@@ -103,6 +104,7 @@ class TileHandler(ft.ListView):
         self.initial_page = page
         self.height = 250
         self.expand = 0
+        self.spacing = 5
         self.FileSingleton = FileSingleton()
         self.tiles: dict[str, Tile] = {}
         self.navigation_bar: NavigationBar = NavigationBar(self.initial_page, self)
@@ -112,22 +114,19 @@ class TileHandler(ft.ListView):
         self.tiles[number] = Tile(self.initial_page, number)
         self.controls.append(self.tiles[number])
         self.initial_page.update()
-                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
 
 
     def delete_tile(self, number: str):
-        # index = self.controls.index(self.tiles[number])
         self.controls.remove(self.tiles[number])
         self.tiles.pop(number)
         self.initial_page.update()
-                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
 
 
     def unselect_all(self):
         for tile in self.controls[1:]:
-            tile.button_select.selected = False
+            if isinstance(tile, Tile):
+                tile.button_select.selected = False
         self.initial_page.update()
-                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
 
 
     def set_status(self, number: str, phrase: str):
@@ -303,6 +302,7 @@ class TileHandler(ft.ListView):
                     self.tiles[str(instance[0])].runner.adb.update_port()
                 else:
                     self.add_tile(str(instance[0]))
+                    self.controls.append(ft.Divider(height=1, color="grey", opacity=0.5))
                 self.tiles[str(instance[0])].config_overrider.items = []
                 self.tiles[str(instance[0])].config_overrider.refresh()
         else:
@@ -312,7 +312,7 @@ class TileHandler(ft.ListView):
                     controls=[
                         ft.Icon(ft.icons.INFO_OUTLINED, size=60),
                         ft.Text(
-                            "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)",
+                            translate("No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"),
                             text_align=ft.TextAlign.CENTER)
                     ],
                     alignment=ft.MainAxisAlignment.START,
@@ -322,6 +322,8 @@ class TileHandler(ft.ListView):
                 margin=ft.margin.only(top=40)
             ))
 
+        # self.initial_page.update()
         self.initial_page.update()
+
                 #self.padding = ft.padding.only(top=15, left=0, bottom=0)
 

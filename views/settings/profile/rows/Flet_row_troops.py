@@ -1,9 +1,10 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.Task_utils import FileSingleton
 
 
-class FletRowTraining(ft.Row):
+class FletRowTraining(ft.ResponsiveRow):
     def __init__(self, key, instance_index, profile_index):
         super().__init__()
         self.FileSingleton = FileSingleton()
@@ -13,10 +14,10 @@ class FletRowTraining(ft.Row):
         self.content_padding = ft.padding.all(10)
         self.controls=[
                     ft.Switch(
-                        label=f"Train {key}",
+                        label=translate(f"Train {key}"),
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}_enable"],
                         on_change=lambda e: self.submit(e, f"{key}_enable", bool),
-                        width = 140
+                        col=6
                     ),
                     ft.Dropdown(
                         width=140,
@@ -31,8 +32,8 @@ class FletRowTraining(ft.Row):
                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][f"{key}_tier"],
                         on_change=lambda e: self.submit(e, f"{key}_tier", str),
                         height=40,
-                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3)  # modify to your likings
-
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
+                        col=6
                     )
                 ]
 

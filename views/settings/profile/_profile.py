@@ -136,7 +136,7 @@ class ProfileSettings(PageSettings):
             ft.Text(
                 spans=[
                     ft.TextSpan(
-                        "Time to wait before the bot log  back from your connection(minutes):\n",
+                        "Time to wait before the bot log  back from your connection(minutes):",
                         style=ft.TextStyle(size=15),
                     )
                 ]

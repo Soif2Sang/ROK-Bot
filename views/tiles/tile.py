@@ -99,10 +99,12 @@ class Tile(ft.Row):
         )
 
         self.config_overrider = ConfigOverrider(self.initial_page, number)
-        self.text_name = ft.Text(value=data[str(number)]['name'], width=70)
+        self.text_name = ft.Text(value=data[str(number)]['name'], width=80)
         self.text_status = ft.Text(value="", width=120)
 
+        self.vertical_alignment=ft.CrossAxisAlignment.CENTER
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+
         self.controls.extend([
             ft.Row(
                 controls=[
@@ -169,15 +171,6 @@ class Tile(ft.Row):
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.initial_page.update()
-
-
-    def process_is_alive(self):
-        self.tasks_process.join()
-        self.paused = False
-        self.stopped = False
-        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
-        self.button_stop.disabled = True
-        self.set_text("")
 
     def start_tasks(self):
         if not self.tasks_process.is_alive():

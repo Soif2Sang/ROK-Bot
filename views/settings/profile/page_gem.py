@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.flet_utils import GenerateCard
 from views.settings.page_base import BasePage
 
@@ -9,8 +10,8 @@ class PageGem(BasePage):
         super().__init__(profile)
         self.troop_scan_row = ft.Container(ft.Row(
             controls=[
-                ft.Text("Available troop scan\nfrequency (seconds)"),
-                ft.TextField(label="Minimum",
+                ft.Text(value=translate("Available troop scan\nfrequency (seconds)")),
+                ft.TextField(label=translate("Minimum"),
                              value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                  "gem_check1"],
                              width=80,
@@ -20,7 +21,7 @@ class PageGem(BasePage):
                                  "gather_gem_swipe_check"]
                              ),
                 ft.Text("~"),
-                ft.TextField(label="Maximum",
+                ft.TextField(label=translate("Maximum"),
                              value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                  "gem_check2"],
                              width=90,
@@ -33,7 +34,7 @@ class PageGem(BasePage):
         ), margin=ft.margin.only(left=50))
 
         self.area_location = ft.Container(content=ft.ResponsiveRow(controls=[
-            ft.Column(controls=[ft.TextField(label="Your kingdom :",
+            ft.Column(controls=[ft.TextField(label=translate("Your kingdom :"),
                                              value=
                                              self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                                  "kingdom"],
@@ -43,7 +44,7 @@ class PageGem(BasePage):
                                              self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                                  "gather_gem_spiral_method"]
                                              )], col=4),
-            ft.Column(controls=[ft.TextField(label="Area location X coordinates :",
+            ft.Column(controls=[ft.TextField(label=translate("Area location X coordinates :"),
                                              value=
                                              self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                                  "city_x"],
@@ -53,7 +54,7 @@ class PageGem(BasePage):
                                              self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                                  "gather_gem_spiral_method"]
                                              )], col=4),
-            ft.Column(controls=[ft.TextField(label="Area location Y coordinates :",
+            ft.Column(controls=[ft.TextField(label=translate("Area location Y coordinates :"),
                                              value=
                                              self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                                  "city_y"],
@@ -68,7 +69,7 @@ class PageGem(BasePage):
 
         self.number_of_nodes = ft.Container(
             content=ft.ResponsiveRow(controls=[
-                ft.Column(controls=[ft.TextField(label="Fixed number of nodes to gather :",
+                ft.Column(controls=[ft.TextField(label=translate("Fixed number of nodes to gather :"),
                                                  value=self.data[str(self.instance_index)]['schedules'][
                                                      str(self.profile_index)]["gather_gem_note_limit"],
                                                  content_padding=ft.padding.all(10),
@@ -81,29 +82,29 @@ class PageGem(BasePage):
             margin=ft.margin.only(left=50)
         )
 
-        self.add(
-            GenerateCard(level="warning",
-                         title="*REQUIREMENT*",
-                         subtitle="Pre-configure yellow-lineups with gathering gem commanders !",
+        self.add_control(
+            GenerateCard(level=translate("warning"),
+                         title=translate("*REQUIREMENT*"),
+                         subtitle=translate("Pre-configure yellow-lineups with gathering gem commanders!"),
                          margin=ft.margin.only(bottom=20),
                          ),
             ft.ResponsiveRow(
                 controls=[
-                    ft.Column(controls=[ft.TextField(label="Minimum running duration (mins)",
+                    ft.Column(controls=[ft.TextField(label=translate("Minimum running duration (mins)"),
                                                      value=self.data[str(self.instance_index)]['schedules'][
                                                          str(self.profile_index)][
                                                          "gather_gem_duration1"],
                                                      content_padding=ft.padding.all(10),
                                                      on_change=lambda e: self.submit(e, "gather_gem_duration1", int)
                                                      )], col=4),
-                    ft.Column(controls=[ft.TextField(label="Maximum running duration (mins)",
+                    ft.Column(controls=[ft.TextField(label=translate("Maximum running duration (mins)"),
                                                      value=self.data[str(self.instance_index)]['schedules'][
                                                          str(self.profile_index)][
                                                          "gather_gem_duration2"],
                                                      content_padding=ft.padding.all(10),
                                                      on_change=lambda e: self.submit(e, "gather_gem_duration2", int)
                                                      )], col=4),
-                    ft.Column(controls=[ft.TextField(label="Scanning radius (km) :",
+                    ft.Column(controls=[ft.TextField(label=translate("Scanning radius (km) :"),
                                                      value=self.data[str(self.instance_index)]['schedules'][
                                                          str(self.profile_index)]["radius"],
                                                      width=300,
@@ -114,7 +115,7 @@ class PageGem(BasePage):
             ),
 
             ft.Switch(
-                label="Spiral path method (only around your city)",
+                label=translate("Spiral path method (only around your city)"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_spiral_method"] else False,
@@ -122,7 +123,7 @@ class PageGem(BasePage):
             ),
             self.area_location,
             ft.Switch(
-                label="Detect free marches without clicking on the node",
+                label=translate("Detect free marches without clicking on the node"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_swipe_check"] else False,
@@ -130,35 +131,35 @@ class PageGem(BasePage):
             ),
             self.troop_scan_row,
             ft.Switch(
-                label="Set the maximum of nodes to gather",
+                label=translate("Set the maximum of nodes to gather"),
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_enable_node_limit"] else False,
                 on_change=lambda _: self.reverse_keyword("gather_gem_enable_node_limit")
             ),
             self.number_of_nodes,
             ft.Switch(
-                label="Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)",
+                label=translate("Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "recenter_feature"] else False,
                 on_change=lambda _: self.reverse_keyword("recenter_feature")
             ),
             ft.Switch(
-                label="Compare march speed (Increase gem gathering\nbut increase number of actions",
+                label=translate("Compare march speed (Increase gem gathering\nbut increase number of actions"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_gem_compare_march_duration"] else False,
                 on_change=lambda _: self.reverse_keyword("gather_gem_compare_march_duration")
             ),
             ft.Switch(
-                label="Restart the game randomly",
+                label=translate("Restart the game randomly"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "restart_game"] else False,
                 on_change=lambda _: self.reverse_keyword("restart_game")
             ),
             # ft.Switch(
-            #     label="Experimental feature",
+            #     label=translate("Experimental feature"),
             #
             #     value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
             #         "gem_experimental"] else False,
@@ -166,8 +167,6 @@ class PageGem(BasePage):
             # ),
 
         )
-
-        self.profile.initial_page.update()
 
     def reverse_keyword(self, keyword: str):
         super().reverse_keyword(keyword)

@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from views.settings.profile.rows.Flet_row_rss import FletRowRss
 from views.settings.page_base import BasePage
 from utils.flet_utils import GenerateCard
@@ -19,17 +20,17 @@ class PageRss(BasePage):
             "Seventh"
         ]
 
-        self.add(
-            GenerateCard(level="tips", subtitle="If you plan on having the safest configuration, take a look at 'Zoom out method' and 'random' node choice!"),
+        self.add_control(
+            GenerateCard(level=translate("tips"), subtitle=translate("If you plan on having the safest configuration, take a look at 'Zoom out method' and 'random' node choice!")),
             ft.Switch(
-                label="Use Yellow presets as gatherers",
+                label=translate("Use Yellow presets as gatherers"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "rss_custom_preset"] else False,
                 on_change=lambda _: self.reverse_keyword("rss_custom_preset")
             ),
             ft.Switch(
-                label="Use zoom out method\n(the bot won't read node levels but is safer)",
+                label=translate("Use zoom out method\n(the bot won't read node levels but is safer)"),
 
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     "gather_rss_method"] else False,
@@ -38,11 +39,8 @@ class PageRss(BasePage):
         )
 
         for key in keys:
-            self.add(
+            self.add_control(
                 FletRowRss(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
-
-
-        self.profile.initial_page.update()
 
     def reverse_keyword(self, keyword: str):
         super().reverse_keyword(keyword)

@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from views.settings.profile.rows.Flet_row_troops import FletRowTraining
 from views.settings.page_base import BasePage
 
@@ -16,12 +17,10 @@ class PageTraining(BasePage):
         ]
 
         for key in keys:
-            self.add(
+            self.add_control(
                 FletRowTraining(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
 
-        self.add(
-            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Training camps position",
+        self.add_control(
+            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text=translate("Set Training camps position"),
                               on_click=lambda _: self.initial_page.go(
                                   f"/citylayout/{self.instance_index}/{self.profile_index}")))
-
-        self.profile.initial_page.update()
