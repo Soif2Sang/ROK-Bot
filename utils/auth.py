@@ -12,7 +12,7 @@ import win32security
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
-from utils.Task_utils import FileSingleton, BREZILIAN
+from utils.Task_utils import FileSingleton, BREZILIAN, LinkSingleton
 
 fileSingleton = FileSingleton()
 
@@ -140,12 +140,20 @@ class selfApi:
             self.setvar("HWID2", hwid)
             wid2 = hwid
 
-        if (wid1 != hwid) and (wid2 != hwid):
-            if self.page is not None:
-                self.log(f"user :{user} tried connecting on {public_ip}")
-                self.page.open_banner("Hardware id doesn't match, contact the admin")
-            print("Hardware id doesn't match")
-            return False
+        if BREZILIAN:
+            if (wid1 != hwid):
+                if self.page is not None:
+                    self.log(f"user :{user} tried connecting on {public_ip}")
+                    self.page.open_banner("Hardware id doesn't match, contact the admin")
+                print("Hardware id doesn't match")
+                return False
+        else:
+            if (wid1 != hwid) and (wid2 != hwid):
+                if self.page is not None:
+                    self.log(f"user :{user} tried connecting on {public_ip}")
+                    self.page.open_banner("Hardware id doesn't match, contact the admin")
+                print("Hardware id doesn't match")
+                return False
 
         if json["success"]:
             self.__load_user_data(json["info"])
@@ -160,11 +168,11 @@ class selfApi:
                     content = ft.Column(controls=[
                         ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
                                       on_click=lambda _: self.page.launch_url(
-                                          "https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                                          LinkSingleton().getStripeLink()),
                                       ),
                         ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
                                       on_click=lambda _: self.page.launch_url(
-                                          "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
+                                          LinkSingleton().getSellixLink()))
 
                     ])
                 else:
