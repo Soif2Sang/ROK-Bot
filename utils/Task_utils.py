@@ -20,7 +20,7 @@ from numpy import ndarray
 dir = "./"
 DEBUG = False
 BREZILIAN = False
-VERSION = '1'
+VERSION = '1.0'
 toasts_history = {}
 
 def word_to_color(word):

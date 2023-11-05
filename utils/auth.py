@@ -81,7 +81,7 @@ class selfApi:
 
         if response == "KeyAuth_Invalid":
             print("The application doesn't exist")
-            self.kill_app()
+            kill_app()
 
         response = encryption.decrypt(response, self.secret, init_iv)
         json = jsond.loads(response)
@@ -91,14 +91,14 @@ class selfApi:
                 print("New Version Available")
                 download_link = json["download"]
                 os.system(f"start {download_link}")
-                self.kill_app()
+                kill_app()
             else:
                 print("Invalid Version, Contact owner to add download link to latest app version")
-                self.kill_app()
+                kill_app()
 
         if not json["success"]:
             print(json["message"])
-            self.kill_app()
+            kill_app()
 
         self.sessionid = json["sessionid"]
         self.initialized = True
@@ -311,7 +311,6 @@ class selfApi:
     def check(self):
         self.checkinit()
         init_iv = SHA256.new(str(uuid4())[:8].encode()).hexdigest()
-        print(self.name)
         post_data = {
             "type": binascii.hexlify("check".encode()),
             "sessionid": binascii.hexlify(self.sessionid.encode()),
@@ -319,13 +318,16 @@ class selfApi:
             "ownerid": binascii.hexlify(self.ownerid.encode()),
             "init_iv": init_iv
         }
-        response = self.__do_request(post_data)
+        try:
+            response = self.__do_request(post_data)
 
-        response = encryption.decrypt(response, self.enckey, init_iv)
-        json = jsond.loads(response)
-        if json["success"]:
-            return True
-        else:
+            response = encryption.decrypt(response, self.enckey, init_iv)
+            json = jsond.loads(response)
+            if json["success"]:
+                return True
+            else:
+                return False
+        except:
             return False
 
     def log(self, message):
