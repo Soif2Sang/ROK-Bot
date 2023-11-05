@@ -148,8 +148,7 @@ class UpgradeCity(Task):
         x, y = ch_position
 
         already_upgrading = self.adb.find_multiple_img("already_upgrading", confidence=0.7)
-        print(ch_position)
-        print(already_upgrading)
+
         for co in already_upgrading:
             if x - 120 < co[0] < x + 10 and y - 20 < co[1] < y + 90:
                 return
