@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 from views.settings.profile.rows.Flet_row_presets import FletRowPresets
 from utils.flet_utils import GenerateCard
@@ -9,10 +10,10 @@ class PageMarauders(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
 
-        self.add(
-            GenerateCard(level="tips", margin=ft.margin.only(bottom=20), subtitle="Pre-configure your red lineups with commanders who have the same march speed.\nIf you intend to use this feature extensively, I recommend running it for 3-4 hours and enabling the option to redo tasks. This will allow your troops to return to the city for healing."),
+        self.add_control(
+            GenerateCard(level=translate("tips"), margin=ft.margin.only(bottom=20), subtitle=translate("Pre-configure your red lineups with commanders who have the same march speed.\nIf you intend to use this feature extensively, I recommend running it for 3-4 hours and enabling the option to redo tasks. This will allow your troops to return to the city for healing.")),
             ft.Container(content=ft.ResponsiveRow(controls=[
-                ft.Column(controls=[ft.TextField(label="Your kingdom :",
+                ft.Column(controls=[ft.TextField(label=translate("Your kingdom :"),
                                                  value=
                                                  self.data[str(self.instance_index)]['schedules'][
                                                      str(self.profile_index)][
@@ -20,7 +21,7 @@ class PageMarauders(BasePage):
                                                  content_padding=ft.padding.all(10),
                                                  on_change=lambda e: self.submit(e, "kingdom", str),
                                                  )], col=4),
-                ft.Column(controls=[ft.TextField(label="Area location X coordinates :",
+                ft.Column(controls=[ft.TextField(label=translate("Area location X coordinates :"),
                                                  value=
                                                  self.data[str(self.instance_index)]['schedules'][
                                                      str(self.profile_index)][
@@ -29,7 +30,7 @@ class PageMarauders(BasePage):
                                                  on_change=lambda e: self.submit(e, "city_x", int),
 
                                                  )], col=4),
-                ft.Column(controls=[ft.TextField(label="Area location Y coordinates :",
+                ft.Column(controls=[ft.TextField(label=translate("Area location Y coordinates :"),
                                                  value=
                                                  self.data[str(self.instance_index)]['schedules'][
                                                      str(self.profile_index)][
@@ -42,14 +43,14 @@ class PageMarauders(BasePage):
             ,
             ft.ResponsiveRow(
                 controls=[
-                    ft.Column(controls=[ft.TextField(label="Minimum Killing Duration (mins)",
+                    ft.Column(controls=[ft.TextField(label=translate("Minimum Killing Duration (mins)"),
                                                      value=self.data[str(self.instance_index)]['schedules'][
                                                          str(self.profile_index)][
                                                          "kill_marauders_duration"][0],
                                                      content_padding=ft.padding.all(10),
                                                      on_change=lambda e: self.submit_marauders(e, 0)
                                                      )], col=6),
-                    ft.Column(controls=[ft.TextField(label="Maximum Killing Duration (mins)",
+                    ft.Column(controls=[ft.TextField(label=translate("Maximum Killing Duration (mins)"),
                                                      value=self.data[str(self.instance_index)]['schedules'][
                                                          str(self.profile_index)][
                                                          "kill_marauders_duration"][1],
@@ -60,7 +61,7 @@ class PageMarauders(BasePage):
             ),
 
             ft.Divider(),
-            ft.Text(value="Peacekeeper presets"),
+            ft.Text(value=translate("Peacekeeper presets")),
             ft.Column(
                 controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in
                           range(1, 8)],
@@ -70,7 +71,6 @@ class PageMarauders(BasePage):
                 height=150
             )
         )
-        self.profile.initial_page.update()
 
     def submit_marauders(self, e, index):
         self.data = self.FileSingleton.get_data()

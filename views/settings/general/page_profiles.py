@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 
 from flet_core import ButtonStyle, RoundedRectangleBorder
@@ -8,18 +9,18 @@ class PageProfiles(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
 
-        self.add(
+        self.add_control(
             ft.Row(
                 controls=[
                     ft.Switch(
-                        label="Profile n°1",
+                        label=translate("Profile n°1"),
                         active_track_color="#3b8ed0",
                         value=True if self.data[str(self.instance_index)]['schedules'][str(1)][
                             "enabled"] else False,
                         on_change=lambda _: self.reverse_keyword("enabled", 1)
                     ),
                     ft.OutlinedButton(
-                        text="Settings",
+                        text=translate("Settings"),
                         icon_color="#3b8ed0",
                         icon=ft.icons.SETTINGS,
                         on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/1/settings"),
@@ -31,14 +32,14 @@ class PageProfiles(BasePage):
             ft.Row(
                 controls=[
                     ft.Switch(
-                        label="Profile n°2",
+                        label=translate("Profile n°2"),
                         active_track_color="#ba4543",
                         value=True if self.data[str(self.instance_index)]['schedules'][str(2)][
                             "enabled"] else False,
                         on_change=lambda _: self.reverse_keyword("enabled", 2)
                     ),
                     ft.OutlinedButton(
-                        text="Settings",
+                        text=translate("Settings"),
                         icon_color="#ba4543",
                         icon=ft.icons.SETTINGS,
                         on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/2/settings"),
@@ -50,14 +51,14 @@ class PageProfiles(BasePage):
             ft.Row(
                 controls=[
                     ft.Switch(
-                        label="Profile n°3",
+                        label=translate("Profile n°3"),
                         active_track_color="#dec433",
                         value=True if self.data[str(self.instance_index)]['schedules'][str(3)][
                             "enabled"] else False,
                         on_change=lambda _: self.reverse_keyword("enabled", 3)
                     ),
                     ft.OutlinedButton(
-                        text="Settings",
+                        text=translate("Settings"),
                         icon_color="#dec433",
                         icon=ft.icons.SETTINGS,
                         on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/3/settings"),

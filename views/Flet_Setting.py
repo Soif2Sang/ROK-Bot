@@ -2,6 +2,7 @@ import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 from flet_route import path
 
+from utils.flet_translations import translate
 from utils.Task_utils import FileSingleton
 from views.city_layout import CityPlacement
 from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
@@ -38,7 +39,6 @@ class SettingContainer(ft.Container):
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
-        # self.tabs = tab
         self.initial_page = page
         self.instance_index = instance_index
         self.profile_index = profile_index
@@ -63,7 +63,7 @@ class SettingContainer(ft.Container):
                              ]
                              )
                              ),
-                ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
+                ft.Text(value=translate("Click on the building button you wanna set, then click in the center of the building.")),
                 CityPlacement(self.instance_index, self.profile_index)
             ]
         )
@@ -78,7 +78,7 @@ class SettingContainer(ft.Container):
                 ft.Container(bgcolor="#ecf0f1",
                              content=ft.Row(controls=[
                                  ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
-                                 ft.Text(value="Go back")
+                                 ft.Text(value=translate("Go back"))
                              ]
                              )
                              ),
@@ -155,7 +155,7 @@ class SettingContainer(ft.Container):
         self.create_slow_mode()
         self.create_advanced_switch("switch_character", "Switch Characters", PageCharacter)
 
-    def reset(self):
+    def goBack(self):
         self.content.controls = []
         self.init()
         self.initial_page.update()
@@ -452,594 +452,6 @@ class SettingContainer(ft.Container):
             )
         )
 
-        self.content.controls.append(
-            ft.Divider(),
-        )
-        # self.show_cords_page()
-        keys = [
-            "infantry",
-            "cavalry",
-            "archery",
-            "siege",
-        ]
-        for key in keys:
-            self.content.controls.append(
-                FletRowTraining(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
-            # self.content.controls.append(ft.Divider())
-        # self.content.controls.append(ft.Divider())
-        self.content.controls.append(
-            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Training camps position",
-                              on_click=lambda _: self.show_cords_page()))
-        self.initial_page.update()
-
-    def page_rss(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        # self.tabs.expand = True
-        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), spacing=3)
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.append(
-            ft.Divider(),
-        )
-        keys = [
-            "First",
-            "Second",
-            "Third",
-            "Fourth",
-            "Fifth",
-            "Sixth",
-            "Seventh"
-        ]
-        self.data = self.FileSingleton.get_data()
-        self.content.controls.append(
-            ft.Switch(
-                label="Use Yellow presets as gatherers",
-                active_track_color=self.color_choice,
-                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                    "rss_custom_preset"] else False,
-                on_change=lambda _: self.reverse_keyword("rss_custom_preset")
-            )
-        )
-        self.content.controls.append(
-            ft.Switch(
-                label="Use zoom out method (the bot won't read levels)",
-                active_track_color=self.color_choice,
-                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                    "gather_rss_method"] else False,
-                on_change=lambda _: self.reverse_keyword("gather_rss_method")
-            )
-        )
-        for key in keys:
-            self.content.controls.append(
-                FletRowRss(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
-
-        self.initial_page.update()
-
-    def page_fog(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.extend([
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            ),
-            ft.Divider(),
-            ft.Row(
-                controls=[
-                    ft.Text("Scout duration (mins)"),
-                    ft.TextField(label="Minimum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "scout_duration1"],
-                                 width=80,
-                                 on_change=lambda e: self.submit(e, "scout_duration1", int)
-                                 ),
-                    ft.Text("~"),
-                    ft.TextField(label="Maximum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "scout_duration2"],
-                                 width=90,
-                                 on_change=lambda e: self.submit(e, "scout_duration2", int)),
-                ]
-            ),
-            ft.Divider(),
-            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Scout camp position",
-                              on_click=lambda _: self.show_cords_page()),
-
-        ]
-        )
-        self.initial_page.update()
-
-    def page_heal(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.extend([
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            ),
-            ft.Divider(),
-            ft.TextField(label="Heal batch :",
-                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                             "healing_count"],
-                         width=300,
-                         on_change=lambda e: self.submit(e, "healing_count", int),
-                         ),
-            ft.Divider(),
-            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set Hospital position",
-                              on_click=lambda _: self.show_cords_page()),
-
-        ]
-        )
-        self.initial_page.update()
-
-    def page_materials(self):
-        self.data = self.FileSingleton.get_data()
-        # self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), spacing=5)
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.append(
-            ft.Divider(),
-        )
-        keys = [
-            "First",
-            "Second",
-            "Third",
-            "Fourth",
-            "Fifth",
-        ]
-        for i in range(1, 6):
-            self.content.controls.append(
-                FletRowMaterial(keys=keys, i=i, instance_index=self.instance_index, profile_index=self.profile_index))
-        self.initial_page.update()
-
-    def page_transfer(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.append(ft.Text(
-            value="/!\ This feature require a custom ApiKey /!\ \n""/!\ This feature is on beta and may crash /!\ \n",
-            size=15, color="red"))
-        self.content.controls.append(ft.Divider())
-        self.content.controls.append(
-            FletColumnRss(self.instance_index, self.profile_index)
-        )
-        self.content.controls.append(ft.Divider())
-        self.content.controls.append(ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text="Set City Position",
-                                                       on_click=lambda _: self.show_cords_page()))
-        self.initial_page.update()
-
-    def page_barbs(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.append(ft.Divider(), )
-        self.content.controls.extend([
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*REQUIREMENT*\n",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Pre-configure red-lineups with PeaceKeeper commanders !\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                    ft.TextSpan(
-                        "Avoid AOE ",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "if you're using this function on low accounts\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                    ft.TextSpan(
-                        "The bot is",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                    ft.TextSpan(
-                        " unable ",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-
-                    ft.TextSpan(
-                        "to see the troops health",
-                        style=ft.TextStyle(size=15, color="red"),
-                    ),
-                ]
-            ),
-            ft.Text("You should only use this with natural AP bar.", color="orange", size=15),
-            ft.Divider(),
-            ft.Row(
-                controls=[
-                    ft.Text(value="Barbarian Level"),
-                    ft.Dropdown(
-                        width=70,
-                        height=50,
-                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                        options=[
-                            ft.dropdown.Option(str(i)) for i in range(1, 56)
-                        ],
-                        on_change=lambda e: self.submit(e, "barbarians_level", str),
-                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                            "barbarians_level"]
-                    )
-                ]
-                , width=300
-            ),
-            ft.Divider(),
-            ft.Text(value="Peacekeeper presets"),
-            ft.Column(
-                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in
-                          range(1, 8)],
-                wrap=True,
-                spacing=10,
-                run_spacing=10,
-                height=150
-            )
-        ]
-        )
-        self.initial_page.update()
-
-    def page_rally(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.append(ft.Divider(), )
-        keys = [
-            "First",
-            "Second",
-            "Third",
-            "Fourth",
-            "Fifth",
-            "Sixth",
-            "Seventh"
-        ]
-        self.content.controls.extend([
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*REQUIREMENT*\n",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Pre-configure first slot of red line-up with rally Leader !",
-                        style=ft.TextStyle(size=15, color="red"),
-                    )
-                ]
-            ),
-
-            ft.Switch(
-                label="Look for Marauders forts",
-                active_track_color=self.color_choice,
-                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                    "mauraudeurs_forts"] else False,
-                on_change=lambda _: self.reverse_keyword("mauraudeurs_forts")
-            ),
-            ft.Switch(
-                label="Skip commander back",
-                active_track_color=self.color_choice,
-                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                    "rally_skip_back"] else False,
-                on_change=lambda _: self.reverse_keyword("rally_skip_back")
-            ),
-            ft.Row(
-                controls=[
-                    ft.Container(
-                        width=100,
-                        content=ft.Text(f"Mobilisation time (minutes):"),
-                        alignment=ft.alignment.center_right
-                    ),
-
-                    ft.Dropdown(
-                        width=140, height=50,
-                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                        label="Minutes",
-                        options=[
-                            ft.dropdown.Option("5"),
-                            ft.dropdown.Option("10"),
-                            ft.dropdown.Option("30"),
-                        ],
-                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["rally_time"],
-                        on_change=lambda e: self.submit(e, "rally_time", int)
-                    )
-                ]
-            ),
-            ft.Row(
-                controls=[
-                    ft.Container(
-                        width=100,
-                        content=ft.Text(f"Rally type :"),
-                        alignment=ft.alignment.center_right
-                    ),
-
-                    ft.Dropdown(
-                        width=140, height=50,
-                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                        label="Type",
-                        options=[
-                            ft.dropdown.Option("cav"),
-                            ft.dropdown.Option("inf"),
-                            ft.dropdown.Option("archers"),
-                        ],
-                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["rally_type"],
-                        on_change=lambda e: self.submit(e, "rally_type", str)
-                    )
-                ]
-            ),
-
-        ]
-
-        )
-        self.initial_page.update()
-
-    def page_character(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        # self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            ))
-        self.content.controls.append(ft.Divider(), )
-        self.content.controls.append(
-            ft.Switch(
-                label="Restart the game after switching\nto a new character (prevent freeze)",
-                active_track_color=self.color_choice,
-                value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                    "leave_game_switch_character"] else False,
-                on_change=lambda _: self.reverse_keyword("leave_game_switch_character")
-            )
-        )
-        self.initial_page.update()
-
-    def page_logback(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        # self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.extend([
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            ),
-            ft.Divider(),
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "Time to wait before the bot log  back from your connection(minutes):\n",
-                        style=ft.TextStyle(size=15, color="black"),
-                    )
-                ]
-            ),
-            ft.Row(
-                controls=[
-                    ft.TextField(label="Minimum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "log_back1"],
-                                 width=80,
-                                 on_change=lambda e: self.submit(e, "log_back1", int)
-                                 ),
-                    ft.Text("~"),
-                    ft.TextField(label="Maximum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "log_back2"],
-                                 width=90,
-                                 on_change=lambda e: self.submit(e, "log_back2", int)
-                                 )
-                ]
-            )
-        ]
-        )
-
-        self.initial_page.update()
-
-    def page_profile(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        # self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.extend([
-            ft.Divider(),
-            ft.Row(
-                controls=[
-                    ft.Switch(
-                        label="Profile n°1",
-                        active_track_color="#3b8ed0",
-                        value=True if self.data[str(self.instance_index)]['schedules'][str(1)][
-                            "enabled"] else False,
-                        on_change=lambda _: self.reverse_keyword("enabled", 1)
-                    ),
-                    ft.OutlinedButton(
-                        text="Settings",
-                        icon_color="#3b8ed0",
-                        icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/1/settings"),
-                        style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            ),
-            ft.Row(
-                controls=[
-                    ft.Switch(
-                        label="Profile n°2",
-                        active_track_color="#ba4543",
-                        value=True if self.data[str(self.instance_index)]['schedules'][str(2)][
-                            "enabled"] else False,
-                        on_change=lambda _: self.reverse_keyword("enabled", 2)
-                    ),
-                    ft.OutlinedButton(
-                        text="Settings",
-                        icon_color="#ba4543",
-                        icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/2/settings"),
-                        style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            ),
-            ft.Row(
-                controls=[
-                    ft.Switch(
-                        label="Profile n°3",
-                        active_track_color="#dec433",
-                        value=True if self.data[str(self.instance_index)]['schedules'][str(3)][
-                            "enabled"] else False,
-                        on_change=lambda _: self.reverse_keyword("enabled", 3)
-                    ),
-                    ft.OutlinedButton(
-                        text="Settings",
-                        icon_color="#dec433",
-                        icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/3/settings"),
-                        style=ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5), })
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            )]
-
-        )
-        self.initial_page.update()
-
-    def page_redo(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        # self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        # self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-        self.content.controls.append(ft.Divider(), )
-        self.content.controls.extend([
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*Randomise it as much as possible*\n",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Time to wait before the bot re-do the tasks selected (minutes):\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    )
-                ]
-            ),
-            ft.Row(
-                controls=[
-                    ft.TextField(label="Minimum",
-                                 value=self.data[str(self.instance_index)]["time_to_wait_loop1"],
-                                 width=80,
-                                 on_change=lambda e: self.submit(e, "time_to_wait_loop1", int)
-                                 ),
-                    ft.Text("~"),
-                    ft.TextField(label="Maximum",
-                                 value=self.data[str(self.instance_index)]["time_to_wait_loop2"],
-                                 width=90,
-                                 on_change=lambda e: self.submit(e, "time_to_wait_loop2", int)
-                                 )
-                ]
-            ),
-            ft.Switch(label="Close the game after all the tasks are done",
-                      value=self.data[str(self.instance_index)]["leave_game_loop"],
-                      on_change=lambda _: self.reverse_keyword('leave_game_loop'))
-        ]
-        )
         self.initial_page.update()
 
     def reverse_keyword(self, keyword: str, index=None):
@@ -1049,8 +461,6 @@ class SettingContainer(ft.Container):
             self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not \
                 self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
         else:
-            print(keyword, self.data[str(self.instance_index)][keyword])
-
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)
 
@@ -1058,7 +468,7 @@ class SettingContainer(ft.Container):
         self.data = self.FileSingleton.get_data()
         self.content.controls.append(
             ft.Switch(
-                label=text,
+                label=translate(text),
                 active_track_color=self.color_choice,
                 value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                     keyword] else False,
@@ -1073,7 +483,7 @@ class SettingContainer(ft.Container):
                 ft.Row(
                     controls=[
                         ft.Switch(
-                            label=text,
+                            label=translate(text),
                             active_track_color=self.color_choice,
                             value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                                 keyword] else False,
@@ -1081,10 +491,10 @@ class SettingContainer(ft.Container):
 
                         ),
                         ft.OutlinedButton(
-                            text="Settings",
+                            text=translate("Settings"),
                             icon_color=self.color_choice,
                             icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(self)
+                            on_click=lambda _: self.newPage(function)
                             , style=ButtonStyle(shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                             })
@@ -1098,16 +508,16 @@ class SettingContainer(ft.Container):
                 ft.Row(
                     controls=[
                         ft.Switch(
-                            label=text,
+                            label=translate(text),
                             active_track_color=self.color_choice,
                             value=True if self.data[str(self.instance_index)][keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
-                            text="Settings",
+                            text=translate("Settings"),
                             icon_color=self.color_choice,
                             icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(self), style=ButtonStyle(shape={
+                            on_click=lambda _: self.newPage(function), style=ButtonStyle(shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                             }, ),
                         )
@@ -1116,6 +526,10 @@ class SettingContainer(ft.Container):
                 ),
 
             )
+
+    def newPage(self, function):
+        function(self)
+        self.initial_page.update()
 
     def create_barbs_row(self):
         self.content.controls.append(ft.Row

@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.flet_utils import GenerateCard
 from views.settings.page_base import BasePage
 
@@ -8,14 +9,14 @@ class PageRedo(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
 
-        self.add(
-            GenerateCard(level="warning", title="Time to wait until the bot do the task again.", subtitle="You need to be aware that using tight timings can lead to unwanted behaviors."),
-            ft.Switch(label="Close the game after all the tasks are done",
+        self.add_control(
+            GenerateCard(level="warning", title=translate("Time to wait until the bot do the task again."), subtitle=translate("You need to be aware that using tight timings can lead to unwanted behaviors.")),
+            ft.Switch(label=translate("Close the game after all the tasks are done"),
                       value=self.data[str(self.instance_index)]["leave_game_loop"],
                       on_change=lambda _: self.reverse_keyword('leave_game_loop')
                       ),
             ft.Container(ft.Text(
-                "Minutes to wait until the bot do the task :",
+                translate("Minutes to wait until the bot do the task :"),
             ),
                 margin=ft.margin.only(left=5)
             ),
@@ -23,14 +24,14 @@ class PageRedo(BasePage):
                 content=ft.ResponsiveRow(
                     controls=[
                         ft.TextField(
-                            label="Minimum",
+                            label=translate("Minimum"),
                             value=self.data[str(self.instance_index)]["time_to_wait_loop1"],
                             on_change=lambda e: self.submit(e, "time_to_wait_loop1", int),
                             content_padding=ft.padding.all(10),
                             col=4
                         ),
                         ft.TextField(
-                            label="Maximum",
+                            label=translate("Maximum"),
                             value=self.data[str(self.instance_index)]["time_to_wait_loop2"],
                             on_change=lambda e: self.submit(e, "time_to_wait_loop2", int),
                             content_padding=ft.padding.all(10),

@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.Task_utils import FileSingleton
 
 
@@ -13,7 +14,7 @@ class FletRowMaterial(ft.Row):
         self.controls = [
             ft.Container(
                 width=100,
-                content=ft.Text(f"{keys[i - 1]} choice :"),
+                content=ft.Text(translate(f"{keys[i - 1]} choice :")),
                 alignment=ft.alignment.center_right
             ),
 

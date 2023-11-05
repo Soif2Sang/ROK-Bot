@@ -3,6 +3,7 @@ from random import randint
 
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.flet_utils import GenerateCard
 from utils.Task_utils import FileSingleton
 from datetime import datetime, timedelta
@@ -129,9 +130,7 @@ class ManagerTimezone(ft.ListView):
         #                                    "When entering the time, please use the 'hours:minutes' format, following a 24-hour clock notation.\nFor example, 02:00 pm should be entered as 14:00, aligning with your computer's 24-hour clock time.\n"
         #                                    "It's essential to adjust your re-do task timings carefully to avoid unintentionally running the profile twice during the same frametime.\n\n"
         #                                    "Enjoy the power of customizing your profile activation schedule!"))
-        val = "" + \
-        "The time format should be 'hh:mm' and work on a 24-hour clock and on your computer clock.\n" + \
-        "exemple:\n     - start : 02:00 / end : 04:00 means the script will start exclusively between 02:00 and 04:00."
+        val = translate("The time format should be 'hh:mm' and work on a 24-hour clock and on your computer clock.\nexemple:\n     - start : 02:00 / end : 04:00 means the script will start exclusively between 02:00 and 04:00.")
         self.controls.append(
             GenerateCard(
                 subtitle=val,
@@ -143,13 +142,13 @@ class ManagerTimezone(ft.ListView):
             ft.Row(
                 controls=[
                     ft.Switch(
-                        label="Enable profile frametime",
+                        label=translate("Enable profile frametime"),
                         active_track_color=color_bank[int(self.profile)],
                         value=True if self.data[str(self.instance)]['schedules'][str(self.profile)][
                             "enable_timing"] else False,
                         on_change=lambda _: self.reverse_keyword("enable_timing")
                     ),
-                    ft.ElevatedButton(text="Add new rule", on_click=lambda _: self.add_tile(),icon=ft.icons.ADD)
+                    ft.ElevatedButton(text=translate("Add new rule"), on_click=lambda _: self.add_tile(),icon=ft.icons.ADD)
                 ],
                 spacing=50
             )

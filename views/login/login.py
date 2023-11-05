@@ -6,9 +6,10 @@ from time import sleep
 
 import flet as ft
 
+from utils.flet_translations import translate
 from views._main import Main
 from utils.auth import selfApi, update_user_info
-from utils.Task_utils import FileSingleton, ApiSingleton, getchecksum, BREZILIAN
+from utils.Task_utils import FileSingleton, ApiSingleton, getchecksum, BREZILIAN, LinkSingleton
 
 
 def is_str_valid(username, password):
@@ -38,15 +39,15 @@ class LoginUI(ft.Column):
             self.initial_page.update()
 
         self.initial_page.banner = ft.Banner(
-            bgcolor=ft.colors.AMBER_100,
+            bgcolor=ft.colors.OUTLINE_VARIANT,
             content=ft.Column(controls=[
                 ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
                               on_click=lambda _: self.initial_page.launch_url(
-                                  "https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
+                                  LinkSingleton().getStripeLink()),
                               ),
                 ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
                               on_click=lambda _: self.initial_page.launch_url(
-                                  "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
+                                  LinkSingleton().getSellixLink()))
 
             ]),
             actions=[
@@ -135,23 +136,23 @@ class LoginUI(ft.Column):
 
     def init(self):
         self.textfield_username = ft.TextField(
-            label="Username",
+            label=translate("Username"),
             width=300,
             value=self.data.get("user", {}).get("username", "")
         )
         self.textfield_password = ft.TextField(
-            label="Password",
+            label=translate("Password"),
             password=True,
             can_reveal_password=True,
             width=300,
             value=self.data.get("user", {}).get("password", "")
         )
         self.button_login = ft.OutlinedButton(
-            text="Login",
+            text=translate("Login"),
             on_click=self.login
         )
         self.subscribe_button = ft.FilledTonalButton(
-            text="Subscribe",
+            text=translate("Subscribe"),
             on_click=self.show_banner
         )
 

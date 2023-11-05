@@ -1,6 +1,7 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from utils.flet_translations import translate
 from utils.Task_utils import FileSingleton
 
 
@@ -14,15 +15,15 @@ class BasePage():
         self.profile_index = profile.profile_index
         self.profile = profile
         self.profile.content.controls = []
-        self.add(
+        self.add_control(
             ft.Container(
                 content=ft.Row(
                     controls=[
                         ft.IconButton(
                             icon=ft.icons.ARROW_BACK,
-                            on_click=lambda _: self.profile.reset()
+                            on_click=lambda _: self.profile.goBack()
                         ),
-                        ft.Text("Settings", size=20),
+                        ft.Text(value=translate("Settings"), size=20),
                     ],
                 ),
                 padding = ft.padding.only(top=5, left=0, bottom=0)
@@ -34,23 +35,20 @@ class BasePage():
         self.profile.content.scroll_to(delta=-1000, duration=1)
         self.initial_page.update()
 
-    def add(self, *control):
+    def add_control(self, *control):
         for ctrl in control:
             self.profile.content.controls.append(ctrl)
-
-    def clean(self):
-        self.profile.content.controls = []
-        self.initial_page.update()
-
-    def update(self):
-        self.profile.initial_page.update()
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", 'API_KEY']:
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
+            if e.control.value.strip() == '':
+                self.data[str(self.instance_index)][keyword] = 0
+                e.control.value = '0'
+            else:
+                self.data[str(self.instance_index)][keyword] = method(e.control.value)
         elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            if e.control.value == '':
+            if e.control.value.strip() == '':
                 self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(0)
             else:
                 self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(
@@ -85,7 +83,7 @@ class BasePage():
     def create_normal_switch(self, keyword: str, text: str):
         self.data = self.FileSingleton.get_data()
         return ft.Switch(
-            label=text,
+            label=translate(text),
 
             value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                 keyword] else False,
@@ -98,7 +96,7 @@ class BasePage():
             return ft.Row(
                 controls=[
                     ft.Switch(
-                        label=text,
+                        label=translate(text),
 
                         value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
                             keyword] else False,
@@ -106,7 +104,7 @@ class BasePage():
 
                     ),
                     ft.OutlinedButton(
-                        text="Settings",
+                        text=translate("Settings"),
                         icon=ft.icons.SETTINGS,
                         on_click=lambda _: function()
                         , style=ButtonStyle(shape={
@@ -120,13 +118,13 @@ class BasePage():
             return ft.Row(
                 controls=[
                     ft.Switch(
-                        label=text,
+                        label=translate(text),
 
                         value=True if self.data[str(self.instance_index)][keyword] else False,
                         on_change=lambda _: self.reverse_keyword(keyword),
                     ),
                     ft.OutlinedButton(
-                        text="Settings",
+                        text=translate("Settings"),
                         icon=ft.icons.SETTINGS,
                         on_click=lambda _: function(), style=ButtonStyle(shape={
                             ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),

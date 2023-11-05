@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.Task_utils import FileSingleton
 
 
@@ -12,7 +13,7 @@ class FletRowRss(ft.ResponsiveRow):
         self.profile_index = profile_index
         self.controls=[
                     ft.Column(
-                        controls=[ft.Container(ft.Text(f"{key} choice :"), alignment=ft.alignment.center_right)],
+                        controls=[ft.Container(ft.Text(translate(f"{key} choice :")), alignment=ft.alignment.center_right)],
 
                         col=4,
                         height=50
@@ -20,7 +21,7 @@ class FletRowRss(ft.ResponsiveRow):
 
                     ft.Column(controls=[ft.Dropdown(
                         content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                        label="Node Type",
+                        label=translate("Node Type"),
                         options=[
                             ft.dropdown.Option("food"),
                             ft.dropdown.Option("wood"),
@@ -36,7 +37,7 @@ class FletRowRss(ft.ResponsiveRow):
 
                     ft.Column(controls=[ft.Dropdown(
                         content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                        label="Node Level",
+                        label=translate("Node Level"),
                         options=[
                             ft.dropdown.Option("1"),
                             ft.dropdown.Option("2"),
