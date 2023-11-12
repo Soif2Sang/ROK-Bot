@@ -1,7 +1,7 @@
 import flet as ft
 
 from utils.flet_translations import translate
-from utils.flet_utils import GenerateCard
+from Components.card import GenerateCard
 from views.settings.page_base import BasePage
 
 

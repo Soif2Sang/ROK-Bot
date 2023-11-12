@@ -1,21 +1,18 @@
+import io
 import shutil
+import subprocess
+import traceback
 from datetime import date
 from os.path import exists
 from time import sleep
 
-import cv2
-import numpy as np
-from ppadb.client import Client as PPADBClient
-import subprocess
-import traceback
-from numpy import array, where, ndarray
-# noinspection PyProtectedMember
-from cv2 import cvtColor, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, COLOR_BGR2HSV, inRange
-import io
 import pytesseract as tess
 from PIL import Image
+from cv2 import cvtColor, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, COLOR_BGR2HSV, inRange
+from numpy import array, where, ndarray
+from ppadb.client import Client as PPADBClient
 
-from utils.Task_utils import current_time, FileSingleton, get_dic_instances
+from utils.functions import current_time, FileSingleton, get_dic_instances
 from utils.resources import ImageSingleton
 
 bridge = None
@@ -259,11 +256,11 @@ class Adb:
         return localisations
 
     def is_game_alive(self):
-        string = "dumpsys activity activities | grep mFocusedActivity"
-        a = self.shell(string)
-        # print(a)
-        return 'lilithgame' in a or 'rok' in a or 'lilithgames' in a
-
+        # string = "dumpsys activity activities | grep mFocusedActivity"
+        a = self.get_device().get_top_activity()
+        if a:
+            return 'lilithgame' in str(a) or 'rok' in str(a) or 'lilithgames' in str(a)
+        return False
     def click(self, x, y):
         string = f'input tap {x} {y}'
         self.shell(string)

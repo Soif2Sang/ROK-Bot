@@ -3,7 +3,7 @@ from random import uniform, shuffle
 import cv2
 
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_name
+from utils.functions import get_class, get_name
 
 
 class UseEnhancedBuff(Task):

@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 
 from tasks.Task import Task
-from utils.Task_utils import get_class
+from utils.functions import get_class
 
 
 class ClaimMail(Task):

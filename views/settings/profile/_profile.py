@@ -16,7 +16,7 @@ from views.settings.profile.page_training import PageTraining
 from views.settings.profile.page_transfer import PageTransfer
 from views.settings.profile.page_rss import PageRss
 from views.settings.profile.page_gem import PageGem
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 color_bank = {
     1: "#3b8ed0",

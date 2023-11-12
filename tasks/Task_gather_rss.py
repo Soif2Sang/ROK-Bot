@@ -5,7 +5,7 @@ from time import sleep
 from PIL import Image
 
 from tasks.Task import Task
-from utils.Task_utils import get_name, get_class
+from utils.functions import get_name, get_class
 
 
 # from utils.easyOcr import Reader

@@ -2,7 +2,7 @@ from random import uniform, randint
 from time import sleep, time
 
 from tasks.Task import Task
-from utils.Task_utils import get_class
+from utils.functions import get_class
 
 
 class ClearFog(Task):

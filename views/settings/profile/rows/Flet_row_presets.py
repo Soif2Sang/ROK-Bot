@@ -1,6 +1,6 @@
 import flet as ft
 
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 
 class FletRowPresets(ft.Row):

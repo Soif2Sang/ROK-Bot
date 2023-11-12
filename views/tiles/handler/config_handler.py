@@ -5,7 +5,7 @@ from views.Flet_Setting import SettingContainer
 from views.settings.general.Flet_general_settings import InterfaceSettings
 from views.tiles.handler.logging_handler import Logger
 from views.settings.profile._profile import ProfileSettings
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 color_bank = {
     1: "#3b8ed0",

@@ -4,7 +4,7 @@ import cv2
 
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
-from utils.Task_utils import get_name, get_class, filter_coordinate
+from utils.functions import get_name, get_class, filter_coordinate
 
 
 # from utils.easyOcr import Reader

@@ -4,7 +4,7 @@ from time import sleep
 import cv2
 
 from tasks.Task import Task
-from utils.Task_utils import get_name, get_class
+from utils.functions import get_name, get_class
 
 
 class RssTransfer(Task):

@@ -1,6 +1,6 @@
 from utils.flet_translations import translate
 from views.settings.general._general import GeneralSettings
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 import flet as ft
 
 class InterfaceSettings(ft.Tab):

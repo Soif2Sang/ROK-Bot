@@ -2,7 +2,7 @@ from random import uniform
 from time import sleep
 
 from tasks.Task import Task, get_name
-from utils.Task_utils import get_class
+from utils.functions import get_class
 
 roles = {
     'justice':[300,400],

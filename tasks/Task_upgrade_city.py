@@ -8,7 +8,7 @@ import win32gui
 
 from tasks.Task_alliance_help import AllianceHelp
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_name
+from utils.functions import get_class, get_name
 
 
 class UpgradeCity(Task):

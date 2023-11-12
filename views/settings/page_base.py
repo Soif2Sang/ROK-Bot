@@ -2,7 +2,7 @@ import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.flet_translations import translate
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 
 class BasePage():
@@ -33,6 +33,7 @@ class BasePage():
         )
 
         self.profile.content.scroll_to(delta=-1000, duration=1)
+
         self.initial_page.update()
 
     def add_control(self, *control):

@@ -1,4 +1,4 @@
-from utils.Task_utils import BREZILIAN
+from utils.constants import BREZILIAN
 
 translations = {
     "RokNet 30 Days left": "ROKBot Brasil 30 Dias Restante",

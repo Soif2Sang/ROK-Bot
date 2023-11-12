@@ -1,7 +1,7 @@
 import flet as ft
 
 from utils.flet_translations import translate
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 
 class FletColumnRss(ft.Column):

@@ -1,7 +1,7 @@
 from views.tiles.handler.config_handler import FrameUpgrade
 import flet as ft
 
-from utils.Task_utils import get_data
+from utils.functions import get_data
 
 
 class TileUpgrade(ft.Row):

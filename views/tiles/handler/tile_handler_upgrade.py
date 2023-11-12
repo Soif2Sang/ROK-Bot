@@ -8,7 +8,7 @@ from views.tiles.handler.tile_handler import NavigationBar
 from views.tiles.tile_upgrade import TileUpgrade
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from utils.Task_utils import get_path, get_data, write_data
+from utils.functions import get_path, get_data, write_data
 
 
 class TileManagerUpgrade(ft.ListView):

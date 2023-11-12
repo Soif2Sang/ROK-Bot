@@ -1,14 +1,16 @@
-import threading
-from time import sleep
+import copy
+import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from utils.constants import BREZILIAN
 from utils.flet_translations import translate
+# from random_test import get_all_vms_running, get_dic_instances
+from utils.functions import get_all_vms_running, get_dic_instances
+from utils.singletons import LinkSingleton, FileSingleton
 from views.tiles.tile import Tile
-from utils.Task_utils import FileSingleton, get_all_vms_running, get_dic_instances, BREZILIAN, LinkSingleton
-import re
-import copy
+
 
 class NavigationBar(ft.Row):
     def __init__(self, page, tile_manager, **kwargs):
@@ -17,66 +19,43 @@ class NavigationBar(ft.Row):
         self.tileManager = tile_manager
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-        self.button_refresh = ft.OutlinedButton(text=translate("Refresh"), icon=ft.icons.REFRESH_ROUNDED,
-                                                on_click=lambda _: self.tileManager.refresh(), style=ButtonStyle(shape={
-                ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-            }, bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100)
-                                                )
+        self.button_refresh = ft.OutlinedButton(
+            text=translate("Refresh"),
+            icon=ft.icons.REFRESH_ROUNDED,
+            on_click=lambda _: self.tileManager.refresh(),
+            style=ButtonStyle(
+                shape={
+                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
+                },
+                bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100
+            )
+        )
 
         self.controls.append(self.button_refresh)
 
-        # self.controls.append(
-        #     ft.PopupMenuButton(
-        #         tooltip="Extend my account",
-        #         icon=ft.icons.ADD_SHOPPING_CART_ROUNDED,
-        #         items=[
-        #             ft.PopupMenuItem(
-        #                 content=ft.Row(
-        #                     [
-        #                         ft.Icon(ft.icons.LINK),
-        #                         ft.Text("Pay with Stripe"),
-        #                     ]
-        #                 ),
-        #                 on_click=lambda _: self.initial_page.launch_url("https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
-        #             ),
-        #             ft.PopupMenuItem(
-        #                 content=ft.Row(
-        #                     [
-        #                         ft.Icon(ft.icons.LINK),
-        #                         ft.Text("Pay with Cryptos"),
-        #                     ]
-        #                 ),
-        #                 on_click=lambda _: self.initial_page.launch_url(
-        #                     "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"),
-        #             ),
-        #         ]
-        #     )
-        # )
-
-        def close_banner(e):
-            page.banner.open = False
-            page.update()
-
-        if not BREZILIAN:
-            page.banner = ft.Banner(
-                bgcolor=ft.colors.WHITE30,
-                content=ft.Column(controls=[
-                    ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                                  on_click=lambda _: page.launch_url(LinkSingleton().getStripeLink()),
-                                  ),
-                    ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
-                                  on_click=lambda _: page.launch_url(LinkSingleton().getSellixLink()))
-
-                ]),
-                actions=[
-                    ft.TextButton("Close", on_click=close_banner),
+        bottom = ft.BottomSheet(
+            content=ft.Row(
+                controls=[
+                    ft.TextButton(
+                        icon=ft.icons.LINK_OUTLINED,
+                        text="Pay with Stripe",
+                        on_click=lambda _: self.initial_page.launch_url(
+                                  LinkSingleton().getStripeLink()),
+                    ),
+                    ft.TextButton(
+                        icon=ft.icons.LINK_OUTLINED,
+                        text="Pay with Crypto",
+                        on_click=lambda _: self.initial_page.launch_url(
+                                  LinkSingleton().getSellixLink())
+                    )
                 ],
-                content_padding=ft.padding.all(5)
-            )
-            
-        def show_banner_click(e):
-            page.banner.open = True
-            page.update()
+                alignment=ft.MainAxisAlignment.CENTER
+                ),
+            open=True,
+            dismissible=True,
+            enable_drag=True,
+            on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
+        )
 
         pattern = r'(\d+) Days left'
         match = re.search(pattern, page.title)
@@ -91,12 +70,24 @@ class NavigationBar(ft.Row):
             button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
                                        bgcolor=ft.colors.ORANGE_300, color="black")
         else:
-            button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
-                                       bgcolor=ft.colors.RED_200, color="black")
+            button_style = ButtonStyle(
+                shape={
+                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)
+                },
+                bgcolor=ft.colors.RED_200,
+                color="black"
+            )
 
         if not BREZILIAN:
-            self.controls.append(ft.OutlinedButton(text="Renew", icon=ft.icons.SHOPPING_CART_OUTLINED,
-                                                   on_click=show_banner_click, style=button_style))
+            self.controls.append(
+                ft.OutlinedButton(
+                    text="Renew",
+                    icon=ft.icons.SHOPPING_CART_OUTLINED,
+                    on_click=lambda e: self.initial_page.show_bottom_sheet(bottom),
+                    style=button_style
+                )
+            )
+
 
 class TileHandler(ft.ListView):
     def __init__(self, page: ft.Page, **kwargs):
@@ -115,12 +106,10 @@ class TileHandler(ft.ListView):
         self.controls.append(self.tiles[number])
         self.initial_page.update()
 
-
     def delete_tile(self, number: str):
         self.controls.remove(self.tiles[number])
         self.tiles.pop(number)
         self.initial_page.update()
-
 
     def unselect_all(self):
         for tile in self.controls[1:]:
@@ -128,14 +117,13 @@ class TileHandler(ft.ListView):
                 tile.button_select.selected = False
         self.initial_page.update()
 
-
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
 
     def refresh(self):
         data = self.FileSingleton.get_data()
         instances = get_dic_instances()
-
+        print(instances)
         default_dic = {
             'instance': "",
             'name': "",
@@ -183,13 +171,13 @@ class TileHandler(ft.ListView):
             'collect_ressource': False,
             'defeat_barbarians': False,
             'barbarians_level': 25,
-            'barbarians_preset': {"1":False,
-                                  "2":False,
-                                  "3":False,
-                                  "4":False,
-                                  "5":False,
-                                  "6":False,
-                                  "7":False,
+            'barbarians_preset': {"1": False,
+                                  "2": False,
+                                  "3": False,
+                                  "4": False,
+                                  "5": False,
+                                  "6": False,
+                                  "7": False,
                                   },
             'gather_gem': False,
             'gem_check1': 60,
@@ -256,21 +244,23 @@ class TileHandler(ft.ListView):
             "transfer_wood": 0,
             "transfer_stone": 0,
             "transfer_gold": 0,
-            "upgrade_city":False,
-            "kill_marauders" : False,
-            "kill_marauders_duration" : [30,90],
-            "rally_skip_back" :  False,
+            "upgrade_city": False,
+            "kill_marauders": False,
+            "kill_marauders_duration": [30, 90],
+            "rally_skip_back": False,
             "gather_rss_method": False,
             "fast_rss_transfer": False,
             "city_hall_position": [],
             "upgrade_city_method": "normal",
             "academic_research": False,
-            "academy_position": []
+            "academy_position": [],
+            "buy_merchant_skip": False
         }
 
         for i in range(1, 4):
             default_dic['schedules'][i] = copy.deepcopy(default_profile)
         default_dic['schedules'][1]['enabled'] = True
+
 
         for instance in instances:
             if str(instance) not in data:
@@ -312,7 +302,8 @@ class TileHandler(ft.ListView):
                     controls=[
                         ft.Icon(ft.icons.INFO_OUTLINED, size=60),
                         ft.Text(
-                            translate("No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"),
+                            translate(
+                                "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"),
                             text_align=ft.TextAlign.CENTER)
                     ],
                     alignment=ft.MainAxisAlignment.START,
@@ -325,5 +316,4 @@ class TileHandler(ft.ListView):
         # self.initial_page.update()
         self.initial_page.update()
 
-                #self.padding = ft.padding.only(top=15, left=0, bottom=0)
-
+        # self.padding = ft.padding.only(top=15, left=0, bottom=0)

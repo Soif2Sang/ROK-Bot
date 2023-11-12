@@ -2,6 +2,7 @@ import os
 import json as jsond  # json
 import time  # sleep before exit
 import binascii  # hex encoding
+from threading import Lock
 from uuid import uuid4  # gen random guid
 import platform  # check platform
 import subprocess  # needed for mac device
@@ -12,7 +13,9 @@ import win32security
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
-from utils.Task_utils import FileSingleton, BREZILIAN, LinkSingleton
+from utils.functions import FileSingleton
+from utils.singletons import ApiSingleton, LinkSingleton
+from utils.constants import BREZILIAN
 
 fileSingleton = FileSingleton()
 
@@ -160,10 +163,6 @@ class selfApi:
             return True
         else:
             if self.page is not None:
-                def close_banner(e):
-                    self.page.banner.open = False
-                    self.page.update()
-
                 if not BREZILIAN:
                     content = ft.Column(controls=[
                         ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
@@ -178,16 +177,15 @@ class selfApi:
                 else:
                     content = ft.Column([ft.Text("Invalid credentials")])
 
-                self.page.banner = ft.Banner(
-                    content=content,
-                    actions=[
-                        ft.TextButton("Close", on_click=close_banner),
-                    ],
-                    content_padding=ft.padding.all(5)
+                self.page.show_banner(
+                    ft.Banner(
+                        content=content,
+                        actions=[
+                            ft.TextButton("Close", on_click=lambda e:page.close_banner()),
+                        ],
+                        content_padding=ft.padding.all(5)
+                    )
                 )
-
-                self.page.banner.open = True
-                self.page.update()
             return False
 
     def license(self, key, hwid=None):
@@ -235,9 +233,7 @@ class selfApi:
 
         if json["success"]:
             return json["message"]
-        else:
-            print(json["message"])
-            kill_app()
+        return "None"
 
     def getvar(self, var_name):
         self.checkinit()
@@ -257,8 +253,7 @@ class selfApi:
 
         if json["success"]:
             return json["response"]
-        else:
-            return "None"
+        return "None"
 
     def setvar(self, var_name, var_data):
         self.checkinit()
@@ -492,3 +487,23 @@ class encryption:
             print(
                 "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
             raise Exception
+
+
+
+class AuthSingleton:
+    __instance = None
+    FileLock = Lock()
+    auth = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def setAuth(self, auth: selfApi) -> None:
+        with self.FileLock:
+            self.auth = auth
+
+    def getAuth(self) -> selfApi:
+        with self.FileLock:
+            return self.auth

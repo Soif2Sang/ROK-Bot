@@ -9,7 +9,7 @@ from PIL import Image
 
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
-from utils.Task_utils import get_name, get_class
+from utils.functions import get_name, get_class
 
 
 # from utils.easyOcr import Reader
@@ -226,7 +226,7 @@ class GatherGem(Task):
                     # cv2.imwrite("test.png",cropped_image)
                     string = self.extract_text(img=cropped_image, allowlist="1234567890:")
                     # string = string.replace(":","")
-                    print(string)
+                    self.debug(string)
 
                     pattern = r'\d\d:\d\d:\d\d'  # Regular expression pattern
 
@@ -237,6 +237,7 @@ class GatherGem(Task):
                         [datetime_object, (points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0)), (x, y)])
                 else:
                     return False
+
             def takeFirst(elem):
                 return elem[0]
 
@@ -244,7 +245,7 @@ class GatherGem(Task):
 
             fastest = timer[0][1]
             # print(timer)
-            print(f"fastest is {timer[0][0]}")
+            self.debug(f"fastest is {timer[0][0]}")
             self.click(x=fastest[0], y=fastest[1])
             self.better_sleep((0.9, 1.3))
             fastest = timer[0][2]

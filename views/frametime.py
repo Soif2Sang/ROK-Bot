@@ -1,11 +1,10 @@
-import time
 from random import randint
 
 import flet as ft
 
 from utils.flet_translations import translate
-from utils.flet_utils import GenerateCard
-from utils.Task_utils import FileSingleton
+from Components.card import GenerateCard
+from utils.functions import FileSingleton
 from datetime import datetime, timedelta
 
 
