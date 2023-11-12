@@ -11,9 +11,14 @@ import flet as ft
 from flet_route import path, Routing
 
 import views.tiles.tile
+from utils.Components.filescan import generate_filescan
+from utils.Components.maintenance import generate_maintenance
 # from flet_translator import TranslateFletPage, GoogleTranslateLanguage
 
-from utils.Task_utils import getchecksum, BREZILIAN, LinkSingleton, toasts_history
+from utils.functions import getchecksum, FileSingleton
+from utils.singletons import ApiSingleton, LinkSingleton
+from utils.constants import BREZILIAN, toasts_history
+
 from utils.auth import selfApi
 from utils.handle_files import main as HandleFiles
 from views.login.login import LoginUI
@@ -23,7 +28,7 @@ try:
     from views.profile_settings import viewProfileSettings
     from views._main import Main
     from views.config_path import find_file_in_all_drives
-    from utils.Task_utils import FileSingleton, ApiSingleton
+    from utils.singletons import ApiSingleton, LinkSingleton
     from utils.flet_toast.toasts_flexible import ToastsFlexible
     from utils.flet_toast.core import Position
 except Exception as e:
@@ -45,7 +50,7 @@ except Exception as e:
         name="Rokbd" if not BREZILIAN else "RokbdBR",
         ownerid="7oofxdj8uH",
         secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0" if not BREZILIAN else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
-        version="1.0",
+        version="2.0",
         hash_to_check=getchecksum()
     )
 
@@ -56,23 +61,24 @@ except Exception as e:
 
 fileSingleton = FileSingleton()
 
-HandleFiles()
-
-
 def main(page: ft.Page):
-    # return Main(page, 500)
-    # Create a TranslateFletPage instance
-    # tp = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.english, use_internet=True, skiped_classes=[ft.Dropdown, views.tiles.tile.Tile, views.tiles.handler.logging_handler.Logger])
-
-    # This will update the translations and page at the same time.
-    page.window_width = 330
-    page.window_height = 330
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.window_width = 450
+    page.window_height = 400
     page.FileSingleton = FileSingleton()
     path_file = page.FileSingleton.get_path()
 
     if not os.path.exists(path_file['bluestacks']) or not os.path.exists(path_file['HD-Player']):
-        progress_bar = ft.ProgressBar(visible=True)
-        page.add(progress_bar)
+        page.vertical_alignment = ft.MainAxisAlignment.CENTER
+        page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        progress_bar = ft.ProgressRing(visible=True)
+
+        page.add(
+            progress_bar,
+            generate_filescan()
+        )
+
         page.update()
 
         if result := find_file_in_all_drives('bluestacks\.conf'):
@@ -86,6 +92,9 @@ def main(page: ft.Page):
                 json.dump(path_file, f, indent=2)
 
         progress_bar.visible = False
+        page.vertical_alignment = None
+        page.horizontal_alignment = None
+        page.clean()
         page.update()
 
     cmd = f"{path_file['HD-Player'].replace('Player', 'Adb')} start-server"
@@ -100,7 +109,7 @@ def main(page: ft.Page):
                 name="Rokbd" if not BREZILIAN else "RokbdBR",
                 ownerid="7oofxdj8uH",
                 secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0" if not BREZILIAN else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
-                version="1.0",
+                version="2.0",
                 hash_to_check=getchecksum()
             )
             ready = True
@@ -115,43 +124,26 @@ def main(page: ft.Page):
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.add(
-            ft.Card(
-                content=ft.Container(
-                    content=
-                    ft.ListTile(
-                        title=ft.Text("The Bot seems to be under maintenance, please wait a bit..")
-                        , leading=ft.Icon(ft.icons.PORTABLE_WIFI_OFF_SHARP)
-                    ),
-                    width=400,
-                    padding=10,
-                ),
-                color=ft.colors.SURFACE_VARIANT
-            )
+            generate_maintenance()
         )
 
         while 1:
             sleep(1)
-    def close_banner(e):
-        page.banner.open = False
-        page.update()
 
-    def open_banner(text):
-        page.banner = ft.Banner(
+    def create_banner(text):
+        return ft.Banner(
             bgcolor=ft.colors.AMBER_100,
             leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
             content=ft.Text(
                 value=text
             ),
             actions=[
-                ft.TextButton("Ok", on_click=page.close_banner),
+                ft.TextButton("Ok", on_click=lambda _ :page.close_banner()),
             ],
             open=True
         )
-        page.update()
 
-    page.close_banner = close_banner
-    page.open_banner = lambda text: open_banner(text)
-    page.subscription_checker = threading.Thread()
+    page.open_banner = lambda text: page.show_banner(create_banner(text))
     page.loginUI = LoginUI(page)
     page.UPGRADE = False
     page.body = ft.Column()
@@ -170,7 +162,10 @@ def main(page: ft.Page):
             bgcolor_title=bgcolor_title
         )
 
-    page.generate_toast = lambda title, description, icon=ft.icons.INFO, bgcolor_title="AMBER": generate_toast(title, description, icon, bgcolor_title)
+    page.generate_toast = lambda title, description, icon=ft.icons.INFO, bgcolor_title="AMBER": generate_toast(title,
+                                                                                                               description,
+                                                                                                               icon,
+                                                                                                            bgcolor_title)
 
     page.app_routes = [
         path(
@@ -213,9 +208,43 @@ def index(page: ft.Page, params, basket):
 
 
 def login(page: ft.Page, params, basket):
-    return ft.View(route="/login", controls=[page.loginUI])
+    page.window_width = 1920 / 2
+    page.window_height = 1080 / 2
+    page.window_resizable = False
+    page.title = "RokNet"
+
+    return ft.View(route="/login",
+                   controls=[
+                       ft.Stack(
+                           controls=[
+                               ft.Container(
+                                   image_src=f"./rok_wallpaper.webp",
+                                   width=1920 / 2,
+                                   height=1080 / 2,
+                                   image_fit=ft.ImageFit.COVER
+                               ),
+
+                               ft.Container(
+                                   blur=100,
+                                   width=400,
+                                   height=250,
+                                   right=1920 / 4 - 400 / 2,
+                                   top=1080 / 4 - 250 / 2 - 15,
+                                   content=ft.Container(content=page.loginUI, height=160, width=300,
+                                                        ),
+                                   alignment=ft.Alignment(0, 0),
+                                   border_radius=5,
+                                   border=ft.border.all(3, ft.colors.GREY_900)
+                               ),
+
+                           ]
+                       )
+                   ],
+                   vertical_alignment=ft.MainAxisAlignment.CENTER,
+                   horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                   padding=0
+       )
 
 
 if __name__ == '__main__':
-
     ft.app(target=main)
