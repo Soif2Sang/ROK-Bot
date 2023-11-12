@@ -33,8 +33,10 @@ from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
-from utils.Task_utils import get_name, current_time, get_window_pid, get_dic_instances, ApiSingleton
-from utils.bot_adb import Adb
+from tasks.Task_academy_research import AcademyResearch
+from utils.functions import get_name, current_time, get_window_pid, get_dic_instances
+from utils.singletons import ApiSingleton, LinkSingleton
+from utils.android_debug_bridge import Adb
 from views.frametime import is_in_frametime, random_time_in_frametime
 
 from datetime import timedelta
@@ -67,12 +69,15 @@ class TaskRunner(Task):
             "ProduceMaterials": "Producing materials",
             "AutoUpgrade": "Upgrading the city..",
             "AllianceHelp": "Helping the alliance..",
-            "DailyQuests": "Claiming daily quests..",
+            "claim_daily_quests": "Claiming daily quests..",
             "TroopTraining": "Training troop..",
             "RssTransfer": "Transferring rss..",
+            "Maraudeurs": "Killing Marauders..",
             "UpgradeCity": "Upgrading the city..",
-            "Maraudeurs": "Killing Maraudeurs..",
+            "AlliancePit": "Alliance Pit",
+            "AcademyResearch": "Academic researches",
         }
+
         return self.set_status(names.get(name, name))
 
     @get_name
@@ -81,8 +86,10 @@ class TaskRunner(Task):
             "ClaimCampaign": "Claiming campaign rewards",
             "CollectResource": "Collecting city rss",
             "BuyMerchant": "Buying merchant..",
-            "GatherRss": "Gathering Rss",
-            "GatherGem": "Gathering Gem",
+            "GatherRssDefault": "Gathering Rss",
+            "GatherRssZoom": "Gathering Rss",
+            "GatherGemSpiral": "Gathering Gem",
+            "GatherGemDefault": "Gathering Gem",
             "UseEnhancedBuff": "Enabling enhanced buffs",
             "AllianceDonation": "Donating to alliance",
             "HuntBarbarians": "Killing barbarians",
@@ -97,8 +104,10 @@ class TaskRunner(Task):
             "claim_daily_quests": "Claiming daily quests..",
             "TroopTraining": "Training troop..",
             "RssTransfer": "Transferring rss..",
-            "Maraudeurs": "Killing Maraudeurs..",
+            "Maraudeurs": "Killing Marauders..",
             "UpgradeCity": "Upgrading the city..",
+            "AlliancePit": "Alliance Pit",
+            "AcademyResearch": "Academic researches",
         }
 
         return names.get(name, name)
@@ -197,7 +206,8 @@ class TaskRunner(Task):
             ('train_troops', TroopTraining),
             ('transfer_enable', RssTransfer),
             ('kill_marauders', Marauders),
-            ('gather_alliance_pit', AlliancePit)
+            ('gather_alliance_pit', AlliancePit),
+            ('academic_research', AcademyResearch)
         ]
 
         lib_tasks = [task_class(self) for profile_key, task_class in tasks if profile.get(profile_key, False)]
@@ -508,7 +518,8 @@ class TaskRunner(Task):
         self.data = self.update_data()
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
         starting_time = time()
-
+        print(self.sel)
+        print(self.data[self.sel]['name'])
         for i in range(loop_task):
             loop_time = time()
             self.set_status("Starting..")

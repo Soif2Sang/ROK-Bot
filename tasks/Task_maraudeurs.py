@@ -8,7 +8,7 @@ import cv2
 from PIL import Image
 
 from tasks.Task import Task
-from utils.Task_utils import get_name, get_class, current_time
+from utils.functions import get_name, get_class, current_time
 
 
 # from utils.easyOcr import Reader

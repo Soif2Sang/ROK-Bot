@@ -1,6 +1,6 @@
-from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode,         IMREAD_COLOR, COLOR_BGR2HSV, inRange
 import os
-import warnings
+
+from cv2 import imread
 
 dir = './resources'
 

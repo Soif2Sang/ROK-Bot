@@ -1,7 +1,7 @@
 from views.settings.general.page_profiles import PageProfiles
 from views.settings.general.page_redo import PageRedo
 from utils.flet_translations import translate
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 

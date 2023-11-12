@@ -2,7 +2,7 @@ import flet as ft
 
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
-from utils.flet_utils import GenerateCard
+from Components.card import GenerateCard
 
 
 class PageRally(BasePage):

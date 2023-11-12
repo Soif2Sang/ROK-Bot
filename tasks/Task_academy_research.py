@@ -3,7 +3,7 @@ from random import uniform, random, choice
 from tasks.Task import Task, get_name
 from tasks.Task_alliance_help import AllianceHelp
 
-from utils.Task_utils import get_class
+from utils.functions import get_class
 
 
 class AcademyResearch(Task):

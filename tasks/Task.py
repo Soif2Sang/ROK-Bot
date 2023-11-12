@@ -1,27 +1,26 @@
 import asyncio
 import json
 import os
+import re
 import shutil
 import sys
 import traceback
-from datetime import date, datetime
+from datetime import datetime
 from random import uniform, randint
 from time import sleep
-import re
+
 import cv2
+import flet as ft
 import win32api
 import win32con
 import win32gui
 from PIL import Image, ImageFile
 from numpy import array, ndarray
-from psutil import pid_exists
 from pytesseract import pytesseract
-from statistics import median
-import flet as ft
 
+from utils.discord_utils import send_discord_message
 from utils.twocaptcha import TimeoutException
 from utils.twocaptcha.api import NetworkException, ApiException
-from utils.discord_utils import send_discord_message
 
 # import discord_bot
 
@@ -29,10 +28,11 @@ from utils.discord_utils import send_discord_message
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 # from utils import discord_bot
-from utils.Task_utils import get_window_pid, get_name, current_time, get_time, string_to_co, FileSingleton, \
-    string_to_co_slide, colorize_name, toString, colorize_output, ApiSingleton
-from utils.bot_adb import Adb
-# from utils.easyOcr import Reader
+from utils.functions import get_name, current_time, string_to_co, FileSingleton, \
+    string_to_co_slide, colorize_name, colorize_output
+from utils.singletons import ApiSingleton
+
+from utils.android_debug_bridge import Adb
 from utils.twocaptcha import TwoCaptcha
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -175,7 +175,6 @@ class Task():
         cropped_image = cv_image[13:35, 1225:1254]
         text = self.extract_text(cropped_image, allowlist="01234567/")
 
-        print(text)
         if len(text) == 3:
             if text[0] < text[2]:
                 self.print("Empty queue found")
@@ -1080,7 +1079,6 @@ class Task():
 
     @get_name
     def recenter(self, deadstop=0):
-        print("recenter")
         image = self.adb.get_cv2_img()
 
         if (co := self.find_img(source=image, target="green_home_button")):
@@ -1111,7 +1109,7 @@ class Task():
             if re.match(r'\d+KM', first):
                 word = first
             if re.match(r'\d+KM', word):
-                print(word)
+                self.debug(word)
                 # print(distances)
                 # if distances:
                 if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(

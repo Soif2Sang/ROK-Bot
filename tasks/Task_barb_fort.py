@@ -7,7 +7,7 @@ from PIL import Image
 
 from tasks.Task import Task, get_name, current_time
 from tasks.Task_heal_troop import HealTroop
-from utils.Task_utils import get_class
+from utils.functions import get_class
 
 
 class BarbFort(Task):

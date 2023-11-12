@@ -1,27 +1,21 @@
 import hashlib
-import json
 import re
 import shutil
 import sys
-from datetime import date
 from datetime import datetime
 from functools import wraps
 from os.path import exists
-from threading import Lock
 from time import perf_counter
 
 import pyautogui
 import win32gui
 import win32process
-from PIL import Image
 from decohints import decohints
-from numpy import ndarray
 
+from utils.singletons import FileSingleton
+from utils.constants import DEBUG
 dir = "./"
-DEBUG = False
-BREZILIAN = False
-VERSION = '1.0'
-toasts_history = {}
+
 
 def word_to_color(word):
     hash_object = hashlib.sha256()
@@ -45,91 +39,6 @@ def custom_key(item):
     if len(parts) == 1:
         return -1
     return int(parts[1])
-
-class ApiSingleton:
-    __instance = None
-    FileLock = Lock()
-    apikey = ""
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
-    def getApiKey(self) -> str :
-        with self.FileLock:
-            return self.apikey
-
-    def setApiKey(self, key:str) :
-        with self.FileLock:
-            self.apikey = key
-
-class LinkSingleton:
-    __instance = None
-    FileLock = Lock()
-    sellix = ""
-    stripe = ""
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
-    def getStripeLink(self) -> str :
-        with self.FileLock:
-            return self.stripe
-
-    def setStripeLink(self, link: str):
-        with self.FileLock:
-            self.stripe = link
-
-    def getSellixLink(self) -> str :
-        with self.FileLock:
-            return self.sellix
-
-    def setSellixLink(self, link: str):
-        with self.FileLock:
-            self.sellix = link
-
-class FileSingleton:
-    __instance = None
-    FileLock = Lock()
-
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
-    def write(self, name, text: str):
-        self.FileLock.acquire()
-        with open(f"./logs/{name}_logs.txt", "a+", encoding="utf-8") as logger:
-            logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
-        self.FileLock.release()
-
-    def get_data(self):
-        self.FileLock.acquire()
-        with open(f"./user_settings.json", encoding='utf-8') as config_file:
-            data = json.load(config_file)
-        self.FileLock.release()
-        return data
-
-    def get_path(self):
-        self.FileLock.acquire()
-        with open(f"./path.json", encoding='utf-8') as config_file:
-            path = json.load(config_file)
-        self.FileLock.release()
-        return path
-
-    def write_data(self, data):
-        self.FileLock.acquire()
-        with open(f"./user_settings.json", 'w', encoding='utf-8') as config_file:
-            config_file.write(json.dumps(data, indent=2))
-        self.FileLock.release()
-
-    def get_default_config(self):
-        self.FileLock.acquire()
-        with open(f"./default_profile.json", encoding='utf-8') as config_file:
-            data = json.load(config_file)
-        self.FileLock.release()
-        return data
 
 
 def current_time():
@@ -170,8 +79,9 @@ def get_time(func):
 
     return wrapper
 
+
 def toString(arg):
-    if isinstance(arg, Image.Image) or isinstance(arg, ndarray):
+    if type(arg).__name__ in ["ndarray", "Image"]:
         return 'Image'
     if isinstance(arg, dict):
         return 'Dict'
@@ -216,7 +126,7 @@ def get_name(func):
 
             if func_output is True or func_output is False or func_output is None:
                 output_str = colorize_output(repr(func_output))
-            elif type(func_output) in [ndarray, Image.Image, str, int]:
+            elif type(func_output).__name__ in ["ndarray", "Image", "str", "int"]:
                 output_str = toString(func_output)
             elif hasattr(func_output, '__iter__'):
                 output_str = ", ".join([toString(arg) for arg in func_output])
@@ -261,17 +171,6 @@ def filter_coordinate(couple: tuple[int, int]):
     if couple[0] > 1146 and couple[1] < 218:
         return False
     return True
-
-
-def change_resource_type(place: str) -> str:
-    if place == "First":
-        return "Second"
-    elif place == "Second":
-        return "Third"
-    elif place == "Third":
-        return "Fourth"
-    elif place == "Fourth":
-        return "Done"
 
 
 def getchecksum():
@@ -327,9 +226,6 @@ def get_dic_instances():
             }
 
 
-    # bluestacks_instances.sort(key=custom_key)
-    # transformed_dict = dict(map(lambda idx_item: (str(idx_item[0]), idx_item[1]), enumerate(bluestacks_instances)))
-    # print(transformed_dict)
     return bluestacks_instances
 
 
@@ -355,3 +251,10 @@ def get_current_instances(data):
 
 def get_all_vms_running():
     return get_current_instances(get_dic_instances())
+
+# print(datetime.now().date())
+#
+# s = CaptchaSingleton()
+# s.addCaptcha()
+#
+# print(json.dumps(s.getCaptchas(), indent=4))

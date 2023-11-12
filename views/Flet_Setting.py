@@ -2,8 +2,9 @@ import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 from flet_route import path
 
+from views.settings.profile.page_buy_merchant import PageBuyMerchant
 from utils.flet_translations import translate
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 from views.city_layout import CityPlacement
 from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
 from views.settings.profile.rows.Flet_row_material import FletRowMaterial
@@ -45,85 +46,17 @@ class SettingContainer(ft.Container):
         self.color_choice = color_bank[self.profile_index]
         self.theme=ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
 
+
+        print(self.instance_index)
         self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300, spacing=3)
         self.init()
-
-    def cityLayout(self, page, params, basket):
-        self.initial_page.window_width = 900
-        self.initial_page.window_height = 500
-        self.initial_page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
-
-        return ft.View(
-            f"/citylayout/{self.instance_index}/{self.profile_index}",
-            controls=[
-                ft.Container(bgcolor="#ecf0f1",
-                             content=ft.Row(controls=[
-                                 ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
-                                 ft.Text(value="Go back")
-                             ]
-                             )
-                             ),
-                ft.Text(value=translate("Click on the building button you wanna set, then click in the center of the building.")),
-                CityPlacement(self.instance_index, self.profile_index)
-            ]
-        )
-    
-    def profileSetting(self, page, params, basket, instance_index, profile_index):
-        self.initial_page.window_width = 900
-        self.initial_page.window_height = 500
-
-        return ft.View(
-            f"/profile/{instance_index}/{profile_index}/settings",
-            controls=[
-                ft.Container(bgcolor="#ecf0f1",
-                             content=ft.Row(controls=[
-                                 ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.returnHome()),
-                                 ft.Text(value=translate("Go back"))
-                             ]
-                             )
-                             ),
-                # ft.Column(
-                #     controls=[
-                #         ft.Row(controls=[
-                #             ft.Text("Time to wait after this profile is done (minutes)")
-                #         ]),
-                #         ft.Row(controls=[
-                #         ft.TextField(label="Minimum",
-                #                      value=
-                #                      self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                #                          "gather_gem_duration1"],
-                #                      width=80,
-                #                      content_padding=ft.padding.all(10),
-                #                      on_change=lambda e: self.submit(e, "gather_gem_duration1", int)
-                #                      ),
-                #         ft.Text("~"),
-                #         ft.TextField(label="Maximum",
-                #                      value=
-                #                      self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                #                          "gather_gem_duration2"],
-                #                      width=90,
-                #                      content_padding=ft.padding.all(10),
-                #                      on_change=lambda e: self.submit(e, "gather_gem_duration2", int)),
-                #         ]
-                #         )
-                #     ]
-                # ),
-                # ft.Divider(),
-                ManagerTimezone(instance_index, profile_index)
-            ]
-        )
-
-    def returnHome(self):
-        self.initial_page.window_width = 400
-        self.initial_page.window_height = 700
-        self.initial_page.go("/")
 
     def init(self):
         self.create_advanced_switch("gather_gem", "Gem Gathering", PageGem)
         self.create_advanced_switch("gather_rss", "Resources Gathering", PageRss)
         self.create_normal_switch("collect_ressource", "Collect City Resources")
         self.create_normal_switch("use_enhanced_buff", "Apply Enhanced Buff")
-        self.create_normal_switch("buy_merchant", "Buy Mysterious Merchant")
+        self.create_advanced_switch("buy_merchant", "Buy Mysterious Merchant", PageBuyMerchant)
         self.create_normal_switch("check_donation", "Donate to Alliance")
         self.create_normal_switch("gather_alliance_pit", "Alliance Pit Gathering")
 
@@ -159,10 +92,6 @@ class SettingContainer(ft.Container):
         self.content.controls = []
         self.init()
         self.initial_page.update()
-
-    def show_cords_page(self):
-        self.initial_page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
-        self.initial_page.go(f"/citylayout/{self.instance_index}/{self.profile_index}")
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
@@ -326,143 +255,25 @@ class SettingContainer(ft.Container):
         # print(self.page)
         self.initial_page.update()
 
-    def page_marauders(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        # self.tabs.expand = True
-        self.content = ft.ListView(height=500, expand=0, padding=1, )
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-
-        self.content.controls.extend([
-            ft.Divider(),
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "*REQUIREMENT* ",
-                        style=ft.TextStyle(size=15, color="red", weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "Pre-configure red-lineups with commanders with the same march speed!\n",
-                        style=ft.TextStyle(size=15, color="red"),
-                    )
-                ]
-            ),
-            ft.Text(
-                spans=[
-                    ft.TextSpan(
-                        "I also recommend having it running up to maximum",
-                        style=ft.TextStyle(size=15),
-                    ),
-                    ft.TextSpan(
-                        " 3-4 hours ",
-                        style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
-                    ),
-                    ft.TextSpan(
-                        "with re-do tasks enabled so the marches can come back to the city and heal.",
-                        style=ft.TextStyle(size=15)
-                    )
-                ]
-            ),
-            ft.Divider(),
-            ft.TextField(label="Your kingdom :",
-                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kingdom"],
-                         width=300,
-                         content_padding=ft.padding.all(10),
-                         on_change=lambda e: self.submit(e, "kingdom", str)),
-            ft.Divider(),
-            ft.TextField(label="Area location X coordinates :",
-                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_x"],
-                         width=300,
-                         content_padding=ft.padding.all(10),
-                         on_change=lambda e: self.submit(e, "city_x", int)
-                         ),
-            ft.Divider(),
-            ft.TextField(label="Area location Y coordinates :",
-                         value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["city_y"],
-                         width=300,
-                         content_padding=ft.padding.all(10),
-                         on_change=lambda e: self.submit(e, "city_y", int),
-                         ),
-            ft.Divider(),
-            ft.Row(
-                controls=[
-                    ft.Text("Killing duration (mins)"),
-                    ft.TextField(label="Minimum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "kill_marauders_duration"][0],
-                                 width=80,
-                                 content_padding=ft.padding.all(10),
-                                 on_change=lambda e: self.submit_marauders(e, 0)
-                                 ),
-                    ft.Text("~"),
-                    ft.TextField(label="Maximum",
-                                 value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                                     "kill_marauders_duration"][1],
-                                 width=90,
-                                 content_padding=ft.padding.all(10),
-                                 on_change=lambda e: self.submit_marauders(e, 1)),
-                ]
-            ),
-            ft.Divider(),
-            ft.Text(value="Peacekeeper presets"),
-            ft.Column(
-                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in
-                          range(1, 8)],
-                wrap=True,
-                spacing=10,
-                run_spacing=10,
-                height=150
-            )
-        ]
-
-        )
-        # print(self.page)
-        self.initial_page.update()
-
-    def submit_marauders(self, e, index):
-        self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]['schedules'][str(self.profile_index)]["kill_marauders_duration"][
-            index] = e.control.value if e.control.value is not None or e.control.value != "" else 0
-        self.FileSingleton.write_data(self.data)
-
-    def page_troops(self):
-        self.data = self.FileSingleton.get_data()
-        self.content.controls = []
-        # self.tabs.expand = True
-        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), spacing=5)
-        self.content.controls.append(
-            ft.Row(
-                controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: self.reset()
-                    ),
-                    ft.Text("Settings", size=20),
-                ],
-            )
-        )
-
-        self.initial_page.update()
-
     def reverse_keyword(self, keyword: str, index=None):
+
+
         if index is None:
             index = self.profile_index
+
+        print(self.data[str(self.instance_index)]['schedules'][str(index)][keyword])
+
         if keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
             self.data[str(self.instance_index)]['schedules'][str(index)][keyword] = not \
                 self.data[str(self.instance_index)]['schedules'][str(index)][keyword]
         else:
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
+
+        print(self.data[str(self.instance_index)]['schedules'][str(index)][keyword])
         self.FileSingleton.write_data(self.data)
+        self.data = self.FileSingleton.get_data()
+        print(self.data[str(self.instance_index)]['schedules'][str(index)][keyword])
+
 
     def create_normal_switch(self, keyword: str, text: str):
         self.data = self.FileSingleton.get_data()

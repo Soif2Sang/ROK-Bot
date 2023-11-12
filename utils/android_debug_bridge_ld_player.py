@@ -1,72 +1,84 @@
+import io
 import shutil
+import subprocess
+import traceback
 from datetime import date
 from os.path import exists
 from time import sleep
 
-from ppadb.client import Client as PPADBClient
-import subprocess
-import traceback
-from numpy import array, where, ndarray
-# noinspection PyProtectedMember
-from cv2 import cvtColor, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, COLOR_BGR2HSV, inRange
-import io
 import pytesseract as tess
 from PIL import Image
+from cv2 import cvtColor, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, COLOR_BGR2HSV, inRange
+from numpy import array, where, ndarray
+from ppadb.client import Client as PPADBClient
 
-from utils.Task_utils import current_time, FileSingleton
+from utils.functions import current_time, FileSingleton, get_dic_instances
+from utils.resources import ImageSingleton
 
-Image.LOAD_TRUNCATED_IMAGES = True
 bridge = None
-from utils.resources import *
 
 class Adb:
-    def __init__(self, number, host='127.0.0.1', port=5037):
+    def __init__(self, number: str, host='127.0.0.1', port=5037):
         self.FileSingleton = FileSingleton()
-        self.images = ImageSingleton()
         self.data = self.FileSingleton.get_data()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
         self.number = number
         self.name = self.data[str(self.number)]['name']
+        self.images = ImageSingleton()
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
         return f"JsonNumber:{self.number} port:{self.port}"
 
+    def update_port(self):
+        instances = get_dic_instances()
 
-    def connect_to_device(self, host='127.0.0.1'):
-        data = self.FileSingleton.get_data()
+        if str(self.number) not in instances:
+            return
+
+        if self.port != int(instances[str(self.number)]['port']):
+            self.data = self.FileSingleton.get_data()
+            self.data[str(self.number)]['instance'] = instances[str(self.number)]['instance']
+            self.data[str(self.number)]['name'] = instances[str(self.number)]['name']
+            self.data[str(self.number)]['port'] = int(instances[str(self.number)]['port'])
+            self.port = int(instances[str(self.number)]['port'])
+            self.FileSingleton.write_data(self.data)
+
+    def connect_to_device(self, host='emulator'):
         path = self.FileSingleton.get_path()
+        self.update_port()
 
-        self.port = int(data[str(self.number)]['port'])
         adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-        cmd = f"{adb_path} connect {host}:{self.port}"
+        cmd = f"{adb_path} connect {host}-{self.port}"
         subprocess.Popen(cmd)
 
     def get_client_devices(self):
         return self.client.devices()
 
-    def get_device(self, host='127.0.0.1'):
-        data = self.FileSingleton.get_data()
-        path = self.FileSingleton.get_path()
+    def get_device(self, host='emulator', fail = 0):
         try:
-            self.port = str(data[str(self.number)]['port'])
-            device = self.client.device(f'{host}:{self.port}')
+            self.port = str(self.data[str(self.number)]['port'])
+            device = self.client.device(f'{host}-{self.port}')
+            # print(device)
             if device is None:
                 self.print(f"INFO : Device is None, trying to reconnect..")
-                adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-                cmd = f"{adb_path} connect {host}:{self.port}"
-                subprocess.Popen(cmd)
+                self.connect_to_device()
                 sleep(2)
 
+                if device is None and fail > 45:
+                    return
                 if device is None:
                     return self.get_device()
+            # print(device)
             return device
         except Exception as e:
             traceback.print_exc()
             self.print("EXCEPTION : Error in connect to device")
 
+            self.update_port()
+            path = self.FileSingleton.get_path()
             cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
             subprocess.Popen(cmd)
 
@@ -74,26 +86,34 @@ class Adb:
             sleep(20)
             self.print(f"Connecting to the device..")
 
-            adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-            cmd = f"{adb_path} connect {host}:{self.port}"
-            subprocess.Popen(cmd)
+            self.connect_to_device()
 
             sleep(5)
             return self.get_device()
 
     def print(self, text:str):
-        print(f"[ {date.today()} {current_time()} ] [ {self.data[str(self.number)]['name']} ] {text}")
-        write(self.name,text)
+        data = self.FileSingleton.get_data()
+        print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
+        self.FileSingleton.write(self.name,text)
 
     def get_curr_device_screen_img_byte_array(self):
         try:
             return self.get_device().screencap()
-        except:
+        except Exception as e:
+            print(e)
             sleep(1)
             return self.get_device().screencap()
 
+    def get_curr_device_screen_img_bytesIO(self):
+        try:
+            return io.BytesIO(self.get_device().screencap())
+        except Exception as e:
+            print(e)
+            sleep(1)
+            return io.BytesIO(self.get_device().screencap())
 
-    def get_curr_device_screen_img(self):
+
+    def get_curr_device_screen_img(self, deadstop=0):
         try:
             device = self.get_device()
             if device is None:
@@ -106,9 +126,11 @@ class Adb:
             return image
         except Exception as e:
             self.print(f"EXCEPTION : get_screen_device")
+            if deadstop == 30:
+                raise e
             sleep(1)
             self.connect_to_device()
-            return self.get_curr_device_screen_img()
+            return self.get_curr_device_screen_img(deadstop+1)
 
     def get_cv2_img(self):
         try:
@@ -125,7 +147,7 @@ class Adb:
 
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
-        image.save(file_name + '.png')
+        image.save(f".//{file_name}.png")
         return True
 
     def find_img_cv(self, img_to_find, confidence=0.9):
@@ -152,10 +174,9 @@ class Adb:
                 source = cvtColor(source, COLOR_BGR2RGB)
 
             img_to_find = self.images.get_file_name(target)
-
+            # bot.adb.get_cv2_img()
             result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = minMaxLoc(result)
-
             if max_val > confidence:
                 if target == "new_troops_button":
                     return max_loc[0] + 800, max_loc[1]
@@ -164,6 +185,7 @@ class Adb:
                 return
         except Exception as exception_error:
             self.print("Error occured when using find_image")
+            self.print(target)
             traceback.print_exc()
             self.print(exception_error)
 
@@ -177,11 +199,12 @@ class Adb:
         else:
             return
 
-    def find_multiple_img(self, target, confidence=0.9):
-        pil_image = self.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cvtColor(cv_image, COLOR_BGR2RGB)
-        # print(cv_image)
+    def find_multiple_img(self, target, source=None, confidence=0.9):
+        if source is None:
+            pil_image = self.get_curr_device_screen_img()
+            cv_image = array(pil_image)
+            source = cvtColor(cv_image, COLOR_BGR2RGB)
+        cv_image = source
 
         img_to_find = self.images.get_file_name(target)
         if target == "back_icon":
@@ -234,9 +257,9 @@ class Adb:
         return localisations
 
     def is_game_alive(self):
-        string = "dumpsys activity activities | grep mFocusedActivity"
+
+        string = "dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'"
         a = self.shell(string)
-        # print(a)
         return 'lilithgame' in a or 'rok' in a or 'lilithgames' in a
 
     def click(self, x, y):
@@ -249,7 +272,7 @@ class Adb:
         try:
             return device.shell(string)
         except RuntimeError:
-            print(RuntimeError)
+            print("Cannot use shell")
             sleep(3)
             self.connect_to_device()
             return self.shell(string)
@@ -289,7 +312,6 @@ class Adb:
 
     def restart_emulator(self):
         try:
-            data = self.FileSingleton.get_data()
             path = self.FileSingleton.get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):

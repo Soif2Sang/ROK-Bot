@@ -3,7 +3,7 @@ from random import uniform
 from PIL import Image
 
 from tasks.Task import Task, get_name
-from utils.Task_utils import get_class
+from utils.functions import get_class
 
 
 class DailyQuests(Task):

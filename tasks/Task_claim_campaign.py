@@ -3,7 +3,7 @@ from random import uniform
 import cv2
 
 from tasks.Task import Task
-from utils.Task_utils import get_class
+from utils.functions import get_class
 
 
 # from utils.easyOcr import Reader

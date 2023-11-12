@@ -3,7 +3,7 @@ import os
 import re
 import win32api
 
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 
 def find_file(root_folder, rex):

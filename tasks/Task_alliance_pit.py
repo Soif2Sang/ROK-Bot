@@ -2,7 +2,7 @@ from random import uniform, randint
 from time import sleep
 
 from tasks.Task import Task
-from utils.Task_utils import get_class, get_name
+from utils.functions import get_class, get_name
 
 
 class AlliancePit(Task):

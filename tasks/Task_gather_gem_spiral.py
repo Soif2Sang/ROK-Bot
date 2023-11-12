@@ -6,7 +6,7 @@ from time import sleep, time
 
 from tasks.Task_gather_gem import GatherGem
 from tasks.Task import Task
-from utils.Task_utils import get_name, get_class
+from utils.functions import get_name, get_class
 
 
 # from utils.easyOcr import Reader
