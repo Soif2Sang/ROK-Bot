@@ -22,6 +22,23 @@ class ApiSingleton:
             self.apikey = key
 
 
+class EmulatorSingleton:
+    __instance = None
+    FileLock = Lock()
+    emulator = ""
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def getEmulator(self) -> str :
+        with self.FileLock:
+            return self.emulator
+
+    def setEmulator(self, mode :str) :
+        with self.FileLock:
+            self.emulator = mode
+
 class CaptchaSingleton:
     __instance = None
     FileLock = Lock()

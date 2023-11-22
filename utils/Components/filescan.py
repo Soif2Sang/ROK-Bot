@@ -6,7 +6,7 @@ def generate_filescan():
         content=ft.Container(
             content=
             ft.ListTile(
-                title=ft.Text("The Bot is scanning the drives for bluestacks configuration, please wait a bit..")
+                title=ft.Text("The Bot is scanning the drives for emulator configuration, please wait a bit..")
                 , leading=ft.Icon(ft.icons.FIND_IN_PAGE_OUTLINED)
             ),
             width=400,
