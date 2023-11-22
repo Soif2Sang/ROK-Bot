@@ -10,7 +10,7 @@ color_bank = {
 
 
 class PageSettings(ft.Container):
-    def __init__(self, page, tab, instance_index: str, profile_index: int):
+    def __init__(self, page, instance_index: str, profile_index: int):
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
