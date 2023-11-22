@@ -16,7 +16,6 @@ from views.settings.profile.page_training import PageTraining
 from views.settings.profile.page_transfer import PageTransfer
 from views.settings.profile.page_rss import PageRss
 from views.settings.profile.page_gem import PageGem
-from utils.functions import FileSingleton
 
 color_bank = {
     1: "#3b8ed0",
@@ -25,9 +24,9 @@ color_bank = {
 }
 
 
-class ProfileSettings(PageSettings):
-    def __init__(self, page, tab, instance_index: str, profile_index: int):
-        super().__init__(page, tab, instance_index, profile_index)
+class SettingContainer(PageSettings):
+    def __init__(self, page, instance_index: str, profile_index: int):
+        super().__init__(page, instance_index, profile_index)
 
     def clean(self):
         self.content.controls = []
@@ -93,7 +92,6 @@ class ProfileSettings(PageSettings):
     def page_character(self):
         self.data = self.FileSingleton.get_data()
         self.clean()
-        self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.append(
             ft.Row(
@@ -120,7 +118,6 @@ class ProfileSettings(PageSettings):
     def page_logback(self):
         self.data = self.FileSingleton.get_data()
         self.clean()
-        self.tabs.expand = True
         self.content = ft.ListView(height=500, expand=0, padding=ft.padding.only(right=20), )
         self.content.controls.extend([
             ft.Row(
@@ -175,6 +172,10 @@ class ProfileSettings(PageSettings):
             self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)
 
+    def handleSettings(self, function):
+        function(self)
+        self.initial_page.update()
+
     def create_normal_switch(self, keyword: str, text: str):
         self.data = self.FileSingleton.get_data()
         self.content.controls.append(
@@ -204,7 +205,7 @@ class ProfileSettings(PageSettings):
                         ft.OutlinedButton(
                             text="Settings",
                             icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(self)
+                            on_click=lambda _: self.handleSettings(function)
                             , style=ButtonStyle(shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                             })
@@ -226,7 +227,7 @@ class ProfileSettings(PageSettings):
                         ft.OutlinedButton(
                             text="Settings",
                             icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(), style=ButtonStyle(shape={
+                            on_click=lambda _: self.handleSettings(function), style=ButtonStyle(shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                             }, ),
                         )
