@@ -1,13 +1,8 @@
-import threading
-from time import sleep
-
 import flet as ft
-
 from utils.constants import VERSION, toasts_history
 from utils.flet_toast.core import Position
 from utils.flet_toast.toasts_flexible import ToastsFlexible, ToastAction
 from views.tiles.handler.tile_handler import TileHandler
-# from viewscod import Flet_TileManager_cod
 
 color_bank = {
     1: "#3b8ed0",
@@ -19,8 +14,8 @@ def Main(page: ft.Page, days=950):
     # page.clean()
     theme = ft.Theme()
     theme.page_transitions.windows = ft.PageTransitionTheme.CUPERTINO
-
-    page.title = f"RokNet - {days} Days left"
+    page.vertical_alignment = None
+    page.horizontal_alignment = None
     page.frames = {}
     page.window_resizable = True
     page.window_width = 450
@@ -111,29 +106,8 @@ def Main(page: ft.Page, days=950):
                 ]
             )
 
-    def threadFetchNews():
-        fetchNews()
-        sleep(6 * 3600)
-        return threadFetchNews()
-
-    threadFetchNews()
+    fetchNews()
     # threading.Thread(target=threadFetchNews, name="FetchNews").start()
-
-def Main_cod(page: ft.Page, days=950):
-    page.title = f"Cod Bot - {days} Days left"
-    page.frames = {}
-    page.window_width = 450
-    page.tile_manager = Flet_TileManager_cod.TileManager(page)
-
-    theme = ft.Theme()
-    theme.page_transitions.windows = ft.PageTransitionTheme.FADE_UPWARDS
-    page.theme = theme
-    page.update()
-
-    page.add(page.tile_manager)
-    page.add(ft.Divider())
-    page.tile_manager.refresh()
-    page.tile_manager.update_tiles()
 
 
 if __name__ == "__main__":

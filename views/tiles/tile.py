@@ -1,12 +1,13 @@
 import copy
 import threading
 
+from utils.singletons import EmulatorSingleton
 from views.tiles.handler.config_handler import Frame
 from tasks.Task import Task
 import flet as ft
 
 from tasks.Task_runner import TaskRunner
-from utils.functions import FileSingleton, get_all_vms_running
+from utils.functions import FileSingleton, get_all_vms_running, get_all_vms_running_ld
 
 
 class ConfigOverrider(ft.PopupMenuButton):
@@ -22,11 +23,18 @@ class ConfigOverrider(ft.PopupMenuButton):
     def init(self):
         self.items.append(ft.PopupMenuItem(text="Export Config"))
         self.items.append(ft.PopupMenuItem())
-        for vms in get_all_vms_running():
-            if str(vms[0]) != self.index:
+        emulator = EmulatorSingleton().getEmulator()
+
+        if emulator == "bluestacks":
+            vms = get_all_vms_running()
+        else:
+            vms = get_all_vms_running_ld()
+
+        for vm in vms:
+            if str(vm[0]) != self.index:
                 self.items.append(
                     ft.PopupMenuItem(
-                        text=vms[1], on_click=self.override_settings, data=vms[0]
+                        text=vm[1], on_click=self.override_settings, data=vm[0]
                     )
                 )
 
@@ -71,7 +79,6 @@ class Tile(ft.Row):
         self.number = number
         self.initial_page = page
         self.tasks_process = None
-        print(number)
         self.paused = False
         self.stopped = False
 

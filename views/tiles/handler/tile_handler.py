@@ -6,9 +6,8 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.constants import BREZILIAN
 from utils.flet_translations import translate
-# from random_test import get_all_vms_running, get_dic_instances
-from utils.functions import get_all_vms_running, get_dic_instances
-from utils.singletons import LinkSingleton, FileSingleton
+from utils.functions import get_all_vms_running, get_dic_instances, get_dic_instances_ld, get_all_vms_running_ld
+from utils.singletons import LinkSingleton, FileSingleton, EmulatorSingleton
 from views.tiles.tile import Tile
 
 
@@ -122,8 +121,15 @@ class TileHandler(ft.ListView):
 
     def refresh(self):
         data = self.FileSingleton.get_data()
-        instances = get_dic_instances()
-        print(instances)
+
+        emulator = EmulatorSingleton().getEmulator()
+
+        if emulator == "bluestacks":
+            instances = get_dic_instances()
+        else:
+            instances = get_dic_instances_ld()
+
+
         default_dic = {
             'instance': "",
             'name': "",
@@ -280,7 +286,10 @@ class TileHandler(ft.ListView):
             data[str(instance)]['port'] = int(instances[str(instance)]['port'])
 
         self.FileSingleton.write_data(data)
-        instances = get_all_vms_running()
+        if emulator == "bluestacks":
+            instances = get_all_vms_running()
+        else:
+            instances = get_all_vms_running_ld()
         for i in range(len(self.controls) - 1):
             self.controls.pop()
         # print(instances)
@@ -296,15 +305,19 @@ class TileHandler(ft.ListView):
                 self.tiles[str(instance[0])].config_overrider.items = []
                 self.tiles[str(instance[0])].config_overrider.refresh()
         else:
+            if emulator == "bluestacks":
+                text = "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"
+            else:
+                text = "No emulator found, have you started one?"
 
             self.controls.append(ft.Container(
                 content=ft.Column(
                     controls=[
                         ft.Icon(ft.icons.INFO_OUTLINED, size=60),
                         ft.Text(
-                            translate(
-                                "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"),
-                            text_align=ft.TextAlign.CENTER)
+                            translate(text),
+                            text_align=ft.TextAlign.CENTER
+                        )
                     ],
                     alignment=ft.MainAxisAlignment.START,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER

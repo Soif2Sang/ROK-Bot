@@ -7,18 +7,18 @@ from utils.functions import FileSingleton
 
 
 def find_file(root_folder, rex):
-    for root,dirs,files in os.walk(root_folder):
+    for root, dirs, files in os.walk(root_folder):
         for f in files:
-            result = rex.search(f)
+            path = os.path.join(root, f)
+            result = rex.search(path)
             if result:
-                return os.path.join(root, f)
-                # break # if you want to find only one
+                return path
 
 def find_file_in_all_drives(file_name):
-    #create a regular expression for the file
+    # create a regular expression for the file
     rex = re.compile(file_name)
     for drive in win32api.GetLogicalDriveStrings().split('\000')[:-1]:
-        if result:=find_file( drive, rex ):
+        if result := find_file(drive, rex):
             return result
 
 
