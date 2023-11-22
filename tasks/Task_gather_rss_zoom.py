@@ -21,9 +21,6 @@ class GatherRssZoom(GatherRss):
     def task_name(self):
         return "GatherRss"
 
-
-
-
     @get_name
     def restart_if_game_crashed(self):
         """
@@ -66,13 +63,13 @@ class GatherRssZoom(GatherRss):
             node_type = self.data[str(self.sel)]['schedules'][self.current_profile][self.node_place]
 
         list_nodes = [f"{node_type}_icon_zoom"]
-        for element  in ['down','up']:
-            for element2 in ['left','right']:
+        for element in ['down', 'up']:
+            for element2 in ['left', 'right']:
                 list_nodes.append(f"{node_type}_{element}_{element2}_icon_zoom")
         co = None
         for icon in list_nodes:
             co = self.validate_co(
-                self.find_img(source=screen, target=icon, confidence=0.8))
+                self.find_img(source=screen, target=icon, confidence=0.8 if "wood" not in icon else 0.75))
             if co is not None:
                 self.print(f"Node Found - x: {co[0]} y:{co[1]}")
                 if self.already_mining(co[0], co[1], screen):
@@ -101,16 +98,15 @@ class GatherRssZoom(GatherRss):
             return self.adjusted_leave_city(x_click, y_click)
 
         if self.send_troop():
-            self.node_place = self.next_resource_type(self.node_place)
+            self.node_place = self.next_place(self.node_place)
             self.better_sleep((1.3, 2))
             self.check_captcha()
             self.zoom_out_city()
         else:
             return "STOP"
 
-
     @get_name
-    def check_if_interrupt(self, screen = None):
+    def check_if_interrupt(self, screen=None):
         if not self.adb.is_game_alive():
             return True
         self.check_download_page(screen)
@@ -119,7 +115,6 @@ class GatherRssZoom(GatherRss):
         if self.check_log_back(screen):
             return True
         return False
-
 
     @get_name
     def swipe_scan(self, scan, direction):
@@ -164,7 +159,7 @@ class GatherRssZoom(GatherRss):
     @get_class
     def run(self, node_place=None):
         if node_place == "Done":
-            return self.click(700,400)
+            return self.click(700, 400)
         self.node_place = node_place
         self.run_game()
         if not self.random_macro():
@@ -206,7 +201,8 @@ class GatherRssZoom(GatherRss):
             for y in range(i):
 
                 if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                    self.node_place, 'nothing') == 'nothing' or self.node_place == 'Done' or (not self.free_troop_commander_list()):
+                        self.node_place, 'nothing') == 'nothing' or self.node_place == 'Done' or (
+                not self.free_troop_commander_list()):
                     return self.click(500, 400)
 
                 if self.swipe_scan(self.scan_node, current_swipe) == "STOP":
@@ -214,4 +210,4 @@ class GatherRssZoom(GatherRss):
 
             current += 1
             current_swipe = swipes[current_swipe]
-        return self.run(node_place=self.next_resource_type(self.node_place))
+        return self.run(node_place=self.next_place(self.node_place))

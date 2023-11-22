@@ -21,21 +21,16 @@ from pytesseract import pytesseract
 from utils.discord_utils import send_discord_message
 from utils.twocaptcha import TimeoutException
 from utils.twocaptcha.api import NetworkException, ApiException
-
-# import discord_bot
-
-# from paddleocr import PaddleOCR
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
-
-# from utils import discord_bot
 from utils.functions import get_name, current_time, string_to_co, FileSingleton, \
     string_to_co_slide, colorize_name, colorize_output
-from utils.singletons import ApiSingleton
+from utils.singletons import ApiSingleton, EmulatorSingleton
 
+from utils.android_debug_bridge_ld_player import AdbLd
 from utils.android_debug_bridge import Adb
 from utils.twocaptcha import TwoCaptcha
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
 
 class Task():
@@ -44,8 +39,14 @@ class Task():
         self.data = self.FileSingleton.get_data()
         self.current_profile: str = '1'
         self.tile = tile
-        self.sel: int = tile.number
-        self.adb: Adb = Adb(self.sel)
+        self.sel: str = tile.number
+        emulator = EmulatorSingleton().getEmulator()
+
+        if emulator == "bluestacks":
+            self.adb = Adb(self.sel)
+        else:
+            self.adb = AdbLd(self.sel)
+
         self.language: str | None = None
         self.name: str = self.adb.name
         self.DEV = False
@@ -192,18 +193,13 @@ class Task():
         """
         cropped_image = self.adb.get_cv2_img()[160:180, 1205:1247]
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2GRAY)
-
-        # imwrite("commander_list.png",cropped_image)
         native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
 
-        # print(f"[ {current_time()} ] [ {self.name} ] {native_text =}")
         if "/" in native_text:
-            # list_text = text0.split("/")
             enhanced_text = native_text.split("/")[0] + native_text.split("/")[1]
         else:
             enhanced_text = native_text
         enhanced_text = enhanced_text.replace("\n", "")
-        # print(f"[ {current_time()} ] [ {self.name} ] {enhanced_text =}")
         if len(enhanced_text) < 2:
             return True
         if len(enhanced_text) == 2:
@@ -213,7 +209,9 @@ class Task():
     def random_macro(self) -> bool:
         try:
             path_json = self.FileSingleton.get_path()
-            for name in ["com.lilithgame.roc.gp.cfg", "com.rok.gp.vn.cfg", "com.lilithgame.rok.gpkr.cfg",
+            for name in ["com.lilithgame.roc.gp.cfg",
+                         "com.rok.gp.vn.cfg",
+                         "com.lilithgame.rok.gpkr.cfg",
                          "com.lilithgames.rok.gp.jp.cfg",
                          "com.lilithgames.rok.gpkr.cfg"]:
                 path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
@@ -272,6 +270,9 @@ class Task():
             if self.find_img(target='gem_search_button'):
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+
+                if self.adb.is_ld:
+                    hwnd = hwndChild
                 self.script_pause()
                 while self.find_img(target="gem_search_button"):
                     self.script_pause()
@@ -302,7 +303,7 @@ class Task():
         y = uniform(517, 560)
         # print(x,y)
         self.click(x, y)
-        self.better_sleep((0.3, 0.5))
+        self.better_sleep((0.9, 1.3))
 
     @get_name
     def set_search_level(self, level: int = 10) -> None:
@@ -325,7 +326,8 @@ class Task():
             self.debug(string)
             string = string.replace("\n", "")
             string = string.split(":")
-
+            if string[1] == '1l':
+                string[1] = '1'
             try:
                 self.print(f'Current level : {string[1]}')
                 # self.set_text(f"[{current_time()}] Current level : {string[1]}")
@@ -564,10 +566,6 @@ class Task():
         captcha = cv2.putText(captcha, 'Click in center of puzzle', org, font,
                               fontScale, color, thickness, cv2.LINE_AA)
 
-        # captcha = cv2.cvtColor(captcha, cv2.COLOR_BGR2RGB)
-        # im_pil = Image.fromarray(captcha)
-        # im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
-        # return cv2.imread(f"captcha{self.sel}.jpg")
         return captcha
 
     @get_name
@@ -804,9 +802,6 @@ class Task():
     def check_chest(self):
         for _ in range(2):
             self.script_pause()
-            # pil_image = self.adb.get_curr_device_screen_img()
-            # cv_image = array(pil_image)
-            # cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             cv_image = self.adb.get_cv2_img()
             cropped_image = cv_image[30:170, 0:1225]
             chest = None

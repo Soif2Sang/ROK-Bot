@@ -57,6 +57,7 @@ class AcademyResearch(Task):
         else:
             if swipes < 5:
                 self.swipe_right_low()
+                self.better_sleep((3, 3.5))
                 return self.select_tech(swipes + 1)
             else:
                 return
