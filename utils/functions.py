@@ -1,6 +1,7 @@
 import hashlib
 import re
 import shutil
+import subprocess
 import sys
 from datetime import datetime
 from functools import wraps
@@ -252,9 +253,52 @@ def get_current_instances(data):
 def get_all_vms_running():
     return get_current_instances(get_dic_instances())
 
-# print(datetime.now().date())
-#
-# s = CaptchaSingleton()
-# s.addCaptcha()
-#
-# print(json.dumps(s.getCaptchas(), indent=4))
+def get_dic_instances_ld():
+    fileSingleton = FileSingleton()
+    path = fileSingleton.get_path()
+
+    argument = 'list2'
+    command = [path["LD-Console"], argument]
+    result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+
+
+    emulators = result.stdout.split('\n')
+    emulators.pop()
+
+    liste = {}
+    for emulator in emulators:
+        emulator = emulator.split(',')
+        liste[emulator[0]] = {
+            'name': emulator[1],
+            'instance': emulator[0],
+            'port': 5554 + 2 * int(emulator[0])
+        }
+
+    return liste
+
+
+def get_current_instances_ld(data: dict):
+    fileSingleton = FileSingleton()
+    path = fileSingleton.get_path()
+
+    argument = 'runninglist'
+    command = [path["LD-Console"], argument]
+    result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+
+    emulators = result.stdout.split('\n')
+    print(emulators)
+
+    emulators.pop()
+
+    liste = []
+
+    for emulator in emulators:
+        for e in data.values():
+            if e['name'] == emulator:
+                liste.append((e['instance'], e['name']))
+    return liste
+
+def get_all_vms_running_ld():
+    return get_current_instances_ld(get_dic_instances_ld())
+
+# print(get_all_vms_running_ld())

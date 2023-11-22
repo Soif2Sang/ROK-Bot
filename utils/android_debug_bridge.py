@@ -27,6 +27,7 @@ class Adb:
         self.number = number
         self.name = self.data[str(self.number)]['name']
         self.images = ImageSingleton()
+        self.is_ld = True
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")

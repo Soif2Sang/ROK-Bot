@@ -17,7 +17,7 @@ from utils.resources import ImageSingleton
 
 bridge = None
 
-class Adb:
+class AdbLd:
     def __init__(self, number: str, host='127.0.0.1', port=5037):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
@@ -27,6 +27,7 @@ class Adb:
         self.number = number
         self.name = self.data[str(self.number)]['name']
         self.images = ImageSingleton()
+        self.is_ld = True
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
@@ -50,7 +51,7 @@ class Adb:
         path = self.FileSingleton.get_path()
         self.update_port()
 
-        adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
+        adb_path = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
         cmd = f"{adb_path} connect {host}-{self.port}"
         subprocess.Popen(cmd)
 
@@ -79,7 +80,7 @@ class Adb:
 
             self.update_port()
             path = self.FileSingleton.get_path()
-            cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
+            cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
             subprocess.Popen(cmd)
 
             self.print(f"Adb restarting..")
