@@ -1,20 +1,18 @@
-import base64
+import os
 import os
 import sys
 import threading
 from datetime import datetime
-from io import BytesIO
 from time import sleep
 
 import flet as ft
-from PIL import Image
 
-from utils.flet_translations import translate
-from views._main import Main
 from utils.auth import selfApi, update_user_info
+from utils.constants import BREZILIAN
+from utils.flet_translations import translate
 from utils.functions import FileSingleton, getchecksum
 from utils.singletons import ApiSingleton, LinkSingleton
-from utils.constants import BREZILIAN
+
 
 def is_str_valid(username, password):
     for element in ['#', "$", "&", "|", "\0",
@@ -99,19 +97,23 @@ class LoginUI(ft.Column):
             if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
                 update_user_info(password, username)
 
+                self.initial_page.splash = None
+                self.button_login.disabled = False
+
                 target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
 
                 current_date = datetime.utcnow()
-                days_remaining = (target_date - current_date).days
+                days = (target_date - current_date).days
 
-                self.initial_page.splash = None
-                self.button_login.disabled = False
+                self.initial_page.title = f"RokNet - {days} Days left"
+                self.initial_page.update()
+                self.initial_page.go('/emulator-choice')
+
                 ApiSingleton().setApiKey(self.initial_page.keyauthapp.var('2captcha'))
-                Main(self.initial_page, days_remaining)
 
                 self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription,
                                                                           args=(username, password))
-                self.initial_page.subscription_checker.start()
+                # self.initial_page.subscription_checker.start()
             else:
                 sleep(5)
                 self.initial_page.splash = None

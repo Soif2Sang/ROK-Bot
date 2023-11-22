@@ -3,7 +3,7 @@ from random import randint
 import flet as ft
 
 from utils.flet_translations import translate
-from Components.card import GenerateCard
+from utils.Components.card import GenerateCard
 from utils.functions import FileSingleton
 from datetime import datetime, timedelta
 
