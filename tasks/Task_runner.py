@@ -36,6 +36,7 @@ from tasks.Task_upgrade_city import UpgradeCity
 from tasks.Task_academy_research import AcademyResearch
 from utils.functions import get_name, current_time, get_window_pid, get_dic_instances
 from utils.singletons import ApiSingleton, LinkSingleton
+from utils.android_debug_bridge_ld_player import AdbLd
 from utils.android_debug_bridge import Adb
 from views.frametime import is_in_frametime, random_time_in_frametime
 
