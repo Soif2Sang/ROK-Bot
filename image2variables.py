@@ -1,4 +1,5 @@
 import glob
+
 from cv2 import imread
 
 print("from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode, \

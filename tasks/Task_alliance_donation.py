@@ -1,5 +1,5 @@
 import random
-from random import uniform, randint
+from random import randint, uniform
 
 from tasks.Task import Task
 from utils.functions import get_class, get_name

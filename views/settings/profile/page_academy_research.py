@@ -1,8 +1,8 @@
 import flet as ft
 
 from utils.flet_translations import translate
-from views.settings.profile.rows.Flet_row_troops import FletRowTraining
 from views.settings.page_base import BasePage
+from views.settings.profile.rows.Flet_row_troops import FletRowTraining
 
 
 class PageAcademyResearch(BasePage):

@@ -1,10 +1,10 @@
-from random import uniform, shuffle
+from random import shuffle, uniform
 from time import sleep
 
 import cv2
 
 from tasks.Task import Task
-from utils.functions import get_name, get_class
+from utils.functions import get_class, get_name
 
 
 class RssTransfer(Task):

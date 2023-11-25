@@ -1,7 +1,7 @@
-from random import uniform, shuffle
+from random import shuffle, uniform
 
 from tasks.Task import Task
-from utils.functions import get_class, filter_coordinate, get_name
+from utils.functions import filter_coordinate, get_class, get_name
 
 
 class BuyMerchant(Task):

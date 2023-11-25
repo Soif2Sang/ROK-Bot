@@ -1,8 +1,10 @@
 import re
+from datetime import timedelta
+
 import pyautogui
-import icecream
 
 from utils.resources import ImageSingleton
+
 #
 with open('average.txt', 'r') as file:
     lines = file.readlines()
@@ -20,12 +22,14 @@ for line in lines:
 
 if all_times_in_seconds:
     average_time = sum(all_times_in_seconds) / len(all_times_in_seconds)
-    print(f'Average time: {average_time} seconds')
+    print(f'Average time: {timedelta(seconds=int(average_time))} seconds')
 else:
     print('No matching lines found in the file.')
 exit()
 images = ImageSingleton()
 import cv2
+
+
 def find_img(target):
     img_to_find = images.get_file_name(target)
 

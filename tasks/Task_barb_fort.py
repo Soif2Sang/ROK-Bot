@@ -1,11 +1,11 @@
 from datetime import datetime
-from random import uniform, randint
+from random import randint, uniform
 from time import sleep, time
 
 import cv2
 from PIL import Image
 
-from tasks.Task import Task, get_name, current_time
+from tasks.Task import Task, current_time, get_name
 from tasks.Task_heal_troop import HealTroop
 from utils.functions import get_class
 

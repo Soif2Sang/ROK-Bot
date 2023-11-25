@@ -4,9 +4,9 @@ import subprocess
 
 import flet as ft
 
-from views.config_path import find_file_in_all_drives
 from utils.functions import FileSingleton
 from utils.singletons import EmulatorSingleton
+from views.config_path import find_file_in_all_drives
 from views.main import Main
 
 

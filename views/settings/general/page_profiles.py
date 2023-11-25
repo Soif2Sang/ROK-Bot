@@ -1,9 +1,9 @@
 import flet as ft
+from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 
-from flet_core import ButtonStyle, RoundedRectangleBorder
 
 class PageProfiles(BasePage):
     def __init__(self, profile):

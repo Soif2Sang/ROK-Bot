@@ -1,22 +1,24 @@
 import multiprocessing
 import subprocess
 import traceback
-from random import uniform, randint, shuffle
-from time import time, sleep
+from datetime import timedelta
+from random import randint, shuffle, uniform
+from time import sleep, time
 
-import win32gui
 import flet as ft
+import win32gui
 from PIL import Image
 
-from tasks.Task_claim_mail import ClaimMail
-from tasks.Task_alliance_pit import AlliancePit
 from tasks.Task import Task
+from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
+from tasks.Task_alliance_pit import AlliancePit
 from tasks.Task_barb_fort import BarbFort
 from tasks.Task_buy_merchant import BuyMerchant
 from tasks.Task_claim_campaign import ClaimCampaign
 from tasks.Task_claim_daily_quests import DailyQuests
+from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_clear_fog import ClearFog
 from tasks.Task_collect_resource import CollectResource
 from tasks.Task_daily_chest import DailyChest
@@ -33,14 +35,12 @@ from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
-from tasks.Task_academy_research import AcademyResearch
-from utils.functions import get_name, current_time, get_window_pid, get_dic_instances
-from utils.singletons import ApiSingleton, LinkSingleton
-from utils.android_debug_bridge_ld_player import AdbLd
 from utils.android_debug_bridge import Adb
+from utils.android_debug_bridge_ld_player import AdbLd
+from utils.functions import (current_time, get_dic_instances, get_name,
+                             get_window_pid)
+from utils.singletons import ApiSingleton, LinkSingleton
 from views.frametime import is_in_frametime, random_time_in_frametime
-
-from datetime import timedelta
 
 
 class TaskRunner(Task):

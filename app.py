@@ -3,7 +3,6 @@ import json
 import os
 import subprocess
 import sys
-import threading
 import traceback
 from time import sleep
 
@@ -11,27 +10,22 @@ import flet as ft
 from flet_route import Routing, path
 
 import views.tiles.tile
+from utils.auth import selfApi
 from utils.Components.AnimatedCard import AnimatedCard
 from utils.Components.filescan import generate_filescan
 from utils.Components.maintenance import generate_maintenance
-# from flet_translator import TranslateFletPage, GoogleTranslateLanguage
-
-from utils.functions import getchecksum, FileSingleton
-from utils.singletons import ApiSingleton, LinkSingleton, EmulatorSingleton
 from utils.constants import BREZILIAN, toasts_history
-
-from utils.auth import selfApi
-from utils.handle_files import main as HandleFiles
+from utils.functions import FileSingleton, getchecksum
 from views.login.login import LoginUI
 
 try:
-    from views.city_layout import viewCityLayout
-    from views.profile_settings import viewProfileSettings
-    from views.main import Main
-    from views.config_path import find_file_in_all_drives
-    from utils.singletons import ApiSingleton, LinkSingleton
-    from utils.flet_toast.toasts_flexible import ToastsFlexible
     from utils.flet_toast.core import Position
+    from utils.flet_toast.toasts_flexible import ToastsFlexible
+    from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
+    from views.city_layout import viewCityLayout
+    from views.config_path import find_file_in_all_drives
+    from views.main import Main
+    from views.profile_settings import viewProfileSettings
 except Exception as e:
 
     exc_type, exc_value, exc_traceback = sys.exc_info()
