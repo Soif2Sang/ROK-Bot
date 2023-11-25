@@ -1,6 +1,6 @@
 import flet as ft
 
-from config_handler import FrameUpgrade
+from tiles.handler.config_handler import FrameUpgrade
 from utils.functions import get_data
 
 

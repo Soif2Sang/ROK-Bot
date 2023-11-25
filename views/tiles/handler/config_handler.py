@@ -1,5 +1,5 @@
 import flet as ft
-from settings.profile.profile import SettingContainer
+from views.settings.profile.profile import SettingContainer
 
 from utils.flet_translations import translate
 from utils.functions import FileSingleton
