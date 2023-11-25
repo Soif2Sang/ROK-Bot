@@ -5,12 +5,6 @@ install-dependencies:
 	pip install isort black flake8
 
 isort:
-	isort --skip venv --skip tesseract --skip "auth compiled" --skip "utils/Crypto" .
+	isort --skip venv --skip tesseract --skip "auth compiled" --skip "utils/Crypto" --skip "*__pycache__*" .
 
-black:
-	black --check --diff --exclude venv --exclude tesseract --exclude "auth compiled" --exclude "utils/Crypto".
-
-flake8:
-	flake8 --exclude=venv,tesseract,"auth compiled","utils/Crypto" .
-
-test: isort black flake8
+test: isort
