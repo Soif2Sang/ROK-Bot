@@ -13,8 +13,9 @@ import win32gui
 import win32process
 from decohints import decohints
 
-from utils.singletons import FileSingleton
 from utils.constants import DEBUG
+from utils.singletons import FileSingleton
+
 dir = "./"
 
 

@@ -8,7 +8,7 @@ from datetime import datetime
 from time import sleep
 
 import clipboard
-from PIL import ImageEnhance, ImageOps, Image
+from PIL import Image, ImageEnhance, ImageOps
 
 from tasks.Task import Task
 from utils.functions import get_class

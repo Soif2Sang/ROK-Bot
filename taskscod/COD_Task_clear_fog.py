@@ -1,6 +1,5 @@
+from random import randint, uniform
 from time import sleep, time
-
-from random import uniform, randint
 
 from pytesseract import pytesseract
 

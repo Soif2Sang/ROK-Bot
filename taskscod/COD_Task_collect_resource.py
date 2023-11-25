@@ -1,5 +1,6 @@
 
-from random import uniform, shuffle, choice
+from random import choice, shuffle, uniform
+
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task

@@ -1,7 +1,6 @@
 import traceback
-
-
 from random import uniform
+
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task, get_name

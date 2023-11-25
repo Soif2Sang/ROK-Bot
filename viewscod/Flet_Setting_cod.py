@@ -3,14 +3,14 @@ import multiprocessing
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from utils.functions import FileSingleton
 from views import frametime
+from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
 from views.settings.profile.rows.Flet_row_material import FletRowMaterial
 from views.settings.profile.rows.Flet_row_presets import FletRowPresets
-from viewscod.Flet_row_rss_cod import FletRowRss
-from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
 from views.settings.profile.rows.Flet_row_troops import FletRowTraining
 from viewscod.Flet_city_layout_cod import CityPlacement
-from utils.functions import FileSingleton
+from viewscod.Flet_row_rss_cod import FletRowRss
 
 color_bank = {
     1: "#3b8ed0",

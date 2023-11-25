@@ -1,5 +1,6 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+
 from utils.functions import FileSingleton
 
 color_bank = {

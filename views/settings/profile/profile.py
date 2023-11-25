@@ -1,21 +1,21 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from views.settings.profile.page_academy_research import PageAcademyResearch
-from views.settings.profile.page_upgrade_city import PageUpgradeCity
 from views.settings.page_settings import PageSettings
-from views.settings.profile.page_character import PageCharacter
-from views.settings.profile.page_logback import PageLogback
+from views.settings.profile.page_academy_research import PageAcademyResearch
 from views.settings.profile.page_barbs import PageBarbs
+from views.settings.profile.page_character import PageCharacter
 from views.settings.profile.page_fog import PageFog
+from views.settings.profile.page_gem import PageGem
 from views.settings.profile.page_heal import PageHeal
+from views.settings.profile.page_logback import PageLogback
 from views.settings.profile.page_marauders import PageMarauders
 from views.settings.profile.page_materials import PageMaterials
 from views.settings.profile.page_rally import PageRally
+from views.settings.profile.page_rss import PageRss
 from views.settings.profile.page_training import PageTraining
 from views.settings.profile.page_transfer import PageTransfer
-from views.settings.profile.page_rss import PageRss
-from views.settings.profile.page_gem import PageGem
+from views.settings.profile.page_upgrade_city import PageUpgradeCity
 
 color_bank = {
     1: "#3b8ed0",

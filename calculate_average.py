@@ -4,6 +4,7 @@ from datetime import timedelta
 import pyautogui
 
 from utils.resources import ImageSingleton
+
 #
 with open('average.txt', 'r') as file:
     lines = file.readlines()
@@ -27,6 +28,8 @@ else:
 exit()
 images = ImageSingleton()
 import cv2
+
+
 def find_img(target):
     img_to_find = images.get_file_name(target)
 

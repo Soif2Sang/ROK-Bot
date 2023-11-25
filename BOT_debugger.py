@@ -10,35 +10,36 @@ import numpy as np
 import win32api
 import win32con
 import win32gui
-
-from MTM  import matchTemplates
-import taskscod.COD_Task_daily_vip
-from tasks.Task_buy_merchant import BuyMerchant
-from tasks.Task_hunt_barbarians import HuntBarbarians
-from tasks.Task_training import TroopTraining
 from android_debug_bridge import Adb
-from tasks.Task_claim_mail import ClaimMail
+from MTM import matchTemplates
+from twocaptcha import TwoCaptcha
+
+import taskscod.COD_Task_daily_vip
 # from tasks.Task_title import Title
 from tasks import Task_gather_rss_default
-from tasks.Task_gather_gem_default import GatherGem
-from tasks.Task_gather_rss_default import GatherRss
-from tasks.Task_kingdom_ranking import KingdomRanking
-from tasks.Task_maraudeurs import Marauders
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 # from taskscod.COD_Task_daily_chest import DailyChest
 # from taskscod.COD_Task_gather_rss import GatherRss
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
+from tasks.Task_alliance_pit import AlliancePit
+from tasks.Task_buy_merchant import BuyMerchant
 from tasks.Task_claim_daily_quests import DailyQuests
+from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_daily_chest2 import DailyChest2
 from tasks.Task_daily_vip import DailyVip
+from tasks.Task_gather_gem_default import GatherGem
+from tasks.Task_gather_rss_default import GatherRss
+from tasks.Task_hunt_barbarians import HuntBarbarians
+from tasks.Task_kingdom_ranking import KingdomRanking
+from tasks.Task_maraudeurs import Marauders
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_runner import TaskRunner
+from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
-from tasks.Task_alliance_pit import AlliancePit
-from twocaptcha import TwoCaptcha
 from utils.android_debug_bridge_ld_player import *
+
 # from utils.android_debug_bridge import *
 DEBUG = True
 

@@ -1,13 +1,14 @@
 import copy
 import threading
 
-from utils.singletons import EmulatorSingleton
-from config_handler import Frame
-from tasks.Task import Task
 import flet as ft
 
+from config_handler import Frame
+from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from utils.functions import FileSingleton, get_all_vms_running, get_all_vms_running_ld
+from utils.functions import (FileSingleton, get_all_vms_running,
+                             get_all_vms_running_ld)
+from utils.singletons import EmulatorSingleton
 
 
 class ConfigOverrider(ft.PopupMenuButton):

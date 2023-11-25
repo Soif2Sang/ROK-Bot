@@ -1,6 +1,6 @@
-from PIL import Image
 from random import uniform
 
+from PIL import Image
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task

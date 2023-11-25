@@ -1,7 +1,11 @@
-from ..utils.allowed_props_to_translate import allowed_props_to_translate
+import asyncio
+import threading
+
+import flet
+
 from ..tools.translate_using_google import translate_using_google
 from ..tools.translate_using_opusMT import translate_using_opusMT
-import flet, threading, asyncio
+from ..utils.allowed_props_to_translate import allowed_props_to_translate
 
 
 def translate_control_content (TranslateFletPage_class, control:flet.Control, use_internet:bool=True, update_async=False):

@@ -2,6 +2,7 @@ import time
 
 import flet as ft
 
+
 class ClickableRow(ft.Row):
     def __init__(self, select, i, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -1,4 +1,4 @@
-from random import uniform,randint
+from random import randint, uniform
 
 from pytesseract import pytesseract
 

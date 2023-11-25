@@ -1,7 +1,6 @@
 from deep_translator import GoogleTranslator
 
 
-
 def translate_using_google (src:str, from_language:str, into_language:str):
     sents = []
     
