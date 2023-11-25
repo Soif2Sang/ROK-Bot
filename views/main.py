@@ -1,8 +1,9 @@
 import flet as ft
+
+from tiles.handler.tile_handler import TileHandler
 from utils.constants import VERSION, toasts_history
 from utils.flet_toast.core import Position
 from utils.flet_toast.toasts_flexible import ToastsFlexible, ToastAction
-from views.tiles.handler.tile_handler import TileHandler
 
 color_bank = {
     1: "#3b8ed0",

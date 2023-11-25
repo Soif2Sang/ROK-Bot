@@ -1,6 +1,7 @@
 import re
+from datetime import timedelta
+
 import pyautogui
-import icecream
 
 from utils.resources import ImageSingleton
 #
@@ -20,7 +21,7 @@ for line in lines:
 
 if all_times_in_seconds:
     average_time = sum(all_times_in_seconds) / len(all_times_in_seconds)
-    print(f'Average time: {average_time} seconds')
+    print(f'Average time: {timedelta(seconds=int(average_time))} seconds')
 else:
     print('No matching lines found in the file.')
 exit()

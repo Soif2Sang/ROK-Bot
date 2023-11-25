@@ -10,7 +10,7 @@ from viewscod.Flet_row_rss_cod import FletRowRss
 from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
 from views.settings.profile.rows.Flet_row_troops import FletRowTraining
 from viewscod.Flet_city_layout_cod import CityPlacement
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 color_bank = {
     1: "#3b8ed0",
@@ -20,11 +20,10 @@ color_bank = {
 
 
 class SettingContainer(ft.Container):
-    def __init__(self, page, tab, instance_index: int, profile_index: int):
+    def __init__(self, page, instance_index: str, profile_index: int):
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
-        self.tabs = tab
         self.page = page
         self.instance_index = instance_index
         self.profile_index = profile_index

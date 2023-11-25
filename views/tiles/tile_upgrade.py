@@ -1,4 +1,4 @@
-from views.tiles.handler.config_handler import FrameUpgrade
+from config_handler import FrameUpgrade
 import flet as ft
 
 from utils.functions import get_data

@@ -2,7 +2,7 @@ import copy
 import threading
 
 from utils.singletons import EmulatorSingleton
-from views.tiles.handler.config_handler import Frame
+from config_handler import Frame
 from tasks.Task import Task
 import flet as ft
 
