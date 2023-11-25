@@ -1,8 +1,8 @@
 import flet as ft
 
+from utils.functions import FileSingleton
 from views.tiles.handler.logging_handler import Logger
 from viewscod.Flet_Setting_cod import SettingContainer
-from utils.functions import FileSingleton
 
 
 class InterfaceSettings(ft.Tab):

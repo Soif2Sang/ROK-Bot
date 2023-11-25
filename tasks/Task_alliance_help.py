@@ -1,7 +1,7 @@
 from random import uniform
 
 from tasks.Task import Task
-from utils.functions import get_class, filter_coordinate
+from utils.functions import filter_coordinate, get_class
 
 
 class AllianceHelp(Task):

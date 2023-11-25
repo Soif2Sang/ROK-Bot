@@ -7,24 +7,25 @@
 # TODO IMPORTING NECESSARY LIBRARYIES
 ########################################################################################################################
 # LIB python libraryies
-import time
 import random
+import time
 from datetime import datetime
-from typing import List, Any, Dict, Callable, Union, Tuple, Literal, Optional
-
-# LIB => squardot-utils-standard libraryies
-from utils_standard.modules.utils import time_sleep_accuracy, GenerateID
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 # LIB => flet libraryies
 import flet as ft
-from flet import UserControl, Control, Page
-from flet_core import ControlEvent, ContainerTapEvent
+from flet import Control, Page, UserControl
+from flet_core import ContainerTapEvent, ControlEvent
 from flet_core.animation import Animation, AnimationCurve
-from flet_core.transform import Offset, Scale, Rotate
+from flet_core.transform import Offset, Rotate, Scale
 from flet_core.types import MainAxisAlignment, MaterialState
+# LIB => squardot-utils-standard libraryies
+from utils_standard.modules.utils import GenerateID, time_sleep_accuracy
 
 # LIB => from libraryies
-from utils.flet_toast.core import OverlayPageManger, SetPosition, Position, set_color_balance
+from utils.flet_toast.core import (OverlayPageManger, Position, SetPosition,
+                                   set_color_balance)
+
 
 ########################################################################################################################
 # TODO SET UP

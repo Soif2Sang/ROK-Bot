@@ -1,7 +1,12 @@
+import asyncio
+import os
+import threading
+
+import flet
+
+from ..tools.translate_control_content import translate_control_content
 from ..utils.google_supported_langaues import GoogleTranslateLanguage
 from ..utils.is_rtl import is_rtl_language
-from ..tools.translate_control_content import translate_control_content
-import flet, threading, os, asyncio
 
 
 class TranslateFletPage:

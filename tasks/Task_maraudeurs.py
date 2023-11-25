@@ -1,15 +1,14 @@
 import math
 import re
 from datetime import datetime
-from random import uniform, randint, random, choice
+from random import choice, randint, random, uniform
 from time import sleep, time
 
 import cv2
 from PIL import Image
 
 from tasks.Task import Task
-from utils.functions import get_name, get_class, current_time
-
+from utils.functions import current_time, get_class, get_name
 
 # from utils.easyOcr import Reader
 

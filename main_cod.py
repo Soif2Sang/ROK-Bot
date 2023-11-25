@@ -11,10 +11,10 @@ import flet as ft
 from pyautogui import getAllWindows
 
 import views.main
+from utils.auth import selfApi
+from utils.functions import get_data, get_path, write_data
 from views import main
 from views.config_path import find_file_in_all_drives
-from utils.functions import get_data, get_path, write_data
-from utils.auth import selfApi
 
 
 def getchecksum():

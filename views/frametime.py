@@ -1,12 +1,11 @@
+from datetime import datetime, timedelta
 from random import randint
 
 import flet as ft
 
-from utils.flet_translations import translate
 from utils.Components.card import GenerateCard
+from utils.flet_translations import translate
 from utils.functions import FileSingleton
-from datetime import datetime, timedelta
-
 
 color_bank = {
     1: "#3b8ed0",

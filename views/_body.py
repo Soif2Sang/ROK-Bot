@@ -1,6 +1,6 @@
 import flet as ft
-
 from tiles.handler.tile_handler import TileHandlere
+
 
 class Body(ft.Column):
     def __init__(self, initial_page, *args, **kwargs):

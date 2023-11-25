@@ -1,7 +1,8 @@
+import math
+import time
+
 import flet
 from flet import *
-import time
-import math
 
 
 class LoadingAnimation(UserControl):

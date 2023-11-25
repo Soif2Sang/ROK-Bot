@@ -1,9 +1,10 @@
-from views.settings.general.page_profiles import PageProfiles
-from views.settings.general.page_redo import PageRedo
-from utils.flet_translations import translate
-from utils.functions import FileSingleton
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+
+from utils.flet_translations import translate
+from utils.functions import FileSingleton
+from views.settings.general.page_profiles import PageProfiles
+from views.settings.general.page_redo import PageRedo
 
 color_bank = {
     "1": "#3b8ed0",

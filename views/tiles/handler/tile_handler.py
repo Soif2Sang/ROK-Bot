@@ -3,12 +3,12 @@ import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+from tiles.tile import Tile
 
 from utils.constants import BREZILIAN
 from utils.flet_translations import translate
 from utils.functions import get_all_vms_running, get_dic_instances
-from utils.singletons import LinkSingleton, FileSingleton
-from tiles.tile import Tile
+from utils.singletons import FileSingleton, LinkSingleton
 
 
 class NavigationBar(ft.Row):

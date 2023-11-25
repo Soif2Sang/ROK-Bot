@@ -1,5 +1,6 @@
 import flet as ft
 
+
 def generate_maintenance():
     return ft.Card(
         content=ft.Container(

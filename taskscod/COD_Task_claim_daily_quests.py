@@ -1,4 +1,5 @@
 from random import uniform
+
 from PIL import Image
 from pytesseract import pytesseract
 

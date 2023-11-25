@@ -4,8 +4,8 @@ import os
 import sys
 import time
 
-import lightbulb
 import hikari
+import lightbulb
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)

@@ -1,7 +1,9 @@
-from utils.flet_translations import translate
-from views.settings.general._general import GeneralSettings
-from utils.functions import FileSingleton
 import flet as ft
+
+from utils.flet_translations import translate
+from utils.functions import FileSingleton
+from views.settings.general._general import GeneralSettings
+
 
 class InterfaceSettings(ft.Tab):
     def __init__(self, page, instance, **kwargs):

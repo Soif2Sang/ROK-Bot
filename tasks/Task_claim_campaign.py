@@ -5,7 +5,6 @@ import cv2
 from tasks.Task import Task
 from utils.functions import get_class
 
-
 # from utils.easyOcr import Reader
 
 

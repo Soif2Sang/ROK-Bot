@@ -1,6 +1,7 @@
 import json
 import os
 import re
+
 import win32api
 
 from utils.functions import FileSingleton
@@ -24,6 +25,7 @@ def find_file_in_all_drives(file_name):
 
 
 import flet as ft
+
 
 class RowFinder(ft.Row):
     def __init__(self,mot, **kwargs):

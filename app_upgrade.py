@@ -10,7 +10,7 @@ from datetime import datetime
 from time import sleep
 
 import flet as ft
-from flet_route import path, Routing
+from flet_route import Routing, path
 
 from utils.auth import selfApi, update_user_info
 from utils.handle_files import main as HandleFiles
@@ -28,13 +28,13 @@ def getchecksum():
 
 
 try:
-    from views.city_layout import viewCityLayout
-    from views.profile_settings import viewProfileSettings
-    from views.main import Main
-    from views.config_path import find_file_in_all_drives
-    from utils.singletons import ApiSingleton, LinkSingleton
-    from utils.flet_toast.toasts_flexible import ToastsFlexible
     from utils.flet_toast.core import Position
+    from utils.flet_toast.toasts_flexible import ToastsFlexible
+    from utils.singletons import ApiSingleton, LinkSingleton
+    from views.city_layout import viewCityLayout
+    from views.config_path import find_file_in_all_drives
+    from views.main import Main
+    from views.profile_settings import viewProfileSettings
 except Exception as e:
 
     exc_type, exc_value, exc_traceback = sys.exc_info()

@@ -1,12 +1,14 @@
 import os
 import sys
 from datetime import date
-from random import uniform, randint
+from random import randint, uniform
 from time import sleep
-from PIL import ImageFile
-from numpy import array, ndarray
 
-from utils.functions import get_window_pid, get_name, current_time, FileSingleton
+from numpy import array, ndarray
+from PIL import ImageFile
+
+from utils.functions import (FileSingleton, current_time, get_name,
+                             get_window_pid)
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 

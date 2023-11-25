@@ -1,15 +1,14 @@
 import re
 import traceback
 from datetime import datetime
-from random import uniform, randint, random, choice
+from random import choice, randint, random, uniform
 from time import sleep, time
 
 import cv2
 
-from tasks.Task_gather_gem import GatherGem
 from tasks.Task import Task
-from utils.functions import get_name, get_class
-
+from tasks.Task_gather_gem import GatherGem
+from utils.functions import get_class, get_name
 
 # from utils.easyOcr import Reader
 

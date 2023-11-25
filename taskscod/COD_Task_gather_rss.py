@@ -1,13 +1,12 @@
+from random import uniform
 from time import sleep
 
-from PIL import Image
-from random import uniform
-
 import cv2
+from PIL import Image
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task
-from utils.functions import get_name, current_time, get_class
+from utils.functions import current_time, get_class, get_name
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 
