@@ -3,7 +3,7 @@ from random import uniform,randint
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task
-from utils.Task_utils import get_class, get_name
+from utils.functions import get_class, get_name
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 

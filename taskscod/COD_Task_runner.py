@@ -20,8 +20,8 @@ from taskscod.COD_Task_gather_rss import GatherRss
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task
-from utils.Task_utils import get_name, current_time, get_window_pid
-from utils.bot_adb import Adb
+from utils.functions import get_name, current_time, get_window_pid
+from utils.android_debug_bridge import Adb
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 

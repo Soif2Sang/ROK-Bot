@@ -6,8 +6,7 @@ from time import sleep
 from PIL import ImageFile
 from numpy import array, ndarray
 
-from utils.Task_utils import get_window_pid, get_name, current_time, FileSingleton
-from utils.COD_bot_adb import Adb
+from utils.functions import get_window_pid, get_name, current_time, FileSingleton
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 

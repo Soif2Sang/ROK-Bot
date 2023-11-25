@@ -5,7 +5,7 @@ from taskscod.COD_Task import Task
 import flet as ft
 
 from taskscod.COD_Task_runner import TaskRunner
-from utils.Task_utils import FileSingleton
+from utils.functions import FileSingleton
 
 
 class Tile(ft.Row):

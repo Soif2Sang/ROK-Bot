@@ -1,35 +1,30 @@
+import time
+
 import flet as ft
 
+class ClickableRow(ft.Row):
+    def __init__(self, select, i, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-def GenerateCard(level=None, title=None, subtitle=None, margin=None, height=None):
-
-
-    if title:
-        title = ft.Text(title, size=14, weight=ft.FontWeight.BOLD)
-
-    return ft.Card(
-        content=ft.Container(
-            content=
-                    ft.ListTile(
-                        title=ft.Text("The Bot seems to be under maintenance, please wait a bit..")
-                        , leading=ft.Icon(ft.icons.PORTABLE_WIFI_OFF_SHARP)
-            ),
-            width=400,
-            padding=10,
-            height=height,
-        ),
-        margin=margin,
-        color=ft.colors.SURFACE_VARIANT
-    )
+        self.controls = [ft.Container(height=35, width=300, bgcolor="red", content=ft.ElevatedButton("Select", on_click=select, data=i))]
 
 
 def main(page: ft.Page):
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    lv = ft.ListView(height=400, width=300, spacing=5, expand=True)
 
+
+    def select(e):
+        if (len(page.controls) != 1):
+            page.controls.pop()
+        page.add(
+            ft.Container(
+                height=400, width=300, bgcolor="blue", content=ft.Text(e.control.data)
+            )
+        )
+
+    for i in range(10):
+        lv.controls.append(ft.Row( controls=[ClickableRow(select, i)]))
     page.add(
-        GenerateCard()
+        lv
     )
-
-if __name__ == '__main__':
-    ft.app(main)
+ft.app(target=main)

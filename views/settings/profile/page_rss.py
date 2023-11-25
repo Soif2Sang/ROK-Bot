@@ -3,7 +3,7 @@ import flet as ft
 from utils.flet_translations import translate
 from views.settings.profile.rows.Flet_row_rss import FletRowRss
 from views.settings.page_base import BasePage
-from Components.card import GenerateCard
+from utils.Components.card import GenerateCard
 
 
 class PageRss(BasePage):
