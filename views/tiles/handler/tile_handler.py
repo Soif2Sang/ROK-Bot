@@ -3,7 +3,7 @@ import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from tiles.tile import Tile
+from views.tiles.tile import Tile
 
 from utils.constants import BREZILIAN
 from utils.flet_translations import translate

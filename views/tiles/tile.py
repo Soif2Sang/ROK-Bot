@@ -3,7 +3,7 @@ import threading
 
 import flet as ft
 
-from config_handler import Frame
+from views.tiles.handler.config_handler import Frame
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from utils.functions import (FileSingleton, get_all_vms_running,

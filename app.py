@@ -17,14 +17,16 @@ from utils.constants import BREZILIAN, toasts_history
 from utils.functions import FileSingleton, getchecksum
 from views.login.login import LoginUI
 
+from utils.flet_toast.core import Position
+from utils.flet_toast.toasts_flexible import ToastsFlexible
+from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
+from views.city_layout import viewCityLayout
+from views.config_path import find_file_in_all_drives
+from views.main import Main
+from views.profile_settings import viewProfileSettings
+
 try:
-    from utils.flet_toast.core import Position
-    from utils.flet_toast.toasts_flexible import ToastsFlexible
-    from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
-    from views.city_layout import viewCityLayout
-    from views.config_path import find_file_in_all_drives
-    from views.main import Main
-    from views.profile_settings import viewProfileSettings
+    1
 except Exception as e:
 
     exc_type, exc_value, exc_traceback = sys.exc_info()
