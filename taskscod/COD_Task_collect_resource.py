@@ -1,9 +1,10 @@
 
-from random import uniform, shuffle, choice
+from random import choice, shuffle, uniform
+
 from pytesseract import pytesseract
 
 from taskscod.COD_Task import Task
-from utils.Task_utils import filter_coordinate, get_class
+from utils.functions import filter_coordinate, get_class
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 

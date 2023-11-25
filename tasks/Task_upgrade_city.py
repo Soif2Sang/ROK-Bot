@@ -6,8 +6,8 @@ import win32api
 import win32con
 import win32gui
 
-from tasks.Task_alliance_help import AllianceHelp
 from tasks.Task import Task
+from tasks.Task_alliance_help import AllianceHelp
 from utils.functions import get_class, get_name
 
 

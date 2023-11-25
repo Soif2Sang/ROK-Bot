@@ -1,10 +1,10 @@
 import flet as ft
+from views.settings.profile.profile import SettingContainer
 
 from utils.flet_translations import translate
-from views.settings.profile._profile import SettingContainer
+from utils.functions import FileSingleton
 from views.settings.general.Flet_general_settings import InterfaceSettings
 from views.tiles.handler.logging_handler import Logger
-from utils.functions import FileSingleton
 
 color_bank = {
     1: "#3b8ed0",

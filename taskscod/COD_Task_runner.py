@@ -1,27 +1,27 @@
 import multiprocessing
 import subprocess
 import traceback
-from random import uniform, randint, shuffle
-from time import time, sleep
+from random import randint, shuffle, uniform
+from time import sleep, time
+
 import win32gui
+from pytesseract import pytesseract
 
 from tasks.Task_alliance_help import AllianceHelp
+from taskscod.COD_Task import Task
 from taskscod.COD_Task_academy_research import AcademyResearch
 from taskscod.COD_Task_alliance_donation import AllianceDonation
-from taskscod.COD_Task_clear_fog import ClearFog
-from taskscod.COD_Task_training import TroopTraining
-from views.frametime import is_in_frametime, random_time_in_frametime
 from taskscod.COD_Task_claim_campaign import ClaimCampaign
 from taskscod.COD_Task_claim_daily_quests import DailyQuests
+from taskscod.COD_Task_clear_fog import ClearFog
 from taskscod.COD_Task_collect_resource import CollectResource
 from taskscod.COD_Task_daily_chest import DailyChest
 from taskscod.COD_Task_daily_vip import DailyVip
 from taskscod.COD_Task_gather_rss import GatherRss
-from pytesseract import pytesseract
-
-from taskscod.COD_Task import Task
-from utils.Task_utils import get_name, current_time, get_window_pid
-from utils.bot_adb import Adb
+from taskscod.COD_Task_training import TroopTraining
+from utils.android_debug_bridge import Adb
+from utils.functions import current_time, get_name, get_window_pid
+from views.frametime import is_in_frametime, random_time_in_frametime
 
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
 

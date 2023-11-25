@@ -1,4 +1,4 @@
-from random import uniform, randint
+from random import randint, uniform
 from time import sleep
 
 from tasks.Task import Task

@@ -1,11 +1,11 @@
-import os
-import json as jsond  # json
-import time  # sleep before exit
 import binascii  # hex encoding
-from threading import Lock
-from uuid import uuid4  # gen random guid
+import json as jsond  # json
+import os
 import platform  # check platform
 import subprocess  # needed for mac device
+import time  # sleep before exit
+from threading import Lock
+from uuid import uuid4  # gen random guid
 
 import flet as ft
 import requests
@@ -13,9 +13,10 @@ import win32security
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
+
+from utils.constants import BREZILIAN
 from utils.functions import FileSingleton
 from utils.singletons import ApiSingleton, LinkSingleton
-from utils.constants import BREZILIAN
 
 fileSingleton = FileSingleton()
 

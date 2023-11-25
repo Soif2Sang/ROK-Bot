@@ -3,12 +3,12 @@ import threading
 from os.path import exists
 
 import flet as ft
+from tiles.handler.tile_handler import NavigationBar
 
-from views.tiles.handler.tile_handler import NavigationBar
-from views.tiles.tile_upgrade import TileUpgrade
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from utils.functions import get_path, get_data, write_data
+from utils.functions import get_data, get_path, write_data
+from views.tiles.tile_upgrade import TileUpgrade
 
 
 class TileManagerUpgrade(ft.ListView):

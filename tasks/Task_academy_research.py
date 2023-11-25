@@ -1,8 +1,7 @@
-from random import uniform, random, choice
+from random import choice, random, uniform
 
 from tasks.Task import Task, get_name
 from tasks.Task_alliance_help import AllianceHelp
-
 from utils.functions import get_class
 
 

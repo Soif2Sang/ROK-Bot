@@ -6,7 +6,7 @@ import shutil
 import sys
 import traceback
 from datetime import datetime
-from random import uniform, randint
+from random import randint, uniform
 from time import sleep
 
 import cv2
@@ -14,20 +14,19 @@ import flet as ft
 import win32api
 import win32con
 import win32gui
-from PIL import Image, ImageFile
 from numpy import array, ndarray
+from PIL import Image, ImageFile
 from pytesseract import pytesseract
 
-from utils.discord_utils import send_discord_message
-from utils.twocaptcha import TimeoutException
-from utils.twocaptcha.api import NetworkException, ApiException
-from utils.functions import get_name, current_time, string_to_co, FileSingleton, \
-    string_to_co_slide, colorize_name, colorize_output
-from utils.singletons import ApiSingleton, EmulatorSingleton
-
-from utils.android_debug_bridge_ld_player import AdbLd
 from utils.android_debug_bridge import Adb
-from utils.twocaptcha import TwoCaptcha
+from utils.android_debug_bridge_ld_player import AdbLd
+from utils.discord_utils import send_discord_message
+from utils.functions import (FileSingleton, colorize_name, colorize_output,
+                             current_time, get_name, string_to_co,
+                             string_to_co_slide)
+from utils.singletons import ApiSingleton, EmulatorSingleton
+from utils.twocaptcha import TimeoutException, TwoCaptcha
+from utils.twocaptcha.api import ApiException, NetworkException
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'

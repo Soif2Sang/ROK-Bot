@@ -1,13 +1,12 @@
 import traceback
-from random import uniform, choice
+from random import choice, uniform
 from time import sleep
 
 from PIL import Image
 
-from tasks.Task_gather_rss import GatherRss
 from tasks.Task import Task
-from utils.functions import get_name, get_class
-
+from tasks.Task_gather_rss import GatherRss
+from utils.functions import get_class, get_name
 
 # from utils.easyOcr import Reader
 

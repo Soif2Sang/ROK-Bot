@@ -1,6 +1,8 @@
 import copy
 import os
+
 from utils.functions import FileSingleton
+
 
 def main():
     fileSingleton = FileSingleton()

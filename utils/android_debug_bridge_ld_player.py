@@ -7,12 +7,13 @@ from os.path import exists
 from time import sleep
 
 import pytesseract as tess
+from cv2 import (COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor,
+                 inRange, matchTemplate, minMaxLoc)
+from numpy import array, ndarray, where
 from PIL import Image
-from cv2 import cvtColor, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, COLOR_BGR2HSV, inRange
-from numpy import array, where, ndarray
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import current_time, FileSingleton, get_dic_instances
+from utils.functions import FileSingleton, current_time, get_dic_instances
 from utils.resources import ImageSingleton
 
 bridge = None

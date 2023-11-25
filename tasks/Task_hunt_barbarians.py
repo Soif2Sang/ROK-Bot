@@ -1,10 +1,10 @@
-from random import uniform, choice, randint
+from random import choice, randint, uniform
 from time import sleep
 
 from PIL import Image
 
 from tasks.Task import Task
-from utils.functions import get_name, get_class, current_time
+from utils.functions import current_time, get_class, get_name
 
 
 class HuntBarbarians(Task):

@@ -1,4 +1,4 @@
-from random import uniform, shuffle, choice
+from random import choice, shuffle, uniform
 
 from tasks.Task import Task
 from utils.functions import filter_coordinate, get_class

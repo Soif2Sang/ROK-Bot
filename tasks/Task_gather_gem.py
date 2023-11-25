@@ -1,7 +1,7 @@
 import re
 import traceback
 from datetime import datetime
-from random import uniform, randint, random, choice
+from random import choice, randint, random, uniform
 from time import sleep, time
 
 import cv2
@@ -9,8 +9,7 @@ from PIL import Image
 
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
-from utils.functions import get_name, get_class
-
+from utils.functions import get_class, get_name
 
 # from utils.easyOcr import Reader
 

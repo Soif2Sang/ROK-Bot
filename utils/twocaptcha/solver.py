@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import base64
-import os, sys
+import os
+import sys
 import time
+from base64 import b64encode
+
 import cv2
 import numpy as np
 import requests
-from base64 import b64encode
-
 
 try:
     from .api import ApiClient

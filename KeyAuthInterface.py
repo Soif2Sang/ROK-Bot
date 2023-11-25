@@ -1,13 +1,16 @@
 import flet as ft
 import requests
+from tiles.handler.tile_handler import TileHandler
 
 SELLER_KEY = "f6386c16787e0eb51b24d168205267e6"
 def empty(value):
     return value == "" or value is None
 def main(page:ft.Page):
-    page.title = "Subscription Manager"
+    page.title = "Subscription Manager 1999 Days left "
     page.window_width =  340
     page.window_height = 350
+    page.UPGRADE = False
+    page.add(TileHandler(page))
     def verifyUsername():
         if empty(username.value):
             username.helper_text = "Username is empty !"
