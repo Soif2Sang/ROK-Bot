@@ -2,7 +2,8 @@ import os
 
 from cv2 import imread
 
-dir = './resources'
+dir = "./resources"
+
 
 class ImageSingleton:
     __instance = None
@@ -17,20 +18,26 @@ class ImageSingleton:
         self.image_dict = {}
         for filename in os.listdir(dir):
             if filename.endswith(".png"):
-                name = os.path.splitext(filename)[0]  # Extract the name without extension
+                name = os.path.splitext(filename)[
+                    0
+                ]  # Extract the name without extension
                 image = imread(os.path.join(dir, filename))
                 self.image_dict[name] = image
 
-        for filename in os.listdir(dir + '/buffs'):
+        for filename in os.listdir(dir + "/buffs"):
             if filename.endswith(".png"):
-                name = 'buffs\\' + os.path.splitext(filename)[0]  # Extract the name without extension
-                image = imread(os.path.join(dir + '/buffs', filename))
+                name = (
+                    "buffs\\" + os.path.splitext(filename)[0]
+                )  # Extract the name without extension
+                image = imread(os.path.join(dir + "/buffs", filename))
                 self.image_dict[name] = image
 
-        for filename in os.listdir(dir + '/items'):
+        for filename in os.listdir(dir + "/items"):
             if filename.endswith(".png"):
-                name = 'items\\' + os.path.splitext(filename)[0]  # Extract the name without extension
-                image = imread(os.path.join(dir + '/items', filename))
+                name = (
+                    "items\\" + os.path.splitext(filename)[0]
+                )  # Extract the name without extension
+                image = imread(os.path.join(dir + "/items", filename))
                 self.image_dict[name] = image
 
     def get_file_name(self, file_name):

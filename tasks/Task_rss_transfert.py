@@ -18,9 +18,9 @@ class RssTransfer(Task):
     @get_name
     def get_capacity(self):
         """
-                :return: True if there's a empty queue
-                :return: False if queues are occupied
-                """
+        :return: True if there's a empty queue
+        :return: False if queues are occupied
+        """
         default_image = self.adb.get_cv2_img()
         default_image = cv2.cvtColor(default_image, cv2.COLOR_BGR2GRAY)
         transport_capacity = default_image[558:590, 285:435]
@@ -28,7 +28,9 @@ class RssTransfer(Task):
 
         # cv2.imwrite("transport.png", transport_capacity)
         # cv2.imwrite("tax.png", tax_rate)
-        transport_capacity = self.extract_text(transport_capacity, allowlist="0123456789/,")
+        transport_capacity = self.extract_text(
+            transport_capacity, allowlist="0123456789/,"
+        )
         transport_capacity = int(transport_capacity.split("/")[1].replace(",", ""))
 
         tax_rate = self.extract_text(tax_rate, allowlist="0123456789%")
@@ -64,7 +66,9 @@ class RssTransfer(Task):
         if deadstop == 3:
             raise ValueError()
 
-        city = self.data[str(self.sel)]['schedules'][str(self.current_profile)][f"city_transfer"]
+        city = self.data[str(self.sel)]["schedules"][str(self.current_profile)][
+            f"city_transfer"
+        ]
         self.click(city[0] + uniform(-10, 10), city[1] + uniform(-10, 10))
         self.better_sleep((1, 2))
         co = self.find_img(target="assist_button")
@@ -83,10 +87,12 @@ class RssTransfer(Task):
 
     @get_name
     def send_rss(self, type):
-        types = {'food': uniform(210, 230),
-                 'wood': uniform(300, 320),
-                 'stone': uniform(390, 410),
-                 'gold': uniform(470, 490)}
+        types = {
+            "food": uniform(210, 230),
+            "wood": uniform(300, 320),
+            "stone": uniform(390, 410),
+            "gold": uniform(470, 490),
+        }
         start = (uniform(589, 597), types[type])
         end = (uniform(1045, 1100), types[type] + uniform(-10, 10))
         self.swipe(start[0], start[1], end[0], end[1])
@@ -96,10 +102,14 @@ class RssTransfer(Task):
 
     @get_name
     def better_sleep(self, limits: tuple[float, float]):
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('fast_rss_transfer', False):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
+            "fast_rss_transfer", False
+        ):
             a = limits[0]
-            if self.data[str(self.sel)]['schedules'][self.current_profile]["slow_mode"]:
-                a *= self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
+            if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
+                a *= self.data[str(self.sel)]["schedules"][self.current_profile][
+                    "sleep_multiplicator"
+                ]
 
             interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
             num_intervals = int(a / interval_duration)
@@ -112,8 +122,11 @@ class RssTransfer(Task):
 
     @get_class
     def run(self, type=None, quantity=None):
-        if self.data[self.sel]['API_KEY'] == "":
-            self.generate_toast("Warning", "This feature require a custom ApiKey.", )
+        if self.data[self.sel]["API_KEY"] == "":
+            self.generate_toast(
+                "Warning",
+                "This feature require a custom ApiKey.",
+            )
             return self.print("This feature require a custom ApiKey")
         self.check_captcha()
 
@@ -124,10 +137,13 @@ class RssTransfer(Task):
         print(f"{transportation_capacity = }")
         to_send = []
         for type in ["food", "wood", "stone", "gold"]:
-
             rss_sent = 0
-            transfert_wanted = self.data[str(self.sel)]['schedules'][str(self.current_profile)][
-                                   f"transfer_{type}"] * 1_000_000
+            transfert_wanted = (
+                self.data[str(self.sel)]["schedules"][str(self.current_profile)][
+                    f"transfer_{type}"
+                ]
+                * 1_000_000
+            )
             loop = int(transfert_wanted / transportation_capacity)
             if transportation_capacity * loop < transfert_wanted:
                 loop += 1
@@ -136,19 +152,15 @@ class RssTransfer(Task):
                 to_send.append(type)
 
         shuffle(to_send)
-        total_sent = {
-            'food': 0,
-            'wood': 0,
-            'stone': 0,
-            'gold': 0
-        }
+        total_sent = {"food": 0, "wood": 0, "stone": 0, "gold": 0}
         for type in to_send:
             total_sent[type] += transportation_capacity
             self.send_rss(type)
             print(f"{type} amount sent : {total_sent[type]}")
 
-            if self.data[str(self.sel)]['schedules'][self.current_profile].get('fast_rss_transfer', False):
-
+            if self.data[str(self.sel)]["schedules"][self.current_profile].get(
+                "fast_rss_transfer", False
+            ):
                 self.check_captcha(chest=False)
             else:
                 self.check_captcha(chest=True)

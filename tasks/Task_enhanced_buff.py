@@ -22,17 +22,25 @@ class UseEnhancedBuff(Task):
         image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         image = image[0:110, 0:680]
         here = False
-        for buffs_string in ['purple', 'blue']:
-            co = self.find_img(source=image, target=f'buffs\\enhanced_gathering_{buffs_string}', confidence=0.8)
+        for buffs_string in ["purple", "blue"]:
+            co = self.find_img(
+                source=image,
+                target=f"buffs\\enhanced_gathering_{buffs_string}",
+                confidence=0.8,
+            )
             if co is not None:
                 here = True
                 break
         if not here:
             buffs_to_do.append("speed")
-        for rss_type in ['food', 'wood', 'stone', 'gold']:
+        for rss_type in ["food", "wood", "stone", "gold"]:
             here = False
-            for buff_type in ['blue', 'green']:
-                co = self.find_img(source=image, target=f'buffs\\enhanced_{rss_type}_{buff_type}', confidence=0.8)
+            for buff_type in ["blue", "green"]:
+                co = self.find_img(
+                    source=image,
+                    target=f"buffs\\enhanced_{rss_type}_{buff_type}",
+                    confidence=0.8,
+                )
                 if co is not None:
                     here = True
                     break
@@ -47,7 +55,7 @@ class UseEnhancedBuff(Task):
 
         self.print(f"Buffs : {buffs_to_do}")
         if buffs_to_do:
-            if self.find_img(target='menu_opened') is None:
+            if self.find_img(target="menu_opened") is None:
                 x, y = uniform(1200, 1250), uniform(650, 690)
                 # else:
                 #     # x, y = temp3[0] + uniform(0, 20), temp3[1] + uniform(0, 15)
@@ -73,9 +81,9 @@ class UseEnhancedBuff(Task):
                     self.click(co[0] + uniform(0, 30), co[1] + uniform(1, 15))
                     self.better_sleep((1.9, 3))
                 if element == "speed":
-                    co = self.find_img(target='items\\enhanced_gathering_purple')
+                    co = self.find_img(target="items\\enhanced_gathering_purple")
                     if co is None:
-                        co = self.find_img(target='items\\enhanced_gathering_blue')
+                        co = self.find_img(target="items\\enhanced_gathering_blue")
                     if co is not None:
                         x, y = co[0] + uniform(10, 60), co[1] + uniform(10, 60)
                         self.click(x, y)
@@ -90,9 +98,9 @@ class UseEnhancedBuff(Task):
                     self.swipe(x1, y1, x2, y2)
                     self.better_sleep((1.195, 2))
                 if element != "speed":
-                    co = self.find_img(target=f'items\\enhanced_{element}_blue')
+                    co = self.find_img(target=f"items\\enhanced_{element}_blue")
                     if co is None:
-                        co = self.find_img(target=f'items\\enhanced_{element}_green')
+                        co = self.find_img(target=f"items\\enhanced_{element}_green")
                     if co is not None:
                         x, y = co[0] + uniform(10, 60), co[1] + uniform(10, 60)
                         self.click(x, y)

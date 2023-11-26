@@ -3,12 +3,17 @@ import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from views.tiles.tile import Tile
 
 from utils.constants import BREZILIAN
 from utils.flet_translations import translate
-from utils.functions import get_all_vms_running, get_dic_instances
-from utils.singletons import FileSingleton, LinkSingleton
+from utils.functions import (
+    get_all_vms_running,
+    get_all_vms_running_ld,
+    get_dic_instances,
+    get_dic_instances_ld,
+)
+from utils.singletons import EmulatorSingleton, FileSingleton, LinkSingleton
+from views.tiles.tile import Tile
 
 
 class NavigationBar(ft.Row):
@@ -26,8 +31,10 @@ class NavigationBar(ft.Row):
                 shape={
                     ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                 },
-                bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100
-            )
+                bgcolor=None
+                if not self.tileManager.initial_page.UPGRADE
+                else ft.colors.AMBER_100,
+            ),
         )
 
         self.controls.append(self.button_refresh)
@@ -39,42 +46,48 @@ class NavigationBar(ft.Row):
                         icon=ft.icons.LINK_OUTLINED,
                         text="Pay with Stripe",
                         on_click=lambda _: self.initial_page.launch_url(
-                                  LinkSingleton().getStripeLink()),
+                            LinkSingleton().getStripeLink()
+                        ),
                     ),
                     ft.TextButton(
                         icon=ft.icons.LINK_OUTLINED,
                         text="Pay with Crypto",
                         on_click=lambda _: self.initial_page.launch_url(
-                                  LinkSingleton().getSellixLink())
-                    )
+                            LinkSingleton().getSellixLink()
+                        ),
+                    ),
                 ],
-                alignment=ft.MainAxisAlignment.CENTER
-                ),
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
             open=True,
             dismissible=True,
             enable_drag=True,
             on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
         )
 
-        pattern = r'(\d+) Days left'
+        pattern = r"(\d+) Days left"
         match = re.search(pattern, page.title)
         days_left_str = match.group(1)
 
         days_left_int = int(days_left_str)
 
         if days_left_int > 10:
-            button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
-                                       bgcolor=ft.colors.GREEN_100, color="black")
+            button_style = ButtonStyle(
+                shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
+                bgcolor=ft.colors.GREEN_100,
+                color="black",
+            )
         elif 10 >= days_left_int > 5:
-            button_style = ButtonStyle(shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
-                                       bgcolor=ft.colors.ORANGE_300, color="black")
+            button_style = ButtonStyle(
+                shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
+                bgcolor=ft.colors.ORANGE_300,
+                color="black",
+            )
         else:
             button_style = ButtonStyle(
-                shape={
-                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)
-                },
+                shape={ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5)},
                 bgcolor=ft.colors.RED_200,
-                color="black"
+                color="black",
             )
 
         if not BREZILIAN:
@@ -83,7 +96,7 @@ class NavigationBar(ft.Row):
                     text="Renew",
                     icon=ft.icons.SHOPPING_CART_OUTLINED,
                     on_click=lambda e: self.initial_page.show_bottom_sheet(bottom),
-                    style=button_style
+                    style=button_style,
                 )
             )
 
@@ -121,29 +134,35 @@ class TileHandler(ft.ListView):
 
     def refresh(self):
         data = self.FileSingleton.get_data()
-        instances = get_dic_instances()
+
+        emulator = EmulatorSingleton().getEmulator()
+
+        if emulator == "bluestacks":
+            instances = get_dic_instances()
+        else:
+            instances = get_dic_instances_ld()
 
         default_dic = {
-            'instance': "",
-            'name': "",
-            'host': '127.0.0.1',
-            'port': 0,
-            'API_KEY': "",
-            'loop_task': False,
-            'time_to_wait_loop1': 60,
-            'time_to_wait_loop2': 110,
-            'leave_game_loop': True,
-            'scheduler': False,
-            'schedules': {}
+            "instance": "",
+            "name": "",
+            "host": "127.0.0.1",
+            "port": 0,
+            "API_KEY": "",
+            "loop_task": False,
+            "time_to_wait_loop1": 60,
+            "time_to_wait_loop2": 110,
+            "leave_game_loop": True,
+            "scheduler": False,
+            "schedules": {},
         }
         default_profile = {
-            'timing': [],
-            'enable_timing': False,
-            'enabled': False,
-            'kingdom': 0,
-            'city_x': 0,
-            'city_y': 0,
-            'radius': 30,
+            "timing": [],
+            "enable_timing": False,
+            "enabled": False,
+            "kingdom": 0,
+            "city_x": 0,
+            "city_y": 0,
+            "radius": 30,
             "First": "stone",
             "Second": "food",
             "Third": "gold",
@@ -159,41 +178,42 @@ class TileHandler(ft.ListView):
             "Sixth_level": 4,
             "Seventh_level": 4,
             "rss_custom_preset": False,
-            'auto_reconnect': True,
-            'auto_captcha': True,
-            'check_donation': False,
-            'gather_alliance_pit': False,
-            'use_enhanced_buff': False,
-            'gather_rss': False,
-            'buy_merchant': False,
-            'claim_daily_quests': False,
-            'collect_ressource': False,
-            'defeat_barbarians': False,
-            'barbarians_level': 25,
-            'barbarians_preset': {"1": False,
-                                  "2": False,
-                                  "3": False,
-                                  "4": False,
-                                  "5": False,
-                                  "6": False,
-                                  "7": False,
-                                  },
-            'gather_gem': False,
-            'gem_check1': 60,
-            'gem_check2': 120,
-            'gem_experimental': False,
-            'recenter_feature': True,
-            'gather_gem_duration1': 60,
-            'gather_gem_duration2': 90,
-            'gather_gem_spiral_method': True,
-            'gather_gem_swipe_check': True,
-            'gather_gem_compare_march_duration': True,
-            'gather_gem_enable_node_limit': False,
-            'claim_mails': False,
-            'gather_gem_note_limit': 0,
-            'restart_game': False,
-            'switch_character': False,
-            'leave_game_switch_character': False,
+            "auto_reconnect": True,
+            "auto_captcha": True,
+            "check_donation": False,
+            "gather_alliance_pit": False,
+            "use_enhanced_buff": False,
+            "gather_rss": False,
+            "buy_merchant": False,
+            "claim_daily_quests": False,
+            "collect_ressource": False,
+            "defeat_barbarians": False,
+            "barbarians_level": 25,
+            "barbarians_preset": {
+                "1": False,
+                "2": False,
+                "3": False,
+                "4": False,
+                "5": False,
+                "6": False,
+                "7": False,
+            },
+            "gather_gem": False,
+            "gem_check1": 60,
+            "gem_check2": 120,
+            "gem_experimental": False,
+            "recenter_feature": True,
+            "gather_gem_duration1": 60,
+            "gather_gem_duration2": 90,
+            "gather_gem_spiral_method": True,
+            "gather_gem_swipe_check": True,
+            "gather_gem_compare_march_duration": True,
+            "gather_gem_enable_node_limit": False,
+            "claim_mails": False,
+            "gather_gem_note_limit": 0,
+            "restart_game": False,
+            "switch_character": False,
+            "leave_game_switch_character": False,
             "scout_fog": False,
             "scout_duration1": 60,
             "scout_duration2": 90,
@@ -206,7 +226,7 @@ class TileHandler(ft.ListView):
             "claim_daily_chest": False,
             "claim_campaign": False,
             "start_fort": False,
-            "rally_type": 'cav',
+            "rally_type": "cav",
             "rally_time": 10,
             "rally_radius": 20,
             "rally_count": 2,
@@ -253,13 +273,12 @@ class TileHandler(ft.ListView):
             "upgrade_city_method": "normal",
             "academic_research": False,
             "academy_position": [],
-            "buy_merchant_skip": False
+            "buy_merchant_skip": False,
         }
 
         for i in range(1, 4):
-            default_dic['schedules'][i] = copy.deepcopy(default_profile)
-        default_dic['schedules'][1]['enabled'] = True
-
+            default_dic["schedules"][i] = copy.deepcopy(default_profile)
+        default_dic["schedules"][1]["enabled"] = True
 
         for instance in instances:
             if str(instance) not in data:
@@ -271,15 +290,21 @@ class TileHandler(ft.ListView):
 
                 for key in default_profile:
                     for i in range(1, 4):
-                        if key not in data[str(instance)]['schedules'][str(i)]:
-                            data[str(instance)]['schedules'][str(i)][key] = copy.deepcopy(default_profile[key])
+                        if key not in data[str(instance)]["schedules"][str(i)]:
+                            data[str(instance)]["schedules"][str(i)][
+                                key
+                            ] = copy.deepcopy(default_profile[key])
 
-            data[str(instance)]['instance'] = instances[str(instance)]['instance']
-            data[str(instance)]['name'] = instances[str(instance)]['name']
-            data[str(instance)]['port'] = int(instances[str(instance)]['port'])
+            data[str(instance)]["instance"] = instances[str(instance)]["instance"]
+            data[str(instance)]["name"] = instances[str(instance)]["name"]
+            data[str(instance)]["port"] = int(instances[str(instance)]["port"])
 
         self.FileSingleton.write_data(data)
-        instances = get_all_vms_running()
+        if emulator == "bluestacks":
+            instances = get_all_vms_running()
+        else:
+            instances = get_all_vms_running_ld()
+
         for i in range(len(self.controls) - 1):
             self.controls.pop()
         # print(instances)
@@ -295,22 +320,27 @@ class TileHandler(ft.ListView):
                 self.tiles[str(instance[0])].config_overrider.items = []
                 self.tiles[str(instance[0])].config_overrider.refresh()
         else:
+            if emulator == "bluestacks":
+                text_explanation = "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"
+            else:
+                text_explanation = "No emulator found, have you started one?\nIf so, check the correct LdPlayer version (LD9)"
 
-            self.controls.append(ft.Container(
-                content=ft.Column(
-                    controls=[
-                        ft.Icon(ft.icons.INFO_OUTLINED, size=60),
-                        ft.Text(
-                            translate(
-                                "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"),
-                            text_align=ft.TextAlign.CENTER)
-                    ],
-                    alignment=ft.MainAxisAlignment.START,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
-
-                ),
-                margin=ft.margin.only(top=40)
-            ))
+            self.controls.append(
+                ft.Container(
+                    content=ft.Column(
+                        controls=[
+                            ft.Icon(ft.icons.INFO_OUTLINED, size=60),
+                            ft.Text(
+                                translate(text_explanation),
+                                text_align=ft.TextAlign.CENTER,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.START,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    ),
+                    margin=ft.margin.only(top=40),
+                )
+            )
 
         # self.initial_page.update()
         self.initial_page.update()

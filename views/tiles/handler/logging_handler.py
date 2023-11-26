@@ -11,7 +11,7 @@ class Logger(ft.ListView):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         if "interface" not in self.data:
-            self.data["interface"] = {'auto_scroll': True, 'auto_refresh': True}
+            self.data["interface"] = {"auto_scroll": True, "auto_refresh": True}
         self.FileSingleton.write_data(self.data)
         self.auto_scroll = self.data["interface"]["auto_scroll"]
         self.limit_logs = self.data["interface"].get("limit_logs", False)
@@ -28,7 +28,7 @@ class Logger(ft.ListView):
         self.initial_page.update()
 
     def add_divider(self):
-        if self.limit_logs and len(self.controls) > 300 :
+        if self.limit_logs and len(self.controls) > 300:
             self.controls.pop(0)
         self.controls.append(ft.Divider())
         self.initial_page.update()
@@ -43,7 +43,7 @@ class LoggerUpgrade(ft.ListView):
         super().__init__(**kwargs)
         data = fileSingleton.get_data()
         if "interface" not in data:
-            data["interface"] = {'auto_scroll': True, 'auto_refresh': True}
+            data["interface"] = {"auto_scroll": True, "auto_refresh": True}
         fileSingleton.write_data(data)
         self.auto_scroll = True
         self.initial_page = page

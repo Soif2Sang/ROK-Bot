@@ -15,7 +15,9 @@ class AcademyResearch(Task):
 
     @get_name
     def academy_coordinates(self):
-        return self.data[str(self.sel)]['schedules'][self.current_profile].get('academy_position', [])
+        return self.data[str(self.sel)]["schedules"][self.current_profile].get(
+            "academy_position", []
+        )
 
     @get_name
     def enter_academy(self):
@@ -35,16 +37,22 @@ class AcademyResearch(Task):
             return False
 
     @get_name
-    def select_tech(self, swipes = 0):
+    def select_tech(self, swipes=0):
         i = 0
         source = self.adb.get_cv2_img()
-        techs = self.adb.find_multiple_img(target="research_tech", source=source, confidence=0.7)
-        cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
+        techs = self.adb.find_multiple_img(
+            target="research_tech", source=source, confidence=0.7
+        )
+        cards = self.adb.find_multiple_img(
+            target="research_card", source=source, confidence=0.9
+        )
 
         duos = set()
         for card in cards:
             for tech in techs:
-                if (tech[1] > card[1] and tech[1] < card[1] + 100) and (tech[0] > card[0] - 150 and tech[0] < card[0]):
+                if (tech[1] > card[1] and tech[1] < card[1] + 100) and (
+                    tech[0] > card[0] - 150 and tech[0] < card[0]
+                ):
                     duos.add(card)
 
         if duos:

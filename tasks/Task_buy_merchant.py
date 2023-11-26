@@ -18,7 +18,7 @@ class BuyMerchant(Task):
         if co is not None:
             self.click(co[0] + uniform(10, 35), co[1] + uniform(0, 30))
             self.better_sleep((1, 2))
-            if (co := self.find_img("close_window")):
+            if co := self.find_img("close_window"):
                 self.click(uniform(1100, 1120), uniform(73, 80))
                 self.better_sleep((1, 2))
 
@@ -28,8 +28,12 @@ class BuyMerchant(Task):
         for y in range(2):
             for i in range(2):
                 self.better_sleep((1.8, 2.2))
-                food = self.adb.find_multiple_img(target="merchant_buy_with_food", confidence=0.8)
-                wood = self.adb.find_multiple_img(target="merchant_buy_with_wood", confidence=0.8)
+                food = self.adb.find_multiple_img(
+                    target="merchant_buy_with_food", confidence=0.8
+                )
+                wood = self.adb.find_multiple_img(
+                    target="merchant_buy_with_wood", confidence=0.8
+                )
                 food.extend(wood)
 
                 food = list(filter(lambda co: co[1] < 470, food))
@@ -59,8 +63,12 @@ class BuyMerchant(Task):
         for y in range(2):
             for i in range(4):
                 self.better_sleep((1.8, 2.2))
-                food = self.adb.find_multiple_img(target="merchant_buy_with_food", confidence=0.8)
-                wood = self.adb.find_multiple_img(target="merchant_buy_with_wood", confidence=0.8)
+                food = self.adb.find_multiple_img(
+                    target="merchant_buy_with_food", confidence=0.8
+                )
+                wood = self.adb.find_multiple_img(
+                    target="merchant_buy_with_wood", confidence=0.8
+                )
                 food.extend(wood)
                 shuffle(food)
                 for element in food:
@@ -92,7 +100,9 @@ class BuyMerchant(Task):
             return self.print("Merchant seems inaccessible.")
         self.print("Robbing the shop.", "green")
         self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('buy_merchant_skip', False):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
+            "buy_merchant_skip", False
+        ):
             self.buy_from_shop_light()
         else:
             self.buy_from_shop()

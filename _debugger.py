@@ -15,8 +15,10 @@ from MTM import matchTemplates
 from twocaptcha import TwoCaptcha
 
 import taskscod.COD_Task_daily_vip
+
 # from tasks.Task_title import Title
 from tasks import Task_gather_rss_default
+
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 # from taskscod.COD_Task_daily_chest import DailyChest
 # from taskscod.COD_Task_gather_rss import GatherRss
@@ -43,50 +45,52 @@ from utils.android_debug_bridge_ld_player import *
 # from utils.android_debug_bridge import *
 DEBUG = True
 
-#from rkp import *
-#from auto_upgrade import *
-file  =  FileSingleton()
+# from rkp import *
+# from auto_upgrade import *
+file = FileSingleton()
 
 data = file.get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 
-class Page():
+
+class Page:
     def __init__(self):
         self.UPGRADE = False
 
-class Frame():
-    def __init__(self,sel):
+
+class Frame:
+    def __init__(self, sel):
         self.started = True
         self.stopped = False
         self.paused = False
         self.number = sel
         self.initial_page = Page()
 
-    def add_text(self,phrase, color="black"):
+    def add_text(self, phrase, color="black"):
         print(phrase)
 
-    def set_text(self,phrase, color="black"):
+    def set_text(self, phrase, color="black"):
         print(phrase)
 
     def get_text(self):
-        return  ""
+        return ""
+
     def add_status(self, phrase, color="black"):
         return
 
 
-class Bot():
-    def __init__(self,adb):
-
-        self.adb: Adb =adb
-        self.device= adb.get_device()
-        self.main_task= Task(Frame(adb.number)) #tasksGEM / tasks
+class Bot:
+    def __init__(self, adb):
+        self.adb: Adb = adb
+        self.device = adb.get_device()
+        self.main_task = Task(Frame(adb.number))  # tasksGEM / tasks
         self.main_task.adb = adb
-        #self.task = Tasks(self.adb)
+        # self.task = Tasks(self.adb)
         self.main_task.set_sel(str(adb.number))
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.merchant = BuyMerchant(self.main_task)
-        self.rss  =  GatherRss(self.main_task)
+        self.rss = GatherRss(self.main_task)
         # self.rss2  =  GatherRss2(self.main_task)
         self.AlliancePit = AlliancePit(self.main_task)
         self.research = AcademyResearch(self.main_task)
@@ -99,6 +103,7 @@ class Bot():
         self.ranks = KingdomRanking(self.main_task)
         self.mails = ClaimMail(self.main_task)
         from tasks.Task_alliance_help import AllianceHelp
+
         self.help = AllianceHelp(self.main_task)
         self.training = TroopTraining(self.main_task)
         self.hunt = HuntBarbarians(self.main_task)
@@ -110,19 +115,21 @@ class Bot():
         self.maraudeurs = Marauders(self.main_task)
         self.gem = GatherGem(self.main_task)
         # self.title = Title(self.main_task)
-        #self.rkp = Rkp(self.adb)
-        #self.rkp.set_sel('4')
-        #self.up = Up(self.adb)
-        #self.rkp.set_sel('3')
+        # self.rkp = Rkp(self.adb)
+        # self.rkp.set_sel('4')
+        # self.up = Up(self.adb)
+        # self.rkp.set_sel('3')
 
 
-def create_instance(number:int, master):
+def create_instance(number: int, master):
     adb = Adb(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
-    bot.task.set_status = lambda text, color=None: print(f"[ {bot.task.name} ] Status = {text}")
+    bot.task.set_status = lambda text, color=None: print(
+        f"[ {bot.task.name} ] Status = {text}"
+    )
     bot.task.print = lambda text, color=None: print(f"[ {bot.task.name} ] {text}")
-    bot.task.current_profile="1"
+    bot.task.current_profile = "1"
     frame = object()
     frame.pr_tasks_button = object()
     frame.end_tasks_button = object()
@@ -133,18 +140,20 @@ def create_instance(number:int, master):
     # bot.task.better_sleep((0.9, 1.2))
     return bot
 
-class FakeText():
+
+class FakeText:
     def __init__(self):
         self.value = ""
 
     def update(self):
         return
 
-class lightTile():
+
+class lightTile:
     def ___init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        with open('user_settings.json') as config_file:
+        with open("user_settings.json") as config_file:
             data = json.load(config_file)
 
         self.started = True
@@ -157,29 +166,26 @@ def get_bot(number):
     bot = Bot(adb)
     bot.adb.connect_to_device()
 
-
     bot.adb.pause = False
     bot.main_task.print = lambda txt: print(txt)
     bot.main_task.set_text = lambda txt: print(txt)
     bot.main_task.status = lambda txt: print(txt)
     bot.main_task.script_pause = lambda: print("")
 
-
-
-
-    bot.task.current_profile="1"
+    bot.task.current_profile = "1"
     # Page = customtkinter.CTk()
     frame = Frame(number)
     frame.number = number
     frame.stopped = False
     frame.started = True
     frame.paused = False
-    frame.add_text = lambda x,_: print(x)
+    frame.add_text = lambda x, _: print(x)
     frame.set_text = lambda x, _: print(x)
 
     bot.task.tile = frame
     bot.task.tile.stopped = False
     return bot
+
 
 def perf(function):
     start = time()
@@ -187,12 +193,13 @@ def perf(function):
     print(f"It took {time() - start}")
     return a
 
+
 if __name__ == "__main__":
     # upgrade_all()
 
     # print(TwoCaptcha("9c5059a65dd40980bd2fc113f616060e").balance())
 
-    bot =  get_bot("Nougat64_13")
+    bot = get_bot("Nougat64_13")
     # bot.task.zoom_out_city()
     bot.research.run()
     exit()
@@ -252,7 +259,9 @@ if __name__ == "__main__":
     duos = set()
     for card in cards:
         for tech in techs:
-            if (tech[1] > card[1] and tech[1] < card[1] +100) and (tech[0] > card[0] - 150 and tech[0] < card[0]):
+            if (tech[1] > card[1] and tech[1] < card[1] + 100) and (
+                tech[0] > card[0] - 150 and tech[0] < card[0]
+            ):
                 duos.add(card)
     print(duos)
     exit()

@@ -19,7 +19,13 @@ class ProduceMaterials(Task):
         #     self.click(co[0] + uniform(0, 24), co[1] + uniform(80, 100))
         #     self.better_sleep((1, 1.5))
         # else:
-        strings = ["forge_icon", "bones_icon", "ebony_icon", "leather_icon", "stone_icon"]
+        strings = [
+            "forge_icon",
+            "bones_icon",
+            "ebony_icon",
+            "leather_icon",
+            "stone_icon",
+        ]
         for string in strings:
             co = self.find_img(target=string, confidence=0.8)
             if co is not None:
@@ -48,9 +54,12 @@ class ProduceMaterials(Task):
                         "ebony": (uniform(922, 972), uniform(208, 255)),
                         "bones": (uniform(1018, 1064), uniform(208, 255)),
                     }
-                    string = self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}']
+                    string = self.data[self.sel]["schedules"][self.current_profile][
+                        f"material_choice_{i}"
+                    ]
                     self.print(
-                        f"Producing {self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}']}")
+                        f"Producing {self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}']}"
+                    )
                     self.click(materials[string][0], materials[string][1])
                     self.better_sleep((0.5, 1.2))
             self.close_windows()

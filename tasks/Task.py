@@ -21,22 +21,28 @@ from pytesseract import pytesseract
 from utils.android_debug_bridge import Adb
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.discord_utils import send_discord_message
-from utils.functions import (FileSingleton, colorize_name, colorize_output,
-                             current_time, get_name, string_to_co,
-                             string_to_co_slide)
+from utils.functions import (
+    FileSingleton,
+    colorize_name,
+    colorize_output,
+    current_time,
+    get_name,
+    string_to_co,
+    string_to_co_slide,
+)
 from utils.singletons import ApiSingleton, EmulatorSingleton
 from utils.twocaptcha import TimeoutException, TwoCaptcha
 from utils.twocaptcha.api import ApiException, NetworkException
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 
-class Task():
+class Task:
     def __init__(self, tile):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
-        self.current_profile: str = '1'
+        self.current_profile: str = "1"
         self.tile = tile
         self.sel: str = tile.number
         emulator = EmulatorSingleton().getEmulator()
@@ -61,8 +67,9 @@ class Task():
         self.DEV = MainTask.DEV
 
     def debug(self, arg):
-
-        timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+        timestamp = (
+            f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+        )
         message = f"[ {colorize_name(self.name)} ] {colorize_output(arg)}"
 
         print(f"{timestamp} {message}")
@@ -104,7 +111,10 @@ class Task():
             mins, secs = divmod(mins, 60)
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             seconds -= 1
-            condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
+            condition = (
+                ":" in self.tile.text_status.value
+                and self.tile.text_status.value != "00:00:01"
+            )
             self.better_sleep((1, 1))
 
     def update_data(self):
@@ -114,13 +124,13 @@ class Task():
     def set_sel(self, sel) -> None:
         self.data = self.update_data()
         self.sel = sel
-        self.name = self.data.get(self.sel).get('name', "Name not found")
+        self.name = self.data.get(self.sel).get("name", "Name not found")
 
     @get_name
     def get_city_position(self):
         image = self.adb.get_cv2_img()
         image = image[5:33, 260:430]
-        return self.extract_text(image, '#XxYy:123456789')
+        return self.extract_text(image, "#XxYy:123456789")
 
     @get_name
     def extract_all_text(self, img, allowlist=None):
@@ -129,14 +139,16 @@ class Task():
     @get_name
     def extract_text(self, img, allowlist=None):
         if allowlist is not None:
-            config = fr'--oem 3 --psm 10 -c tessedit_char_whitelist={allowlist}'
+            config = rf"--oem 3 --psm 10 -c tessedit_char_whitelist={allowlist}"
         else:
-            config = r'--oem 3 --psm 10'
+            config = r"--oem 3 --psm 10"
 
         enhanced_image = self.modify_image(img)
         # return pytesseract.image_to_string(img, config=config).replace("\n", "")
 
-        return pytesseract.image_to_string(self.modify_image(enhanced_image), config=config).replace("\n", "")
+        return pytesseract.image_to_string(
+            self.modify_image(enhanced_image), config=config
+        ).replace("\n", "")
 
     def print(self, text: str, color=None) -> None:
         if text != "":
@@ -149,7 +161,9 @@ class Task():
         if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
             # loop = asyncio.get_event_loop()
             self.adb.save_screen(f"{self.name}_error")
-            asyncio.run(send_discord_message(self.name, message, f"{self.name}_error.png"))
+            asyncio.run(
+                send_discord_message(self.name, message, f"{self.name}_error.png")
+            )
 
     @get_name
     def click(self, x, y):
@@ -208,21 +222,27 @@ class Task():
     def random_macro(self) -> bool:
         try:
             path_json = self.FileSingleton.get_path()
-            for name in ["com.lilithgame.roc.gp.cfg",
-                         "com.rok.gp.vn.cfg",
-                         "com.lilithgame.rok.gpkr.cfg",
-                         "com.lilithgames.rok.gp.jp.cfg",
-                         "com.lilithgames.rok.gpkr.cfg"]:
-                path = path_json['bluestacks'][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
+            for name in [
+                "com.lilithgame.roc.gp.cfg",
+                "com.rok.gp.vn.cfg",
+                "com.lilithgame.rok.gpkr.cfg",
+                "com.lilithgames.rok.gp.jp.cfg",
+                "com.lilithgames.rok.gpkr.cfg",
+            ]:
+                path = (
+                    path_json["bluestacks"][:-15]
+                    + "Engine\\UserData\\InputMapper\\UserFiles\\"
+                    + name
+                )
                 if os.path.isfile(path):
                     break
 
             path2 = path.replace("cfg", "json")
             shutil.copy(path, path2)
 
-            with open(path2, encoding='utf-8') as config_file:
+            with open(path2, encoding="utf-8") as config_file:
                 macro_json = json.load(config_file)
-            for element in macro_json['ControlSchemes']:
+            for element in macro_json["ControlSchemes"]:
                 if element["Selected"]:
                     # print(element["Name"])
                     for macro in element["GameControls"]:
@@ -236,20 +256,25 @@ class Task():
                             macro["X2"] = x1
                             macro["Y1"] = y + 0.64
                             macro["Y2"] = y + 43.42
-            with open(path2, 'w', encoding="UTF-8") as outfile:
+            with open(path2, "w", encoding="UTF-8") as outfile:
                 json.dump(macro_json, outfile, ensure_ascii=False)
             shutil.copy(path2, path)
             return True
         except Exception as e:
-            self.generate_toast('Error', 'You did not import the config file, watch #tutorial to import it.')
+            self.generate_toast(
+                "Error",
+                "You did not import the config file, watch #tutorial to import it.",
+            )
 
             for _ in range(5):
                 self.print("/!\ FIX IT !! /!\ ", "red")
             print(
-                f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}")
+                f"[ {current_time()} ] [ {self.name} ] Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial\n{e}"
+            )
             self.print(
                 "Wrong macro location, cannot randomise it.. Please import the file com.lilithgame.roc.gp.cfg \nIf you don't know how to do it please watch the video in the #tutorial",
-                "red")
+                "red",
+            )
             for _ in range(5):
                 self.print("/!\ FIX IT !! /!\ ", "red")
             return False
@@ -266,7 +291,7 @@ class Task():
         self.script_pause()
         try:
             self.print("Zooming out..")
-            if self.find_img(target='gem_search_button'):
+            if self.find_img(target="gem_search_button"):
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
 
@@ -275,18 +300,34 @@ class Task():
                 self.script_pause()
                 while self.find_img(target="gem_search_button"):
                     self.script_pause()
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    win32gui.SendMessage(
+                        hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0
+                    )
+                    win32api.PostMessage(
+                        hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0
+                    )
                     self.better_sleep((0.45, 0.45))
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    win32gui.SendMessage(
+                        hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0
+                    )
+                    win32api.PostMessage(
+                        hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0
+                    )
                     self.better_sleep((1.4, 2))
                     self.script_pause()
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    win32gui.SendMessage(
+                        hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0
+                    )
+                    win32api.PostMessage(
+                        hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0
+                    )
                     self.better_sleep((0.17, 0.17))
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    win32gui.SendMessage(
+                        hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0
+                    )
+                    win32api.PostMessage(
+                        hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0
+                    )
                     self.better_sleep((1.4, 2))
 
         except Exception as e:
@@ -295,7 +336,7 @@ class Task():
     @get_name
     def click_loop(self) -> None:
         if not self.find_img(target="gem_search_button"):
-            self.print(f'Loop icon not found, leaving the city')
+            self.print(f"Loop icon not found, leaving the city")
             self.leave_city()
             self.better_sleep((2, 3))
         x = uniform(33, 76)
@@ -309,14 +350,14 @@ class Task():
         cv_image = self.adb.get_cv2_img()
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
-            self.print(f'Cannot find the button_level')
+            self.print(f"Cannot find the button_level")
             # self.set_text(f"[{current_time()}] Cannot find the level button")
             self.click_loop()
             self.better_sleep((1, 1.7))
         else:
             # x,y = uniform(225,285) , uniform(607,667)
             # self.click(x,y)
-            cv_image = cv_image[co[1] - 30:co[1], co[0] - 60:co[0] + 60]
+            cv_image = cv_image[co[1] - 30 : co[1], co[0] - 60 : co[0] + 60]
             # cv2.imwrite("level.png", cv_image)
             # string = pytesseract.image_to_string(cv_image,
             #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
@@ -325,25 +366,25 @@ class Task():
             self.debug(string)
             string = string.replace("\n", "")
             string = string.split(":")
-            if string[1] == '1l':
-                string[1] = '1'
+            if string[1] == "1l":
+                string[1] = "1"
             try:
-                self.print(f'Current level : {string[1]}')
+                self.print(f"Current level : {string[1]}")
                 # self.set_text(f"[{current_time()}] Current level : {string[1]}")
                 level_to_go = level - int(string[1].replace("l", "1"))
             except:
-                x, y = self.find_img(target='minus_button')
+                x, y = self.find_img(target="minus_button")
                 for i in range(6):
                     self.click(x + uniform(0, 20), y + uniform(0, 20))
                     self.better_sleep((0.450, 1))
                 level_to_go = level
             if level_to_go > 0:
                 word = "Increasing"
-                x, y = self.find_img(target='plus_button')
+                x, y = self.find_img(target="plus_button")
             else:
                 word = "Decreasing"
-                x, y = self.find_img(target='minus_button')
-            self.print(f'{word} the level by : {abs(level_to_go)}')
+                x, y = self.find_img(target="minus_button")
+            self.print(f"{word} the level by : {abs(level_to_go)}")
             # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
             for _ in range(abs(level_to_go)):
                 x2 = x + uniform(0, 30)
@@ -392,28 +433,48 @@ class Task():
         """
         Send adb signal to swipe to the right
         """
-        x1, y1, x2, y2 = uniform(700, 720), uniform(330, 380), uniform(260, 280), uniform(330, 380)
+        x1, y1, x2, y2 = (
+            uniform(700, 720),
+            uniform(330, 380),
+            uniform(260, 280),
+            uniform(330, 380),
+        )
         self.swipe(x1, y1, x2, y2)
 
     def swipe_left_low(self) -> None:
         """
         Send adb signal to swipe to the left
         """
-        x1, y1, x2, y2 = uniform(700, 720), uniform(330, 380), uniform(260, 280), uniform(330, 380)
+        x1, y1, x2, y2 = (
+            uniform(700, 720),
+            uniform(330, 380),
+            uniform(260, 280),
+            uniform(330, 380),
+        )
         self.swipe(x2, y2, x1, y1)
 
     def swipe_up_low(self) -> None:
         """
         Send adb signal to swipe upward
         """
-        x1, y1, x2, y2 = uniform(540, 560), uniform(540, 560), uniform(570, 600), uniform(200, 220)
+        x1, y1, x2, y2 = (
+            uniform(540, 560),
+            uniform(540, 560),
+            uniform(570, 600),
+            uniform(200, 220),
+        )
         self.swipe(x2, y2, x1, y1)
 
     def swipe_down_low(self) -> None:
         """
         Send adb signal to swipe downward
         """
-        x1, y1, x2, y2 = uniform(540, 560), uniform(540, 560), uniform(570, 600), uniform(200, 220)
+        x1, y1, x2, y2 = (
+            uniform(540, 560),
+            uniform(540, 560),
+            uniform(570, 600),
+            uniform(200, 220),
+        )
         self.swipe(x1, y1, x2, y2)
 
     @get_name
@@ -462,50 +523,59 @@ class Task():
                 if count == 1:
                     if self.language is None or self.language == "eng":
                         for _ in range(2):
-                            string = self.adb.shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
-                            self.FileSingleton.write(self.name,
-                                                     f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
-                            if 'Error' in str(string):
+                            string = self.adb.shell(
+                                "am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity"
+                            )
+                            self.FileSingleton.write(
+                                self.name,
+                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+                            )
+                            if "Error" in str(string):
                                 break
-                            if 'Activity not started' not in str(string):
+                            if "Activity not started" not in str(string):
                                 self.print("Starting the game !")
                                 self.wait_until_connected()
                                 self.language = "eng"
                                 return self.run_game(count=2)
-                            if 'Activity not started' in str(string):
+                            if "Activity not started" in str(string):
                                 return
                     if self.language is None or self.language == "vn":
                         for i in range(2):
-                            string = self.adb.shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
+                            string = self.adb.shell(
+                                "am start -n com.rok.gp.vn/com.harry.engine.MainActivity"
+                            )
                             self.FileSingleton.write(
                                 self.name,
-                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
-                            if 'Error' in str(string):
+                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+                            )
+                            if "Error" in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
-                            if 'Activity not started' not in str(string):
+                            if "Activity not started" not in str(string):
                                 self.print("Starting the game !")
                                 self.wait_until_connected()
                                 self.language = "vn"
                                 return self.run_game(count=2)
-                            if 'Activity not started' in str(string):
+                            if "Activity not started" in str(string):
                                 return
                     if self.language is None or self.language == "kr":
                         for i in range(2):
                             string = self.adb.shell(
-                                "am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity")
+                                "am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity"
+                            )
                             self.FileSingleton.write(
                                 self.name,
-                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n")
-                            if 'Error' in str(string):
+                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+                            )
+                            if "Error" in str(string):
                                 # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
                                 return
-                            if 'Activity not started' not in str(string):
+                            if "Activity not started" not in str(string):
                                 self.print("Starting the game !")
                                 self.wait_until_connected()
                                 self.language = "kr"
                                 return self.run_game(count=2)
-                            if 'Activity not started' in str(string):
+                            if "Activity not started" in str(string):
                                 return
 
                 self.print("ERROR CANNOT START THE GAME.")
@@ -519,9 +589,13 @@ class Task():
     def better_sleep(self, limits: tuple[float, float]):
         a = limits[0]
         b = limits[1]
-        if self.data[str(self.sel)]['schedules'][self.current_profile]["slow_mode"]:
-            a *= self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
-            b *= self.data[str(self.sel)]['schedules'][self.current_profile]["sleep_multiplicator"]
+        if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
+            a *= self.data[str(self.sel)]["schedules"][self.current_profile][
+                "sleep_multiplicator"
+            ]
+            b *= self.data[str(self.sel)]["schedules"][self.current_profile][
+                "sleep_multiplicator"
+            ]
 
         sleep_duration = uniform(a, b)
         interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
@@ -533,9 +607,11 @@ class Task():
 
     @get_name
     def check_captcha_slider(self, deadstop=0):
-        while self.find_img('slider_captcha', confidence=0.83) and deadstop != 5:
+        while self.find_img("slider_captcha", confidence=0.83) and deadstop != 5:
             if deadstop == 0:
-                self.print("Captcha detected !", )
+                self.print(
+                    "Captcha detected !",
+                )
             captcha = self.save_captcha_slider()
             self.solve_slider(captcha)
             deadstop += 1
@@ -551,7 +627,7 @@ class Task():
 
     @get_name
     def save_captcha_slider(self):
-        captcha = self.adb.get_cv2_img()[139:511, 499:1280 - 353]
+        captcha = self.adb.get_cv2_img()[139:511, 499 : 1280 - 353]
 
         for y in range(30):
             for i in range(captcha.shape[0]):
@@ -562,8 +638,16 @@ class Task():
         fontScale = 1
         color = (0, 0, 0)
         thickness = 2
-        captcha = cv2.putText(captcha, 'Click in center of puzzle', org, font,
-                              fontScale, color, thickness, cv2.LINE_AA)
+        captcha = cv2.putText(
+            captcha,
+            "Click in center of puzzle",
+            org,
+            font,
+            fontScale,
+            color,
+            thickness,
+            cv2.LINE_AA,
+        )
 
         return captcha
 
@@ -572,28 +656,32 @@ class Task():
         if file is None:
             file = f"captcha{self.sel}.jpg"
 
-        if self.data[self.sel]['API_KEY']:
-            api_key = self.data[self.sel]['API_KEY']
+        if self.data[self.sel]["API_KEY"]:
+            api_key = self.data[self.sel]["API_KEY"]
         else:
             api_key = ApiSingleton().getApiKey()
 
         solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
         try:
-            result = solver.coordinates(file, lang='en', hintText="Please locate the CENTER of the puzzle hole")
+            result = solver.coordinates(
+                file, lang="en", hintText="Please locate the CENTER of the puzzle hole"
+            )
 
             self.debug(result)
 
-            co = string_to_co_slide(result['code'])
+            co = string_to_co_slide(result["code"])
             self.debug(co)
-            slider_x, slider_y = self.find_img('slider_captcha')
+            slider_x, slider_y = self.find_img("slider_captcha")
             self.swipe_arg(slider_x + 25, slider_y, co[0] + 499, slider_y, 3000)
             self.better_sleep((2, 3))
         except Exception as e:
             self.debug(e)
             self.print("Cannot resolve this captcha slider!")
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
-            traceback_str = ''.join(traceback_list)
+            traceback_list = traceback.format_exception(
+                exc_type, exc_value, exc_traceback
+            )
+            traceback_str = "".join(traceback_list)
             try:
                 self.tile.initial_page.keyauthapp.log(traceback_str)
             except:
@@ -636,18 +724,45 @@ class Task():
         if co is not None:
             co = self.find_img(source=cv_image, target="reconnect", confidence=0.9)
         if co is not None:
-            if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_log_back', False):
+            if (
+                self.data.get(self.sel)
+                .get("schedules")
+                .get(self.current_profile)
+                .get("auto_log_back", False)
+            ):
+                if self.data.get(self.sel).get("schedules").get(
+                    self.current_profile
+                ).get("log_back1") > self.data.get(self.sel).get("schedules").get(
+                    self.current_profile
+                ).get(
+                    "log_back2"
+                ):
+                    (
+                        self.data[self.sel]["schedules"][self.current_profile][
+                            "log_back1"
+                        ],
+                        self.data[self.sel]["schedules"][self.current_profile][
+                            "log_back2"
+                        ],
+                    ) = (
+                        self.data[self.sel]["schedules"][self.current_profile][
+                            "log_back2"
+                        ],
+                        self.data[self.sel]["schedules"][self.current_profile][
+                            "log_back1"
+                        ],
+                    )
 
-                if self.data.get(self.sel).get('schedules').get(self.current_profile).get('log_back1') > self.data.get(
-                        self.sel).get('schedules').get(self.current_profile).get('log_back2'):
-                    self.data[self.sel]['schedules'][self.current_profile]['log_back1'], \
-                        self.data[self.sel]['schedules'][self.current_profile]['log_back2'] = \
-                        self.data[self.sel]['schedules'][self.current_profile]['log_back2'], \
-                            self.data[self.sel]['schedules'][self.current_profile]['log_back1']
-
-                value = randint(self.data.get(self.sel).get('schedules').get(self.current_profile).get('log_back1'),
-                                self.data.get(self.sel).get('schedules').get(self.current_profile).get(
-                                    'log_back2')) * 60 + randint(0, 59)
+                value = randint(
+                    self.data.get(self.sel)
+                    .get("schedules")
+                    .get(self.current_profile)
+                    .get("log_back1"),
+                    self.data.get(self.sel)
+                    .get("schedules")
+                    .get(self.current_profile)
+                    .get("log_back2"),
+                ) * 60 + randint(0, 59)
                 self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
                 self.better_sleep((value, value))
                 self.click(co[0] + uniform(0, 50), co[1] + uniform(-10, 20))
@@ -678,11 +793,10 @@ class Task():
     @get_name
     def close_osiris_popup(self):
         if self.find_img(target="osiris_invitation"):
-            self.click(1280/2, 720/2)
+            self.click(1280 / 2, 720 / 2)
             self.better_sleep((3.5, 4.7))
             self.click(960, 108)
             self.better_sleep((1.8, 2.7))
-
 
     @get_name
     def check_reconnect(self, cv_image=None, cropped=False):
@@ -691,11 +805,17 @@ class Task():
         """
         if cv_image is None:
             cv_image = self.adb.get_cv2_img()
-        co = self.find_img(source=cv_image, target="network_disconnected", confidence=0.85)
+        co = self.find_img(
+            source=cv_image, target="network_disconnected", confidence=0.85
+        )
 
         if co is not None:
-
-            if self.data.get(self.sel).get('schedules').get(self.current_profile).get('auto_reconnect', False):
+            if (
+                self.data.get(self.sel)
+                .get("schedules")
+                .get(self.current_profile)
+                .get("auto_reconnect", False)
+            ):
                 print(f"[ {current_time()} ] [ {self.name} ] You just got disconnected")
                 print(co)
                 co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
@@ -713,7 +833,9 @@ class Task():
                 return self.adb.get_cv2_img()
             else:
                 self.print("Reconnection disabled", "red")
-                self.send_discord_message("The game got disconnected, auto-Reconnection off.")
+                self.send_discord_message(
+                    "The game got disconnected, auto-Reconnection off."
+                )
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -726,14 +848,18 @@ class Task():
         condition = True
         while condition:
             self.run_game()
-            if self.find_img(target="menu_button", confidence=0.8) or \
-                    self.find_img(target="map_icon", confidence=0.8) or \
-                    self.find_img(target="hammer", confidence=0.8) or \
-                    self.find_img(target="inbox", confidence=0.8):
+            if (
+                self.find_img(target="menu_button", confidence=0.8)
+                or self.find_img(target="map_icon", confidence=0.8)
+                or self.find_img(target="hammer", confidence=0.8)
+                or self.find_img(target="inbox", confidence=0.8)
+            ):
                 condition = False
             co = self.find_img(target="mightiest_gov", confidence=0.8)
             if co is not None:
-                self.click(uniform(co[0] + 5, co[0] + 20), uniform(co[1] + 5, co[1] + 20))
+                self.click(
+                    uniform(co[0] + 5, co[0] + 20), uniform(co[1] + 5, co[1] + 20)
+                )
                 condition = False
             self.better_sleep((5, 5))
             self.check_captcha_slider()
@@ -759,7 +885,6 @@ class Task():
 
     @get_name
     def leave_kd_buff(self, source=None):
-
         co = self.find_img(target="kingdom_buff", source=source)
         if co is not None:
             self.click(uniform(70, 270), uniform(100, 542))
@@ -806,11 +931,17 @@ class Task():
             chest = None
             for i in range(1, 4):
                 self.script_pause()
-                chest = self.find_img(target=f"verification_chest{i}", source=cropped_image, confidence=0.6)
+                chest = self.find_img(
+                    target=f"verification_chest{i}",
+                    source=cropped_image,
+                    confidence=0.6,
+                )
                 if chest is None:
                     break
             if chest is not None:
-                if self.data[self.sel]['schedules'][self.current_profile]['auto_captcha']:
+                if self.data[self.sel]["schedules"][self.current_profile][
+                    "auto_captcha"
+                ]:
                     # print(co)
                     self.click(chest[0] + uniform(0, 30), chest[1] + uniform(35, 50))
                     self.better_sleep((3, 4))
@@ -818,7 +949,9 @@ class Task():
                 else:
                     self.set_text(f"[{current_time()}] Captcha verification is Off")
                     self.set_status("Captcha is Off")
-                    self.send_discord_message("Captcha detected, Captcha verification off.")
+                    self.send_discord_message(
+                        "Captcha detected, Captcha verification off."
+                    )
                     while True:
                         self.better_sleep((1, 1.1))
 
@@ -854,8 +987,12 @@ class Task():
             self.solve_captcha(i, DefaultApiKey)
             i += 1
             if i == 6:
-                self.print("Error, unable to resolve the captcha for 5 times in a row !")
-                self.send_discord_message("Error, unable to resolve the captcha for 5 times in a row. You have to solve it manually.")
+                self.print(
+                    "Error, unable to resolve the captcha for 5 times in a row !"
+                )
+                self.send_discord_message(
+                    "Error, unable to resolve the captcha for 5 times in a row. You have to solve it manually."
+                )
                 while self.find_img(target="close_refresh_ok", confidence=0.75):
                     self.better_sleep((10, 10))
             resolved = True
@@ -872,29 +1009,29 @@ class Task():
             if DefaultApiKey:
                 api_key = ApiSingleton().getApiKey()
             else:
-                api_key = self.data[self.sel]['API_KEY']
+                api_key = self.data[self.sel]["API_KEY"]
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
-            if self.data[self.sel]['API_KEY'] != "":
-                api_key = self.data[self.sel]['API_KEY']
+            if self.data[self.sel]["API_KEY"] != "":
+                api_key = self.data[self.sel]["API_KEY"]
             self.print("Trying to resolve the captcha")
 
             captcha = self.save_captcha()
 
             solver = TwoCaptcha(api_key, defaultTimeout=120, pollingInterval=5)
 
-            result = solver.coordinates(captcha, lang='en')
+            result = solver.coordinates(captcha, lang="en")
 
             self.debug(result)
 
-            co = string_to_co(result['code'])
+            co = string_to_co(result["code"])
             if self.adb.find_img_cv(captcha) is not None:
                 for x, y in co:
                     self.click(x, y)
                     self.better_sleep((0.4, 0.795))
                 self.click(uniform(700, 830), uniform(570, 600))
                 self.better_sleep((1, 1.795))
-            captchaId = result['captchaId']
+            captchaId = result["captchaId"]
             self.better_sleep((3, 4))
 
             if self.find_img(target="close_refresh_ok", confidence=0.75) is None:
@@ -908,7 +1045,9 @@ class Task():
         except NetworkException as e:
             self.print(e)
             print(e)
-            self.print("An error occurred with your network, waiting for few seconds before retrying")
+            self.print(
+                "An error occurred with your network, waiting for few seconds before retrying"
+            )
             self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
 
             if compteur < 5:
@@ -927,9 +1066,13 @@ class Task():
             self.print(e)
             print(e)
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
-            traceback_str = ''.join(traceback_list)
-            self.print("An error occurred with 2captcha.com, waiting for few seconds before retrying")
+            traceback_list = traceback.format_exception(
+                exc_type, exc_value, exc_traceback
+            )
+            traceback_str = "".join(traceback_list)
+            self.print(
+                "An error occurred with 2captcha.com, waiting for few seconds before retrying"
+            )
             try:
                 self.tile.initial_page.keyauthapp.log(traceback_str)
             except:
@@ -943,8 +1086,10 @@ class Task():
             traceback.print_exc()
             self.print(f"Exception raised :\n{e}\n")
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
-            traceback_str = ''.join(traceback_list)
+            traceback_list = traceback.format_exception(
+                exc_type, exc_value, exc_traceback
+            )
+            traceback_str = "".join(traceback_list)
             try:
                 self.tile.initial_page.keyauthapp.log(traceback_str)
             except:
@@ -1012,31 +1157,41 @@ class Task():
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        return self.find_img(target='checkpoint_star', source=self.adb.get_cv2_img()[:100, 0:600],
-                             confidence=0.9) is None
+        return (
+            self.find_img(
+                target="checkpoint_star",
+                source=self.adb.get_cv2_img()[:100, 0:600],
+                confidence=0.9,
+            )
+            is None
+        )
 
     def get_config(self):
-        return self.data.get(self.sel).get('schedules').get(self.current_profile)
+        return self.data.get(self.sel).get("schedules").get(self.current_profile)
 
     @get_name
     def close_windows(self):
         image = self.adb.get_cv2_img()[0:322, 0:1280]
-        while (cos := self.adb.find_multiple_img(target="close_window", source=image)):
+        while cos := self.adb.find_multiple_img(target="close_window", source=image):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()[0:322, 0:1280]
-        while (cos := self.adb.find_multiple_img(target="close_window2", source=image, confidence=0.83)):
+        while cos := self.adb.find_multiple_img(
+            target="close_window2", source=image, confidence=0.83
+        ):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()[0:322, 0:1280]
-        while (cos := self.adb.find_multiple_img(target="close_window3", source=image, confidence=0.83)):
+        while cos := self.adb.find_multiple_img(
+            target="close_window3", source=image, confidence=0.83
+        ):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()[0:322, 0:1280]
-        while (cos := self.adb.find_multiple_img(target="close_chat", confidence=0.83)):
+        while cos := self.adb.find_multiple_img(target="close_chat", confidence=0.83):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
@@ -1060,8 +1215,17 @@ class Task():
         dilate = cv2.dilate(opening, kernel, iterations=1)
         return dilate
 
-    def get_neighboring_image(self, image, center_point, grid_width=1280, grid_height=720, up=50, left=20, right=60,
-                              down=85):
+    def get_neighboring_image(
+        self,
+        image,
+        center_point,
+        grid_width=1280,
+        grid_height=720,
+        up=50,
+        left=20,
+        right=60,
+        down=85,
+    ):
         """Gets the neighboring points around a center point on the grid."""
         x, y = center_point[0], center_point[1]
         min_x = max(0, x - left)
@@ -1075,7 +1239,7 @@ class Task():
     def recenter(self, deadstop=0):
         image = self.adb.get_cv2_img()
 
-        if (co := self.find_img(source=image, target="green_home_button")):
+        if co := self.find_img(source=image, target="green_home_button"):
             # reader = Reader()
             if (250 > co[0] > 130) and (co[1] > 560):
                 return
@@ -1092,22 +1256,30 @@ class Task():
             first_try = image[0:35, :]
             second_try = image[-30:, :]
 
-            word = ''
+            word = ""
 
             first = self.extract_text(first_try, allowlist="0123456789KM")
             second = self.extract_text(second_try, allowlist="0123456789KM")
             # print(f"{first = } {second = }")
             # return
-            if re.match(r'\d+KM', second):
+            if re.match(r"\d+KM", second):
                 word = second
-            if re.match(r'\d+KM', first):
+            if re.match(r"\d+KM", first):
                 word = first
-            if re.match(r'\d+KM', word):
+            if re.match(r"\d+KM", word):
                 self.debug(word)
                 # print(distances)
                 # if distances:
-                if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > int(
-                        self.data[str(self.sel)]['schedules'][self.current_profile].get('radius', 40)) + 15:
+                if (
+                    word.split("KM")[0].isnumeric()
+                    and int(word.split("KM")[0])
+                    > int(
+                        self.data[str(self.sel)]["schedules"][self.current_profile].get(
+                            "radius", 40
+                        )
+                    )
+                    + 15
+                ):
                     if co[0] < 500 and co[1] < 220:
                         self.swipe(co[0] + 90, co[1] + 90, 640, 360)
                         # self.swipe(330, 160, 760, 530)
@@ -1142,7 +1314,7 @@ class Task():
     def go_back_to_city(self, deadstop=0):
         image = self.adb.get_cv2_img()
 
-        if (co := self.find_img(source=image, target="green_home_button")):
+        if co := self.find_img(source=image, target="green_home_button"):
             self.click(co[0], co[1])
             self.better_sleep((2, 3))
 
@@ -1187,23 +1359,24 @@ class Task():
     @get_name
     def validate_co(self, co: tuple[int, int]) -> None | tuple[int, int]:
         if co is not None:
-            if (co[0] < 550 and co[1] < 100) or \
-                    ((1180 < co[0] < 1235) and (520 < co[1] < 620)) or \
-                    ((1159 < co[0] < 1235) and (150 < co[1] < 195)) or \
-                    (co[0] < 556 and co[1] > 630) or \
-                    (co[0] < 110 and co[1] > 495) or \
-                    (co[0] > 1040 and co[1] < 160) or \
-                    (co[1] > 515 and co[0] > 1175) or \
-                    (co[0] < 120 and co[1] < 120) or \
-                    (co[0] < 685 and co[1] > 615) or \
-                    co[0] < 100 or \
-                    co[1] < 35:
+            if (
+                (co[0] < 550 and co[1] < 100)
+                or ((1180 < co[0] < 1235) and (520 < co[1] < 620))
+                or ((1159 < co[0] < 1235) and (150 < co[1] < 195))
+                or (co[0] < 556 and co[1] > 630)
+                or (co[0] < 110 and co[1] > 495)
+                or (co[0] > 1040 and co[1] < 160)
+                or (co[1] > 515 and co[0] > 1175)
+                or (co[0] < 120 and co[1] < 120)
+                or (co[0] < 685 and co[1] > 615)
+                or co[0] < 100
+                or co[1] < 35
+            ):
                 co = None
         return co
 
     @get_name
     def adjusted_leave_city(self, x_click: int, y_click: int) -> None:
-
         self.zoom_out_city()
         self.better_sleep((1, 2))
 
@@ -1260,7 +1433,7 @@ class Task():
 
     @get_name
     def node_found(self) -> bool:
-        if self.find_img(target='search_button') is not None:
+        if self.find_img(target="search_button") is not None:
             self.print("Node not found")
             return False
         return True
@@ -1277,46 +1450,96 @@ class Task():
             source = self.adb.get_cv2_img()[230:480, 441:814]
         img = Image.fromarray(source)
 
-        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255), (4, 144, 199), (5, 201, 2), (2, 143, 197)]
+        whitelist = [
+            (0, 148, 192),
+            (1, 149, 193),
+            (49, 161, 255),
+            (4, 144, 199),
+            (5, 201, 2),
+            (2, 143, 197),
+        ]
         occupied_colors = [
-            (2, 4, 183), (233, 233, 233), (247, 156, 47), (207, 131, 40), (248, 157, 48),
-            (239, 205, 165), (0, 0, 178), (2, 204, 2), (195, 142, 0), (0, 154, 14),
-            (0, 154, 13), (1, 186, 0), (0, 142, 193), (12, 154, 1), (1, 215, 0),
-            (1, 216, 0), (253, 253, 253), (49, 161, 255), (2, 197, 2), (247, 210, 167),
-            (255, 161, 49), (253, 253, 253), (167, 121, 28), (28, 121, 167), (92, 157, 246), (246, 157, 92,),
-            (101, 200, 43), (43, 200, 101), (106, 209, 46), (46, 209, 106), (2, 189, 2), (57, 159, 35), (35, 159, 24),
+            (2, 4, 183),
+            (233, 233, 233),
+            (247, 156, 47),
+            (207, 131, 40),
+            (248, 157, 48),
+            (239, 205, 165),
+            (0, 0, 178),
+            (2, 204, 2),
+            (195, 142, 0),
+            (0, 154, 14),
+            (0, 154, 13),
+            (1, 186, 0),
+            (0, 142, 193),
+            (12, 154, 1),
+            (1, 215, 0),
+            (1, 216, 0),
+            (253, 253, 253),
+            (49, 161, 255),
+            (2, 197, 2),
+            (247, 210, 167),
+            (255, 161, 49),
+            (253, 253, 253),
+            (167, 121, 28),
+            (28, 121, 167),
+            (92, 157, 246),
+            (
+                246,
+                157,
+                92,
+            ),
+            (101, 200, 43),
+            (43, 200, 101),
+            (106, 209, 46),
+            (46, 209, 106),
+            (2, 189, 2),
+            (57, 159, 35),
+            (35, 159, 24),
             (6, 187, 5),
-            (107, 211, 46), (46, 211, 107), (49, 161, 255), (255, 161, 49), (14, 154, 0), (0, 154, 14)
+            (107, 211, 46),
+            (46, 211, 107),
+            (49, 161, 255),
+            (255, 161, 49),
+            (14, 154, 0),
+            (0, 154, 14),
         ]
 
         for i in range(img.size[0]):
             for y in range(img.size[1]):
-                if (((img.getpixel((i, y))[0] < 5) and
-                     (img.getpixel((i, y))[1] < 5) and
-                     (img.getpixel((i, y))[2] > 175) and
-                     (img.getpixel((i, y))[2] < 196) and
-                     ((img.getpixel((i, y))[0] != 2) and
-                      (img.getpixel((i, y))[1] != 4) and
-                      (img.getpixel((i, y))[2] != 183))) or
-
-                    ((img.getpixel((i, y))[2] < 179) and
-                     (img.getpixel((i, y))[2] > 175) and
-                     (img.getpixel((i, y))[1] > 116) and
-                     (img.getpixel((i, y))[1] < 119) and
-                     (img.getpixel((i, y))[0] < 2))
-                    or
-                    ((img.getpixel((i, y))[0] < 5) and
-                     (img.getpixel((i, y))[1] > 142) and
-                     (img.getpixel((i, y))[1] < 150) and
-                     (img.getpixel((i, y))[2] < 200) and
-                     (img.getpixel((i, y))[2] > 190))
-                    or
-                    ((img.getpixel((i, y))[0] < 10) and
-                     (img.getpixel((i, y))[1] > 187) and
-                     (img.getpixel((i, y))[2] < 10)
+                if (
+                    (
+                        (img.getpixel((i, y))[0] < 5)
+                        and (img.getpixel((i, y))[1] < 5)
+                        and (img.getpixel((i, y))[2] > 175)
+                        and (img.getpixel((i, y))[2] < 196)
+                        and (
+                            (img.getpixel((i, y))[0] != 2)
+                            and (img.getpixel((i, y))[1] != 4)
+                            and (img.getpixel((i, y))[2] != 183)
+                        )
                     )
-                    or
-                    (img.getpixel((i, y)) in occupied_colors)) and (img.getpixel((i, y)) not in whitelist):
+                    or (
+                        (img.getpixel((i, y))[2] < 179)
+                        and (img.getpixel((i, y))[2] > 175)
+                        and (img.getpixel((i, y))[1] > 116)
+                        and (img.getpixel((i, y))[1] < 119)
+                        and (img.getpixel((i, y))[0] < 2)
+                    )
+                    or (
+                        (img.getpixel((i, y))[0] < 5)
+                        and (img.getpixel((i, y))[1] > 142)
+                        and (img.getpixel((i, y))[1] < 150)
+                        and (img.getpixel((i, y))[2] < 200)
+                        and (img.getpixel((i, y))[2] > 190)
+                    )
+                    or (
+                        (img.getpixel((i, y))[0] < 10)
+                        and (img.getpixel((i, y))[1] > 187)
+                        and (img.getpixel((i, y))[2] < 10)
+                    )
+                    or (img.getpixel((i, y)) in occupied_colors)
+                ) and (img.getpixel((i, y)) not in whitelist):
                     self.print(f"Node occupied {img.getpixel((i, y))}")
                     return True
         return False
@@ -1327,21 +1550,18 @@ class Task():
         img = Image.fromarray(cv_image)
         print(img.getpixel((33, 73)))
         if (
-                (10 < img.getpixel((33, 73))[0] < 20) and
-                (225 < img.getpixel((33, 73))[1] < 240) and
-                (120 < img.getpixel((33, 73))[2] < 135)
-        ) \
-                or \
-                (
-                        (10 < img.getpixel((33, 73))[2] < 20) and
-                        (225 < img.getpixel((33, 73))[1] < 240) and
-                        (120 < img.getpixel((33, 73))[0] < 135)
-                ) \
-                or \
-                (
-                        img.getpixel((33, 73)) == (0, 255, 142)
-                ):
-
+            (
+                (10 < img.getpixel((33, 73))[0] < 20)
+                and (225 < img.getpixel((33, 73))[1] < 240)
+                and (120 < img.getpixel((33, 73))[2] < 135)
+            )
+            or (
+                (10 < img.getpixel((33, 73))[2] < 20)
+                and (225 < img.getpixel((33, 73))[1] < 240)
+                and (120 < img.getpixel((33, 73))[0] < 135)
+            )
+            or (img.getpixel((33, 73)) == (0, 255, 142))
+        ):
             return True
         else:
             return False

@@ -21,14 +21,14 @@ dir = "./"
 
 def word_to_color(word):
     hash_object = hashlib.sha256()
-    hash_object.update(word.encode('utf-8'))
+    hash_object.update(word.encode("utf-8"))
     hex_color = hash_object.hexdigest()[:6]
     return f"#{hex_color}"
 
 
 def colorize_name(word):
     hex_color = word_to_color(word)
-    hex_color = hex_color.lstrip('#')
+    hex_color = hex_color.lstrip("#")
 
     text_color_code = f"\033[38;2;{int(hex_color[0:2], 16)};{int(hex_color[2:4], 16)};{int(hex_color[4:6], 16)}m"
     reset_code = "\033[0m"
@@ -37,7 +37,7 @@ def colorize_name(word):
 
 
 def custom_key(item):
-    parts = item['instance'].split('_')
+    parts = item["instance"].split("_")
     if len(parts) == 1:
         return -1
     return int(parts[1])
@@ -48,18 +48,21 @@ def current_time():
 
 
 def string_to_co(string):
-    pattern_x = r'x=(\d+)'
-    pattern_y = r'y=(\d+)'
+    pattern_x = r"x=(\d+)"
+    pattern_y = r"y=(\d+)"
 
     matches_x = re.findall(pattern_x, string)
     matches_y = re.findall(pattern_y, string)
 
-    return [(int(pair[0]) + 441, int(pair[1]) + 101) for pair in list(zip(matches_x, matches_y))]
+    return [
+        (int(pair[0]) + 441, int(pair[1]) + 101)
+        for pair in list(zip(matches_x, matches_y))
+    ]
 
 
 def string_to_co_slide(string):
-    pattern_x = r'x=(\d+)'
-    pattern_y = r'y=(\d+)'
+    pattern_x = r"x=(\d+)"
+    pattern_y = r"y=(\d+)"
 
     matches_x = re.search(pattern_x, string)
     matches_y = re.search(pattern_y, string)
@@ -75,8 +78,13 @@ def get_time(func):
         end_time = perf_counter()
 
         if 0 and func.__name__ == "check_captcha":
-            print(f'[ {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
-            self.FileSingleton.write(self.name, f"INFO : Verification made in {(end_time - start_time):0.1f}\n")
+            print(
+                f'[ {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}'
+            )
+            self.FileSingleton.write(
+                self.name,
+                f"INFO : Verification made in {(end_time - start_time):0.1f}\n",
+            )
         return func_output
 
     return wrapper
@@ -84,9 +92,9 @@ def get_time(func):
 
 def toString(arg):
     if type(arg).__name__ in ["ndarray", "Image"]:
-        return 'Image'
+        return "Image"
     if isinstance(arg, dict):
-        return 'Dict'
+        return "Dict"
     if callable(arg):
         return arg.__name__
     return repr(arg)
@@ -111,10 +119,16 @@ def get_name(func):
 
         if func.__name__ == "set_timer":
             args_str = [toString(arg) for arg in args] if args is not None else []
-            kwargs_str = [f"{key}={toString(value)}" for key, value in kwargs.items()] if kwargs is not None else []
+            kwargs_str = (
+                [f"{key}={toString(value)}" for key, value in kwargs.items()]
+                if kwargs is not None
+                else []
+            )
             arg_str = ", ".join(args_str + kwargs_str)
 
-            timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+            timestamp = (
+                f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+            )
             message = f"[ {colorize_name(self.name)} ] {func.__name__}({arg_str})"
 
             print(f"{timestamp} {message}")
@@ -123,19 +137,25 @@ def get_name(func):
 
         if DEBUG:
             args_str = [toString(arg) for arg in args] if args is not None else []
-            kwargs_str = [f"{key}={toString(value)}" for key, value in kwargs.items()] if kwargs is not None else []
+            kwargs_str = (
+                [f"{key}={toString(value)}" for key, value in kwargs.items()]
+                if kwargs is not None
+                else []
+            )
             arg_str = ", ".join(args_str + kwargs_str)
 
             if func_output is True or func_output is False or func_output is None:
                 output_str = colorize_output(repr(func_output))
             elif type(func_output).__name__ in ["ndarray", "Image", "str", "int"]:
                 output_str = toString(func_output)
-            elif hasattr(func_output, '__iter__'):
+            elif hasattr(func_output, "__iter__"):
                 output_str = ", ".join([toString(arg) for arg in func_output])
             else:
                 output_str = f"Unexpected, {type(func_output)}"
 
-            timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+            timestamp = (
+                f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+            )
             message = f"[ {colorize_name(self.name)} ] {func.__name__}({arg_str}): {colorize_output(output_str)}"
 
             print(f"{timestamp} {message}")
@@ -178,9 +198,9 @@ def filter_coordinate(couple: tuple[int, int]):
 def getchecksum():
     md5_hash = hashlib.md5()
     try:
-        file = open(''.join(sys.argv), "rb")
+        file = open("".join(sys.argv), "rb")
     except:
-        file = open(''.join(sys.argv[0]), "rb")
+        file = open("".join(sys.argv[0]), "rb")
     md5_hash.update(file.read())
     digest = md5_hash.hexdigest()
     return digest
@@ -193,18 +213,19 @@ def get_dic_instances():
         string = path["bluestacks"][:-5] + ".txt"
         if exists(rf'{path["bluestacks"]}'):
             string = path["bluestacks"][:-5] + ".txt"
-            shutil.copy(rf'{path["bluestacks"]}', rf'{string}')
-        with open(rf'{string}', 'r', encoding='utf-8') as file:
-            data_instance = file.read().split('\n')
+            shutil.copy(rf'{path["bluestacks"]}', rf"{string}")
+        with open(rf"{string}", "r", encoding="utf-8") as file:
+            data_instance = file.read().split("\n")
     except Exception as e:
         print(e)
         raise OSError(
-            "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'")
+            "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'"
+        )
 
-    pattern_status_adb = re.compile(r'bst\.instance\.Nougat64_?(\d*)\.status\.adb_port')
-    pattern_display_name = re.compile(r'bst\.instance\.Nougat64_?(\d*)\.display_name')
+    pattern_status_adb = re.compile(r"bst\.instance\.Nougat64_?(\d*)\.status\.adb_port")
+    pattern_display_name = re.compile(r"bst\.instance\.Nougat64_?(\d*)\.display_name")
 
-    pattern_for_nougat = re.compile(r'Nougat64_?(\d*)')
+    pattern_for_nougat = re.compile(r"Nougat64_?(\d*)")
     pattern_for_value = re.compile(r'="([^"]*)"')
 
     matched_lines = []
@@ -222,11 +243,10 @@ def get_dic_instances():
     bluestacks_instances = {}
     for i in range(0, len(matched_lines), 3):
         bluestacks_instances[str(matched_lines[i])] = {
-                'instance': str(matched_lines[i]),
-                'name': matched_lines[i + 1],
-                'port': int(matched_lines[i + 2]),
-            }
-
+            "instance": str(matched_lines[i]),
+            "name": matched_lines[i + 1],
+            "port": int(matched_lines[i + 2]),
+        }
 
     return bluestacks_instances
 
@@ -234,7 +254,7 @@ def get_dic_instances():
 def get_index_and_names(data):
     names = []
     for key in data.keys():
-        names.append((key, data[key]['name']))
+        names.append((key, data[key]["name"]))
     return names
 
 
@@ -254,25 +274,25 @@ def get_current_instances(data):
 def get_all_vms_running():
     return get_current_instances(get_dic_instances())
 
+
 def get_dic_instances_ld():
     fileSingleton = FileSingleton()
     path = fileSingleton.get_path()
 
-    argument = 'list2'
+    argument = "list2"
     command = [path["LD-Console"], argument]
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
-
-    emulators = result.stdout.split('\n')
+    emulators = result.stdout.split("\n")
     emulators.pop()
 
     liste = {}
     for emulator in emulators:
-        emulator = emulator.split(',')
+        emulator = emulator.split(",")
         liste[emulator[0]] = {
-            'name': emulator[1],
-            'instance': emulator[0],
-            'port': 5554 + 2 * int(emulator[0])
+            "name": emulator[1],
+            "instance": emulator[0],
+            "port": 5554 + 2 * int(emulator[0]),
         }
 
     return liste
@@ -282,11 +302,11 @@ def get_current_instances_ld(data: dict):
     fileSingleton = FileSingleton()
     path = fileSingleton.get_path()
 
-    argument = 'runninglist'
+    argument = "runninglist"
     command = [path["LD-Console"], argument]
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
-    emulators = result.stdout.split('\n')
+    emulators = result.stdout.split("\n")
     print(emulators)
 
     emulators.pop()
@@ -295,11 +315,13 @@ def get_current_instances_ld(data: dict):
 
     for emulator in emulators:
         for e in data.values():
-            if e['name'] == emulator:
-                liste.append((e['instance'], e['name']))
+            if e["name"] == emulator:
+                liste.append((e["instance"], e["name"]))
     return liste
+
 
 def get_all_vms_running_ld():
     return get_current_instances_ld(get_dic_instances_ld())
+
 
 # print(get_all_vms_running_ld())

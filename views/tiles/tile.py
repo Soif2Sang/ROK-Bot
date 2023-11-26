@@ -3,12 +3,11 @@ import threading
 
 import flet as ft
 
-from views.tiles.handler.config_handler import Frame
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from utils.functions import (FileSingleton, get_all_vms_running,
-                             get_all_vms_running_ld)
+from utils.functions import FileSingleton, get_all_vms_running, get_all_vms_running_ld
 from utils.singletons import EmulatorSingleton
+from views.tiles.handler.config_handler import Frame
 
 
 class ConfigOverrider(ft.PopupMenuButton):
@@ -94,37 +93,35 @@ class Tile(ft.Row):
         self.button_select = ft.IconButton(
             icon=ft.icons.SETTINGS,
             selected_icon=ft.icons.SETTINGS,
-            on_click=self.select
+            on_click=self.select,
         )
         self.button_start = ft.IconButton(
-            icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED,
-            on_click=self.start
+            icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start
         )
         self.button_stop = ft.IconButton(
-            icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED,
-            disabled=True,
-            on_click=self.stop
+            icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop
         )
 
         self.config_overrider = ConfigOverrider(self.initial_page, number)
-        self.text_name = ft.Text(value=data[str(number)]['name'], width=80)
+        self.text_name = ft.Text(value=data[str(number)]["name"], width=80)
         self.text_status = ft.Text(value="", width=120)
 
-        self.vertical_alignment=ft.CrossAxisAlignment.CENTER
+        self.vertical_alignment = ft.CrossAxisAlignment.CENTER
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-        self.controls.extend([
-            ft.Row(
-                controls=[
-                    self.button_select,
-                    self.button_start,
-                    self.button_stop,
-                    self.text_name,
-                    self.text_status,
-                ]
-            ),
-            self.config_overrider
-        ]
+        self.controls.extend(
+            [
+                ft.Row(
+                    controls=[
+                        self.button_select,
+                        self.button_start,
+                        self.button_stop,
+                        self.text_name,
+                        self.text_status,
+                    ]
+                ),
+                self.config_overrider,
+            ]
         )
 
     def select(self, e):
@@ -135,7 +132,9 @@ class Tile(ft.Row):
             self.initial_page.body.controls.pop()
 
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = Frame(
+                self.initial_page, self.number
+            )
 
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
         self.initial_page.update()
@@ -171,7 +170,6 @@ class Tile(ft.Row):
         self.button_start.on_click = self.resume
         self.initial_page.update()
 
-
     def stop(self, e):
         self.paused = False
         self.stopped = True
@@ -189,7 +187,9 @@ class Tile(ft.Row):
             self.tasks_process.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
-            self.initial_page.generate_toast('Warning', "Task is frozen, you may need to restart the bot.")
+            self.initial_page.generate_toast(
+                "Warning", "Task is frozen, you may need to restart the bot."
+            )
             print("Task is frozen, you may need to restart the bot.")
 
     def set_text(self, phrase: str):
@@ -201,12 +201,16 @@ class Tile(ft.Row):
 
     def add_text(self, phrase: str, color=None):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = Frame(
+                self.initial_page, self.number
+            )
 
         self.initial_page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = Frame(
+                self.initial_page, self.number
+            )
 
         self.initial_page.frames[self.number].add_divider()
