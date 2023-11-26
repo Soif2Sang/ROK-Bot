@@ -3,11 +3,7 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.functions import FileSingleton
 
-color_bank = {
-    1: "#3b8ed0",
-    2: "#ba4543",
-    3: "#dec433"
-}
+color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
 class PageSettings(ft.Container):
@@ -19,9 +15,13 @@ class PageSettings(ft.Container):
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.padding = ft.padding.only(top=5, left=0, bottom=0)
-        self.content: ft.ListView = ft.ListView(height=400, expand=1, padding=1, spacing=6)
+        self.content: ft.ListView = ft.ListView(
+            height=400, expand=1, padding=1, spacing=6
+        )
 
-        self.theme = ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
+        self.theme = ft.Theme(
+            color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index])
+        )
         self.init()
 
     def add(self, *control):

@@ -23,7 +23,7 @@ fileSingleton = FileSingleton()
 
 def update_user_info(password, username):
     data = fileSingleton.get_data()
-    data["user"] = {'username': username, 'password': password}
+    data["user"] = {"username": username, "password": password}
     fileSingleton.write_data(data)
 
 
@@ -63,7 +63,6 @@ class selfApi:
     initialized = False
 
     def init(self):
-
         if self.sessionid != "":
             print("You've already initialized!")
             kill_app()
@@ -78,7 +77,7 @@ class selfApi:
             "enckey": encryption.encrypt(self.enckey, self.secret, init_iv),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
 
         response = self.__do_request(post_data)
@@ -97,7 +96,9 @@ class selfApi:
                 os.system(f"start {download_link}")
                 kill_app()
             else:
-                print("Invalid Version, Contact owner to add download link to latest app version")
+                print(
+                    "Invalid Version, Contact owner to add download link to latest app version"
+                )
                 kill_app()
 
         if not json["success"]:
@@ -109,7 +110,6 @@ class selfApi:
         self.__load_app_data(json["appinfo"])
 
     def login(self, user, password, hwid=None, page=None):
-
         self.checkinit()
         if hwid is None:
             hwid = others.get_hwid()
@@ -126,7 +126,7 @@ class selfApi:
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
 
         response = self.__do_request(post_data)
@@ -145,17 +145,21 @@ class selfApi:
             wid2 = hwid
 
         if BREZILIAN:
-            if (wid1 != hwid):
+            if wid1 != hwid:
                 if self.page is not None:
                     self.log(f"user :{user} tried connecting on {public_ip}")
-                    self.page.open_banner("Hardware id doesn't match, contact the admin")
+                    self.page.open_banner(
+                        "Hardware id doesn't match, contact the admin"
+                    )
                 print("Hardware id doesn't match")
                 return False
         else:
             if (wid1 != hwid) and (wid2 != hwid):
                 if self.page is not None:
                     self.log(f"user :{user} tried connecting on {public_ip}")
-                    self.page.open_banner("Hardware id doesn't match, contact the admin")
+                    self.page.open_banner(
+                        "Hardware id doesn't match, contact the admin"
+                    )
                 print("Hardware id doesn't match")
                 return False
 
@@ -165,16 +169,24 @@ class selfApi:
         else:
             if self.page is not None:
                 if not BREZILIAN:
-                    content = ft.Column(controls=[
-                        ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                                      on_click=lambda _: self.page.launch_url(
-                                          LinkSingleton().getStripeLink()),
-                                      ),
-                        ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
-                                      on_click=lambda _: self.page.launch_url(
-                                          LinkSingleton().getSellixLink()))
-
-                    ])
+                    content = ft.Column(
+                        controls=[
+                            ft.TextButton(
+                                icon=ft.icons.LINK_OUTLINED,
+                                text="Pay with Stripe",
+                                on_click=lambda _: self.page.launch_url(
+                                    LinkSingleton().getStripeLink()
+                                ),
+                            ),
+                            ft.TextButton(
+                                icon=ft.icons.LINK_OUTLINED,
+                                text="Pay with Crypto",
+                                on_click=lambda _: self.page.launch_url(
+                                    LinkSingleton().getSellixLink()
+                                ),
+                            ),
+                        ]
+                    )
                 else:
                     content = ft.Column([ft.Text("Invalid credentials")])
 
@@ -182,9 +194,11 @@ class selfApi:
                     ft.Banner(
                         content=content,
                         actions=[
-                            ft.TextButton("Close", on_click=lambda e:page.close_banner()),
+                            ft.TextButton(
+                                "Close", on_click=lambda e: page.close_banner()
+                            ),
                         ],
-                        content_padding=ft.padding.all(5)
+                        content_padding=ft.padding.all(5),
                     )
                 )
             return False
@@ -200,7 +214,7 @@ class selfApi:
             "hwid": hwid,
             "sessionid": self.sessionid,
             "name": self.name,
-            "ownerid": self.ownerid
+            "ownerid": self.ownerid,
         }
 
         response = self.__do_request(post_data)
@@ -223,7 +237,7 @@ class selfApi:
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
 
         response = self.__do_request(post_data)
@@ -246,7 +260,7 @@ class selfApi:
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
         response = self.__do_request(post_data)
         response = encryption.decrypt(response, self.enckey, init_iv)
@@ -266,7 +280,7 @@ class selfApi:
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
         response = self.__do_request(post_data)
         response = encryption.decrypt(response, self.enckey, init_iv)
@@ -290,7 +304,7 @@ class selfApi:
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
 
         response = self.__do_request(post_data)
@@ -312,7 +326,7 @@ class selfApi:
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
         try:
             response = self.__do_request(post_data)
@@ -335,12 +349,12 @@ class selfApi:
 
         post_data = {
             "type": binascii.hexlify("log".encode()),
-            "pcuser": encryption.encrypt(os.getenv('username'), self.enckey, init_iv),
+            "pcuser": encryption.encrypt(os.getenv("username"), self.enckey, init_iv),
             "message": encryption.encrypt(message, self.enckey, init_iv),
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
 
         self.__do_request(post_data)
@@ -355,7 +369,7 @@ class selfApi:
             "sessionid": binascii.hexlify(self.sessionid.encode()),
             "name": binascii.hexlify(self.name.encode()),
             "ownerid": binascii.hexlify(self.ownerid.encode()),
-            "init_iv": init_iv
+            "init_iv": init_iv,
         }
 
         response = self.__do_request(post_data)
@@ -378,9 +392,7 @@ class selfApi:
 
     def __do_request(self, post_data, deadstop=0):
         try:
-            rq_out = s.post(
-                "https://keyauth.win/api/1.0/", data=post_data, timeout=15
-            )
+            rq_out = s.post("https://keyauth.win/api/1.0/", data=post_data, timeout=15)
             return rq_out.text
         except requests.exceptions.Timeout:
             if deadstop < 5:
@@ -398,7 +410,9 @@ class selfApi:
     # region user_data
 
     class user_data_c:
-        username = ip = hwid = expires = createdate = lastlogin = subscription = subscriptions = ""
+        username = (
+            ip
+        ) = hwid = expires = createdate = lastlogin = subscription = subscriptions = ""
 
     user_data = user_data_c()
     app_data = application_data_c()
@@ -428,16 +442,20 @@ class others:
             with open("/etc/machine-id") as f:
                 hwid = f.read()
                 return hwid
-        elif platform.system() == 'Windows':
+        elif platform.system() == "Windows":
             winuser = os.getlogin()
             sid = win32security.LookupAccountName(None, winuser)[
-                0]  # You can also use WMIC (better than SID, some users had problems with WMIC)
+                0
+            ]  # You can also use WMIC (better than SID, some users had problems with WMIC)
             hwid = win32security.ConvertSidToStringSid(sid)
             return hwid
-        elif platform.system() == 'Darwin':
-            output = subprocess.Popen("ioreg -l | grep IOPlatformSerialNumber", stdout=subprocess.PIPE,
-                                      shell=True).communicate()[0]
-            serial = output.decode().split('=', 1)[1].replace(' ', '')
+        elif platform.system() == "Darwin":
+            output = subprocess.Popen(
+                "ioreg -l | grep IOPlatformSerialNumber",
+                stdout=subprocess.PIPE,
+                shell=True,
+            ).communicate()[0]
+            serial = output.decode().split("=", 1)[1].replace(" ", "")
             hwid = serial[1:-2]
             return hwid
 
@@ -470,10 +488,13 @@ class encryption:
 
             _iv = SHA256.new(iv.encode()).hexdigest()[:16]
 
-            return encryption.encrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
+            return encryption.encrypt_string(
+                message.encode(), _key.encode(), _iv.encode()
+            ).decode()
         except:
             print(
-                "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
+                "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username"
+            )
             raise Exception
 
     @staticmethod
@@ -483,12 +504,14 @@ class encryption:
 
             _iv = SHA256.new(iv.encode()).hexdigest()[:16]
 
-            return encryption.decrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
+            return encryption.decrypt_string(
+                message.encode(), _key.encode(), _iv.encode()
+            ).decode()
         except:
             print(
-                "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username")
+                "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username"
+            )
             raise Exception
-
 
 
 class AuthSingleton:

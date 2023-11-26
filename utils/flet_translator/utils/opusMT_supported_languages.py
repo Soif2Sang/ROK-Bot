@@ -1,12 +1,13 @@
 from enum import Enum
 
 
-class OpusmtLanguage (Enum):
+class OpusmtLanguage(Enum):
     """
     This class contain all languages supported with OpusMT ML translate.
 
     Its better with Opusmt to not use `auto`
     """
+
     auto = "auto"
     af = "af"
     ar = "ar"

@@ -2,9 +2,11 @@ import glob
 
 from cv2 import imread
 
-print("from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode, \
-    IMREAD_COLOR, COLOR_BGR2HSV, inRange")
-dir_path = r'resources/*.png'
+print(
+    "from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode, \
+    IMREAD_COLOR, COLOR_BGR2HSV, inRange"
+)
+dir_path = r"resources/*.png"
 # for file in glob.glob(dir_path, recursive=True):
 #     a = "\\"
 #     print(f'{file.split(a)[1].split(".")[0]} = ',end="")
@@ -19,10 +21,12 @@ dir_path = r'resources/*.png'
 # print("    else:")
 # print("        return imread('resources\\' + file_name + '.png')")
 #
-file = 'utils/resources.py'
-with open(file, 'w') as f:
-    f.write("from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode, \
-        IMREAD_COLOR, COLOR_BGR2HSV, inRange\n")
+file = "utils/resources.py"
+with open(file, "w") as f:
+    f.write(
+        "from cv2 import cvtColor, imread, matchTemplate, minMaxLoc, COLOR_BGR2RGB, TM_CCOEFF_NORMED, imdecode, \
+        IMREAD_COLOR, COLOR_BGR2HSV, inRange\n"
+    )
     f.write("import os\n")
     f.write("dir = './resources'\n")
     f.write("class ImageSingleton:\n")
@@ -36,18 +40,22 @@ with open(file, 'w') as f:
     f.write("\n")
     f.write("    def load_images(self):\n")
 
-    dir_path = r'resources/*.png'
+    dir_path = r"resources/*.png"
     for file in glob.glob(dir_path, recursive=True):
         # f.write(file.split("\\")[1])
         a = "\\"
-        f.write(f'       self.{file.split(a)[1].split(".")[0]}' "= imread(f'{dir}/"f"{file.split(a)[1].split('.')[0]}.png')\n")
+        f.write(
+            f'       self.{file.split(a)[1].split(".")[0]}'
+            "= imread(f'{dir}/"
+            f"{file.split(a)[1].split('.')[0]}.png')\n"
+        )
     f.write("\n")
     f.write("    def get_file_name(self,file_name):\n")
 
     for file in glob.glob(dir_path, recursive=True):
         # f.write(file.split("\\")[1])
         a = "\\"
-        f.write("        if file_name == "f'"{file.split(a)[1].split(".")[0]}":\n')
+        f.write("        if file_name == " f'"{file.split(a)[1].split(".")[0]}":\n')
         f.write(f'            return self.{file.split(a)[1].split(".")[0]}\n')
         # f.write(f"= imread('resources\\\\{file.split(a)[1].split('.')[0]}')")
         # if file_name == "gem_icon_day_up_left":

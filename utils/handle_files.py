@@ -17,7 +17,7 @@ def main():
             fileSingleton.write_data(
                 {
                     "bluestacks": "C:\\ProgramData\\BlueStacks_nxt\\bluestacks.conf",
-                    "HD-Player": "C:\\Program Files\\BlueStacks_nxt\\HD-Player.exe"
+                    "HD-Player": "C:\\Program Files\\BlueStacks_nxt\\HD-Player.exe",
                 }
             )
             print("User settings created")
@@ -27,14 +27,14 @@ def main():
     data = fileSingleton.get_data()
 
     if "discord" not in data:
-        data["discord"] = {"user_id":0, "enabled":False}
+        data["discord"] = {"user_id": 0, "enabled": False}
         fileSingleton.write_data(data)
 
     old_data = copy.deepcopy(data)
 
     for element in old_data.keys():
         if element.isdigit():
-            data[data[element]['instance']] = copy.deepcopy(data[element])
+            data[data[element]["instance"]] = copy.deepcopy(data[element])
             del data[element]
 
     fileSingleton.write_data(data)

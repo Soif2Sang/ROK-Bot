@@ -50,7 +50,7 @@ class AnimatedCard(UserControl):
             controls=[
                 self.__card,
             ],
-            col=6
+            col=6,
         )
 
         self._main = self._card
@@ -59,7 +59,6 @@ class AnimatedCard(UserControl):
 
     def AnimatedCardHover(self, e):
         if e.data == "true":
-
             for __ in range(20):
                 self.__card.elevation += 1
                 self.__card.update()
@@ -74,4 +73,3 @@ class AnimatedCard(UserControl):
 
             self._container.border = border.all(4, colors.WHITE24)
             self._container.update()
-

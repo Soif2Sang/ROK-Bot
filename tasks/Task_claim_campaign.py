@@ -23,7 +23,7 @@ class ClaimCampaign(Task):
 
         number = self.extract_text(img=cropped_image, allowlist="12345670.")
 
-        if '.' in number:
+        if "." in number:
             return True
         try:
             return int(number) > 15
@@ -33,7 +33,7 @@ class ClaimCampaign(Task):
     @get_class
     def run(self):
         # Open du menu
-        if self.find_img(target='menu_opened', confidence=0.8) is None:
+        if self.find_img(target="menu_opened", confidence=0.8) is None:
             x, y = uniform(1200, 1250), uniform(650, 690)
             self.click(x, y)
             self.better_sleep((1.725, 1.995))

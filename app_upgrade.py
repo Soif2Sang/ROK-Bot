@@ -19,9 +19,9 @@ from utils.handle_files import main as HandleFiles
 def getchecksum():
     md5_hash = hashlib.md5()
     try:
-        file = open(''.join(sys.argv), "rb")
+        file = open("".join(sys.argv), "rb")
     except:
-        file = open(''.join(sys.argv[0]), "rb")
+        file = open("".join(sys.argv[0]), "rb")
     md5_hash.update(file.read())
     digest = md5_hash.hexdigest()
     return digest
@@ -36,25 +36,25 @@ try:
     from views.main import Main
     from views.profile_settings import viewProfileSettings
 except Exception as e:
-
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
-    traceback_str = ''.join(traceback_list)
+    traceback_str = "".join(traceback_list)
 
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
-        page.add(ft.Text("An error occurred, a log message have been sent to the developer"))
+        page.add(
+            ft.Text("An error occurred, a log message have been sent to the developer")
+        )
         page.add(ft.Text(value=traceback_str, color="red"))
         page.update()
-
 
     keyauthapp = selfApi(
         name="Rokbd",
         ownerid="7oofxdj8uH",
         secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
         version="1.0",
-        hash_to_check=getchecksum()
+        hash_to_check=getchecksum(),
     )
 
     keyauthapp.log(traceback_str)
@@ -69,13 +69,7 @@ HandleFiles()
 
 
 def is_str_valid(username, password):
-    for element in ['#', "$", "&", "|", "\0",
-                    "\n",
-                    "\r",
-                    '\'',
-                    "'",
-                    '"',
-                    "\Z"]:
+    for element in ["#", "$", "&", "|", "\0", "\n", "\r", "'", "'", '"', "\Z"]:
         if element in username or element in password:
             return False
     return True
@@ -96,20 +90,28 @@ class LoginUI(ft.Column):
 
         self.initial_page.banner = ft.Banner(
             bgcolor=ft.colors.AMBER_100,
-            content=ft.Column(controls=[
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                              on_click=lambda _: self.initial_page.launch_url(
-                                  "https://buy.stripe.com/dR66oX4ov0qldkQaEF"),
-                              ),
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
-                              on_click=lambda _: self.initial_page.launch_url(
-                                  "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"))
-
-            ]),
+            content=ft.Column(
+                controls=[
+                    ft.TextButton(
+                        icon=ft.icons.LINK_OUTLINED,
+                        text="Pay with Stripe",
+                        on_click=lambda _: self.initial_page.launch_url(
+                            "https://buy.stripe.com/dR66oX4ov0qldkQaEF"
+                        ),
+                    ),
+                    ft.TextButton(
+                        icon=ft.icons.LINK_OUTLINED,
+                        text="Pay with Crypto",
+                        on_click=lambda _: self.initial_page.launch_url(
+                            "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099"
+                        ),
+                    ),
+                ]
+            ),
             actions=[
                 ft.TextButton("Close", on_click=close_banner),
             ],
-            content_padding=ft.padding.all(5)
+            content_padding=ft.padding.all(5),
         )
 
         self.initial_page.banner.open = True
@@ -127,25 +129,30 @@ class LoginUI(ft.Column):
             username = self.textfield_username.value
             password = self.textfield_password.value
 
-            if username == '' or password == '':
+            if username == "" or password == "":
                 return
             if not is_str_valid(username, password):
                 self.initial_page.open_banner("Illegal characters..")
-            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
+            if self.initial_page.keyauthapp.login(
+                user=username, password=password, page=self.initial_page
+            ):
                 update_user_info(password, username)
 
-                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
+                target_date = datetime.utcfromtimestamp(
+                    int(self.initial_page.keyauthapp.user_data.expires)
+                )
 
                 current_date = datetime.utcnow()
                 days_remaining = (target_date - current_date).days
 
                 self.initial_page.splash = None
                 self.button_login.disabled = False
-                ApiSingleton().setApiKey(self.initial_page.keyauthapp.var('2captcha'))
+                ApiSingleton().setApiKey(self.initial_page.keyauthapp.var("2captcha"))
                 Main(self.initial_page, days_remaining)
 
-                self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription,
-                                                                          args=(username, password))
+                self.initial_page.subscription_checker = threading.Thread(
+                    target=self.verify_subscription, args=(username, password)
+                )
                 self.initial_page.subscription_checker.start()
             else:
                 sleep(5)
@@ -165,11 +172,15 @@ class LoginUI(ft.Column):
                 ownerid="7oofxdj8uH",
                 secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
                 version="1.0",
-                hash_to_check=getchecksum()
+                hash_to_check=getchecksum(),
             )
 
-            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
-                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
+            if self.initial_page.keyauthapp.login(
+                user=username, password=password, page=self.initial_page
+            ):
+                target_date = datetime.utcfromtimestamp(
+                    int(self.initial_page.keyauthapp.user_data.expires)
+                )
 
                 current_date = datetime.utcnow()
                 days_remaining = (target_date - current_date).days
@@ -194,24 +205,36 @@ class LoginUI(ft.Column):
             sys.exit()
 
     def init(self):
-        self.textfield_username = ft.TextField(label="Username", width=300,
-                                               value=self.data.get("user", {}).get("username", ""))
-        self.textfield_password = ft.TextField(label="Password", password=True, can_reveal_password=True, width=300,
-                                               value=self.data.get("user", {}).get("password", ""))
+        self.textfield_username = ft.TextField(
+            label="Username",
+            width=300,
+            value=self.data.get("user", {}).get("username", ""),
+        )
+        self.textfield_password = ft.TextField(
+            label="Password",
+            password=True,
+            can_reveal_password=True,
+            width=300,
+            value=self.data.get("user", {}).get("password", ""),
+        )
         self.button_login = ft.OutlinedButton(text="Login", on_click=self.login)
-        self.subscribe_button = ft.FilledTonalButton(text="Subscribe", on_click=self.show_banner)
+        self.subscribe_button = ft.FilledTonalButton(
+            text="Subscribe", on_click=self.show_banner
+        )
 
-        return self.controls.extend([
-            self.textfield_username,
-            self.textfield_password,
-            ft.Row(
-                controls=[
-                    ft.Column(controls=[self.button_login], col=4),
-                    ft.Column(controls=[self.subscribe_button], col=6),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            )
-        ])
+        return self.controls.extend(
+            [
+                self.textfield_username,
+                self.textfield_password,
+                ft.Row(
+                    controls=[
+                        ft.Column(controls=[self.button_login], col=4),
+                        ft.Column(controls=[self.subscribe_button], col=6),
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ),
+            ]
+        )
 
 
 def main(page: ft.Page):
@@ -225,17 +248,19 @@ def main(page: ft.Page):
     cmd = f"{path_file['HD-Player'].replace('Player', 'Adb')} start-server"
     subprocess.Popen(cmd)
 
-    if not os.path.exists(path_file['bluestacks']) or not os.path.exists(path_file['HD-Player']):
+    if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(
+        path_file["HD-Player"]
+    ):
         progress_bar = ft.ProgressBar(visible=True)
         page.add(progress_bar)
         page.update()
-        if result := find_file_in_all_drives('bluestacks\.conf'):
-            path_file['bluestacks\.conf'.split("\\")[0]] = result
-            with open('./path.json', 'w', encoding="UTF-8") as f:
+        if result := find_file_in_all_drives("bluestacks\.conf"):
+            path_file["bluestacks\.conf".split("\\")[0]] = result
+            with open("./path.json", "w", encoding="UTF-8") as f:
                 json.dump(path_file, f, indent=2)
-        if result := find_file_in_all_drives('HD-Player\.exe'):
-            path_file['HD-Player\.exe'.split("\\")[0]] = result
-            with open('./path.json', 'w', encoding="UTF-8") as f:
+        if result := find_file_in_all_drives("HD-Player\.exe"):
+            path_file["HD-Player\.exe".split("\\")[0]] = result
+            with open("./path.json", "w", encoding="UTF-8") as f:
                 json.dump(path_file, f, indent=2)
         progress_bar.visible = False
         page.update()
@@ -248,7 +273,7 @@ def main(page: ft.Page):
                 ownerid="7oofxdj8uH",
                 secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0",
                 version="1.0",
-                hash_to_check=getchecksum()
+                hash_to_check=getchecksum(),
             )
             ready = True
         except Exception as e:
@@ -256,7 +281,8 @@ def main(page: ft.Page):
             page.keyauthapp = None
             print("Problem in the database loading..Wait a bit please..")
             sleep(5)
-        if ready: break
+        if ready:
+            break
     if not ready:
         page.window_close()
 
@@ -267,14 +293,14 @@ def main(page: ft.Page):
     def open_banner(text):
         page.banner = ft.Banner(
             bgcolor=ft.colors.AMBER_100,
-            leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
-            content=ft.Text(
-                value=text
+            leading=ft.Icon(
+                ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
             ),
+            content=ft.Text(value=text),
             actions=[
-                ft.TextButton("Ok", on_click=lambda :page.close_banner()),
+                ft.TextButton("Ok", on_click=lambda: page.close_banner()),
             ],
-            open=True
+            open=True,
         )
         page.update()
 
@@ -296,25 +322,25 @@ def main(page: ft.Page):
             width=360,
             set_history=toasts_history,
             position=Position.TOP_RIGHT,
-            bgcolor_title="AMBER"
+            bgcolor_title="AMBER",
         )
 
-    page.generate_toast = lambda title, description, icon=ft.icons.INFO: generate_toast(title, description, icon)
+    page.generate_toast = lambda title, description, icon=ft.icons.INFO: generate_toast(
+        title, description, icon
+    )
 
     page.app_routes = [
+        path(url="/", clear=True, view=index),
         path(
-            url="/",
-            clear=True,
-            view=index
+            url=f"/citylayout/:instance_index/:profile_index",
+            clear=False,
+            view=viewCityLayout,
         ),
-        path(url=f"/citylayout/:instance_index/:profile_index",
-             clear=False,
-             view=viewCityLayout
-             ),
-        path(url=f"/profile/:instance_index/:profile_index/settings",
-             clear=False,
-             view=viewProfileSettings
-             )
+        path(
+            url=f"/profile/:instance_index/:profile_index/settings",
+            clear=False,
+            view=viewProfileSettings,
+        ),
     ]
 
     page.routing = Routing(
@@ -330,5 +356,5 @@ def index(page: ft.Page, params, basket):
     return ft.View(route="/", controls=page.body.controls)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ft.app(target=main)

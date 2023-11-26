@@ -10,7 +10,11 @@ class PageAcademyResearch(BasePage):
         super().__init__(profile)
 
         self.add_control(
-            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text=translate("Set Academy Research"),
-                              on_click=lambda _: self.initial_page.go(
-                                  f"/citylayout/{self.instance_index}/{self.profile_index}")))
-
+            ft.OutlinedButton(
+                icon=ft.icons.GPS_FIXED_SHARP,
+                text=translate("Set Academy Research"),
+                on_click=lambda _: self.initial_page.go(
+                    f"/citylayout/{self.instance_index}/{self.profile_index}"
+                ),
+            )
+        )

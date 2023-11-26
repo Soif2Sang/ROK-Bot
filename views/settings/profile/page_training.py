@@ -18,9 +18,19 @@ class PageTraining(BasePage):
 
         for key in keys:
             self.add_control(
-                FletRowTraining(key=key, instance_index=self.instance_index, profile_index=self.profile_index))
+                FletRowTraining(
+                    key=key,
+                    instance_index=self.instance_index,
+                    profile_index=self.profile_index,
+                )
+            )
 
         self.add_control(
-            ft.OutlinedButton(icon=ft.icons.GPS_FIXED_SHARP, text=translate("Set Training camps position"),
-                              on_click=lambda _: self.initial_page.go(
-                                  f"/citylayout/{self.instance_index}/{self.profile_index}")))
+            ft.OutlinedButton(
+                icon=ft.icons.GPS_FIXED_SHARP,
+                text=translate("Set Training camps position"),
+                on_click=lambda _: self.initial_page.go(
+                    f"/citylayout/{self.instance_index}/{self.profile_index}"
+                ),
+            )
+        )

@@ -17,13 +17,11 @@ security = PythonProtector(
         "Miscellaneous",
         "AntiDLL",
         "AntiAnalysis",
-        "AntiDump"],
+        "AntiDump",
+    ],
     logs_path=LOGGING_PATH,
     webhook_url="",
-    on_detect=[
-        "Report",
-        "Exit",
-        "Screenshot"],
+    on_detect=["Report", "Exit", "Screenshot"],
 )
 
 # -- Main Code

@@ -1,8 +1,9 @@
 from enum import Enum
 
 
-class GoogleTranslateLanguage (Enum):
+class GoogleTranslateLanguage(Enum):
     """These are the lanuages that supported with google translate"""
+
     auto = "auto"
     afrikaans = "afrikaans"
     albanian = "albanian"

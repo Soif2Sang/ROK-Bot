@@ -124,22 +124,23 @@ class KingdomRanking(Task):
 
     def auto_capture(self, start: int, end: int):
         global current_rank
-        self.writeCsv([
-            'Rank',
-            'ID',
-            'Name',
-            'Alliance',
-            'Power',
-            'Hpower',
-            'Kills_1',
-            'Kills_2',
-            'Kills_3',
-            'Kills_4',
-            'Kills_5',
-            'Ranged',
-            'Dead',
-            'Rss'
-        ]
+        self.writeCsv(
+            [
+                "Rank",
+                "ID",
+                "Name",
+                "Alliance",
+                "Power",
+                "Hpower",
+                "Kills_1",
+                "Kills_2",
+                "Kills_3",
+                "Kills_4",
+                "Kills_5",
+                "Ranged",
+                "Dead",
+                "Rss",
+            ]
         )
         for i in range(start, end):
             current_rank = i + 1
@@ -171,7 +172,9 @@ class KingdomRanking(Task):
                     )
                     continue
                 else:
-                    self.err(f"An error occurred when scanning {current_rank}, the bot has to stop.")
+                    self.err(
+                        f"An error occurred when scanning {current_rank}, the bot has to stop."
+                    )
                     sys.exit(1)
 
             # 撃破詳細表示・キャプチャ
@@ -181,7 +184,9 @@ class KingdomRanking(Task):
             try:
                 self.checkImg(template_dir_path + "kill")
             except TimeoutError:
-                self.err(f"An error occurred when scanning {current_rank}. Returning to the Ranking Screen")
+                self.err(
+                    f"An error occurred when scanning {current_rank}. Returning to the Ranking Screen"
+                )
                 self.returnToRankingScreen()
                 continue
 
@@ -195,10 +200,7 @@ class KingdomRanking(Task):
 
             # 総督名保存
             with open(
-                    img_dir_path + "names.tsv",
-                    "a+",
-                    encoding="utf_8",
-                    newline=""
+                img_dir_path + "names.tsv", "a+", encoding="utf_8", newline=""
             ) as fh:
                 fh.seek(0)
                 co = self.find_img(template_dir_path + "copy")
@@ -235,7 +237,9 @@ class KingdomRanking(Task):
             if self.find_img(template_dir_path + "ranking"):
                 break
             elif timer >= 4:
-                self.err(f"Unable to return to the ranking screen, current rank was : {current_rank}")
+                self.err(
+                    f"Unable to return to the ranking screen, current rank was : {current_rank}"
+                )
                 sys.exit(1)
             else:
                 co = self.find_img(template_dir_path + "close")
@@ -245,9 +249,7 @@ class KingdomRanking(Task):
 
     def err(self, message: str, fzelp):
         print(message)
-        with open(
-                log_dir_path + "error.log", "a", encoding="utf_8"
-        ) as fh:
+        with open(log_dir_path + "error.log", "a", encoding="utf_8") as fh:
             fh.write(message + "\n")
         self.adb.save_screen(log_dir_path + str(current_rank) + "")
 
@@ -265,7 +267,9 @@ class KingdomRanking(Task):
 
         os.makedirs(log_dir_path, exist_ok=True)
 
-        with open(dir_path + args.dir + ".tsv", "w", encoding="utf_8", newline="") as fh:
+        with open(
+            dir_path + args.dir + ".tsv", "w", encoding="utf_8", newline=""
+        ) as fh:
             data = sorted(data, key=lambda x: int(x[0]))
             data.insert(
                 0,
@@ -301,7 +305,9 @@ class KingdomRanking(Task):
             img_b = img_b.convert("RGB")
 
         # ID
-        id_img = self.correct_image(img_a, ID_CROP_RANGE, threshold=50, contrast=5, brightness=2)
+        id_img = self.correct_image(
+            img_a, ID_CROP_RANGE, threshold=50, contrast=5, brightness=2
+        )
         id = self.ocr_image(id_img, whitelist="0123456789)")
         id = re.sub("\)$", "", id)
         if id == "":
@@ -327,9 +333,9 @@ class KingdomRanking(Task):
         # 撃破
         kills = []
         for i, (
-                kill_crop_range,
-                kill_point_crop_range,
-                kill_point_coefficient,
+            kill_crop_range,
+            kill_point_crop_range,
+            kill_point_coefficient,
         ) in enumerate(
             zip(KILL_CROP_RANGES, KILL_POINT_CROP_RANGES, KILL_POINT_COEFFICIENTS)
         ):
@@ -361,12 +367,18 @@ class KingdomRanking(Task):
             if kill == "":
                 self.err(
                     f"{rank}th - {name}: Failed to read 'T{i + 1} Kill Count'. -> {kill_img_file_name}, {kill_p_img_file_name}",
-                    [(kill_img_file_name, kill_img), (kill_p_img_file_name, kill_p_img)],
+                    [
+                        (kill_img_file_name, kill_img),
+                        (kill_p_img_file_name, kill_p_img),
+                    ],
                 )
             elif abs(int(kill) * kill_point_coefficient - int(kill_p)) > 1:
                 self.err(
                     f"{rank}th - {name}: There may be a failure in reading 'T{i + 1} Kill Count' accurately. OCR result: Kill Count: '{kill}', Kill Points: '{kill_p}'. -> {kill_img_file_name}, {kill_p_img_file_name}",
-                    [(kill_img_file_name, kill_img), (kill_p_img_file_name, kill_p_img)],
+                    [
+                        (kill_img_file_name, kill_img),
+                        (kill_p_img_file_name, kill_p_img),
+                    ],
                 )
 
             kills.append(kill)
@@ -419,7 +431,9 @@ class KingdomRanking(Task):
             )
 
         # 戦死
-        dead_img = self.correct_image(img_b, DEAD_CROP_RANGE, brightness=1.3, contrast=1.8)
+        dead_img = self.correct_image(
+            img_b, DEAD_CROP_RANGE, brightness=1.3, contrast=1.8
+        )
         dead = self.ocr_image(dead_img)
         dead = dead.replace(",", "")
         if dead == "":
@@ -428,7 +442,9 @@ class KingdomRanking(Task):
                 [(f"{rank}-dead", dead_img)],
             )
         # 資源援助
-        rss_img = self.correct_image(img_b, RSS_CROP_RANGE, brightness=1.3, contrast=1.8)
+        rss_img = self.correct_image(
+            img_b, RSS_CROP_RANGE, brightness=1.3, contrast=1.8
+        )
         rss = self.ocr_image(rss_img)
         rss = rss.replace(",", "")
         if rss == "":
@@ -461,21 +477,26 @@ class KingdomRanking(Task):
     def writeCsv(self, array):
         import csv
 
-        with open('rankings.csv', mode='a+', encoding='utf-8', newline='') as ranking_file:
-            rankings = csv.writer(ranking_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        with open(
+            "rankings.csv", mode="a+", encoding="utf-8", newline=""
+        ) as ranking_file:
+            rankings = csv.writer(
+                ranking_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            )
             print(array)
             rankings.writerow(array)
 
-    def correct_image(self,
-                      img: Image.Image,
-                      crop_range: tuple,
-                      threshold: int = 0,
-                      threshold_max: int = -1,
-                      invert: bool = True,
-                      scale: float = 1,
-                      contrast: float = 1,
-                      brightness: float = 1,
-                      ) -> Image.Image:
+    def correct_image(
+        self,
+        img: Image.Image,
+        crop_range: tuple,
+        threshold: int = 0,
+        threshold_max: int = -1,
+        invert: bool = True,
+        scale: float = 1,
+        contrast: float = 1,
+        brightness: float = 1,
+    ) -> Image.Image:
         tmp = img.crop(crop_range)
         tmp = ImageOps.invert(tmp) if invert else tmp
         tmp = tmp.convert("L")
@@ -485,7 +506,9 @@ class KingdomRanking(Task):
             else tmp
         )
         tmp = ImageEnhance.Contrast(tmp).enhance(contrast) if contrast != 1 else tmp
-        tmp = ImageEnhance.Brightness(tmp).enhance(brightness) if brightness != 1 else tmp
+        tmp = (
+            ImageEnhance.Brightness(tmp).enhance(brightness) if brightness != 1 else tmp
+        )
         if threshold == 0:
             pass
         elif threshold_max == -1:

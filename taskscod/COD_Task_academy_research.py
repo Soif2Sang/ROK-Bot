@@ -6,7 +6,7 @@ from pytesseract import pytesseract
 from taskscod.COD_Task import Task
 from utils.functions import get_class
 
-pytesseract.tesseract_cmd = r'.\\tesseract\\tesseract.exe'
+pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 
 class AcademyResearch(Task):
@@ -27,25 +27,27 @@ class AcademyResearch(Task):
 
     @get_class
     def run(self):
-        if not self.data[self.sel]["schedules"][self.current_profile]['research_center']:
+        if not self.data[self.sel]["schedules"][self.current_profile][
+            "research_center"
+        ]:
             return
-        co = self.data[self.sel]["schedules"][self.current_profile]['research_center']
-        self.click(co[0],co[1])
-        self.better_sleep((1.2,1.7))
+        co = self.data[self.sel]["schedules"][self.current_profile]["research_center"]
         self.click(co[0], co[1])
         self.better_sleep((1.2, 1.7))
-        if not (co:=self.find_img("cod_research")):
+        self.click(co[0], co[1])
+        self.better_sleep((1.2, 1.7))
+        if not (co := self.find_img("cod_research")):
             return self.close_windows()
-        self.click(co[0] + uniform(5,10),co[1]+ uniform(5,10))
+        self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
         self.better_sleep((2, 2.7))
-        if not (co:=self.find_img("cod_research_button",confidence=0.8)):
+        if not (co := self.find_img("cod_research_button", confidence=0.8)):
             return self.close_windows()
         self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
         self.better_sleep((1.2, 1.7))
-        if not (co:=self.find_img("cod_research_top")):
+        if not (co := self.find_img("cod_research_top")):
             return self.close_windows()
         self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
         self.better_sleep((1.2, 1.7))
-        if (co := self.find_img("cod_research_button", confidence=0.8)):
+        if co := self.find_img("cod_research_button", confidence=0.8):
             self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
         self.close_windows()

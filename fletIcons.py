@@ -6,7 +6,7 @@ import flet as ft
 class FletIcons(ft.UserControl):
     """Icons Flet to select"""
 
-    def __init__(self, data='Erase this test'):
+    def __init__(self, data="Erase this test"):
         super().__init__()
         self.title = data
         self.gridview = ft.GridView(
@@ -33,25 +33,21 @@ class FletIcons(ft.UserControl):
         icons = dir(ft.icons)
 
         for num, x in enumerate(icons):
-            if not x.startswith('_'):
-                self.gridview.controls.append(ft.Icon(name=f"{x}",
-                                                      color="green",
-                                                      tooltip=f"{x}"
-                                                      ),
-                                              )
+            if not x.startswith("_"):
+                self.gridview.controls.append(
+                    ft.Icon(name=f"{x}", color="green", tooltip=f"{x}"),
+                )
 
     def search(self, word):
         icons = dir(ft.icons)
-        pattern = r'\b\w*{}\w*\b'.format(re.escape(word))
+        pattern = r"\b\w*{}\w*\b".format(re.escape(word))
 
         for num, x in enumerate(icons):
             matches = re.finditer(pattern, x)
-            if not x.startswith('_') and matches:
-                self.gridview.controls.append(ft.Icon(name=f"{x}",
-                                                      color="green",
-                                                      tooltip=f"{x}"
-                                                      ),
-                                              )
+            if not x.startswith("_") and matches:
+                self.gridview.controls.append(
+                    ft.Icon(name=f"{x}", color="green", tooltip=f"{x}"),
+                )
 
     def on_type(self, e):
         self.gridview.controls = []
@@ -63,7 +59,9 @@ class FletIcons(ft.UserControl):
 
     def build(self):
         self.initialize()
-        return [ft.Column(controls=[ft.TextField(on_submit=self.on_type), self.gridview])]
+        return [
+            ft.Column(controls=[ft.TextField(on_submit=self.on_type), self.gridview])
+        ]
 
 
 def configuration(self):
@@ -94,7 +92,7 @@ def main(page):
     icons = dir(ft.icons)
 
     for num, x in enumerate(icons):
-        if not x.startswith('_'):
+        if not x.startswith("_"):
             page.dic[f"{x}"] = x
 
     listview = ft.ListView()
@@ -104,33 +102,26 @@ def main(page):
             if num % 10 == 0:
                 listview.controls.append(ft.Row())
             listview.controls[-1].controls.append(
-                ft.Icon(name=f"{x}",
-                        color="green",
-                        tooltip=f"{x}",
-                        size=55
-                        ),
+                ft.Icon(name=f"{x}", color="green", tooltip=f"{x}", size=55),
             )
 
     def search(e):
         listview.controls = []
         page.update()
 
-        pattern = r'\b\w*{}\w*\b'.format(re.escape(e.control.value))
+        pattern = r"\b\w*{}\w*\b".format(re.escape(e.control.value))
         i = 0
         for num, x in enumerate(page.dic.keys()):
-
-            matches = re.findall(rf'\b\w*{e.control.value}\w*\b', x, flags=re.IGNORECASE)
+            matches = re.findall(
+                rf"\b\w*{e.control.value}\w*\b", x, flags=re.IGNORECASE
+            )
             if matches:
                 print(x)
                 if i % 10 == 0:
                     listview.controls.append(ft.Row())
 
                 listview.controls[-1].controls.append(
-                    ft.Icon(name=f"{x}",
-                            color="green",
-                            tooltip=f"{x}",
-                            size=55
-                            ),
+                    ft.Icon(name=f"{x}", color="green", tooltip=f"{x}", size=55),
                 )
 
                 i += 1
@@ -139,18 +130,14 @@ def main(page):
 
     textfield = ft.TextField(on_submit=search)
 
-    page.add(
-        textfield,
-        listview
-    )  # page.add(FletIcons()) FletIcons.action()
+    page.add(textfield, listview)  # page.add(FletIcons()) FletIcons.action()
 
     initialize()
     page.update()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ft.app(
         target=main,
         # assets_dir="assets",
     )
-

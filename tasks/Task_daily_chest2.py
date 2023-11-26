@@ -24,7 +24,7 @@ class DailyChest2(Task):
     @get_name
     def claim_legendary_chest(self):
         try:
-            co = self.find_img(target='legendary_chest_tiny', confidence=0.7)
+            co = self.find_img(target="legendary_chest_tiny", confidence=0.7)
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))
                 self.better_sleep((1.7, 3))
@@ -32,7 +32,9 @@ class DailyChest2(Task):
                     self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
                     self.better_sleep((3, 5))
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                        self.click(
+                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
+                        )
                         self.better_sleep((1.7, 3))
                 self.click(uniform(25, 55), uniform(20, 56))
                 self.better_sleep((2.5, 5))
@@ -46,7 +48,7 @@ class DailyChest2(Task):
         self.claim_legendary_chest()
         self.better_sleep((1.7, 3))
         cv_image = self.adb.get_cv2_img()
-        chests = ['golden_chest_tiny', 'silver_chest_tiny']
+        chests = ["golden_chest_tiny", "silver_chest_tiny"]
         entered = False
         for chest in chests:
             if entered:
@@ -60,7 +62,9 @@ class DailyChest2(Task):
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
                     self.better_sleep((5, 8))
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                        self.click(
+                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
+                        )
                         self.better_sleep((1.7, 3))
                 self.better_sleep((1.7, 3))
 
