@@ -139,7 +139,7 @@ def main(page: ft.Page):
         path(url=f"/emulator-choice", clear=True, view=emulator_choice),
         path(url=f"/emulator-loading", clear=True, view=loading_files),
         path(
-            url=f"/citylayout/:instance_index/:profile_index",
+            url=f"/city-layout/:instance_index/:profile_index",
             clear=True,
             view=viewCityLayout,
         ),

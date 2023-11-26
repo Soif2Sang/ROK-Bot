@@ -23,7 +23,7 @@ class PageHeal(BasePage):
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set Hospital position"),
                 on_click=lambda _: self.initial_page.go(
-                    f"/citylayout/{self.instance_index}/{self.profile_index}"
+                    f"/city-layout/{self.instance_index}/{self.profile_index}"
                 ),
             ),
         )

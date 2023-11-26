@@ -332,7 +332,7 @@ def main(page: ft.Page):
     page.app_routes = [
         path(url="/", clear=True, view=index),
         path(
-            url=f"/citylayout/:instance_index/:profile_index",
+            url=f"/city-layout/:instance_index/:profile_index",
             clear=False,
             view=viewCityLayout,
         ),
