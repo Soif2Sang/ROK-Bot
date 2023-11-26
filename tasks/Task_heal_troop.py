@@ -26,7 +26,7 @@ class HealTroop(Task):
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
             # cv2.imwrite("timer.png", cropped_image)
             for button in buttons:
-                cropped_image = cv_image[button[1]:button[1] + 25, 950:1020]
+                cropped_image = cv_image[button[1] : button[1] + 25, 950:1020]
                 # string = pytesseract.image_to_string(cropped_image,
                 #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=1234567890:')
 
@@ -34,7 +34,9 @@ class HealTroop(Task):
 
                 string = string.replace("\n", "")
                 if string not in ["0", ""]:
-                    self.click(uniform(950, 1020), uniform(button[1] + 5, button[1] + 20))
+                    self.click(
+                        uniform(950, 1020), uniform(button[1] + 5, button[1] + 20)
+                    )
                     self.better_sleep((1, 1.5))
                     string = "input keyevent 67 67 67 67 67 67 67 67 67"
                     self.adb.get_device().shell(string)
@@ -47,27 +49,45 @@ class HealTroop(Task):
             if len(buttons) < 3 and i == 0:
                 break
             if i == 0:
-                self.swipe(uniform(740, 780), uniform(436, 450), uniform(740, 780), uniform(140, 150))
+                self.swipe(
+                    uniform(740, 780),
+                    uniform(436, 450),
+                    uniform(740, 780),
+                    uniform(140, 150),
+                )
                 self.better_sleep((1, 1.5))
-        self.swipe(uniform(740, 780), uniform(140, 150), uniform(740, 780), uniform(630, 650))
+        self.swipe(
+            uniform(740, 780), uniform(140, 150), uniform(740, 780), uniform(630, 650)
+        )
         self.better_sleep((1, 1.5))
 
     @get_class
     def run(self):
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('heal_troop'):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
+            "heal_troop"
+        ):
             tier_icons = []
             tiers = [1, 2, 3, 4, 5]
             for tier in tiers:
-                cos = self.adb.find_multiple_img(target=f"t{tier}_badge", confidence=0.65)
+                cos = self.adb.find_multiple_img(
+                    target=f"t{tier}_badge", confidence=0.65
+                )
                 cos = list(filter(filter_coordinate, cos))
                 tier_icons.extend(cos)
             if tier_icons is not None and len(tier_icons) != 0:
                 shuffle(tier_icons)
-                self.click(tier_icons[0][0] + uniform(-5, 20), tier_icons[0][1] + uniform(-15, 10))
+                self.click(
+                    tier_icons[0][0] + uniform(-5, 20),
+                    tier_icons[0][1] + uniform(-15, 10),
+                )
                 self.better_sleep((1, 1.8))
             # print(f"{self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') =}")
-            healing_hut = self.data[str(self.sel)]['schedules'][self.current_profile]['hospital']
-            self.FileSingleton.write(self.name, f"Healing building placement (randomised) : {healing_hut}")
+            healing_hut = self.data[str(self.sel)]["schedules"][self.current_profile][
+                "hospital"
+            ]
+            self.FileSingleton.write(
+                self.name, f"Healing building placement (randomised) : {healing_hut}"
+            )
             self.click(healing_hut[0], healing_hut[1])
             # print("après les healing_hut")
             co = self.find_img(target="heal_icon")
@@ -91,7 +111,11 @@ class HealTroop(Task):
                 string = string.replace(",", "")
             nb_heal = string.split("/")
             print(string, nb_heal)
-            if int(self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_count')) > int(nb_heal[0]):
+            if int(
+                self.data[str(self.sel)]["schedules"][self.current_profile].get(
+                    "healing_count"
+                )
+            ) > int(nb_heal[0]):
                 self.click(uniform(880, 1018), uniform(560, 600))
                 self.better_sleep((1, 1.5))
                 AllianceHelp(self).run()
@@ -106,7 +130,8 @@ class HealTroop(Task):
             self.adb.get_device().shell(string)
             self.better_sleep((0.3, 0.5))
             self.adb.get_device().shell(
-                f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_count')}")
+                f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_count')}"
+            )
             self.better_sleep((1, 1.5))
             self.click(uniform(187, 170), uniform(226, 400))
             self.click(uniform(880, 1018), uniform(560, 600))

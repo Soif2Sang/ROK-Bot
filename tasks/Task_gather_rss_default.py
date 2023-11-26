@@ -10,6 +10,7 @@ from utils.functions import get_class, get_name
 
 # from utils.easyOcr import Reader
 
+
 class GatherRssDefault(GatherRss):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask)
@@ -36,7 +37,7 @@ class GatherRssDefault(GatherRss):
 
     @get_name
     def node_found(self) -> bool:
-        if self.find_img(target='search_button') is not None:
+        if self.find_img(target="search_button") is not None:
             self.print("Node not found")
             return False
         return True
@@ -82,35 +83,57 @@ class GatherRssDefault(GatherRss):
             self.better_sleep((2, 4))
             return
 
-        if self.data[str(self.sel)]['schedules'][self.current_profile][node_place] == 'nothing':
+        if (
+            self.data[str(self.sel)]["schedules"][self.current_profile][node_place]
+            == "nothing"
+        ):
             return
 
-        if self.data[str(self.sel)]['schedules'][self.current_profile][node_place] == 'random':
+        if (
+            self.data[str(self.sel)]["schedules"][self.current_profile][node_place]
+            == "random"
+        ):
             if node_type is None:
                 node_type = choice(["food", "wood", "stone", "gold"])
         else:
-            node_type = self.data[str(self.sel)]['schedules'][self.current_profile][node_place]
+            node_type = self.data[str(self.sel)]["schedules"][self.current_profile][
+                node_place
+            ]
 
         self.leave_city_simple()
 
         if self.free_troop_commander_list():
-            
             self.check_log_back()
             self.check_reconnect()
             self.click_loop()
-            
+
             self.print(f"Looking for : {node_type}")
             x, y = self.select_resource_type(node_type)
-            
+
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            if self.data.get(self.sel).get('schedules').get(self.current_profile).get(f"{node_place}_level") - level_decrease <= 0:
+            if (
+                self.data.get(self.sel)
+                .get("schedules")
+                .get(self.current_profile)
+                .get(f"{node_place}_level")
+                - level_decrease
+                <= 0
+            ):
                 node_place = self.next_place(node_place)
-                self.print(f"Cannot decrease the current level.. Too low ! next choice : {node_place}")
+                self.print(
+                    f"Cannot decrease the current level.. Too low ! next choice : {node_place}"
+                )
                 return self.run(node_place, None, resolved, 0)
 
-            self.set_search_level(self.data.get(self.sel).get('schedules').get(self.current_profile).get(f"{node_place}_level") - level_decrease)
+            self.set_search_level(
+                self.data.get(self.sel)
+                .get("schedules")
+                .get(self.current_profile)
+                .get(f"{node_place}_level")
+                - level_decrease
+            )
             self.better_sleep((0.925, 2.795))
             self.click_search_by_node_type(node_type)
             self.better_sleep((5, 8))
@@ -118,7 +141,9 @@ class GatherRssDefault(GatherRss):
             if self.node_found() is False or self.find_cross() is True:
                 self.check_reconnect()
                 self.check_log_back()
-                self.click((1280 // 2) + uniform(-20, 20), (720 // 3) + uniform(-20, 20))
+                self.click(
+                    (1280 // 2) + uniform(-20, 20), (720 // 3) + uniform(-20, 20)
+                )
                 self.better_sleep((1.325, 3.795))
                 if level_decrease >= 1:
                     self.print("No node matched the requirements, changing node type..")

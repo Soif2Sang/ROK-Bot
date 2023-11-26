@@ -23,7 +23,7 @@ class DailyChest(Task):
     @get_name
     def claim_legendary_chest(self):
         try:
-            co = self.find_img(target='legendary_chest', confidence=0.83)
+            co = self.find_img(target="legendary_chest", confidence=0.83)
 
             if co is not None:
                 self.click(co[0] + uniform(10, 20), co[1] + uniform(10, 20))
@@ -32,7 +32,9 @@ class DailyChest(Task):
                     self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
                     self.better_sleep((3, 5))
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                        self.click(
+                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
+                        )
                         self.better_sleep((1.7, 3))
                 self.close_windows()
                 self.better_sleep((2.5, 5))
@@ -46,7 +48,7 @@ class DailyChest(Task):
         self.claim_legendary_chest()
         self.better_sleep((1.7, 3))
         cv_image = self.adb.get_cv2_img()
-        chests = ['material_chest', 'golden_chest', 'silver_chest']
+        chests = ["material_chest", "golden_chest", "silver_chest"]
         entered = False
         for chest in chests:
             if entered:
@@ -61,7 +63,9 @@ class DailyChest(Task):
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
                     self.better_sleep((5, 8))
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
+                        self.click(
+                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
+                        )
                         self.better_sleep((1.7, 3))
                 self.better_sleep((1.7, 3))
 

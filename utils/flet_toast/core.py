@@ -2,13 +2,23 @@
 # TODO DOCUMENT
 ########################################################################################################################
 # |   ├──  |
-# |   |    └── src: 
+# |   |    └── src:
 ########################################################################################################################
 # TODO IMPORTING NECESSARY LIBRARYIES
 ########################################################################################################################
 # LIB python libraryies
-from typing import (Any, Callable, Dict, Iterable, List, Literal, Optional,
-                    Set, Tuple, Union)
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 # LIB => flet libraryies
 import flet as ft
@@ -94,6 +104,7 @@ def set_color_balance(bgcolor: str):
         color = ft.colors.ON_SURFACE
     return color
 
+
 class Position:
     """The position attribute.
 
@@ -108,6 +119,7 @@ class Position:
         `CENTER_LEFT`
         `CENTER_RIGHT`
     """
+
     TOP_CENTER = "top_center"
     TOP_LEFT = "top_left"
     TOP_RIGHT = "top_right"
@@ -121,6 +133,7 @@ class Position:
     CENTER_RIGHT = "center_right"
 
     NONE = "none"
+
 
 class SetPosition:
     """The set position attribute.
@@ -136,12 +149,13 @@ class SetPosition:
         `center_left`: The returns list of top, left, right, bottom.
         `center_right`: The returns list of top, left, right, bottom.
     """
+
     def _set_position(
-        top: Optional[Union[int, float]], 
-        left: Optional[Union[int, float]], 
-        right: Optional[Union[int, float]], 
-        bottom: Optional[Union[int, float]]
-        ):
+        top: Optional[Union[int, float]],
+        left: Optional[Union[int, float]],
+        right: Optional[Union[int, float]],
+        bottom: Optional[Union[int, float]],
+    ):
         """Set position.
 
         Args:
@@ -155,35 +169,36 @@ class SetPosition:
         """
         return top, left, right, bottom
 
-    top_center      = _set_position(top=0, left=0, right=0, bottom=None)
+    top_center = _set_position(top=0, left=0, right=0, bottom=None)
     """Returns: top, left, right, bottom."""
 
-    top_left        = _set_position(top=0, left=0, right=None, bottom=None)
+    top_left = _set_position(top=0, left=0, right=None, bottom=None)
     """Returns: top, left, right, bottom."""
 
-    top_right       = _set_position(top=0, left=None, right=0, bottom=None)
+    top_right = _set_position(top=0, left=None, right=0, bottom=None)
     """Returns: top, left, right, bottom."""
 
-    bottom_center   = _set_position(top=None, left=0, right=0, bottom=0)
+    bottom_center = _set_position(top=None, left=0, right=0, bottom=0)
     """Returns: top, left, right, bottom."""
 
-    bottom_left     = _set_position(top=None, left=0, right=None, bottom=0)
+    bottom_left = _set_position(top=None, left=0, right=None, bottom=0)
     """Returns: top, left, right, bottom."""
 
-    bottom_right    = _set_position(top=None, left=None, right=0, bottom=0)
+    bottom_right = _set_position(top=None, left=None, right=0, bottom=0)
     """Returns: top, left, right, bottom."""
 
-    center          = _set_position(top=0, left=0, right=0, bottom=0)
+    center = _set_position(top=0, left=0, right=0, bottom=0)
     """Returns: top, left, right, bottom."""
 
-    center_left     = _set_position(top=0, left=0, right=None, bottom=0)
+    center_left = _set_position(top=0, left=0, right=None, bottom=0)
     """Returns: top, left, right, bottom."""
 
-    center_right    = _set_position(top=0, left=None, right=0, bottom=0)
+    center_right = _set_position(top=0, left=None, right=0, bottom=0)
     """Returns: top, left, right, bottom."""
 
-    none            = _set_position(top=None, left=None, right=None, bottom=None)
+    none = _set_position(top=None, left=None, right=None, bottom=None)
     """Returns: top, left, right, bottom."""
+
 
 class OverlayPageManger:
     """A class OverlayPageManger the an manages the control controls of in page overlay.
@@ -200,7 +215,8 @@ class OverlayPageManger:
         `append_controls_in_specific_route_with_filtering`: Append control in specific page route to display with filtering and check of in overlay.
         `clear_overlay`: Clear controls into overlay list.
     """
-    def __init__(self, page: Page): # DESC => initialize constructor.
+
+    def __init__(self, page: Page):  # DESC => initialize constructor.
         """Initialize the OverlayPageManger object.
 
         Args:
@@ -225,7 +241,7 @@ class OverlayPageManger:
         """Get control specific in overlay list.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
             `control` (Control): The Control object specific of the getting it.
 
         Returns:
@@ -242,11 +258,13 @@ class OverlayPageManger:
             else:
                 return None
 
-    def get_control_specific_with_filtering(self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None):
+    def get_control_specific_with_filtering(
+        self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None
+    ):
         """Get control specific with filtering of in overlay list.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
             `attribute_control` (str): The attribute of control example "key" or "data" etc.
             `attr_value_match` (str): The value of match to searching in attribute value.
 
@@ -254,13 +272,20 @@ class OverlayPageManger:
             List: Returns each control containing attribute value of match in list.
         """
         # DESC => filter and get control in overlay list.
-        return list(filter(lambda control: getattr(control, attribute_control) == attr_value_match, page.overlay if page else self.page.overlay))
+        return list(
+            filter(
+                lambda control: getattr(control, attribute_control) == attr_value_match,
+                page.overlay if page else self.page.overlay,
+            )
+        )
 
-    def remove_control_specific_with_filtering(self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None):
+    def remove_control_specific_with_filtering(
+        self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None
+    ):
         """Remove control specific with filtering of in overlay list.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
             `attribute_control` (str): The attribute of control example "key" or "data" etc.
             `attr_value_match` (str): The value of match to searching in attribute value.
 
@@ -270,7 +295,12 @@ class OverlayPageManger:
         _page = page if page else self.page
 
         # DESC => filter and get control in overlay list.
-        controls_filter = list(filter(lambda control: getattr(control, attribute_control) == attr_value_match, _page.overlay))
+        controls_filter = list(
+            filter(
+                lambda control: getattr(control, attribute_control) == attr_value_match,
+                _page.overlay,
+            )
+        )
 
         for control in controls_filter[:]:
             if control in _page.overlay:
@@ -278,11 +308,13 @@ class OverlayPageManger:
                 controls_filter.remove(control)
         _page.update()
 
-    def remove_control_specific_with_same(self, control_compring: Control, page: Optional[Page] = None):
+    def remove_control_specific_with_same(
+        self, control_compring: Control, page: Optional[Page] = None
+    ):
         """Remove control specific with if same of in overlay list.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
             `control_compring` (Control): The Control object specific of the comparing if same it.
 
         Returns:
@@ -294,12 +326,12 @@ class OverlayPageManger:
             if control == control_compring:
                 _page.overlay.remove(control)
         _page.update()
-    
+
     def append_controls(self, controls: Control, page: Optional[Page] = None):
         """Append controls with check if same of in overlay list.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
             `controls` (Control): The Control object to append in overlay to page.
 
         Returns:
@@ -316,7 +348,13 @@ class OverlayPageManger:
         else:
             return controls
 
-    def append_controls_with_filtering(self, controls: Control, attribute_control: str, attr_value_match: str, page: Optional[Page] = None):
+    def append_controls_with_filtering(
+        self,
+        controls: Control,
+        attribute_control: str,
+        attr_value_match: str,
+        page: Optional[Page] = None,
+    ):
         """Append controls with filtering and check of in overlay list.
 
         Args:
@@ -331,8 +369,12 @@ class OverlayPageManger:
         _page = page if page else self.page
 
         # DESC => filter and get control in overlay list.
-        filtering = self.get_control_specific_with_filtering(attribute_control=attribute_control, attr_value_match=attr_value_match, page=_page)
-        
+        filtering = self.get_control_specific_with_filtering(
+            attribute_control=attribute_control,
+            attr_value_match=attr_value_match,
+            page=_page,
+        )
+
         # DESC => Check controls if not in overlay to page.
         if len(filtering) == 0:
             # DESC => Append control's UI in overlay to page to display.
@@ -342,11 +384,13 @@ class OverlayPageManger:
         else:
             return filtering
 
-    def append_controls_in_specific_route(self, controls: Control, route_display: str, page: Optional[Page] = None):
+    def append_controls_in_specific_route(
+        self, controls: Control, route_display: str, page: Optional[Page] = None
+    ):
         """Append control in specific page route to display.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
             `controls` (Control): The Control object to append in overlay to page.
             `route_display` (str): The specific page route to display controls.
 
@@ -365,13 +409,22 @@ class OverlayPageManger:
             else:
                 return controls
         else:
-            self.remove_control_specific_with_same(control_compring=controls, page=_page)
+            self.remove_control_specific_with_same(
+                control_compring=controls, page=_page
+            )
 
-    def append_controls_in_specific_route_with_filtering(self, controls: Control, attribute_control: str, attr_value_match: str, route_display: str, page: Optional[Page] = None):
+    def append_controls_in_specific_route_with_filtering(
+        self,
+        controls: Control,
+        attribute_control: str,
+        attr_value_match: str,
+        route_display: str,
+        page: Optional[Page] = None,
+    ):
         """Append control in specific page route to display with filtering and check of in overlay.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
             `controls` (Control): The Control object to append in overlay to page.
             `attribute_control` (str): The attribute of control example "key" or "data" etc.
             `attr_value_match` (str): The value of match to searching in attribute value.
@@ -384,7 +437,10 @@ class OverlayPageManger:
 
         # DESC => filter and get control in overlay list.
         filtering = self.get_control_specific_with_filtering(
-            attribute_control=attribute_control, attr_value_match=attr_value_match, page=_page)
+            attribute_control=attribute_control,
+            attr_value_match=attr_value_match,
+            page=_page,
+        )
 
         # DESC => Check current page navigation route.
         if _page.route == route_display:
@@ -407,7 +463,7 @@ class OverlayPageManger:
         """Clear controls into overlay list.
 
         Args:
-            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None. 
+            `page` (Page, optional): The session start of page container to displaying a for controls (widgets). Defaults to None.
 
         Returns:
             None.

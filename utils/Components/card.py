@@ -13,27 +13,17 @@ def GenerateCard(level=None, title=None, subtitle=None, margin=None, height=None
         title = ft.Text(title, size=14, weight=ft.FontWeight.BOLD)
 
     if subtitle:
-        subtitle = ft.Text(
-            value=subtitle,
-            size=12,
-            weight=ft.FontWeight.W_700
-        )
+        subtitle = ft.Text(value=subtitle, size=12, weight=ft.FontWeight.W_700)
 
     return ft.Card(
         content=ft.Container(
             content=ft.Column(
-                [
-                    ft.ListTile(
-                        leading=leading,
-                        title=title,
-                        subtitle=subtitle
-                    )
-                ]
+                [ft.ListTile(leading=leading, title=title, subtitle=subtitle)]
             ),
             width=400,
             padding=10,
             height=height,
         ),
         margin=margin,
-        color=ft.colors.SURFACE_VARIANT
+        color=ft.colors.SURFACE_VARIANT,
     )

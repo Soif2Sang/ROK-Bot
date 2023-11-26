@@ -20,7 +20,7 @@ class TileManagerUpgrade(ft.ListView):
         self.tiles: dict[str, TileUpgrade] = {}
         self.navigation_bar: NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
-        self.start_bar = StartBar(self.page,self)
+        self.start_bar = StartBar(self.page, self)
         # self.controls.append(self.start_bar)
         # self.controls.append(self.logger)
 
@@ -42,33 +42,36 @@ class TileManagerUpgrade(ft.ListView):
         # is_alive.deamon = True
         # is_alive.start()
         return
+
     def unselect_all(self):
         for tile in self.controls[1:]:
             try:
                 tile.button_select.selected = False
             finally:
                 tile.button_select.update()
+
     def get_dic_instances(self):
         try:
             path = get_path()
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"
-                shutil.copy(rf'{path["bluestacks"]}', rf'{string}')
-            with open(rf'{string}', 'r', encoding='utf-8') as file:
-                data_instance = file.read().split('\n')
+                shutil.copy(rf'{path["bluestacks"]}', rf"{string}")
+            with open(rf"{string}", "r", encoding="utf-8") as file:
+                data_instance = file.read().split("\n")
         except:
             raise OSError(
-                "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'")
+                "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'"
+            )
 
         def sort_by_instance(tab):
             for i in range(len(tab)):
                 for y in range(len(tab) - 1):
-                    if len(tab[y]['instance']) == len(tab[y + 1]['instance']):
-                        if tab[y]['instance'] > tab[y + 1]['instance']:
+                    if len(tab[y]["instance"]) == len(tab[y + 1]["instance"]):
+                        if tab[y]["instance"] > tab[y + 1]["instance"]:
                             tab[y], tab[y + 1] = tab[y + 1], tab[y]
                     else:
-                        if len(tab[y]['instance']) > len(tab[y + 1]['instance']):
+                        if len(tab[y]["instance"]) > len(tab[y + 1]["instance"]):
                             tab[y], tab[y + 1] = tab[y + 1], tab[y]
             dic = {}
             for i in range(len(tab)):
@@ -77,23 +80,23 @@ class TileManagerUpgrade(ft.ListView):
 
         liste_info = []
         for element in data_instance:
-            if ((('bst.instance.Nougat64' in element) and ('adb_port' in element))
-                and 'status' in element) or \
-                    (('bst.instance.Nougat64' in element) and ('display_name' in element)
-                    ):
+            if (
+                (("bst.instance.Nougat64" in element) and ("adb_port" in element))
+                and "status" in element
+            ) or (("bst.instance.Nougat64" in element) and ("display_name" in element)):
                 liste_info.append(element)
         tab_instance = []
         for i in range(0, len(liste_info), 2):
-            string = liste_info[i + 1].split('.status.adb_port=')
+            string = liste_info[i + 1].split(".status.adb_port=")
 
             instance = string[0].split(".")[-1]
             port = string[1].replace('"', "")
-            display_name = liste_info[i].split('.display_name=')[1].replace('"', "")
+            display_name = liste_info[i].split(".display_name=")[1].replace('"', "")
 
             dico_instance = {
-                'instance': str(instance),
-                'port': port,
-                'name': display_name
+                "instance": str(instance),
+                "port": port,
+                "name": display_name,
             }
             tab_instance.append(dico_instance)
         return sort_by_instance(tab_instance)
@@ -102,7 +105,7 @@ class TileManagerUpgrade(ft.ListView):
         names = []
         for key in data.keys():
             for element in data[key]:
-                if element == 'name':
+                if element == "name":
                     names.append((len(names), data[key][element]))
         return names
 
@@ -130,25 +133,25 @@ class TileManagerUpgrade(ft.ListView):
         print(instances)
         for key in instances:
             default_dic = {
-                'instance': instances[str(key)]['instance'],
-                'name': instances[str(key)]['name'],
-                'host': '127.0.0.1',
-                'port': int(instances[str(key)]['port']),
-                'API_KEY': "",
-                'loop_task': False,
-                'time_to_wait_loop1': 60,
-                'time_to_wait_loop2': 110,
-                'leave_game_loop': True,
-                'scheduler': False,
-                'schedules': {}
+                "instance": instances[str(key)]["instance"],
+                "name": instances[str(key)]["name"],
+                "host": "127.0.0.1",
+                "port": int(instances[str(key)]["port"]),
+                "API_KEY": "",
+                "loop_task": False,
+                "time_to_wait_loop1": 60,
+                "time_to_wait_loop2": 110,
+                "leave_game_loop": True,
+                "scheduler": False,
+                "schedules": {},
             }
             for i in range(1, 4):
-                default_dic['schedules'][i] = {
-                    'enabled': False,
-                    'kingdom': 0,
-                    'city_x': 0,
-                    'city_y': 0,
-                    'radius': 30,
+                default_dic["schedules"][i] = {
+                    "enabled": False,
+                    "kingdom": 0,
+                    "city_x": 0,
+                    "city_y": 0,
+                    "radius": 30,
                     "First": "stone",
                     "Second": "food",
                     "Third": "gold",
@@ -164,25 +167,25 @@ class TileManagerUpgrade(ft.ListView):
                     "Sixth_level": 6,
                     "Seventh_level": 6,
                     "rss_custom_preset": False,
-                    'auto_reconnect': True,
-                    'auto_captcha': True,
-                    'check_donation': False,
-                    'use_enhanced_buff': False,
-                    'gather_rss': False,
-                    'buy_merchant': False,
-                    'claim_daily_quests': False,
-                    'collect_ressource': False,
-                    'defeat_barbarians': False,
-                    'barbarians_level': 25,
-                    'gather_gem': False,
-                    'gem_check1': 60,
-                    'gem_check2': 120,
-                    'gem_experimental': False,
-                    'gather_gem_duration1': 60,
-                    'gather_gem_duration2': 90,
-                    'restart_game': False,
-                    'switch_character': False,
-                    'leave_game_switch_character': False,
+                    "auto_reconnect": True,
+                    "auto_captcha": True,
+                    "check_donation": False,
+                    "use_enhanced_buff": False,
+                    "gather_rss": False,
+                    "buy_merchant": False,
+                    "claim_daily_quests": False,
+                    "collect_ressource": False,
+                    "defeat_barbarians": False,
+                    "barbarians_level": 25,
+                    "gather_gem": False,
+                    "gem_check1": 60,
+                    "gem_check2": 120,
+                    "gem_experimental": False,
+                    "gather_gem_duration1": 60,
+                    "gather_gem_duration2": 90,
+                    "restart_game": False,
+                    "switch_character": False,
+                    "leave_game_switch_character": False,
                     "scout_fog": False,
                     "scout_duration1": 60,
                     "scout_duration2": 90,
@@ -195,7 +198,7 @@ class TileManagerUpgrade(ft.ListView):
                     "claim_daily_chest": False,
                     "claim_campaign": False,
                     "start_fort": False,
-                    "rally_type": 'cav',
+                    "rally_type": "cav",
                     "rally_time": 10,
                     "rally_radius": 20,
                     "rally_count": 2,
@@ -231,23 +234,25 @@ class TileManagerUpgrade(ft.ListView):
                     "transfer_food": 0,
                     "transfer_wood": 0,
                     "transfer_stone": 0,
-                    "transfer_gold": 0
+                    "transfer_gold": 0,
                 }
             if str(key) not in data:
-                default_dic['schedules'][1]['enabled'] = True
+                default_dic["schedules"][1]["enabled"] = True
                 data[str(key)] = default_dic
             else:
                 for key2 in default_dic:
                     if key2 not in data[str(key)]:
                         data[str(key)][key2] = default_dic[key2]
 
-                for key2 in default_dic['schedules'][1]:
+                for key2 in default_dic["schedules"][1]:
                     for i in range(1, 4):
-                        if key2 not in data[str(key)]['schedules'][str(i)]:
-                            data[str(key)]['schedules'][str(i)][key2] = default_dic['schedules'][1][key2]
-            data[str(key)]['instance'] = instances[str(key)]['instance']
-            data[str(key)]['name'] = instances[str(key)]['name']
-            data[str(key)]['port'] = int(instances[str(key)]['port'])
+                        if key2 not in data[str(key)]["schedules"][str(i)]:
+                            data[str(key)]["schedules"][str(i)][key2] = default_dic[
+                                "schedules"
+                            ][1][key2]
+            data[str(key)]["instance"] = instances[str(key)]["instance"]
+            data[str(key)]["name"] = instances[str(key)]["name"]
+            data[str(key)]["port"] = int(instances[str(key)]["port"])
         print(f"Before refresh")
         for key in data:
             print(key, end=", ")
@@ -263,14 +268,13 @@ class TileManagerUpgrade(ft.ListView):
             self.controls.pop()
         for instance in instances:
             if str(instance[0]) in self.tiles:
-
                 self.controls.append(self.tiles[str(instance[0])])
             else:
                 self.add_tile(str(instance[0]))
         self.update()
 
     def add_text(self, phrase, color):
-        self.page.logger.add_text(phrase,color)
+        self.page.logger.add_text(phrase, color)
 
     def get_enabled_sel(self):
         tiles = []
@@ -281,7 +285,7 @@ class TileManagerUpgrade(ft.ListView):
 
 
 class StartBar(ft.Row):
-    def __init__(self,page,tile_manager:TileManagerUpgrade, **kwargs):
+    def __init__(self, page, tile_manager: TileManagerUpgrade, **kwargs):
         super().__init__(**kwargs)
         self.text_status = ft.Text()
         self.number = 0
@@ -295,20 +299,13 @@ class StartBar(ft.Row):
         self.stopped = False
 
         self.button_start = ft.IconButton(
-            icon=ft.icons.NOT_STARTED_OUTLINED,
-            on_click=lambda _: self.start()
+            icon=ft.icons.NOT_STARTED_OUTLINED, on_click=lambda _: self.start()
         )
         self.button_stop = ft.IconButton(
-            icon=ft.icons.STOP_OUTLINED,
-            disabled=True,
-            on_click=lambda _: self.stop()
+            icon=ft.icons.STOP_OUTLINED, disabled=True, on_click=lambda _: self.stop()
         )
 
-        self.controls.extend([
-            self.button_start,
-            self.button_stop,
-            self.text_status
-        ])
+        self.controls.extend([self.button_start, self.button_stop, self.text_status])
 
     def get_enabled_sel(self):
         return self.tile_manager.get_enabled_sel()
@@ -360,4 +357,4 @@ class StartBar(ft.Row):
         return self.text_status.value
 
     def add_text(self, phrase: str, color=None):
-        self.tile_manager.add_text(phrase,color)
+        self.tile_manager.add_text(phrase, color)

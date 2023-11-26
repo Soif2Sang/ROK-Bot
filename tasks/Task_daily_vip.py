@@ -27,7 +27,7 @@ class DailyVip(Task):
                 self.print("Claiming daily VIP points")
                 self.click(uniform(1015, 1035), uniform(163, 192))
                 self.better_sleep((2, 2.5))
-                if (co := self.find_img(target="close_window")):
+                if co := self.find_img(target="close_window"):
                     self.click(co[0] + uniform(5, 10), co[1] + uniform(5, 10))
                     self.better_sleep((1, 1.5))
             co = self.find_img(target="claim_daily")

@@ -27,34 +27,32 @@ class Tile(ft.Row):
         self.button_select = ft.IconButton(
             icon=ft.icons.PAGEVIEW,
             selected_icon=ft.icons.REMOVE_RED_EYE_OUTLINED,
-            on_click=lambda _: self.select()
+            on_click=lambda _: self.select(),
         )
         self.button_start = ft.IconButton(
-            icon=ft.icons.NOT_STARTED_OUTLINED,
-            on_click=lambda _: self.start()
+            icon=ft.icons.NOT_STARTED_OUTLINED, on_click=lambda _: self.start()
         )
         self.button_stop = ft.IconButton(
-            icon=ft.icons.STOP_OUTLINED,
-            disabled=True,
-            on_click=lambda _: self.stop()
+            icon=ft.icons.STOP_OUTLINED, disabled=True, on_click=lambda _: self.stop()
         )
-        self.text_name = ft.Text(value=data[str(number)]['name'], width=70)
+        self.text_name = ft.Text(value=data[str(number)]["name"], width=70)
         self.text_status = ft.Text(value="")
 
-        self.controls.extend([
-            self.button_select,
-            self.button_start,
-            self.button_stop,
-            self.text_name,
-            self.text_status,
-        ]
+        self.controls.extend(
+            [
+                self.button_select,
+                self.button_start,
+                self.button_stop,
+                self.text_name,
+                self.text_status,
+            ]
         )
 
     def select(self):
         self.page.tile_manager.unselect_all()
         self.button_select.selected = True
         # print(f"{len(self.page.controls)>2 =}")
-        if len(self.page.controls)>2:
+        if len(self.page.controls) > 2:
             self.page.controls.pop()
         if self.number not in self.page.frames:
             self.page.frames[self.number] = Frame(self.page, self.number)
@@ -96,8 +94,12 @@ class Tile(ft.Row):
             # is_alive.deamon = True
             # is_alive.start()
         else:
-            self.add_text("Task is froze for an unknown reason, you may want to restart the bot..")
-            print("Task is froze for an unknown reason, you may want to restart the bot..")
+            self.add_text(
+                "Task is froze for an unknown reason, you may want to restart the bot.."
+            )
+            print(
+                "Task is froze for an unknown reason, you may want to restart the bot.."
+            )
 
     def stop(self):
         self.started = False
@@ -115,7 +117,7 @@ class Tile(ft.Row):
     def get_text(self):
         return self.text_status.value
 
-    def add_text(self, phrase: str, color = None):
+    def add_text(self, phrase: str, color=None):
         # # print(self.page.frames)
         # if len(self.page.controls) > 2:
         #     self.page.controls.pop()

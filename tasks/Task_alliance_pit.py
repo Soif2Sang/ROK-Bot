@@ -27,11 +27,17 @@ class AlliancePit(Task):
     @get_name
     def is_pit_ready(self):
         screen = self.adb.get_cv2_img()
-        alliance_pits = self.find_img(target="alliance_pits", source=screen, confidence=0.79)
+        alliance_pits = self.find_img(
+            target="alliance_pits", source=screen, confidence=0.79
+        )
         if not alliance_pits:
             return False
 
-        is_alliance_pit_expended = self.find_img(target="is_alliance_pit_expended", source=screen[alliance_pits[1]+15:alliance_pits[1] + 40,1076:1151], confidence=0.75)
+        is_alliance_pit_expended = self.find_img(
+            target="is_alliance_pit_expended",
+            source=screen[alliance_pits[1] + 15 : alliance_pits[1] + 40, 1076:1151],
+            confidence=0.75,
+        )
         if not is_alliance_pit_expended:
             self.click(alliance_pits[0], alliance_pits[1])
             self.better_sleep((1, 2))
@@ -40,15 +46,13 @@ class AlliancePit(Task):
         if not available_to_gather:
             return False
         self.click(available_to_gather[0], available_to_gather[1] - 20)
-        self.better_sleep((5,9))
+        self.better_sleep((5, 9))
         return True
-
-
 
     @get_name
     def open_alliance_menu(self):
         # Open du menu
-        if self.find_img(target='menu_opened', confidence=0.8) is None:
+        if self.find_img(target="menu_opened", confidence=0.8) is None:
             x, y = uniform(1200, 1250), uniform(650, 690)
             self.click(x, y)
             self.better_sleep((1.725, 1.995))
@@ -61,13 +65,18 @@ class AlliancePit(Task):
     def donate_to_alliance(self):
         alliance_tech_logo = self.find_img(target="alliance_tech")
         if alliance_tech_logo is not None:
-            self.click(alliance_tech_logo[0] + uniform(0, 30), alliance_tech_logo[1] + uniform(0, 15))
+            self.click(
+                alliance_tech_logo[0] + uniform(0, 30),
+                alliance_tech_logo[1] + uniform(0, 15),
+            )
             self.better_sleep((2, 3))
             donation_logo = self.find_img(target="tech_2", confidence=0.97)
             # if donation_logo is None:
             # donation_logo = self.find_img(target="tech_2",confidence=0.97)
             if donation_logo is not None:
-                self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
+                self.click(
+                    donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10)
+                )
                 self.better_sleep((1, 2))
                 # Holding click on the donation button
                 talked = False
@@ -75,7 +84,11 @@ class AlliancePit(Task):
                     if not talked:
                         self.print("Donating to the alliance")
                         talked = True
-                    x, y, arg = uniform(910, 1040), uniform(550, 580), randint(2500, 3475)
+                    x, y, arg = (
+                        uniform(910, 1040),
+                        uniform(550, 580),
+                        randint(2500, 3475),
+                    )
                     self.swipe_arg(x, y, x, y, arg)
                     self.better_sleep((0.7, 1.3))
                 # Check if the resources pop-up comes
@@ -137,14 +150,18 @@ class AlliancePit(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.find_img(target=f'{color}_icon', confidence=0.95) is None and self.find_img(target=
-                                                                                               "troops_march_button") is not None:
+        while (
+            self.find_img(target=f"{color}_icon", confidence=0.95) is None
+            and self.find_img(target="troops_march_button") is not None
+        ):
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_text("Error in line-up selection")
-                self.send_discord_message("Error in line-up selection, human interaction required.")
+                self.send_discord_message(
+                    "Error in line-up selection, human interaction required."
+                )
                 while True:
                     self.script_pause()
                     sleep(0.1)
@@ -154,7 +171,7 @@ class AlliancePit(Task):
             self.print("Switching between line-up..")
 
     @get_name
-    def send_new_troop(self, deadstop: int = 0, color: str = 'yellow') -> bool:
+    def send_new_troop(self, deadstop: int = 0, color: str = "yellow") -> bool:
         """
         Send a new troop to gather the gem node
         :return: True is successfully
@@ -180,7 +197,9 @@ class AlliancePit(Task):
                 default_image = self.adb.get_cv2_img()
                 for i in range(1):  # change if you have 6-7 troops
                     default_color = default_image[260 + i * 50, 1100]
-                    x_click, y_click = uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50)
+                    x_click, y_click = uniform(1096, 1118), uniform(
+                        260 + i * 50, 275 + i * 50
+                    )
                     self.click(x_click, y_click)
                     self.better_sleep((1, 2))
                     new_image = self.adb.get_cv2_img()
