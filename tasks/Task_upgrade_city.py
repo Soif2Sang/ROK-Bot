@@ -8,7 +8,7 @@ import win32gui
 
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
-from utils.functions import get_class, get_name
+from utils.functions import filter_coordinate, get_class, get_name
 
 
 class UpgradeCity(Task):
@@ -65,24 +65,33 @@ class UpgradeCity(Task):
 
     @get_name
     def help_build(self):
-        if co := self.find_img(target='help_build', confidence=0.75):
+        if co := self.find_img(target="help_build", confidence=0.75):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
-        if co := self.find_img(target='help_build2', confidence=0.75):
+        if co := self.find_img(target="help_build2", confidence=0.75):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
-        if co := self.find_img(target='help_build3', confidence=0.75):
+        if co := self.find_img(target="help_build3", confidence=0.75):
             self.click(co[0] + uniform(0, 10), co[1] + uniform(20, 40))
             self.better_sleep((0.9, 1.2))
 
     @get_name
     def recursive_upgrade(self, type="normal"):
         screen = self.adb.get_cv2_img()
-        stones = self.find_img(target="upgrade_build", confidence=0.7, source=screen)
-        if not stones:
-            stones = self.find_img(target="city_hall_change_age", confidence=0.7, source=screen)
 
-        if stones is not None and self.find_img('building_speedups', source=screen) is None:
+        stones = self.adb.find_multiple_img(
+            target="upgrade_build", confidence=0.7, source=screen
+        )
+        stones = list(filter(filter_coordinate, stones))
+        if stones:
+            stones = random.choice(stones)
+
+        if not stones:
+            stones = self.find_img(
+                target="city_hall_change_age", confidence=0.7, source=screen
+            )
+
+        if stones and self.find_img("building_speedups", source=screen) is None:
             self.click(stones[0] + uniform(0, 20), stones[1] + uniform(0, 30))
             self.better_sleep((0.9, 1.2))
             if cos := self.adb.find_multiple_img(target="upgrade_go"):
@@ -104,7 +113,6 @@ class UpgradeCity(Task):
             self.help_build()
             self.better_sleep((1.7, 2.2))
 
-
     @get_name
     def setup_view(self):
         hwnd = win32gui.FindWindow(None, self.adb.name)
@@ -120,7 +128,9 @@ class UpgradeCity(Task):
     @get_name
     def is_city_hall_upgradable(self):
         screen = self.adb.get_cv2_img()
-        if self.find_img(target='city_hall_change_age', confidence=0.7, source=screen) or self.find_img(target="upgrade_build", confidence=0.7, source=screen):
+        if self.find_img(
+            target="city_hall_change_age", confidence=0.7, source=screen
+        ) or self.find_img(target="upgrade_build", confidence=0.7, source=screen):
             return True
         return False
 
@@ -132,22 +142,28 @@ class UpgradeCity(Task):
             self.better_sleep((0.9, 1.2))
         AllianceHelp(self).run()
 
-
     @get_name
     def free_constructor(self):
-        if self.find_img("upgrade_stone") is None and self.find_img("upgrade_stone2") is None:
+        if (
+            self.find_img("upgrade_stone") is None
+            and self.find_img("upgrade_stone2") is None
+        ):
             return False
         return True
 
     @get_class
     def run1(self):
-        ch_position = self.data[str(self.sel)]['schedules'][self.current_profile].get('city_hall_position', [])
+        ch_position = self.data[str(self.sel)]["schedules"][self.current_profile].get(
+            "city_hall_position", []
+        )
         if not ch_position:
             return
 
         x, y = ch_position
 
-        already_upgrading = self.adb.find_multiple_img("already_upgrading", confidence=0.7)
+        already_upgrading = self.adb.find_multiple_img(
+            "already_upgrading", confidence=0.7
+        )
 
         for co in already_upgrading:
             if x - 120 < co[0] < x + 10 and y - 20 < co[1] < y + 90:
@@ -164,24 +180,38 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.78)
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.78))
-        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.78))
+        upgrades_brut = self.adb.find_multiple_img(
+            target="upgrade_stone", confidence=0.78
+        )
+        upgrades_brut.extend(
+            self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.78)
+        )
+        upgrades_brut.extend(
+            self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.78)
+        )
         upgrades_final = list(filter(lambda co: co[1] < 480, upgrades_brut))
         return upgrades_final
 
     @get_class
     def run(self):
-        if self.data[str(self.sel)]['schedules'][self.current_profile].get('upgrade_city_method', 'normal'):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
+            "upgrade_city_method", "normal"
+        ):
             self.run1()
         self.setup_view()
         for i in range(2):
-            if (upgrades_final := self.free_worker()):
+            if upgrades_final := self.free_worker():
                 self.print("Upgrade available.")
                 current_build = upgrades_final[0]
-                self.click(current_build[0] + uniform(-5, 5), current_build[1] + uniform(-20, 0))
+                self.click(
+                    current_build[0] + uniform(-5, 5),
+                    current_build[1] + uniform(-20, 0),
+                )
                 self.better_sleep((0.9, 1.2))
-                self.click(current_build[0] + uniform(-5, 5), current_build[1] + uniform(-20, 0))
+                self.click(
+                    current_build[0] + uniform(-5, 5),
+                    current_build[1] + uniform(-20, 0),
+                )
                 self.better_sleep((0.9, 1.2))
                 self.recursive_upgrade()
                 self.better_sleep((0.9, 1.2))

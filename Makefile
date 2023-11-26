@@ -5,6 +5,12 @@ install-dependencies:
 	pip install isort black flake8
 
 isort:
-	isort --skip venv --skip tesseract --skip "auth compiled" --skip "utils/Crypto" --skip "*__pycache__*" .
+	isort --skip venv --skip tesseract --skip "auth compiled" --skip "utils/Crypto" --skip-glob "*__pycache__*" .
 
-test: isort
+black:
+	black . --exclude 'venv|tesseract|auth compiled|utils/Crypto|__pycache__'
+
+compile:
+	nuitka --clang --mingw64 --onefile --follow-imports --windows-icon-from-ico=.\Item_Gem.ico --remove-output --output-filename=Bot --windows-company-name=Unknown --windows-product-version=1.0 --onefile-tempdir-spec=C:\Users\Default\AppData\Local\Temp\bot_unknown .\app.py
+
+test: isort black

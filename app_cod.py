@@ -20,17 +20,19 @@ from views.config_path import find_file_in_all_drives
 def getchecksum():
     md5_hash = hashlib.md5()
     try:
-        file = open(''.join(sys.argv), "rb")
+        file = open("".join(sys.argv), "rb")
     except:
-        file = open(''.join(sys.argv[0]), "rb")
+        file = open("".join(sys.argv[0]), "rb")
     md5_hash.update(file.read())
     digest = md5_hash.hexdigest()
     return digest
 
+
 def update_user_info(password, username):
     data = get_data()
-    data["user"] = {'username': username, 'password': password}
+    data["user"] = {"username": username, "password": password}
     write_data(data)
+
 
 def find_window(window_title):
     return any(window_title in element.title for element in getAllWindows())
@@ -39,16 +41,10 @@ def find_window(window_title):
 class LoginButton(ft.FilledButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.keyauthapp:selfApi | None= None
+        self.keyauthapp: selfApi | None = None
 
     def is_str_valid(self, username, password):
-        for element in ['#', "$", "&", "|", "\0",
-                        "\n",
-                        "\r",
-                        '\'',
-                        "'",
-                        '"',
-                        "\Z"]:
+        for element in ["#", "$", "&", "|", "\0", "\n", "\r", "'", "'", '"', "\Z"]:
             if element in username or element in password:
                 return False
         return True
@@ -59,7 +55,7 @@ class LoginButton(ft.FilledButton):
             ownerid="7oofxdj8uH",
             secret="ef165ddde4ded2ef707095b80ebad353e026381ff1408616b640506049aa5a49",
             version="1.0",
-            hash_to_check=getchecksum()
+            hash_to_check=getchecksum(),
         )
         if not self.is_str_valid(username, password):
             self.pop_banner("Illegal characters..")
@@ -70,9 +66,13 @@ class LoginButton(ft.FilledButton):
             except:
                 sys.exit(1)
         try:
-            if self.keyauthapp.login(user=username, password=password,page=self.page):
-                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-                heures = date_brut.split('-')
+            if self.keyauthapp.login(user=username, password=password, page=self.page):
+                date_brut = (
+                    datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires))
+                    .strftime("%Y-%m-%d %H:%M:%S")
+                    .split(" ")[0]
+                )
+                heures = date_brut.split("-")
                 future = date(int(heures[0]), int(heures[1]), int(heures[2]))
                 diff = future - date.today()
                 self.page.title = f"Cod Bot - {diff.days} Days left"
@@ -109,7 +109,7 @@ class LoginButton(ft.FilledButton):
             ownerid="7oofxdj8uH",
             secret="ef165ddde4ded2ef707095b80ebad353e026381ff1408616b640506049aa5a49",
             version="1.0",
-            hash_to_check=getchecksum()
+            hash_to_check=getchecksum(),
         )
         print("Trying to login...")
         if username is None and password is None:
@@ -119,14 +119,18 @@ class LoginButton(ft.FilledButton):
             self.pop_banner("Illegal characters..")
             return False
         # try:
-        if self.keyauthapp.login(username, password,page=self.page):
+        if self.keyauthapp.login(username, password, page=self.page):
             print("Login successful")
             data = get_data()
-            if 'user' not in data:
-                data['user'] = {'username':username,'password':password}
+            if "user" not in data:
+                data["user"] = {"username": username, "password": password}
                 write_data(data)
-            date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime('%Y-%m-%d %H:%M:%S').split(" ")[0]
-            heures = date_brut.split('-')
+            date_brut = (
+                datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires))
+                .strftime("%Y-%m-%d %H:%M:%S")
+                .split(" ")[0]
+            )
+            heures = date_brut.split("-")
             future = date(int(heures[0]), int(heures[1]), int(heures[2]))
             diff = future - date.today()
             self.page.clean()
@@ -148,16 +152,17 @@ class LoginButton(ft.FilledButton):
     def pop_banner(self, text):
         self.page.banner = ft.Banner(
             bgcolor=ft.colors.AMBER_100,
-            leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
-            content=ft.Text(
-                value=text
+            leading=ft.Icon(
+                ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
             ),
+            content=ft.Text(value=text),
             actions=[
                 ft.TextButton("Ok", on_click=self.close_banner),
             ],
-            open=True
+            open=True,
         )
         self.page.update()
+
 
 def main(page: ft.Page):
     try:
@@ -167,19 +172,19 @@ def main(page: ft.Page):
     except:
         pass
     path = get_path()
-    if not os.path.exists(path['bluestacks']) or not os.path.exists(path['HD-Player']):
-        if result:=find_file_in_all_drives('bluestacks\.conf'):
-            path['bluestacks\.conf'.split("\\")[0]] = result
-            with open('../path.json', 'w', encoding="UTF-8") as f:
+    if not os.path.exists(path["bluestacks"]) or not os.path.exists(path["HD-Player"]):
+        if result := find_file_in_all_drives("bluestacks\.conf"):
+            path["bluestacks\.conf".split("\\")[0]] = result
+            with open("../path.json", "w", encoding="UTF-8") as f:
                 json.dump(path, f, indent=2)
-        if result := find_file_in_all_drives('HD-Player\.exe'):
-            path['HD-Player\.exe'.split("\\")[0]] = result
-            with open('../path.json', 'w', encoding="UTF-8") as f:
+        if result := find_file_in_all_drives("HD-Player\.exe"):
+            path["HD-Player\.exe".split("\\")[0]] = result
+            with open("../path.json", "w", encoding="UTF-8") as f:
                 json.dump(path, f, indent=2)
 
     data = get_data()
     if "discord" not in data:
-        data["discord"] = {"user_id":0, "enabled":False}
+        data["discord"] = {"user_id": 0, "enabled": False}
         write_data(data)
     for i in range(5):
         ready = False
@@ -189,19 +194,32 @@ def main(page: ft.Page):
                 ownerid="7oofxdj8uH",
                 secret="ef165ddde4ded2ef707095b80ebad353e026381ff1408616b640506049aa5a49",
                 version="1.0",
-                hash_to_check=getchecksum()
+                hash_to_check=getchecksum(),
             )
             ready = True
-        except :
+        except:
             keyauthapp = None
             print("Problem in the database loading..Wait a bit please..")
             sleep(5)
-        if ready:break
+        if ready:
+            break
 
     page.window_width = 330
     page.window_height = 330
-    page.add(ft.TextField(label="Username", width=300, value=data.get("user",{}).get("username","")))
-    page.add(ft.TextField(label="Password", password=True, can_reveal_password=True, width=300,value=data.get("user",{}).get("password","")))
+    page.add(
+        ft.TextField(
+            label="Username", width=300, value=data.get("user", {}).get("username", "")
+        )
+    )
+    page.add(
+        ft.TextField(
+            label="Password",
+            password=True,
+            can_reveal_password=True,
+            width=300,
+            value=data.get("user", {}).get("password", ""),
+        )
+    )
     login_button = LoginButton(text="Login", width=100)
     login_button.on_click = login_button.login
     login_button.keyauthapp = keyauthapp
@@ -218,6 +236,8 @@ def main(page: ft.Page):
             # Flet_main_interface.Main(page, 100)
             # login_button.login(None, data['user']["username"], data['user']["password"])
             a = 1
+
+
 from pathlib import Path
 from threading import Thread
 

@@ -3,14 +3,19 @@ import requests
 from tiles.handler.tile_handler import TileHandler
 
 SELLER_KEY = "f6386c16787e0eb51b24d168205267e6"
+
+
 def empty(value):
     return value == "" or value is None
-def main(page:ft.Page):
+
+
+def main(page: ft.Page):
     page.title = "Subscription Manager 1999 Days left "
-    page.window_width =  340
+    page.window_width = 340
     page.window_height = 350
     page.UPGRADE = False
     page.add(TileHandler(page))
+
     def verifyUsername():
         if empty(username.value):
             username.helper_text = "Username is empty !"
@@ -21,7 +26,6 @@ def main(page:ft.Page):
         username.error_text = ""
         page.update()
         return True
-
 
     def verifyPassword():
         if empty(password.value):
@@ -55,7 +59,7 @@ def main(page:ft.Page):
         else:
             if not verifyDuration() or not verifyPassword():
                 return
-            print(create_user(username.value,password.value,subscription.value))
+            print(create_user(username.value, password.value, subscription.value))
 
     def verify(username):
         url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=verifyuser&user={username}"
@@ -65,7 +69,7 @@ def main(page:ft.Page):
         response = requests.get(url, headers=headers)
 
         print(response.text)
-        return response.json()['success']
+        return response.json()["success"]
 
     def create_user(username, password, duration):
         url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=adduser&user={username}&sub=default&expiry={duration}&pass={password}"
@@ -81,17 +85,19 @@ def main(page:ft.Page):
         page.update()
 
         print(response.text)
-        randomtext.value = response.json()['message']
+        randomtext.value = response.json()["message"]
 
-        if response.json()['success']:
+        if response.json()["success"]:
             randomtext.color = "green"
         else:
             randomtext.color = "red"
         page.update()
         return response.json()
 
-    def delete_hwid(e,):
-        for i in range(1,3):
+    def delete_hwid(
+        e,
+    ):
+        for i in range(1, 3):
             url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=deluservar&user={username.value}&var=HWID{i}"
 
             headers = {"accept": "application/json"}
@@ -107,9 +113,9 @@ def main(page:ft.Page):
             page.update()
 
             print(response.text)
-            randomtext.value = response.json()['message']
+            randomtext.value = response.json()["message"]
 
-            if response.json()['success']:
+            if response.json()["success"]:
                 randomtext.color = "green"
             else:
                 randomtext.color = "red"
@@ -131,9 +137,9 @@ def main(page:ft.Page):
         page.update()
 
         print(response.text)
-        randomtext.value = response.json()['message']
+        randomtext.value = response.json()["message"]
 
-        if response.json()['success']:
+        if response.json()["success"]:
             randomtext.color = "green"
         else:
             randomtext.color = "red"
@@ -149,27 +155,22 @@ def main(page:ft.Page):
     randomtext = ft.Text(value="")
     progressbar = ft.ProgressBar(visible=False)
 
-    database = ft.Column(controls=[username,
-                                   password,
-                                   subscription,
-                                   ft.Row(controls=[generate,reset_hwid]),
-                                   progressbar,
-                                   randomtext]
-                         )
+    database = ft.Column(
+        controls=[
+            username,
+            password,
+            subscription,
+            ft.Row(controls=[generate, reset_hwid]),
+            progressbar,
+            randomtext,
+        ]
+    )
 
     channel = ft.TextField(label="Channel")
-    message = ft.TextField(
-        label="Message",
-        multiline=True,
-        min_lines=5
-    )
-    message_sender = ft.Column(controls=[channel,message])
+    message = ft.TextField(label="Message", multiline=True, min_lines=5)
+    message_sender = ft.Column(controls=[channel, message])
 
-    page.add(ft.Row(
-        controls=[
-            database]
-    ))
-
+    page.add(ft.Row(controls=[database]))
 
 
 if __name__ == "__main__":

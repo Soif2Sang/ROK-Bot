@@ -11,8 +11,4 @@ class Body(ft.Column):
         self.initial_page.tile_manager = self.tile_manager
         self.current_frame = ft.Container()
 
-        self.controls = [
-            self.tile_manager,
-            ft.Divider(),
-            self.current_frame
-        ]
+        self.controls = [self.tile_manager, ft.Divider(), self.current_frame]

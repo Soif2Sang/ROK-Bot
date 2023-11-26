@@ -16,4 +16,10 @@ class PageMaterials(BasePage):
 
         for i in range(1, 6):
             self.add_control(
-                FletRowMaterial(keys=keys, i=i, instance_index=self.instance_index, profile_index=self.profile_index))
+                FletRowMaterial(
+                    keys=keys,
+                    i=i,
+                    instance_index=self.instance_index,
+                    profile_index=self.profile_index,
+                )
+            )

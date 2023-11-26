@@ -14,13 +14,7 @@ from utils.singletons import ApiSingleton, LinkSingleton
 
 
 def is_str_valid(username, password):
-    for element in ['#', "$", "&", "|", "\0",
-                    "\n",
-                    "\r",
-                    '\'',
-                    "'",
-                    '"',
-                    "\Z"]:
+    for element in ["#", "$", "&", "|", "\0", "\n", "\r", "'", "'", '"', "\Z"]:
         if element in username or element in password:
             return False
     return True
@@ -35,41 +29,63 @@ class LoginUI(ft.Column):
         self.init()
 
     def show_payment_banner(self, e):
-        self.initial_page.show_banner(ft.Banner(
-            content=ft.Column(controls=[
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                              on_click=lambda _: self.initial_page.launch_url(
-                                  LinkSingleton().getStripeLink()),
-                              ),
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
-                              on_click=lambda _: self.initial_page.launch_url(
-                                  LinkSingleton().getSellixLink()))
-
-            ]),
-            actions=[
-                ft.TextButton("Close", on_click=lambda e:self.initial_page.close_banner()),
-            ],
-            content_padding=ft.padding.all(5)
-        ))
+        self.initial_page.show_banner(
+            ft.Banner(
+                content=ft.Column(
+                    controls=[
+                        ft.TextButton(
+                            icon=ft.icons.LINK_OUTLINED,
+                            text="Pay with Stripe",
+                            on_click=lambda _: self.initial_page.launch_url(
+                                LinkSingleton().getStripeLink()
+                            ),
+                        ),
+                        ft.TextButton(
+                            icon=ft.icons.LINK_OUTLINED,
+                            text="Pay with Crypto",
+                            on_click=lambda _: self.initial_page.launch_url(
+                                LinkSingleton().getSellixLink()
+                            ),
+                        ),
+                    ]
+                ),
+                actions=[
+                    ft.TextButton(
+                        "Close", on_click=lambda e: self.initial_page.close_banner()
+                    ),
+                ],
+                content_padding=ft.padding.all(5),
+            )
+        )
 
     def show_payment_banner(self, e):
-        self.initial_page.show_bottom_sheet(ft.BottomSheet(
-            content=ft.Row(controls=[
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Stripe",
-                              on_click=lambda _: self.initial_page.launch_url(
-                                  LinkSingleton().getStripeLink()),
-                              ),
-                ft.TextButton(icon=ft.icons.LINK_OUTLINED, text="Pay with Crypto",
-                              on_click=lambda _: self.initial_page.launch_url(
-                                  LinkSingleton().getSellixLink()))
-
-            ],
-            alignment=ft.MainAxisAlignment.CENTER),
-            open=True,
-            dismissible=True,
-            enable_drag=True,
-            on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
-        ))
+        self.initial_page.show_bottom_sheet(
+            ft.BottomSheet(
+                content=ft.Row(
+                    controls=[
+                        ft.TextButton(
+                            icon=ft.icons.LINK_OUTLINED,
+                            text="Pay with Stripe",
+                            on_click=lambda _: self.initial_page.launch_url(
+                                LinkSingleton().getStripeLink()
+                            ),
+                        ),
+                        ft.TextButton(
+                            icon=ft.icons.LINK_OUTLINED,
+                            text="Pay with Crypto",
+                            on_click=lambda _: self.initial_page.launch_url(
+                                LinkSingleton().getSellixLink()
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                open=True,
+                dismissible=True,
+                enable_drag=True,
+                on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
+            )
+        )
 
     def login(self, e):
         try:
@@ -88,30 +104,35 @@ class LoginUI(ft.Column):
             username = self.textfield_username.value
             password = self.textfield_password.value
 
-            if username == '' or password == '':
+            if username == "" or password == "":
                 return
             if not is_str_valid(username, password):
                 self.initial_page.open_banner("Illegal characters..")
                 return
-            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
+            if self.initial_page.keyauthapp.login(
+                user=username, password=password, page=self.initial_page
+            ):
                 update_user_info(password, username)
 
                 self.initial_page.splash = None
                 self.button_login.disabled = False
 
-                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
+                target_date = datetime.utcfromtimestamp(
+                    int(self.initial_page.keyauthapp.user_data.expires)
+                )
 
                 current_date = datetime.utcnow()
                 days = (target_date - current_date).days
 
                 self.initial_page.title = f"RokNet - {days} Days left"
                 self.initial_page.update()
-                self.initial_page.go('/emulator-choice')
+                self.initial_page.go("/emulator-choice")
 
-                ApiSingleton().setApiKey(self.initial_page.keyauthapp.var('2captcha'))
+                ApiSingleton().setApiKey(self.initial_page.keyauthapp.var("2captcha"))
 
-                self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription,
-                                                                          args=(username, password))
+                self.initial_page.subscription_checker = threading.Thread(
+                    target=self.verify_subscription, args=(username, password)
+                )
                 # self.initial_page.subscription_checker.start()
             else:
                 sleep(5)
@@ -136,13 +157,19 @@ class LoginUI(ft.Column):
             self.initial_page.keyauthapp = selfApi(
                 name="Rokbd" if not BREZILIAN else "RokbdBR",
                 ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0" if not BREZILIAN else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
+                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
+                if not BREZILIAN
+                else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
                 version="2.0",
-                hash_to_check=getchecksum()
+                hash_to_check=getchecksum(),
             )
 
-            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
-                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
+            if self.initial_page.keyauthapp.login(
+                user=username, password=password, page=self.initial_page
+            ):
+                target_date = datetime.utcfromtimestamp(
+                    int(self.initial_page.keyauthapp.user_data.expires)
+                )
 
                 current_date = datetime.utcnow()
                 days_remaining = (target_date - current_date).days
@@ -156,7 +183,7 @@ class LoginUI(ft.Column):
                     element.paused = False
                     element.stopped = True
 
-                self.initial_page.go('/login')
+                self.initial_page.go("/login")
         except Exception as e:
             print(e)
             self.initial_page.window_close()
@@ -171,8 +198,7 @@ class LoginUI(ft.Column):
             color=ft.colors.GREY_300,
             border_color=ft.colors.GREY_300,
             cursor_color=ft.colors.GREY_300,
-            label_style=ft.TextStyle(color=ft.colors.GREY_300)
-
+            label_style=ft.TextStyle(color=ft.colors.GREY_300),
         )
         self.textfield_password = ft.TextField(
             label=translate("Password"),
@@ -182,8 +208,7 @@ class LoginUI(ft.Column):
             label_style=ft.TextStyle(color=ft.colors.GREY_300),
             width=300,
             value=self.data.get("user", {}).get("password", ""),
-            keyboard_type=ft.KeyboardType.VISIBLE_PASSWORD
-
+            keyboard_type=ft.KeyboardType.VISIBLE_PASSWORD,
         )
         self.button_login = ft.OutlinedButton(
             text=translate("Login"),
@@ -194,8 +219,7 @@ class LoginUI(ft.Column):
                     ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.GREY_300),
                     ft.MaterialState.HOVERED: ft.BorderSide(1, ft.colors.GREY_600),
                 },
-            )
-
+            ),
         )
         self.subscribe_button = ft.OutlinedButton(
             text=translate("Subscribe"),
@@ -206,23 +230,26 @@ class LoginUI(ft.Column):
                     ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.GREY_300),
                     ft.MaterialState.HOVERED: ft.BorderSide(1, ft.colors.GREY_600),
                 },
-            )
-
+            ),
         )
 
         r = ft.Row(
             controls=[
                 ft.Column(controls=[self.button_login], col=4),
-
             ],
         )
 
         if not BREZILIAN:
             r.controls.append(ft.Column(controls=[self.subscribe_button], col=6))
 
-        return self.controls.extend([
-            ft.Row([self.textfield_username], alignment=ft.MainAxisAlignment.CENTER),
-            ft.Row([self.textfield_password], alignment=ft.MainAxisAlignment.CENTER),
-            r
-        ])
-
+        return self.controls.extend(
+            [
+                ft.Row(
+                    [self.textfield_username], alignment=ft.MainAxisAlignment.CENTER
+                ),
+                ft.Row(
+                    [self.textfield_password], alignment=ft.MainAxisAlignment.CENTER
+                ),
+                r,
+            ]
+        )

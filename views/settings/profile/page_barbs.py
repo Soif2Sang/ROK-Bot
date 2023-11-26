@@ -11,32 +11,44 @@ class PageBarbs(BasePage):
         super().__init__(profile)
 
         self.add_control(
-            GenerateCard(level="warning",margin=ft.margin.only(bottom=10), title=translate("*WARNING*"), subtitle=translate("Pre-configure red-lineups with PeaceKeeper commanders!\nThe bot is unable to see the troops health.\nYou should only use this with natural AP bar.")),
+            GenerateCard(
+                level="warning",
+                margin=ft.margin.only(bottom=10),
+                title=translate("*WARNING*"),
+                subtitle=translate(
+                    "Pre-configure red-lineups with PeaceKeeper commanders!\nThe bot is unable to see the troops health.\nYou should only use this with natural AP bar."
+                ),
+            ),
             ft.Row(
                 controls=[
                     ft.Text(value=translate("Barbarian Level")),
                     ft.Dropdown(
                         width=70,
                         height=50,
-                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                        options=[
-                            ft.dropdown.Option(str(i)) for i in range(1, 56)
-                        ],
+                        content_padding=ft.Padding(
+                            left=5, top=3, right=5, bottom=3
+                        ),  # modify to your likings
+                        options=[ft.dropdown.Option(str(i)) for i in range(1, 56)],
                         on_change=lambda e: self.submit(e, "barbarians_level", str),
-                        value=self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                            "barbarians_level"]
-                    )
-                ]
-                , width=300
+                        value=self.data[str(self.instance_index)]["schedules"][
+                            str(self.profile_index)
+                        ]["barbarians_level"],
+                    ),
+                ],
+                width=300,
             ),
             ft.Divider(),
             ft.Text(value=translate("Peacekeeper presets")),
             ft.Column(
-                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in
-                          range(1, 8)],
+                controls=[
+                    FletRowPresets(
+                        self.instance_index, self.profile_index, str(preset_index)
+                    )
+                    for preset_index in range(1, 8)
+                ],
                 wrap=True,
                 spacing=10,
                 run_spacing=10,
-                height=150
-            )
+                height=150,
+            ),
         )

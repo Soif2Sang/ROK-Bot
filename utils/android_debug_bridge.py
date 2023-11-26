@@ -7,8 +7,15 @@ from os.path import exists
 from time import sleep
 
 import pytesseract as tess
-from cv2 import (COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor,
-                 inRange, matchTemplate, minMaxLoc)
+from cv2 import (
+    COLOR_BGR2HSV,
+    COLOR_BGR2RGB,
+    TM_CCOEFF_NORMED,
+    cvtColor,
+    inRange,
+    matchTemplate,
+    minMaxLoc,
+)
 from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
@@ -18,15 +25,16 @@ from utils.resources import ImageSingleton
 
 bridge = None
 
+
 class Adb:
-    def __init__(self, number: str, host='127.0.0.1', port=5037):
+    def __init__(self, number: str, host="127.0.0.1", port=5037):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
         self.number = number
-        self.name = self.data[str(self.number)]['name']
+        self.name = self.data[str(self.number)]["name"]
         self.images = ImageSingleton()
         self.is_ld = True
 
@@ -40,15 +48,19 @@ class Adb:
         if str(self.number) not in instances:
             return
 
-        if self.port != int(instances[str(self.number)]['port']):
+        if self.port != int(instances[str(self.number)]["port"]):
             self.data = self.FileSingleton.get_data()
-            self.data[str(self.number)]['instance'] = instances[str(self.number)]['instance']
-            self.data[str(self.number)]['name'] = instances[str(self.number)]['name']
-            self.data[str(self.number)]['port'] = int(instances[str(self.number)]['port'])
-            self.port = int(instances[str(self.number)]['port'])
+            self.data[str(self.number)]["instance"] = instances[str(self.number)][
+                "instance"
+            ]
+            self.data[str(self.number)]["name"] = instances[str(self.number)]["name"]
+            self.data[str(self.number)]["port"] = int(
+                instances[str(self.number)]["port"]
+            )
+            self.port = int(instances[str(self.number)]["port"])
             self.FileSingleton.write_data(self.data)
 
-    def connect_to_device(self, host='127.0.0.1'):
+    def connect_to_device(self, host="127.0.0.1"):
         path = self.FileSingleton.get_path()
         self.update_port()
 
@@ -59,10 +71,10 @@ class Adb:
     def get_client_devices(self):
         return self.client.devices()
 
-    def get_device(self, host='127.0.0.1', fail = 0):
+    def get_device(self, host="127.0.0.1", fail=0):
         try:
-            self.port = str(self.data[str(self.number)]['port'])
-            device = self.client.device(f'{host}:{self.port}')
+            self.port = str(self.data[str(self.number)]["port"])
+            device = self.client.device(f"{host}:{self.port}")
             if device is None:
                 self.print(f"INFO : Device is None, trying to reconnect..")
                 self.connect_to_device()
@@ -92,10 +104,12 @@ class Adb:
             sleep(5)
             return self.get_device()
 
-    def print(self, text:str):
+    def print(self, text: str):
         data = self.FileSingleton.get_data()
-        print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
-        self.FileSingleton.write(self.name,text)
+        print(
+            f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}"
+        )
+        self.FileSingleton.write(self.name, text)
 
     def get_curr_device_screen_img_byte_array(self):
         try:
@@ -112,7 +126,6 @@ class Adb:
             print(e)
             sleep(1)
             return io.BytesIO(self.get_device().screencap())
-
 
     def get_curr_device_screen_img(self, deadstop=0):
         try:
@@ -131,7 +144,7 @@ class Adb:
                 raise e
             sleep(1)
             self.connect_to_device()
-            return self.get_curr_device_screen_img(deadstop+1)
+            return self.get_curr_device_screen_img(deadstop + 1)
 
     def get_cv2_img(self):
         try:
@@ -162,7 +175,7 @@ class Adb:
         else:
             return
 
-    def find_img(self, target:str, source:  ndarray = None, confidence=0.9):
+    def find_img(self, target: str, source: ndarray = None, confidence=0.9):
         try:
             if source is None:
                 pil_image = self.get_curr_device_screen_img()
@@ -189,7 +202,6 @@ class Adb:
             self.print(target)
             traceback.print_exc()
             self.print(exception_error)
-
 
     def find_img_src_conf(self, src, target, confidence):
         img_to_find = self.images.get_file_name(target)
@@ -240,16 +252,15 @@ class Adb:
                 localisations.append((rectangles[i][0], rectangles[i][1]))
         element_to_delete = []
         for i in range(len(localisations) - 1):
-            if ((
-                    (localisations[i][0] + 1 == localisations[i + 1][0]) or
-                    (localisations[i][0] - 1 == localisations[i + 1][0]) or
-                    (localisations[i][0] == localisations[i + 1][0])
-            ) and
-                    (
-                            (localisations[i][1] + 1 == localisations[i + 1][1]) or
-                            (localisations[i][1] - 1 == localisations[i + 1][1]) or
-                            (localisations[i][1] == localisations[i + 1][1])
-                    )):
+            if (
+                (localisations[i][0] + 1 == localisations[i + 1][0])
+                or (localisations[i][0] - 1 == localisations[i + 1][0])
+                or (localisations[i][0] == localisations[i + 1][0])
+            ) and (
+                (localisations[i][1] + 1 == localisations[i + 1][1])
+                or (localisations[i][1] - 1 == localisations[i + 1][1])
+                or (localisations[i][1] == localisations[i + 1][1])
+            ):
                 element_to_delete.append(localisations[i])
 
         # print(element_to_delete)
@@ -261,10 +272,11 @@ class Adb:
         # string = "dumpsys activity activities | grep mFocusedActivity"
         a = self.get_device().get_top_activity()
         if a:
-            return 'lilithgame' in str(a) or 'rok' in str(a) or 'lilithgames' in str(a)
+            return "lilithgame" in str(a) or "rok" in str(a) or "lilithgames" in str(a)
         return False
+
     def click(self, x, y):
-        string = f'input tap {x} {y}'
+        string = f"input tap {x} {y}"
         self.shell(string)
         return
 
@@ -279,12 +291,12 @@ class Adb:
             return self.shell(string)
 
     def swipe(self, x, y, x2, y2):
-        string = f'input swipe {x} {y} {x2} {y2} 420'
+        string = f"input swipe {x} {y} {x2} {y2} 420"
         self.shell(string)
         return
 
     def swipe_arg(self, x, y, x2, y2, arg):
-        string = f'input swipe {x} {y} {x2} {y2} {arg}'
+        string = f"input swipe {x} {y} {x2} {y2} {arg}"
         self.shell(string)
         return
 
@@ -317,34 +329,38 @@ class Adb:
             string = path["bluestacks"][:-5] + ".txt"
             if exists(rf'{path["bluestacks"]}'):
                 string = path["bluestacks"][:-5] + ".txt"
-                shutil.copy(rf'{path["bluestacks"]}', rf'{string}')
+                shutil.copy(rf'{path["bluestacks"]}', rf"{string}")
 
-            with open(rf'{string}', 'r') as file:
-                data_instance = file.read().split('\n')
+            with open(rf"{string}", "r") as file:
+                data_instance = file.read().split("\n")
         except:
             print(
-                "The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
+                "The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf"
+            )
 
         liste_info = []
         for element in data_instance:
-            if ((('bst.instance.Nougat64' in element) and ('adb_port' in element)) and 'status' not in element) or (
-                    ('bst.instance.Nougat64' in element) and ('display_name' in element)):
+            if (
+                (("bst.instance.Nougat64" in element) and ("adb_port" in element))
+                and "status" not in element
+            ) or (("bst.instance.Nougat64" in element) and ("display_name" in element)):
                 liste_info.append(element)
 
         dico_instance = {}
         for i in range(0, len(liste_info), 2):
-            string = liste_info[i].split('.adb_port=')
+            string = liste_info[i].split(".adb_port=")
             string[1] = string[1].replace('"', "")
             string[0] = string[0][13:]
             dico_instance[str(len(dico_instance))] = {}
-            dico_instance[str(len(dico_instance) - 1)]['instance'] = str(string[0])
-            dico_instance[str(len(dico_instance) - 1)]['port'] = string[1]
-            string2 = liste_info[i + 1].split('.display_name=')
+            dico_instance[str(len(dico_instance) - 1)]["instance"] = str(string[0])
+            dico_instance[str(len(dico_instance) - 1)]["port"] = string[1]
+            string2 = liste_info[i + 1].split(".display_name=")
             string2[1] = string2[1].replace('"', "")
-            dico_instance[str(len(dico_instance) - 1)]['name'] = string2[1]
+            dico_instance[str(len(dico_instance) - 1)]["name"] = string2[1]
 
     def home_button(self):
-        self.shell('input keyevent KEYCODE_HOME')
+        self.shell("input keyevent KEYCODE_HOME")
+
     #
     # def enable_adb(self,host='127.0.0.1', port=5037):
     #     adb = None
@@ -376,9 +392,13 @@ class Adb:
 
 def img_to_string(pil_image):
     # pil_image.save(resource_path("test.png"))
-    tess.pytesseract.tesseract_cmd = 'tesseract\\tesseract.exe'
-    result = tess.image_to_string(pil_image, lang='eng', config='--psm 6') \
-        .replace('\t', '').replace('\n', '').replace('\f', '')
+    tess.pytesseract.tesseract_cmd = "tesseract\\tesseract.exe"
+    result = (
+        tess.image_to_string(pil_image, lang="eng", config="--psm 6")
+        .replace("\t", "")
+        .replace("\n", "")
+        .replace("\f", "")
+    )
     return result
 
 

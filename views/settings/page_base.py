@@ -5,7 +5,7 @@ from utils.flet_translations import translate
 from utils.functions import FileSingleton
 
 
-class BasePage():
+class BasePage:
     def __init__(self, profile):
         super().__init__()
         self.FileSingleton = FileSingleton()
@@ -21,13 +21,12 @@ class BasePage():
                     controls=[
                         ft.IconButton(
                             icon=ft.icons.ARROW_BACK,
-                            on_click=lambda _: self.profile.goBack()
+                            on_click=lambda _: self.profile.goBack(),
                         ),
                         ft.Text(value=translate("Settings"), size=20),
                     ],
                 ),
-                padding = ft.padding.only(top=5, left=0, bottom=0)
-
+                padding=ft.padding.only(top=5, left=0, bottom=0),
             ),
             ft.Divider(),
         )
@@ -42,21 +41,25 @@ class BasePage():
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", 'API_KEY']:
-            if e.control.value.strip() == '':
+        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", "API_KEY"]:
+            if e.control.value.strip() == "":
                 self.data[str(self.instance_index)][keyword] = 0
-                e.control.value = '0'
+                e.control.value = "0"
             else:
                 self.data[str(self.instance_index)][keyword] = method(e.control.value)
         elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            if e.control.value.strip() == '':
-                self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(0)
+            if e.control.value.strip() == "":
+                self.data[str(self.instance_index)]["schedules"][
+                    str(self.profile_index)
+                ][keyword] = method(0)
             else:
-                self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = method(
-                    e.control.value)
+                self.data[str(self.instance_index)]["schedules"][
+                    str(self.profile_index)
+                ][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = float(
-                e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
+                keyword
+            ] = float(e.control.value.replace("x", "").replace("level ", ""))
         self.FileSingleton.write_data(self.data)
 
     def reverse_keyword(self, keyword: str):
@@ -65,17 +68,26 @@ class BasePage():
         if keyword == "auto_scroll" or keyword == "limit_logs":
             data["interface"][keyword] = not data["interface"].get(keyword, False)
             self.FileSingleton.write_data(data)
-            if keyword == 'auto_scroll':
+            if keyword == "auto_scroll":
                 for frame in self.profile.initial_page.frames:
-                    self.profile.initial_page.frames[frame].logger.auto_scroll = data["interface"][keyword]
+                    self.profile.initial_page.frames[frame].logger.auto_scroll = data[
+                        "interface"
+                    ][keyword]
                 self.initial_page.update()
         elif keyword == "enabled":
             data["discord"]["enabled"] = not data["discord"].get(keyword, False)
         elif keyword == "leave_game_loop":
-            data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
+            data[str(self.instance_index)][keyword] = not self.data[
+                str(self.instance_index)
+            ][keyword]
         else:
-            data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword] = not \
-            self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][keyword]
+            data[str(self.instance_index)]["schedules"][str(self.profile_index)][
+                keyword
+            ] = not self.data[str(self.instance_index)]["schedules"][
+                str(self.profile_index)
+            ][
+                keyword
+            ]
 
         self.data = data
 
@@ -85,10 +97,12 @@ class BasePage():
         self.data = self.FileSingleton.get_data()
         return ft.Switch(
             label=translate(text),
-
-            value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                keyword] else False,
-            on_change=lambda _: self.reverse_keyword(keyword)
+            value=True
+            if self.data[str(self.instance_index)]["schedules"][
+                str(self.profile_index)
+            ][keyword]
+            else False,
+            on_change=lambda _: self.reverse_keyword(keyword),
         )
 
     def create_advanced_switch(self, keyword: str, text: str, function):
@@ -98,39 +112,52 @@ class BasePage():
                 controls=[
                     ft.Switch(
                         label=translate(text),
-
-                        value=True if self.data[str(self.instance_index)]['schedules'][str(self.profile_index)][
-                            keyword] else False,
-                        on_change=lambda _: self.reverse_keyword(keyword),
-
-                    ),
-                    ft.OutlinedButton(
-                        text=translate("Settings"),
-                        icon=ft.icons.SETTINGS,
-                        on_click=lambda _: function()
-                        , style=ButtonStyle(shape={
-                            ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-                        })
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            )
-        else:
-            return ft.Row(
-                controls=[
-                    ft.Switch(
-                        label=translate(text),
-
-                        value=True if self.data[str(self.instance_index)][keyword] else False,
+                        value=True
+                        if self.data[str(self.instance_index)]["schedules"][
+                            str(self.profile_index)
+                        ][keyword]
+                        else False,
                         on_change=lambda _: self.reverse_keyword(keyword),
                     ),
                     ft.OutlinedButton(
                         text=translate("Settings"),
                         icon=ft.icons.SETTINGS,
-                        on_click=lambda _: function(), style=ButtonStyle(shape={
-                            ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-                        }, ),
-                    )
+                        on_click=lambda _: function(),
+                        style=ButtonStyle(
+                            shape={
+                                ft.MaterialState.DEFAULT: RoundedRectangleBorder(
+                                    radius=5
+                                ),
+                            }
+                        ),
+                    ),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            ),
+            )
+        else:
+            return (
+                ft.Row(
+                    controls=[
+                        ft.Switch(
+                            label=translate(text),
+                            value=True
+                            if self.data[str(self.instance_index)][keyword]
+                            else False,
+                            on_change=lambda _: self.reverse_keyword(keyword),
+                        ),
+                        ft.OutlinedButton(
+                            text=translate("Settings"),
+                            icon=ft.icons.SETTINGS,
+                            on_click=lambda _: function(),
+                            style=ButtonStyle(
+                                shape={
+                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(
+                                        radius=5
+                                    ),
+                                },
+                            ),
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ),
+            )

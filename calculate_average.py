@@ -6,10 +6,10 @@ import pyautogui
 from utils.resources import ImageSingleton
 
 #
-with open('average.txt', 'r') as file:
+with open("average.txt", "r") as file:
     lines = file.readlines()
 
-time_pattern = re.compile(r'fastest is (\d{2}):(\d{2}):(\d{2})$')
+time_pattern = re.compile(r"fastest is (\d{2}):(\d{2}):(\d{2})$")
 
 all_times_in_seconds = []
 
@@ -22,9 +22,9 @@ for line in lines:
 
 if all_times_in_seconds:
     average_time = sum(all_times_in_seconds) / len(all_times_in_seconds)
-    print(f'Average time: {timedelta(seconds=int(average_time))} seconds')
+    print(f"Average time: {timedelta(seconds=int(average_time))} seconds")
 else:
-    print('No matching lines found in the file.')
+    print("No matching lines found in the file.")
 exit()
 images = ImageSingleton()
 import cv2
@@ -33,14 +33,13 @@ import cv2
 def find_img(target):
     img_to_find = images.get_file_name(target)
 
-
-    result = cv2.matchTemplate(cv2.imread('captcha_slider.png'), img_to_find, cv2.TM_CCOEFF_NORMED)
+    result = cv2.matchTemplate(
+        cv2.imread("captcha_slider.png"), img_to_find, cv2.TM_CCOEFF_NORMED
+    )
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
 
     return max_val
-        
+
 
 for keyword in ["menu_button", "map_icon", "hammer", "inbox", "mightiest_gov"]:
     print(find_img(target=keyword))
-    
-    

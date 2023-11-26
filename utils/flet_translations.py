@@ -29,7 +29,7 @@ translations = {
     "Maximum": "Máximo",
     "Set the maximum of nodes to gather": "Defina o máximo de nós a serem reunidos",
     "Fixed number of nodes to gather": "Número fixo de nós para reunir",
-    "Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)" : "recentralize a visualização com base na localização da cidade\n(desligue se a localização NÃO for da sua cidade)",
+    "Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)": "recentralize a visualização com base na localização da cidade\n(desligue se a localização NÃO for da sua cidade)",
     "Compare march speed (Increase gem gathering\nbut increase number of actions": "compare a velocidade de marcha (aumenta a coleta de gemas,\nmas aumenta o número de ações)",
     "Restart the game randomly": "Reinicie o jogo aleatoriamente",
     "Resources Gathering": "Coleta de Recursos",
@@ -85,8 +85,7 @@ translations = {
     "Help Alliance": "Ajuda Aliança",
     "Hunt Barbarians": "Caçar Bárbaros",
     "*WARNING*": "*AVISO*",
-    "Pre-configure red-lineups with PeaceKeeper commanders!\nThe bot is unable to see the troops health.\nYou should only use this with natural AP bar.":
-        "Pré-configurar escalações vermelhas com comandantes de PeaceKeeper!\nO bot não consegue ver a saúde das tropas.\nVocê só deve usar isso com a barra de PA natural.",
+    "Pre-configure red-lineups with PeaceKeeper commanders!\nThe bot is unable to see the troops health.\nYou should only use this with natural AP bar.": "Pré-configurar escalações vermelhas com comandantes de PeaceKeeper!\nO bot não consegue ver a saúde das tropas.\nVocê só deve usar isso com a barra de PA natural.",
     "Pre-configure red-lineups with PeaceKeeper commanders!": "Pré-configure escalações vermelhas com comandantes de matar Bárbaros!",
     "The bot is unable to see the troops' health. You should only use this with a natural AP bar.": "O bot não consegue ver a saúde das tropas. Você só deve usar isso com uma barra de AP natural.",
     "Barbarian Level": "Nível Bárbaro",
@@ -152,24 +151,25 @@ translations = {
     "General Settings": "Configurações Gerais",
     "Shared Profile Preferences": "Preferências de perfil compartilhado",
     "Do tasks again": "Faça as tarefas novamente",
-"Time to wait until the bot do the task again." : "Tempo de espera até o bot realizar a tarefa novamente.",
+    "Time to wait until the bot do the task again.": "Tempo de espera até o bot realizar a tarefa novamente.",
     "Close the game after all the tasks are done": "Feche o jogo depois que todas as tarefas forem concluídas",
     "Minutes to wait until the bot does the task :": "Minutos para esperar até que o bot execute a tarefa :",
     "run Multiple Profile": "execute vários perfis",
     "Profile": "Perfil",
-"You need to be aware that using tight timings can lead to unwanted behaviors.":"Você precisa estar ciente de que o uso de cronogramas rigorosos pode levar a comportamentos indesejados.",
+    "You need to be aware that using tight timings can lead to unwanted behaviors.": "Você precisa estar ciente de que o uso de cronogramas rigorosos pode levar a comportamentos indesejados.",
     "Custom API key": "Chave de API personalizada",
     "Interface & Discord Settings": "Configurações de interface e Discord",
     "Logger autoscroll": "Rolagem automática do registro",
     "Limit Logs to 300 (reduce lags)": "Limitar registros a 300 (reduzir atrasos)",
     "Enable Discord Notifications": "Habilitar notificações do Discord",
     "Your discord ID": "Seu ID do Discord",
-    "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)" : "Nenhum emulador encontrado, você iniciou um?\nSe sim, verifique a versão correta do Bluestacks (Nougat64).",
+    "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)": "Nenhum emulador encontrado, você iniciou um?\nSe sim, verifique a versão correta do Bluestacks (Nougat64).",
     "The time format should be 'hh:mm' and work on a 24-hour clock and on your computer clock.\nexemple:\n     - start : 02:00 / end : 04:00 means the script will start exclusively between 02:00 and 04:00.": "O formato de hora deve ser 'hh:mm' e funcionar em um relógio de 24 horas, de acordo com o relógio do seu computador.\nexemplo:\n - início: 02:00 / fim: 04:00 significa que o script iniciará exclusivamente entre 02:00 e 04:00.",
     "Mobilisation time (minutes):": "Tempo de mobilização (minutos):",
     "Pre-configure your red lineups with commanders who have the same march speed.\nIf you intend to use this feature extensively, I recommend running it for 3-4 hours and enabling the option to redo tasks. This will allow your troops to return to the city for healing.": "Pré-configure suas formações vermelhas com comandantes que tenham a mesma velocidade de marcha.\nSe você pretende usar esse recurso extensivamente, recomendo executá-lo por 3-4 horas e habilitar a opção de refazer tarefas. Isso permitirá que suas tropas retornem à cidade para cura.",
-    "Minutes to wait until the bot do the task :":"Minutos a esperar até o bot realizar a tarefa :"
+    "Minutes to wait until the bot do the task :": "Minutos a esperar até o bot realizar a tarefa :",
 }
+
 
 def translate(message):
     if BREZILIAN:

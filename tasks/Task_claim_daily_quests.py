@@ -62,13 +62,7 @@ class DailyQuests(Task):
                 self.claim_all()
                 if self.daily_objectives():
                     self.print("Claiming daily objectives")
-                    cos = [
-                        [360, 203],
-                        [530, 203],
-                        [710, 203],
-                        [880, 203],
-                        [1050, 203]
-                    ]
+                    cos = [[360, 203], [530, 203], [710, 203], [880, 203], [1050, 203]]
                     for co in cos:
                         self.click(co[0] + uniform(-1, 1), co[1] + uniform(-1, 1))
                         self.better_sleep((3, 5))
