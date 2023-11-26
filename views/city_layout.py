@@ -36,7 +36,7 @@ def viewCityLayout(
         page.go("/")
 
     return ft.View(
-        f"/citylayout/{params.instance_index}/{params.profile_index}",
+        f"/city-layout/{params.instance_index}/{params.profile_index}",
         controls=[
             ft.Container(
                 bgcolor=ft.colors.SURFACE_VARIANT,
@@ -112,7 +112,6 @@ class CityPlacement(ft.Container):
                         opacity=0.7,
                     )
                 )
-                print(self.main_container.controls[-1].key)
 
     def setCurrentBuild(self, param: str):
         self.current_build = param

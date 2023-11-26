@@ -26,7 +26,7 @@ class PageTransfer(BasePage):
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set City Position"),
                 on_click=lambda _: self.initial_page.go(
-                    f"/citylayout/{self.instance_index}/{self.profile_index}"
+                    f"/city-layout/{self.instance_index}/{self.profile_index}"
                 ),
             ),
         )

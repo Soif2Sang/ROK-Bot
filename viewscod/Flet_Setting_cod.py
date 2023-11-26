@@ -33,7 +33,7 @@ class SettingContainer(ft.Container):
         self.page.window_width = 900
         self.page.window_height = 500
         return ft.View(
-            f"/citylayout/{self.instance_index}/{self.profile_index}",
+            f"/city-layout/{self.instance_index}/{self.profile_index}",
             controls=[
                 ft.Container(
                     bgcolor="#ecf0f1",
@@ -408,7 +408,7 @@ class SettingContainer(ft.Container):
         self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen(
             "city"
         )
-        self.page.go(f"/citylayout/{self.instance_index}/{self.profile_index}")
+        self.page.go(f"/city-layout/{self.instance_index}/{self.profile_index}")
 
     def page_heal(self):
         self.data = self.FileSingleton.get_data()
