@@ -1,7 +1,8 @@
 import flet as ft
 from tiles.handler.config_handler import FrameUpgrade
+from tiles.tile import ConfigOverrider
 
-from utils.functions import get_data
+from utils.functions import FileSingleton
 
 
 class TileUpgrade(ft.Row):
@@ -9,10 +10,12 @@ class TileUpgrade(ft.Row):
         super().__init__(**kwargs)
 
         self.tile_manager = None
-        data = get_data()
+        data = FileSingleton().get_data()
 
         self.selected = False
         self.page = page
+        self.initial_page = page
+
         self.number = number
 
         self.started = False
@@ -28,11 +31,20 @@ class TileUpgrade(ft.Row):
         self.enable_switch = ft.Switch(on_change=lambda _: self.change(), value=False)
         self.text_name = ft.Text(value=data[str(number)]["name"], width=150)
 
+        self.config_overrider = ConfigOverrider(self.initial_page, number)
+
+        self.vertical_alignment = ft.CrossAxisAlignment.CENTER
+        self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         self.controls.extend(
             [
-                self.button_select,
-                self.enable_switch,
-                self.text_name,
+                ft.Row(
+                    controls=[
+                        self.button_select,
+                        self.enable_switch,
+                        self.text_name,
+                    ]
+                ),
+                self.config_overrider,
             ]
         )
 
