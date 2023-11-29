@@ -556,11 +556,11 @@ class TaskRunner(Task):
         subprocess.run(cmd)
 
         print(f"Bot will wait 1 min from now.")
-        sleep(120)
+        self.better_sleep((120, 120))
         if win32gui.FindWindow(None, self.name) is None:
             self.print(f"Executing cmd")
             subprocess.run(cmd)
-            sleep(120)
+            self.better_sleep((120, 120))
 
         instances = get_dic_instances()
         for instance in instances:
