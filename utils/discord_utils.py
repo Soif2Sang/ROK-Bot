@@ -2,7 +2,7 @@ import discord
 
 from utils.functions import FileSingleton
 
-token = "MTEwMDM2MTgyNTQ0MDIzOTY3Ng.Gvz3U-.cjhCXxzLs4kNjlqnaZiwJm55-yHRUjKW6oxMks"
+token = "MTEwMDM2MTgyNTQ0MDIzOTY3Ng.GJkXHM.ZoG-FJI5RcnaLYnvFnQUiUgIVU5EcPwi81l-go"
 
 
 async def send_discord_message(name, message, path):
