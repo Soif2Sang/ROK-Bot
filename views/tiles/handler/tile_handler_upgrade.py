@@ -7,7 +7,7 @@ from tiles.handler.tile_handler import NavigationBar
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from utils.functions import get_data, get_path, write_data
+from utils.functions import FileSingleton
 from views.tiles.tile_upgrade import TileUpgrade
 
 
@@ -15,17 +15,19 @@ class TileManagerUpgrade(ft.ListView):
     def __init__(self, page, **kwargs):
         super().__init__(**kwargs)
         self.page = page
+        self.initial_page = page
+
         self.height = 250
         self.expand = 0
         self.tiles: dict[str, TileUpgrade] = {}
         self.navigation_bar: NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
-        self.start_bar = StartBar(self.page, self)
+        self.start_bar = StartBar(self.initial_page, self)
         # self.controls.append(self.start_bar)
         # self.controls.append(self.logger)
 
     def add_tile(self, number: str):
-        self.tiles[number] = TileUpgrade(self.page, number)
+        self.tiles[number] = TileUpgrade(self.initial_page, number)
         self.tiles[number].runner = self.start_bar.runner
         self.controls.append(self.tiles[number])
 
@@ -35,7 +37,7 @@ class TileManagerUpgrade(ft.ListView):
         index = self.controls.index(self.tiles[number])
         self.controls.pop(index)
         del self.tiles[number]
-        self.update()
+        self.initial_page.update()
 
     def update_tiles(self):
         # is_alive = threading.Thread(target=self.process_is_alive)
