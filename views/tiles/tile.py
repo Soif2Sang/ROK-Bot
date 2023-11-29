@@ -173,7 +173,6 @@ class Tile(ft.Row):
     def stop(self, e):
         self.paused = False
         self.stopped = True
-
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.initial_page.update()
