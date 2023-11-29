@@ -7,7 +7,7 @@ from time import sleep
 import flet as ft
 
 from utils.auth import selfApi, update_user_info
-from utils.constants import BREZILIAN
+from utils.constants import BREZILIAN, global_name, brezilian_name, ownerid, global_secret, brezilian_secret
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, getchecksum
 from utils.singletons import ApiSingleton, LinkSingleton
@@ -28,35 +28,35 @@ class LoginUI(ft.Column):
         self.data = self.fileSingleton.get_data()
         self.init()
 
-    def show_payment_banner(self, e):
-        self.initial_page.show_banner(
-            ft.Banner(
-                content=ft.Column(
-                    controls=[
-                        ft.TextButton(
-                            icon=ft.icons.LINK_OUTLINED,
-                            text="Pay with Stripe",
-                            on_click=lambda _: self.initial_page.launch_url(
-                                LinkSingleton().getStripeLink()
-                            ),
-                        ),
-                        ft.TextButton(
-                            icon=ft.icons.LINK_OUTLINED,
-                            text="Pay with Crypto",
-                            on_click=lambda _: self.initial_page.launch_url(
-                                LinkSingleton().getSellixLink()
-                            ),
-                        ),
-                    ]
-                ),
-                actions=[
-                    ft.TextButton(
-                        "Close", on_click=lambda e: self.initial_page.close_banner()
-                    ),
-                ],
-                content_padding=ft.padding.all(5),
-            )
-        )
+    # def show_payment_banner(self, e):
+    #     self.initial_page.show_banner(
+    #         ft.Banner(
+    #             content=ft.Column(
+    #                 controls=[
+    #                     ft.TextButton(
+    #                         icon=ft.icons.LINK_OUTLINED,
+    #                         text="Pay with Stripe",
+    #                         on_click=lambda _: self.initial_page.launch_url(
+    #                             LinkSingleton().getStripeLink()
+    #                         ),
+    #                     ),
+    #                     ft.TextButton(
+    #                         icon=ft.icons.LINK_OUTLINED,
+    #                         text="Pay with Crypto",
+    #                         on_click=lambda _: self.initial_page.launch_url(
+    #                             LinkSingleton().getSellixLink()
+    #                         ),
+    #                     ),
+    #                 ]
+    #             ),
+    #             actions=[
+    #                 ft.TextButton(
+    #                     "Close", on_click=lambda e: self.initial_page.close_banner()
+    #                 ),
+    #             ],
+    #             content_padding=ft.padding.all(5),
+    #         )
+    #     )
 
     def show_payment_banner(self, e):
         self.initial_page.show_bottom_sheet(
@@ -155,11 +155,9 @@ class LoginUI(ft.Column):
     def verify_subscription(self, username, password):
         try:
             self.initial_page.keyauthapp = selfApi(
-                name="Rokbd" if not BREZILIAN else "RokbdBR",
-                ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
-                if not BREZILIAN
-                else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
+                name=global_name if not BREZILIAN else brezilian_name,
+                ownerid=ownerid,
+                secret=global_secret if not BREZILIAN else brezilian_secret,
                 version="2.0",
                 hash_to_check=getchecksum(),
             )

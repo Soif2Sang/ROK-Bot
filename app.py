@@ -14,7 +14,8 @@ from utils.auth import selfApi
 from utils.Components.AnimatedCard import AnimatedCard
 from utils.Components.filescan import generate_filescan
 from utils.Components.maintenance import generate_maintenance
-from utils.constants import BREZILIAN, toasts_history
+from utils.constants import BREZILIAN, toasts_history, global_name, ownerid, global_secret, brezilian_secret, \
+    brezilian_name
 from utils.functions import FileSingleton, getchecksum
 from views.login.login import LoginUI
 
@@ -42,12 +43,11 @@ except Exception as e:
         page.add(ft.Text(value=traceback_str, color="red"))
         page.update()
 
+
     keyauthapp = selfApi(
-        name="Rokbd" if not BREZILIAN else "RokbdBR",
-        ownerid="7oofxdj8uH",
-        secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
-        if not BREZILIAN
-        else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
+        name=global_name if not BREZILIAN else brezilian_name,
+        ownerid=ownerid,
+        secret=global_secret if not BREZILIAN else brezilian_secret,
         version="2.0",
         hash_to_check=getchecksum(),
     )
@@ -73,11 +73,9 @@ def main(page: ft.Page):
         ready = False
         try:
             page.keyauthapp = selfApi(
-                name="Rokbd" if not BREZILIAN else "RokbdBR",
-                ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
-                if not BREZILIAN
-                else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
+                name=global_name if not BREZILIAN else brezilian_name,
+                ownerid=ownerid,
+                secret=global_secret if not BREZILIAN else brezilian_secret,
                 version="2.0",
                 hash_to_check=getchecksum(),
             )
