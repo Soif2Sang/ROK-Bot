@@ -1,5 +1,7 @@
 import flet as ft
 
+from views.tiles.handler.logging_handler import Logger, LoggerUpgrade
+from views.tiles.handler.tile_handler_u import TileManagerUpgrade
 from utils.constants import VERSION, toasts_history
 from utils.flet_toast.core import Position
 from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
@@ -19,8 +21,16 @@ def Main(page: ft.Page, days=950):
     page.window_width = 450
     page.window_height = 700
     page.theme = theme
-    page.tile_manager = TileHandler(page)
+    if page.UPGRADE:
+        page.tile_manager = TileManagerUpgrade(page)
+        page.logger = LoggerUpgrade(page)
+    else:
+        page.tile_manager = TileHandler(page)
     page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
+    if page.UPGRADE:
+        page.body.controls.append(page.tile_manager.start_bar)
+        page.body.controls.append(page.logger)
+
     page.go("/")
     page.tile_manager.refresh()
 
