@@ -8,6 +8,7 @@ from views.settings.general._general import GeneralSettings
 class InterfaceSettings(ft.Tab):
     def __init__(self, page, instance, **kwargs):
         super().__init__(**kwargs)
+        self.initial_page = page
         self.text = translate("General Settings")
         self.FileSingleton = FileSingleton()
         data = self.FileSingleton.get_data()
@@ -16,8 +17,11 @@ class InterfaceSettings(ft.Tab):
             data["interface"] = {"auto_scroll": True, "auto_refresh": True}
             self.FileSingleton.write_data(data)
 
-        self.content = GeneralSettings(page, self, instance)
-        # self.content = InterfaceSettings(page, instance)
+        if "discord" not in data:
+            data["discord"] = {"user_id": 0, "enabled": False}
+            self.FileSingleton.write_data(data)
+
+        self.content = GeneralSettings(page, instance)
 
     def reverse_keyword(self, keyword: str):
         if keyword == "auto_scroll" or keyword == "limit_logs":
@@ -29,7 +33,7 @@ class InterfaceSettings(ft.Tab):
                     self.page.frames[frame].logger.auto_scroll = data["interface"][
                         keyword
                     ]
-                self.update()
+                self.initial_page.update()
         if keyword == "enabled":
             data = self.FileSingleton.get_data()
             data["discord"]["enabled"] = not data["discord"].get(keyword, False)

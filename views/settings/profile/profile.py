@@ -1,6 +1,7 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from flet_translations import translate
 from views.settings.page_settings import PageSettings
 from views.settings.profile.page_academy_research import PageAcademyResearch
 from views.settings.profile.page_barbs import PageBarbs
@@ -212,7 +213,7 @@ class SettingContainer(PageSettings):
         self.data = self.FileSingleton.get_data()
         self.content.controls.append(
             ft.Switch(
-                label=text,
+                label=translate(text),
                 value=True
                 if self.data[str(self.instance_index)]["schedules"][
                     str(self.profile_index)
@@ -229,7 +230,7 @@ class SettingContainer(PageSettings):
                 ft.Row(
                     controls=[
                         ft.Switch(
-                            label=text,
+                            label=translate(text),
                             value=True
                             if self.data[str(self.instance_index)]["schedules"][
                                 str(self.profile_index)
@@ -238,7 +239,7 @@ class SettingContainer(PageSettings):
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
-                            text="Settings",
+                            text=translate("Settings"),
                             icon=ft.icons.SETTINGS,
                             on_click=lambda _: self.handleSettings(function),
                             style=ButtonStyle(
@@ -258,14 +259,14 @@ class SettingContainer(PageSettings):
                 ft.Row(
                     controls=[
                         ft.Switch(
-                            label=text,
+                            label=translate(text),
                             value=True
                             if self.data[str(self.instance_index)][keyword]
                             else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
-                            text="Settings",
+                            text=translate("Settings"),
                             icon=ft.icons.SETTINGS,
                             on_click=lambda _: self.handleSettings(function),
                             style=ButtonStyle(
@@ -286,7 +287,7 @@ class SettingContainer(PageSettings):
             ft.Row(
                 controls=[
                     ft.Switch(
-                        label="Reduce bot speed",
+                        label=translate("Reduce bot speed"),
                         value=True
                         if self.data[str(self.instance_index)]["schedules"][
                             str(self.profile_index)

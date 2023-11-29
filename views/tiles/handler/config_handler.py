@@ -2,7 +2,7 @@ import flet as ft
 
 from utils.flet_translations import translate
 from utils.functions import FileSingleton
-from views.settings.general.Flet_general_settings import InterfaceSettings
+from views.settings.general.general_tab import InterfaceSettings
 from views.settings.profile.profile import SettingContainer
 from views.tiles.handler.logging_handler import Logger
 

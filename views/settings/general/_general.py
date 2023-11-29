@@ -10,8 +10,8 @@ color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
 class GeneralSettings(PageSettings):
-    def __init__(self, page, tab, instance_index):
-        super().__init__(page, tab, instance_index, 1)
+    def __init__(self, page, instance_index):
+        super().__init__(page, instance_index, 1)
 
     def clean(self):
         self.content.controls = []
@@ -27,61 +27,61 @@ class GeneralSettings(PageSettings):
 
     def init(self):
         self.add(
-            ft.Container(
-                content=ft.Text(
-                    spans=[
-                        ft.TextSpan(
-                            translate("Shared Profile Preferences"),
-                            style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
-                        ),
-                    ]
-                ),
-                bgcolor=ft.colors.SURFACE_VARIANT,
-                padding=ft.padding.all(10),
-                margin=ft.margin.only(top=5, bottom=3),
-            ),
+                ft.Container(
+                    content=ft.Text(
+                        spans=[
+                            ft.TextSpan(
+                                translate("Shared Profile Preferences"),
+                                style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
+                            ),
+                        ]
+                    ),
+                    bgcolor=ft.colors.SURFACE_VARIANT,
+                    padding=ft.padding.all(10),
+                    margin=ft.margin.only(top=5, bottom=3),
+                )
         )
         self.create_advanced_switch("loop_task", "Do tasks again", PageRedo)
         self.create_advanced_switch("scheduler", "run Multiple Profile", PageProfiles)
         self.add(
-            ft.TextField(
-                label=translate("Custom API key:"),
-                value=self.data[str(self.instance_index)]["API_KEY"],
-                on_change=lambda e: self.submit(e, "API_KEY", str),
-            ),
-            ft.Container(
-                content=ft.Text(
-                    spans=[
-                        ft.TextSpan(
-                            text="Interface & Discord Settings",
-                            style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
-                        ),
-                    ]
+                ft.TextField(
+                    label=translate("Custom API key:"),
+                    value=self.data[str(self.instance_index)]["API_KEY"],
+                    on_change=lambda e: self.submit(e, "API_KEY", str),
                 ),
-                bgcolor=ft.colors.SURFACE_VARIANT,
-                padding=ft.padding.all(10),
-                margin=ft.margin.only(top=5, bottom=3),
-            ),
-            ft.Switch(
-                label=translate("Logger autoscroll"),
-                value=self.data["interface"]["auto_scroll"],
-                on_change=lambda _: self.reverse_keyword("auto_scroll"),
-            ),
-            ft.Switch(
-                label=translate("Limit Logs to 300 (reduce lags)"),
-                value=self.data["interface"].get("limit_logs", False),
-                on_change=lambda _: self.reverse_keyword("limit_logs"),
-            ),
-            ft.Switch(
-                label=translate("Enable Discord Notifications"),
-                value=self.data["discord"]["enabled"],
-                on_change=lambda _: self.reverse_keyword("enabled"),
-            ),
-            ft.TextField(
-                label=translate("Your discord ID"),
-                value=self.data["discord"]["user_id"],
-                on_change=lambda e: self.submit(e, "user_id", int),
-            ),
+                ft.Container(
+                    content=ft.Text(
+                        spans=[
+                            ft.TextSpan(
+                                text=translate("Interface & Discord Settings"),
+                                style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
+                            ),
+                        ]
+                    ),
+                    bgcolor=ft.colors.SURFACE_VARIANT,
+                    padding=ft.padding.all(10),
+                    margin=ft.margin.only(top=5, bottom=3),
+                ),
+                ft.Switch(
+                    label=translate("Logger autoscroll"),
+                    value=self.data["interface"]["auto_scroll"],
+                    on_change=lambda _: self.reverse_keyword("auto_scroll"),
+                ),
+                ft.Switch(
+                    label=translate("Limit Logs to 300 (reduce lags)"),
+                    value=self.data["interface"].get("limit_logs", False),
+                    on_change=lambda _: self.reverse_keyword("limit_logs"),
+                ),
+                ft.Switch(
+                    label=translate("Enable Discord Notifications"),
+                    value=self.data["discord"]["enabled"],
+                    on_change=lambda _: self.reverse_keyword("enabled"),
+                ),
+                ft.TextField(
+                    label=translate("Your discord ID"),
+                    value=self.data["discord"]["user_id"],
+                    on_change=lambda e: self.submit(e, "user_id", int),
+                )
         )
 
     def submit(self, e, keyword, method):
