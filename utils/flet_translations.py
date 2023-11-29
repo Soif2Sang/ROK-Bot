@@ -24,8 +24,6 @@ translations = {
     "Area location Y": "Localização da área Y",
     "coordinates": "coordenadas",
     "Detect free marches without clicking on the node": "Detecte marchas livres sem clicar no node",
-    "Available troop scan\nfrequency (seconds)": "Frequência de varredura de tropa disponível (segundos)",
-    "Minimum": "Mínimo",
     "Maximum": "Máximo",
     "Set the maximum of nodes to gather": "Defina o máximo de nós a serem reunidos",
     "Fixed number of nodes to gather": "Número fixo de nós para reunir",
@@ -168,6 +166,8 @@ translations = {
     "Mobilisation time (minutes):": "Tempo de mobilização (minutos):",
     "Pre-configure your red lineups with commanders who have the same march speed.\nIf you intend to use this feature extensively, I recommend running it for 3-4 hours and enabling the option to redo tasks. This will allow your troops to return to the city for healing.": "Pré-configure suas formações vermelhas com comandantes que tenham a mesma velocidade de marcha.\nSe você pretende usar esse recurso extensivamente, recomendo executá-lo por 3-4 horas e habilitar a opção de refazer tarefas. Isso permitirá que suas tropas retornem à cidade para cura.",
     "Minutes to wait until the bot do the task :": "Minutos a esperar até o bot realizar a tarefa :",
+    "Skip second and fourth line": "Pular segunda e quarta linha",
+    "Available troop scan\nfrequency (seconds)": "Frequência de varredura\nde tropa disponível (segundos)"
 }
 
 
