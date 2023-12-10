@@ -153,6 +153,7 @@ class TaskRunner(Task):
                 "ProduceMaterials",
                 "TroopTraining",
                 "UpgradeCity",
+                "AcademyResearch"
             ]:
                 self.go_city()
             try:
@@ -278,6 +279,7 @@ class TaskRunner(Task):
 
         if profile.get("upgrade_city", False):
             lib_tasks.append(UpgradeCity(self))
+
         if ("TroopTraining" in tasks_names) and self.tile.initial_page.UPGRADE:
             lib_tasks.pop(tasks_names.index("TroopTraining"))
             lib_tasks.append(TroopTraining(self))
@@ -555,7 +557,7 @@ class TaskRunner(Task):
 
         subprocess.run(cmd)
 
-        print(f"Bot will wait 1 min from now.")
+        print(f"Bot will wait 2 min from now.")
         self.better_sleep((120, 120))
         if win32gui.FindWindow(None, self.name) is None:
             self.print(f"Executing cmd")
@@ -704,7 +706,7 @@ class TaskRunner(Task):
                 self.start_emulator(emulator)
                 self.print("Changing adb..")
                 self.print(f"{self.adb.number = } {self.adb.port =}")
-                self.adb = Adb(int(emulator))
+                self.adb = Adb(emulator)
                 self.adb.__repr__()
                 self.print("Connecting to the emulator..")
                 self.adb.connect_to_device()
