@@ -218,7 +218,7 @@ class GatherRssZoom(GatherRss):
 
         self.scan_node()
 
-        max_distance = 5
+        max_distance = 6
         swipes = {
             self.swipe_up: self.swipe_right,
             self.swipe_right: self.swipe_down,
