@@ -117,6 +117,10 @@ class UpgradeCity(Task):
     def setup_view(self):
         hwnd = win32gui.FindWindow(None, self.adb.name)
         hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+
+        if self.adb.is_ld:
+            hwnd = hwndChild
+
         for _ in range(2):
             win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
             win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
