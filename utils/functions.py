@@ -284,11 +284,21 @@ def get_dic_instances_ld():
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
     emulators = result.stdout.split("\n")
-    emulators.pop()
+    if emulators[-1] == '':
+        emulators.pop()
+
+    if emulators[-1][0] == ',':
+        emulators.pop()
+
+    final = []
+    for emulator in emulators:
+        if emulator.split(',')[0] != '':
+            final.append(emulator)
 
     liste = {}
-    for emulator in emulators:
+    for emulator in final:
         emulator = emulator.split(",")
+
         liste[emulator[0]] = {
             "name": emulator[1],
             "instance": emulator[0],
@@ -307,13 +317,15 @@ def get_current_instances_ld(data: dict):
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
     emulators = result.stdout.split("\n")
-    print(emulators)
 
-    emulators.pop()
+    final = []
+    for emulator in emulators:
+        if emulator.split(',')[0] != '':
+            final.append(emulator)
 
     liste = []
 
-    for emulator in emulators:
+    for emulator in final:
         for e in data.values():
             if e["name"] == emulator:
                 liste.append((e["instance"], e["name"]))
