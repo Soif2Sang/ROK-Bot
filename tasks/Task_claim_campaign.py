@@ -1,4 +1,4 @@
-from random import uniform
+from random import uniform, shuffle
 
 import cv2
 
@@ -30,6 +30,13 @@ class ClaimCampaign(Task):
         except Exception as e:
             return False
 
+    def is_new_shop_available(self):
+        screen = self.adb.get_cv2_img()
+        if screen[93, 165][0] > 220 and screen[93, 165][1] == 0 and screen[93, 165][1] == 0:
+            return True
+        return False
+
+
     @get_class
     def run(self):
         # Open du menu
@@ -50,4 +57,27 @@ class ClaimCampaign(Task):
                 self.print("Claiming the daily rewards from the expedition.")
                 self.click(co[0] + uniform(0, 149), co[1] + uniform(0, 20))
                 self.better_sleep((1.3, 2.2))
+                if self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_ethel"] or self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_items"]:
+                    self.click(160, 100)
+                    self.better_sleep((1.3, 2.2))
+
+                    items = [(626, 466), (800, 466), (990, 466), (626, 600), (800, 600), (990, 600)]
+                    ethel = (1000,275)
+                    refresh = (1040, 330)
+                    shuffle(items)
+
+                    if self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_ethel"]:
+                        for i in range(3):
+                            self.click(ethel[0] + uniform(-3, 3), ethel[1] + uniform(-3, 3))
+                            self.better_sleep((0.7, 1.2))
+
+                    if self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_items"]:
+                        for i in range(2):
+                            for item in items:
+                                self.click(item[0] + uniform(-3, 3), item[1] + uniform(-3, 3))
+                                self.better_sleep((0.7, 1.2))
+                            if i == 0:
+                                self.click(refresh[0], refresh[1])
+                                self.better_sleep((0.7, 1.2))
+
             self.close_windows()
