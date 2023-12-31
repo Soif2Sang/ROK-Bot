@@ -66,7 +66,6 @@ def main(page: ft.Page):
     page.window_width = 450
     page.window_height = 400
     page.FileSingleton = FileSingleton()
-
     ready = False
 
     for i in range(3):
@@ -101,14 +100,13 @@ def main(page: ft.Page):
             leading=ft.Icon(
                 ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
             ),
-            content=ft.Text(value=text),
+            content=ft.Text(value=text, color=ft.colors.ON_INVERSE_SURFACE),
             actions=[
                 ft.TextButton("Ok", on_click=lambda _: page.close_banner()),
             ],
             open=True,
         )
 
-    page.open_banner = lambda text: page.show_banner(create_banner(text))
     page.loginUI = LoginUI(page)
     page.UPGRADE = False
     page.body = ft.Column()
@@ -127,7 +125,7 @@ def main(page: ft.Page):
             bgcolor_title=bgcolor_title,
         )
 
-    page.generate_toast = lambda title, description, icon=ft.icons.INFO, bgcolor_title="AMBER": generate_toast(
+    page.generate_toast = lambda title, description, icon=ft.icons.INFO, bgcolor_title=ft.colors.ERROR_CONTAINER: generate_toast(
         title, description, icon, bgcolor_title
     )
 
@@ -282,7 +280,7 @@ def login(page: ft.Page, params, basket):
                             width=300,
                         ),
                         alignment=ft.Alignment(0, 0),
-                        border_radius=5,
+                        border_radius=15,
                         border=ft.border.all(3, ft.colors.GREY_900),
                     ),
                 ]
