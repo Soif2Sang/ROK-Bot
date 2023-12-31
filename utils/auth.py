@@ -148,16 +148,17 @@ class selfApi:
             if wid1 != hwid:
                 if self.page is not None:
                     self.log(f"user :{user} tried connecting on {public_ip}")
-                    self.page.open_banner(
-                        "Hardware id doesn't match, contact the admin"
-                    )
+                    self.page.generate_toast("Something wrong occurred",
+                                             "Hardware id doesn't match, contact the admin"
+                                             )
                 print("Hardware id doesn't match")
                 return False
         else:
             if (wid1 != hwid) and (wid2 != hwid):
                 if self.page is not None:
                     self.log(f"user :{user} tried connecting on {public_ip}")
-                    self.page.open_banner(
+                    self.page.generate_toast(
+                        "Something wrong occurred",
                         "Hardware id doesn't match, contact the admin"
                     )
                 print("Hardware id doesn't match")
@@ -397,7 +398,7 @@ class selfApi:
         except requests.exceptions.Timeout:
             if deadstop < 5:
                 if self.page is not None:
-                    self.page.pop_banner("Request timed out.. Please wait few minutes")
+                    self.page.generate_toast("Something wrong occurred","Request timed out.. Please wait few minutes")
                 print("Request timed out")
         except requests.exceptions.ConnectionError:
             if deadstop < 5:
