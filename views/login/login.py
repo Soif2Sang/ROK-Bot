@@ -24,6 +24,7 @@ class LoginUI(ft.Column):
     def __init__(self, page, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initial_page = page
+
         self.fileSingleton = FileSingleton()
         self.data = self.fileSingleton.get_data()
         self.init()
@@ -88,7 +89,16 @@ class LoginUI(ft.Column):
         )
 
     def login(self, e):
+        username = self.textfield_username.value
+        password = self.textfield_password.value
+
         try:
+            if username == "" or password == "":
+                return
+            if not is_str_valid(username, password):
+                self.initial_page.generate_toast("Invalid credentials", "Illegal characters..")
+                return
+
             self.initial_page.splash = ft.ProgressBar()
             self.button_login.disabled = True
             self.button_login.style = ft.ButtonStyle(
@@ -101,14 +111,7 @@ class LoginUI(ft.Column):
             )
             self.initial_page.update()
 
-            username = self.textfield_username.value
-            password = self.textfield_password.value
 
-            if username == "" or password == "":
-                return
-            if not is_str_valid(username, password):
-                self.initial_page.open_banner("Illegal characters..")
-                return
             if self.initial_page.keyauthapp.login(
                 user=username, password=password, page=self.initial_page
             ):

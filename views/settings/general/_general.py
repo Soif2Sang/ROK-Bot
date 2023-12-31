@@ -68,7 +68,7 @@ class GeneralSettings(PageSettings):
                     on_change=lambda _: self.reverse_keyword("auto_scroll"),
                 ),
                 ft.Switch(
-                    label=translate("Limit Logs to 300 (reduce lags)"),
+                    label=translate("Limit Logs to 200 (reduce lags)"),
                     value=self.data["interface"].get("limit_logs", False),
                     on_change=lambda _: self.reverse_keyword("limit_logs"),
                 ),

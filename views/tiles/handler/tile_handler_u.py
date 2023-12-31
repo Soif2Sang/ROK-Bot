@@ -7,7 +7,7 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from tiles.tile_upgrade import TileUpgrade
+from views.tiles.tile_upgrade import TileUpgrade
 from utils.constants import BREZILIAN
 from utils.flet_translations import translate
 from utils.functions import (
@@ -148,7 +148,7 @@ class TileManagerUpgrade(ft.ListView):
             instances = get_dic_instances()
         else:
             instances = get_dic_instances_ld()
-
+        print(instances)
         default_dic = {
             "instance": "",
             "name": "",
@@ -307,10 +307,8 @@ class TileManagerUpgrade(ft.ListView):
             data[str(instance)]["port"] = int(instances[str(instance)]["port"])
 
         self.FileSingleton.write_data(data)
-        if emulator == "bluestacks":
-            instances = get_all_vms_running()
-        else:
-            instances = get_all_vms_running_ld()
+
+        instances = [(instance, instance) for instance in instances]
 
         for i in range(len(self.controls) - 1):
             self.controls.pop()

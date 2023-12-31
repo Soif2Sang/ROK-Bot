@@ -1,6 +1,6 @@
 import flet as ft
-from tiles.handler.config_handler import FrameUpgrade
-from tiles.tile import ConfigOverrider
+from views.tiles.handler.config_handler import FrameUpgrade
+from views.tiles.tile import ConfigOverrider
 
 from utils.functions import FileSingleton
 

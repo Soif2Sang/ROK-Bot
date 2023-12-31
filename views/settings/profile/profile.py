@@ -1,7 +1,8 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from flet_translations import translate
+from views.settings.profile.page_expedition import PageExpedition
+from utils.flet_translations import translate
 from views.settings.page_settings import PageSettings
 from views.settings.profile.page_academy_research import PageAcademyResearch
 from views.settings.profile.page_barbs import PageBarbs
@@ -34,6 +35,8 @@ class SettingContainer(PageSettings):
         self.initial_page.update()
 
     def init(self):
+        self.data = self.FileSingleton.get_data()
+
         self.create_advanced_switch("gather_gem", "Gem Gathering", PageGem)
         self.create_advanced_switch("gather_rss", "Resources Gathering", PageRss)
         self.create_normal_switch("collect_ressource", "Collect City Resources")
@@ -50,7 +53,7 @@ class SettingContainer(PageSettings):
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
         self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
         self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
-        self.create_normal_switch("claim_campaign", "Claim Expedition Rewards")
+        self.create_advanced_switch("claim_campaign", "Claim Expedition Rewards", PageExpedition)
         self.create_normal_switch("claim_mails", "Claim Mails")
         self.create_normal_switch("alliance_help", "Help Alliance")
         #
@@ -210,77 +213,56 @@ class SettingContainer(PageSettings):
         self.initial_page.update()
 
     def create_normal_switch(self, keyword: str, text: str):
-        self.data = self.FileSingleton.get_data()
         self.content.controls.append(
-            ft.Switch(
-                label=translate(text),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword]
-                else False,
-                on_change=lambda _: self.reverse_keyword(keyword),
+            ft.Row(
+                controls=[
+                    ft.Switch(
+                        label=translate(text),
+                        value=True
+                        if self.data[str(self.instance_index)]["schedules"][
+                            str(self.profile_index)
+                        ][keyword]
+                        else False,
+                        on_change=lambda _: self.reverse_keyword(keyword),
+                    )
+                ]
             )
         )
 
     def create_advanced_switch(self, keyword: str, text: str, function):
-        self.data = self.FileSingleton.get_data()
-        if keyword not in ["loop_task", "scheduler"]:
-            self.content.controls.append(
-                ft.Row(
-                    controls=[
-                        ft.Switch(
-                            label=translate(text),
-                            value=True
-                            if self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ][keyword]
-                            else False,
-                            on_change=lambda _: self.reverse_keyword(keyword),
-                        ),
-                        ft.OutlinedButton(
-                            text=translate("Settings"),
-                            icon=ft.icons.SETTINGS,
-                            on_click=lambda _: self.handleSettings(function),
-                            style=ButtonStyle(
-                                shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(
-                                        radius=5
-                                    ),
-                                }
-                            ),
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                )
+        self.content.controls.append(
+            ft.Row(
+                controls=[
+                    ft.Switch(
+                        label=translate(text),
+                        value=True
+                        if self.data[str(self.instance_index)]["schedules"][
+                            str(self.profile_index)
+                        ][keyword]
+                        else False,
+                        on_change=lambda _: self.reverse_keyword(keyword),
+                    ),
+                    ft.Row(
+                        controls=[
+                            ft.OutlinedButton(
+                                text=translate("Settings"),
+                                icon=ft.icons.SETTINGS,
+                                on_click=lambda _: self.handleSettings(function),
+                                style=ButtonStyle(
+                                    shape={
+                                        ft.MaterialState.DEFAULT: RoundedRectangleBorder(
+                                            radius=5
+                                        ),
+                                    }
+                                ),
+                            )
+                        ]
+                    )
+
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             )
-        else:
-            self.content.controls.append(
-                ft.Row(
-                    controls=[
-                        ft.Switch(
-                            label=translate(text),
-                            value=True
-                            if self.data[str(self.instance_index)][keyword]
-                            else False,
-                            on_change=lambda _: self.reverse_keyword(keyword),
-                        ),
-                        ft.OutlinedButton(
-                            text=translate("Settings"),
-                            icon=ft.icons.SETTINGS,
-                            on_click=lambda _: self.handleSettings(function),
-                            style=ButtonStyle(
-                                shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(
-                                        radius=5
-                                    ),
-                                },
-                            ),
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                ),
-            )
+        )
 
     def create_slow_mode(self):
         self.content.controls.append(
@@ -314,7 +296,7 @@ class SettingContainer(PageSettings):
                                 str(self.profile_index)
                             ]["sleep_multiplicator"]
                         )
-                        + "x",
+                              + "x",
                         on_change=lambda e: self.submit(e, "sleep_multiplicator", str),
                         height=50,
                         content_padding=ft.Padding(
