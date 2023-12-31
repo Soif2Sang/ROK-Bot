@@ -18,7 +18,7 @@ class Frame(ft.Tabs):
         self.initial_page = page
         self.logger = Logger(self, page)
 
-        self.tabs.append(ft.Tab(content=self.logger, text=translate("Logs")))
+        self.tabs.append(ft.Tab(content=self.logger, text=translate("Activity Logs")))
         self.tabs.append(ft.Tab(content=self.settings, text=translate("Settings")))
         self.tabs.append(InterfaceSettings(page, number))
         #
@@ -69,7 +69,7 @@ class FrameUpgrade(ft.Tabs):
         self.FileSingleton = FileSingleton()
 
         self.tabs.append(ft.Tab(content=self.settings, text=translate("Settings")))
-        self.tabs.append(ft.Tab(content=self.logger, text=translate("Logs")))
+        self.tabs.append(ft.Tab(content=self.logger, text=translate("Activity Logs")))
         self.tabs.append(InterfaceSettings(page, number))
         # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 1), text="Profile 1"))
         # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, int(number), 2), text="Profile 2"))

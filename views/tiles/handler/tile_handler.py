@@ -274,6 +274,8 @@ class TileHandler(ft.ListView):
             "academic_research": False,
             "academy_position": [],
             "buy_merchant_skip": False,
+            "expedition_shop_ethel": False,
+            "expedition_shop_items": False,
         }
 
         for i in range(1, 4):

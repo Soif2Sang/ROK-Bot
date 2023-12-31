@@ -1,3 +1,8 @@
+import json
+import sys
+import time
+import traceback
+
 import flet as ft
 
 from views.tiles.handler.logging_handler import Logger, LoggerUpgrade
@@ -21,12 +26,14 @@ def Main(page: ft.Page, days=950):
     page.window_width = 450
     page.window_height = 700
     page.theme = theme
+
     if page.UPGRADE:
         page.tile_manager = TileManagerUpgrade(page)
         page.logger = LoggerUpgrade(page)
     else:
         page.tile_manager = TileHandler(page)
     page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
+
     if page.UPGRADE:
         page.body.controls.append(page.tile_manager.start_bar)
         page.body.controls.append(page.logger)
@@ -34,76 +41,103 @@ def Main(page: ft.Page, days=950):
     page.go("/")
     page.tile_manager.refresh()
 
-    def fetchNews():
-        if VERSION != page.keyauthapp.var("version"):
-            ToastsFlexible(
-                page=page,
-                width=280,
-                position=Position.BOTTOM_LEFT,
-                no_live_time=True,
-                set_history_title="Update available",
-                set_history_desc=None,
-                set_history=toasts_history,
-                desc=ft.Row(
-                    expand=True,
-                    alignment=ft.MainAxisAlignment.START,
-                    vertical_alignment=ft.CrossAxisAlignment.START,
-                    spacing=12,
-                    controls=[
-                        ft.Icon(ft.icons.UPDATE, size=24),
-                        ft.Column(
-                            alignment=ft.MainAxisAlignment.START,
-                            horizontal_alignment=ft.CrossAxisAlignment.START,
-                            spacing=0,
-                            controls=[
-                                ft.Text(
-                                    "Update available",
-                                    style=ft.TextThemeStyle.BODY_MEDIUM,
-                                    weight=ft.FontWeight.BOLD,
-                                ),
-                                ft.Text(
-                                    "A new software version is available for download.",
-                                    style=ft.TextThemeStyle.LABEL_MEDIUM,
-                                    width=210,
-                                    opacity=0.8,
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-                actions_alignment=ft.MainAxisAlignment.START,
-                actions=[
-                    ToastAction(
-                        text="Update",
-                        width=100,
-                        action_style="filled",
-                        disabled=False,
-                        on_click=lambda e: page.launch_url(
-                            page.keyauthapp.var("download_link")
-                        ),
-                    )
+
+    REMOTE_VERSION = page.keyauthapp.var("version")
+    try:
+        version_json = json.loads(REMOTE_VERSION)
+    except:
+        traceback.print_exc()
+        version_json = {"version": "-1", "force": False, "download_link": ""}
+
+    GLOBAL_MESSAGE = page.keyauthapp.var("message")
+    PERSONAL_MESSAGE = page.keyauthapp.getvar("message").replace("None", "")
+    if version_json["version"] > VERSION:
+
+        if version_json["force"]:
+            page.launch_url(version_json["download_link"])
+            time.sleep(1)
+            page.window_destroy()
+            sys.exit(0)
+
+        ToastsFlexible(
+            page=page,
+            width=280,
+            position=Position.BOTTOM_LEFT,
+            no_live_time=True,
+            set_history_title="Update available",
+            set_history_desc=None,
+            set_history=toasts_history,
+            desc=ft.Row(
+                expand=True,
+                alignment=ft.MainAxisAlignment.START,
+                vertical_alignment=ft.CrossAxisAlignment.START,
+                spacing=12,
+                controls=[
+                    ft.Icon(ft.icons.UPDATE, size=24),
+                    ft.Column(
+                        alignment=ft.MainAxisAlignment.START,
+                        horizontal_alignment=ft.CrossAxisAlignment.START,
+                        spacing=0,
+                        controls=[
+                            ft.Text(
+                                "Update available",
+                                style=ft.TextThemeStyle.BODY_MEDIUM,
+                                weight=ft.FontWeight.BOLD,
+                            ),
+                            ft.Text(
+                                f"A new software version is available for download (v{version_json['version']}).",
+                                style=ft.TextThemeStyle.LABEL_MEDIUM,
+                                width=210,
+                                opacity=0.8,
+                            ),
+                        ],
+                    ),
                 ],
-            )
-        if message := page.keyauthapp.var("message").replace("None", ""):
+            ),
+            actions_alignment=ft.MainAxisAlignment.START,
+            actions=[
+                ToastAction(
+                    text="Update",
+                    width=100,
+                    action_style="filled",
+                    disabled=False,
+                    on_click=lambda e: page.launch_url(
+                        version_json["download_link"]
+                    ),
+                )
+            ],
+        )
+
+    try:
+        message_json = json.loads(GLOBAL_MESSAGE)
+        if int(message_json['end']) > time.time() > int(message_json['start']):
             ToastsFlexible(
                 page=page,
                 icon=ft.icons.NOTIFICATION_IMPORTANT_OUTLINED,
                 title="Announcements",
                 bgcolor_title="red",
-                desc=message,
+                desc=message_json['message'],
                 auto_close=None,
                 trigger=None,
                 set_history=toasts_history,
                 position=Position.TOP_RIGHT,
             )
+    except:
+        pass
 
-        if message := page.keyauthapp.getvar("message").replace("None", ""):
+    try:
+        message_json = json.loads(PERSONAL_MESSAGE)
+        if (not message_json['read']) and (int(message_json['end']) > time.time() > int(message_json['start'])):
+            def accept_message(e):
+                message_json['read'] = True
+                page.keyauthapp.setvar("message", json.dumps(message_json))
+
             ToastsFlexible(
                 page=page,
                 icon=ft.icons.ANNOUNCEMENT_OUTLINED,
                 title="Private Messages",
                 bgcolor_title=ft.colors.BLUE_300,
-                desc=message,
+                desc=message_json['message'],
                 auto_close=None,
                 trigger=None,
                 set_history=toasts_history,
@@ -112,14 +146,12 @@ def Main(page: ft.Page, days=950):
                     ToastAction(
                         text="I have read",
                         action_style="texted",
-                        on_click=lambda e: page.keyauthapp.setvar("message", "None"),
+                        on_click=accept_message,
                     )
                 ],
             )
-
-    fetchNews()
-    # threading.Thread(target=threadFetchNews, name="FetchNews").start()
-
+    except:
+        pass
 
 if __name__ == "__main__":
     ft.app(target=Main, view=ft.FLET_APP)

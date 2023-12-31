@@ -16,7 +16,7 @@ class PageSettings(ft.Container):
         self.profile_index = profile_index
         self.padding = ft.padding.only(top=5, left=0, bottom=0)
         self.content: ft.ListView = ft.ListView(
-            height=400, expand=1, padding=1, spacing=6
+            height=400, expand=1, padding=1, spacing=0
         )
 
         self.theme = ft.Theme(
