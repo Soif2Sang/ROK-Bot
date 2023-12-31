@@ -366,9 +366,10 @@ class Task:
             self.debug(string)
             string = string.replace("\n", "")
             string = string.split(":")
-            if string[1] == "1l":
-                string[1] = "1"
+
             try:
+                if string[1] == "1l":
+                    string[1] = "1"
                 self.print(f"Current level : {string[1]}")
                 # self.set_text(f"[{current_time()}] Current level : {string[1]}")
                 level_to_go = level - int(string[1].replace("l", "1"))
@@ -846,7 +847,8 @@ class Task:
     def wait_until_connected(self) -> None:
         self.print("Script is paused until game is fully loaded..")
         condition = True
-        while condition:
+        limit = 30
+        while condition and limit:
             self.run_game()
             if (
                 self.find_img(target="menu_button", confidence=0.8)
@@ -875,10 +877,16 @@ class Task:
                 self.leave_game()
                 self.run_game()
 
+            limit = limit - 1
+
+            if not limit:
+                self.leave_game()
+                self.run_game()
+
     @get_name
     def close_upgrade_popup(self):
         for i in range(3):
-            co = self.find_img(f"upgrade_popup_{i}")
+            co = self.find_img(f"upgrade_popup_{i}", confidence=0.67)
             if co is not None:
                 self.click(uniform(1102, 1030), uniform(92, 118))
                 self.better_sleep((2, 4))
@@ -1160,7 +1168,7 @@ class Task:
         return (
             self.find_img(
                 target="checkpoint_star",
-                source=self.adb.get_cv2_img()[:100, 0:600],
+                source=self.adb.get_cv2_img()[:70, 200:600],
                 confidence=0.9,
             )
             is None
