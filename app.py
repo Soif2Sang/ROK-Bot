@@ -9,26 +9,30 @@ from time import sleep
 import flet as ft
 from flet_route import Routing, path
 
-import views.tiles.tile
-from utils.auth import selfApi
-from utils.Components.AnimatedCard import AnimatedCard
-from utils.Components.filescan import generate_filescan
-from utils.Components.maintenance import generate_maintenance
-from utils.constants import BREZILIAN, toasts_history, global_name, ownerid, global_secret, brezilian_secret, \
-    brezilian_name
-from utils.functions import FileSingleton, getchecksum
-from views.login.login import LoginUI
-
-from utils.flet_toast.core import Position
-from utils.flet_toast.toasts_flexible import ToastsFlexible
-from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
-from views.city_layout import viewCityLayout
-from views.config_path import find_file_in_all_drives
-from views.main import Main
-from views.profile_settings import viewProfileSettings
 
 try:
-    1
+    from utils.Components.AnimatedCard import AnimatedCard
+    from utils.Components.filescan import generate_filescan
+    from utils.Components.maintenance import generate_maintenance
+    from utils.auth import selfApi
+    from utils.constants import (
+        BREZILIAN,
+        toasts_history,
+        global_name,
+        ownerid,
+        global_secret,
+        brezilian_secret,
+        brezilian_name,
+    )
+    from utils.flet_toast.core import Position
+    from utils.flet_toast.toasts_flexible import ToastsFlexible
+    from utils.functions import FileSingleton, getchecksum
+    from utils.singletons import EmulatorSingleton, LinkSingleton
+    from views.city_layout import viewCityLayout
+    from views.config_path import find_file_in_all_drives
+    from views.login.login import LoginUI
+    from views.main import Main
+    from views.profile_settings import viewProfileSettings
 except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -42,7 +46,6 @@ except Exception as e:
         )
         page.add(ft.Text(value=traceback_str, color="red"))
         page.update()
-
 
     keyauthapp = selfApi(
         name=global_name if not BREZILIAN else brezilian_name,
@@ -217,6 +220,10 @@ def emulator_choice(page: ft.Page, params, basket):
                     path_file["LD-Console"] = result
                     with open("./path.json", "w", encoding="UTF-8") as f:
                         json.dump(path_file, f, indent=2)
+                else:
+                    page.generate_toast("LD9 Missing", "Unable to load LD Player 9 Configuration")
+                    while 1:
+                        sleep(1)
 
             cmd = f"{path_file['LD-Console'].replace('ldconsole', 'adb')} start-server"
             subprocess.Popen(cmd)
