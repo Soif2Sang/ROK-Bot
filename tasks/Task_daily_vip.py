@@ -18,12 +18,14 @@ class DailyVip(Task):
     def run(self):
         cv_image = self.adb.get_cv2_img()
         img = Image.fromarray(cv_image)
-        if img.getpixel((186, 50)) == (0, 0, 227):
+        notification_pixel = img.getpixel((186, 50))
+        if notification_pixel[0] == 0 and notification_pixel[1] == 0 and notification_pixel[2] > 220 or 1:
             self.click(uniform(105, 170), uniform(56, 69))
             self.better_sleep((1.25, 2))
             cv_image = self.adb.get_cv2_img()
             img = Image.fromarray(cv_image)
-            if img.getpixel((1041, 155)) == (0, 0, 227):
+            notification_pixel = img.getpixel((1041, 155))
+            if notification_pixel[0] == 0 and notification_pixel[1] == 0 and notification_pixel[2] > 220:
                 self.print("Claiming daily VIP points")
                 self.click(uniform(1015, 1035), uniform(163, 192))
                 self.better_sleep((2, 2.5))
