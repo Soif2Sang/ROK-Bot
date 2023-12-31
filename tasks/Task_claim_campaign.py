@@ -19,9 +19,15 @@ class ClaimCampaign(Task):
     def has_notification(self):
         cv_image = self.adb.get_cv2_img()
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
-        cropped_image = cv_image[630:655, 841:865]
+        cropped_image = cv_image[630:655, 841:870]
 
-        number = self.extract_text(img=cropped_image, allowlist="12345670.")
+        _, cropped_image = cv2.threshold(cropped_image, 128, 255, cv2.THRESH_BINARY_INV)
+
+        # Remove small noise using morphological operations
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+        cropped_image = cv2.morphologyEx(cropped_image, cv2.MORPH_OPEN, kernel)
+
+        number = self.extract_text(img=cropped_image, allowlist="0123456789.")
 
         if "." in number:
             return True
