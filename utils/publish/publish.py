@@ -1,6 +1,7 @@
 import sys
 import shutil
 import os
+import zipfile
 from datetime import datetime
 
 # Get the input argument
@@ -19,3 +20,17 @@ os.makedirs(f".\\auth compiled\\test environnement\\bot_executable_{current_date
 shutil.move(".\\Bot.exe", new_filename)
 shutil.copytree(".\\resources", f".\\auth compiled\\test environnement\\bot_executable_{current_date}\\resources", dirs_exist_ok=True)
 shutil.copytree(".\\assets", f".\\auth compiled\\test environnement\\bot_executable_{current_date}\\assets", dirs_exist_ok=True)
+
+# Zip the folder
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            # this line will add each file to the zip file with path relative to the directory being zipped
+            ziph.write(os.path.join(root, file), arcname=os.path.relpath(os.path.join(root, file), path))
+
+zipf = zipfile.ZipFile(f'bot_executable_{current_date}.zip', 'w', zipfile.ZIP_DEFLATED)
+zipdir(f'.\\auth compiled\\test environnement\\bot_executable_{current_date}', zipf)
+zipf.close()
+
+shutil.move(f".\\bot_executable_{current_date}.zip", f'.\\auth compiled\\test environnement\\bot_executable_{current_date}.zip')
