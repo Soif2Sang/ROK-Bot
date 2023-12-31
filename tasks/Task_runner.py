@@ -318,6 +318,10 @@ class TaskRunner(Task):
         self.enter_characters()
         self.better_sleep((0.925, 1.795))
 
+        if self.find_img('star') is None:
+            self.click(uniform(600,900),uniform(170,177))
+            self.better_sleep((1.925, 2.795))
+
         stop = 0
         while (
             Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color
@@ -555,13 +559,14 @@ class TaskRunner(Task):
         )
         self.print(f"Executing cmd")
 
-        subprocess.run(cmd)
+        subprocess.Popen(cmd)
 
-        print(f"Bot will wait 2 min from now.")
-        self.better_sleep((120, 120))
+
         if win32gui.FindWindow(None, self.name) is None:
             self.print(f"Executing cmd")
-            subprocess.run(cmd)
+            subprocess.Popen(cmd)
+            print(f"Bot will wait 2 min from now.")
+
             self.better_sleep((120, 120))
 
         instances = get_dic_instances()
@@ -701,6 +706,7 @@ class TaskRunner(Task):
             loop_time = time()
 
             first = self.tile.get_enabled_sel()[0]
+            print(self.tile.get_enabled_sel())
             for emulator in self.tile.get_enabled_sel():
                 self.set_sel(emulator)
                 self.start_emulator(emulator)
