@@ -1,4 +1,3 @@
-# coding=UTF-8
 import json
 import os
 import subprocess
@@ -96,19 +95,6 @@ def main(page: ft.Page):
 
         while 1:
             sleep(1)
-
-    def create_banner(text):
-        return ft.Banner(
-            bgcolor=ft.colors.AMBER_100,
-            leading=ft.Icon(
-                ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
-            ),
-            content=ft.Text(value=text, color=ft.colors.ON_INVERSE_SURFACE),
-            actions=[
-                ft.TextButton("Ok", on_click=lambda _: page.close_banner()),
-            ],
-            open=True,
-        )
 
     page.loginUI = LoginUI(page)
     page.UPGRADE = False

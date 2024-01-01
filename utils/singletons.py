@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 from datetime import date, datetime
 from threading import Lock
+from typing import Literal
 
 
 class ApiSingleton:
@@ -33,11 +34,11 @@ class EmulatorSingleton:
             cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def getEmulator(self) -> str:
+    def getEmulator(self) -> Literal["ld", "bluestacks"]:
         with self.FileLock:
             return self.emulator
 
-    def setEmulator(self, mode: str):
+    def setEmulator(self, mode: Literal["ld", "bluestacks"]):
         with self.FileLock:
             self.emulator = mode
 
