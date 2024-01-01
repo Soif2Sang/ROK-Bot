@@ -37,8 +37,14 @@ from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge import Adb
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import current_time, get_dic_instances, get_name, get_window_pid
-from utils.singletons import ApiSingleton, LinkSingleton
+from utils.functions import (
+    current_time,
+    get_dic_instances,
+    get_name,
+    get_window_pid,
+    get_dic_instances_ld,
+)
+from utils.singletons import ApiSingleton, LinkSingleton, EmulatorSingleton
 from views.frametime import is_in_frametime, random_time_in_frametime
 
 
@@ -153,7 +159,7 @@ class TaskRunner(Task):
                 "ProduceMaterials",
                 "TroopTraining",
                 "UpgradeCity",
-                "AcademyResearch"
+                "AcademyResearch",
             ]:
                 self.go_city()
             try:
@@ -318,8 +324,8 @@ class TaskRunner(Task):
         self.enter_characters()
         self.better_sleep((0.925, 1.795))
 
-        if self.find_img('star') is None:
-            self.click(uniform(600,900),uniform(170,177))
+        if self.find_img("star") is None:
+            self.click(uniform(600, 900), uniform(170, 177))
             self.better_sleep((1.925, 2.795))
 
         stop = 0
@@ -553,14 +559,16 @@ class TaskRunner(Task):
     def start_emulator(self, emulator: str):
         path = self.FileSingleton.get_path()
         data = self.FileSingleton.get_data()
+        emulator_choice = EmulatorSingleton().getEmulator()
+        print(emulator)
+        if emulator_choice == "ld":
+            cmd = f'{path["LD-Console"]} launch --index {self.data.get(emulator).get("instance")}'
+        else:
+            cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
 
-        cmd = (
-            f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
-        )
         self.print(f"Executing cmd")
 
         subprocess.Popen(cmd)
-
 
         if win32gui.FindWindow(None, self.name) is None:
             self.print(f"Executing cmd")
@@ -569,11 +577,16 @@ class TaskRunner(Task):
 
             self.better_sleep((120, 120))
 
-        instances = get_dic_instances()
+        if emulator_choice == "ld":
+            instances = get_dic_instances_ld()
+        else:
+            instances = get_dic_instances()
+
         for instance in instances:
             data[str(instance)]["instance"] = instances[str(instance)]["instance"]
             data[str(instance)]["name"] = instances[str(instance)]["name"]
             data[str(instance)]["port"] = int(instances[str(instance)]["port"])
+
         self.data = data
         self.FileSingleton.write_data(data)
         self.tile.main_task.adb.connect_to_device()
@@ -696,7 +709,8 @@ class TaskRunner(Task):
 
     @get_name
     def run3(self):
-        # print("starting")
+        emulator = EmulatorSingleton().getEmulator()
+
         self.set_sel(self.tile.get_enabled_sel()[0])
         # self.adb.connect_to_device()
         self.data = self.update_data()
@@ -712,7 +726,12 @@ class TaskRunner(Task):
                 self.start_emulator(emulator)
                 self.print("Changing adb..")
                 self.print(f"{self.adb.number = } {self.adb.port =}")
-                self.adb = Adb(emulator)
+
+                if emulator == "bluestacks":
+                    self.adb = Adb(emulator)
+                else:
+                    self.adb = AdbLd(emulator)
+
                 self.adb.__repr__()
                 self.print("Connecting to the emulator..")
                 self.adb.connect_to_device()
