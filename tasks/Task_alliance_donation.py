@@ -54,6 +54,7 @@ class AllianceDonation(Task):
             self.better_sleep((2, 3))
 
             source = self.adb.get_cv2_img()
+
             techs = self.adb.find_multiple_img(
                 target="tech", source=source, confidence=0.7
             )
@@ -64,18 +65,32 @@ class AllianceDonation(Task):
             duos = set()
             for card in cards:
                 for tech in techs:
-                    if (tech[1] > card[1] and tech[1] < card[1] + 100) and (
-                        tech[0] > card[0] - 150 and tech[0] < card[0]
-                    ):
+                    if (card[1] > tech[1] > card[1] -50) and (card[0] + 50 > tech[0] > card[0] -100):
                         duos.add(card)
 
-            if duos:
+            nb_check = 0
+            for i in range(len(duos)):
+                if nb_check == 4:
+                    break
+
+                nb_check += 1
                 donation_logo = random.choice(list(duos))
+                duos.remove(donation_logo)
+
                 self.click(
                     donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10)
                 )
                 self.better_sleep((1, 2))
-                # Holding click on the donation button
+
+
+                if not self.find_img(target="donate_button"):
+                    cos = self.adb.find_multiple_img(target="close_window")
+                    co = cos[-1]
+                    self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
+                    self.better_sleep((1.3, 2.8))
+                    continue
+
+                # Hold  ing click on the donation button
                 talked = False
                 while self.find_img(target="donate_button"):
                     if not talked:
@@ -94,6 +109,7 @@ class AllianceDonation(Task):
                     self.better_sleep((1, 1.425))
                 self.click(uniform(1080, 1100), uniform(70, 90))
                 self.better_sleep((1, 1.425))
+                break
 
             x, y = uniform(1100, 1130), uniform(60, 80)
             self.click(x, y)
