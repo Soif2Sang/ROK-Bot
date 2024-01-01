@@ -16,6 +16,7 @@ class UpgradeCity(Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
 
+
     def task_name(self):
         return "UpgradeCity"
 
