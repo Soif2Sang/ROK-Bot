@@ -50,9 +50,7 @@ class AcademyResearch(Task):
         duos = set()
         for card in cards:
             for tech in techs:
-                if (tech[1] > card[1] and tech[1] < card[1] + 100) and (
-                    tech[0] > card[0] - 150 and tech[0] < card[0]
-                ):
+                if (card[1] > tech[1] > card[1] -50) and (card[0] + 50 > tech[0] > card[0] -100):
                     duos.add(card)
 
         if duos:

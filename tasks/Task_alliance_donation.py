@@ -84,7 +84,10 @@ class AllianceDonation(Task):
 
 
                 if not self.find_img(target="donate_button"):
-                    cos = self.adb.find_multiple_img(target="close_window")
+                    cos = self.adb.find_multiple_img(target="close_window", confidence=0.7)
+                    if not cos:
+                        self.close_windows()
+                        return
                     co = cos[-1]
                     self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
                     self.better_sleep((1.3, 2.8))
@@ -120,7 +123,4 @@ class AllianceDonation(Task):
         self.open_alliance_menu()
         self.collect_alliance_resources()
         self.donate_to_alliance()
-
-        x, y = uniform(1100, 1130), uniform(30, 58)
-        self.click(x, y)
-        self.better_sleep((1.3, 1.6))
+        self.close_windows()
