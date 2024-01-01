@@ -10,8 +10,10 @@ import numpy as np
 import win32api
 import win32con
 import win32gui
-from android_debug_bridge import Adb
 from MTM import matchTemplates
+
+from Task_claim_campaign import ClaimCampaign
+from android_debug_bridge import Adb
 from twocaptcha import TwoCaptcha
 
 import taskscod.COD_Task_daily_vip
@@ -40,8 +42,8 @@ from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_runner import TaskRunner
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
-from utils.android_debug_bridge_ld_player import *
-
+from utils.android_debug_bridge_ld_player import AdbLd
+from utils.singletons import FileSingleton
 # from utils.android_debug_bridge import *
 DEBUG = True
 
@@ -81,7 +83,7 @@ class Frame:
 
 class Bot:
     def __init__(self, adb):
-        self.adb: Adb = adb
+        self.adb: AdbLd = adb
         self.device = adb.get_device()
         self.main_task = Task(Frame(adb.number))  # tasksGEM / tasks
         self.main_task.adb = adb
@@ -103,10 +105,11 @@ class Bot:
         self.ranks = KingdomRanking(self.main_task)
         self.mails = ClaimMail(self.main_task)
         from tasks.Task_alliance_help import AllianceHelp
-
+        self.expedition = ClaimCampaign(self.main_task)
         self.help = AllianceHelp(self.main_task)
         self.training = TroopTraining(self.main_task)
         self.hunt = HuntBarbarians(self.main_task)
+        self.runner = TaskRunner(self.main_task, self.main_task.tile)
         # self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
         # self.cod_chest = DailyChest(self.main_task)
         # self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
@@ -122,7 +125,7 @@ class Bot:
 
 
 def create_instance(number: int, master):
-    adb = Adb(number)
+    adb = AdbLd(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
     bot.task.set_status = lambda text, color=None: print(
@@ -162,7 +165,8 @@ class lightTile:
 
 
 def get_bot(number):
-    adb = Adb(number)
+    # adb = Adb(number)
+    adb = AdbLd(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
 
@@ -199,9 +203,12 @@ if __name__ == "__main__":
 
     # print(TwoCaptcha("9c5059a65dd40980bd2fc113f616060e").balance())
 
-    bot = get_bot("Nougat64_13")
-    # bot.task.zoom_out_city()
-    bot.research.run()
+    bot = get_bot("3")
+    # bot.vip.run()
+    print(bot.alliance.donate_to_alliance())
+    # print(bot.runner.)
+    exit()
+    bot.research.donate_to_alliance()
     exit()
 
     hwnd = win32gui.FindWindow(None, bot.task.adb.name)

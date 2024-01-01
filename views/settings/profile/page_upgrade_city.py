@@ -19,7 +19,7 @@ class PageUpgradeCity(BasePage):
             ),
             ft.Switch(
                 label=translate(
-                    "Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the pass but \nit is a safer way to upgrade the city)"
+                    "Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the wall but \nit is a safer way to upgrade the city)"
                 ),
                 on_change=self.submit_upgrade_mode,
                 value=self.data[str(self.instance_index)]["schedules"][
