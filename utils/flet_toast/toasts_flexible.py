@@ -97,12 +97,8 @@ class ButtonIcon(UserControl):
             else:
                 event.control.content.opacity = 0.5
         else:
-            if event.control.bgcolor != ft.colors.with_opacity(
-                opacity=0.08, color=self._hovercolor
-            ):
-                event.control.bgcolor = ft.colors.with_opacity(
-                    opacity=0.08, color=self._hovercolor
-                )
+            if event.control.bgcolor != ft.colors.with_opacity(opacity=0.08, color=self._hovercolor):
+                event.control.bgcolor = ft.colors.with_opacity(opacity=0.08, color=self._hovercolor)
             else:
                 event.control.bgcolor = None
         event.control.update()
@@ -111,11 +107,7 @@ class ButtonIcon(UserControl):
         """The initialize build control's UI."""
         self._size = self._size if self._size else 22
         self.padding = 0 if self._no_hover else 5
-        self.size_final = (
-            (self.padding + self._size)
-            if self._no_hover
-            else (self.padding + self._size + 10)
-        )
+        self.size_final = (self.padding + self._size) if self._no_hover else (self.padding + self._size + 10)
 
         self.builder = ft.Stack(
             width=self.size_final,
@@ -155,9 +147,7 @@ class ButtonIcon(UserControl):
                         color=self._color,
                         opacity=0.5 if self._no_hover else 1,
                         # offset=ft.transform.Offset(x=0, y=-0.1),
-                        animate_opacity=ft.animation.Animation(
-                            duration=200, curve=ft.AnimationCurve.DECELERATE
-                        ),
+                        animate_opacity=ft.animation.Animation(duration=200, curve=ft.AnimationCurve.DECELERATE),
                     ),
                 ),
             ],
@@ -207,9 +197,7 @@ class ToastAction(UserControl):
         opacity: Optional[Union[int, float]] = None,
         rotate: Optional[Union[int, float, Rotate]] = None,
         scale: Optional[Union[int, float, Scale]] = None,
-        offset: Optional[
-            Union[Offset, Tuple[Union[float, int], Union[float, int]]]
-        ] = None,
+        offset: Optional[Union[Offset, Tuple[Union[float, int], Union[float, int]]]] = None,
         aspect_ratio: Optional[Union[int, float]] = None,
         visible: Optional[bool] = None,
         disabled: Optional[bool] = None,
@@ -221,9 +209,7 @@ class ToastAction(UserControl):
         animate_offset: Optional[Union[bool, int, Animation]] = None,
         on_animation_end: Optional[Any] = None,
         text: Optional[str] = None,
-        action_style: Optional[
-            Literal["elevated", "filled", "outlined", "texted"]
-        ] = None,
+        action_style: Optional[Literal["elevated", "filled", "outlined", "texted"]] = None,
         color: Union[None, str, Dict[Union[str, MaterialState], str]] = None,
         bgcolor: Union[None, str, Dict[Union[str, MaterialState], str]] = None,
         url: Optional[str] = None,
@@ -731,15 +717,11 @@ class ToastsFlexible:
         )
         self.gen_id = GenerateID()
         self.overlay_manger = OverlayPageManger(page=self.page)
-        self.stacks_toast_key = self.gen_id.generate_md5_id(
-            f"ToastsFlexible_stacks_{self.position_current(self._position)}"
-        )
+        self.stacks_toast_key = self.gen_id.generate_md5_id(f"ToastsFlexible_stacks_{self.position_current(self._position)}")
 
         # DESC => Release toast to page.
         if self._trigger:
-            assert hasattr(
-                self._trigger, "on_click"
-            ), "Trigger must contain 'Controls' and 'Control' contain 'on_click' attribute."
+            assert hasattr(self._trigger, "on_click"), "Trigger must contain 'Controls' and 'Control' contain 'on_click' attribute."
             self._trigger.on_click = lambda _: self.open_toast()
         else:
             self.open_toast()
@@ -778,12 +760,10 @@ class ToastsFlexible:
                 {
                     str(self.gen_id.generate_random_id()): {
                         self._title
-                        if isinstance(self._title, str)
-                        and self._set_history_title is None
+                        if isinstance(self._title, str) and self._set_history_title is None
                         else self._set_history_title: {
                             "description": self._desc
-                            if isinstance(self._desc, str)
-                            and self._set_history_desc is None
+                            if isinstance(self._desc, str) and self._set_history_desc is None
                             else self._set_history_desc,
                             "ago": {
                                 "Year": toast_time.year,
@@ -820,11 +800,7 @@ class ToastsFlexible:
             self.control_toast.update()
 
             # DESC => wait and remover its control.
-            time.sleep(
-                int(self._animate_duration if self._animate_duration is not None else 1)
-                / 1000
-                / 2
-            )
+            time.sleep(int(self._animate_duration if self._animate_duration is not None else 1) / 1000 / 2)
             control_stacks_toasts.controls.remove(self.control_toast)
             control_stacks_toasts.update()
 
@@ -865,24 +841,14 @@ class ToastsFlexible:
                 self.control_toast.update()
 
                 # DESC => wait and remover its control.
-                time.sleep(
-                    int(
-                        self._animate_duration
-                        if self._animate_duration is not None
-                        else 1
-                    )
-                    / 1000
-                    / 2
-                )
+                time.sleep(int(self._animate_duration if self._animate_duration is not None else 1) / 1000 / 2)
                 control_stacks_toasts.controls.remove(self.control_toast)
                 control_stacks_toasts.update()
 
     def open_toast(self):
         """Append control's UI in overlay to page."""
 
-        def update_control_value(
-            control, interval_update, interval_random=True, refresh_runs=None
-        ):
+        def update_control_value(control, interval_update, interval_random=True, refresh_runs=None):
             """Update control value.
 
             Args:
@@ -901,12 +867,10 @@ class ToastsFlexible:
 
                 while elapsed_time < (refresh_runs + 1):
                     # DESC => filter and get control in overlay.
-                    control_stacks_toasts = (
-                        self.overlay_manger.get_control_specific_with_filtering(
-                            attribute_control="key",
-                            attr_value_match=self.stacks_toast_key,
-                        )[0]
-                    )
+                    control_stacks_toasts = self.overlay_manger.get_control_specific_with_filtering(
+                        attribute_control="key",
+                        attr_value_match=self.stacks_toast_key,
+                    )[0]
 
                     if interval_random:
                         _interval_update = random.uniform(0.5, 10)
@@ -917,13 +881,9 @@ class ToastsFlexible:
                         # (i.e., it's an integer multiple of 1 second).
                         if elapsed_time % _interval_update != 0:
                             if elapsed_time >= 60:
-                                control.content.controls[0].content.controls[
-                                    1
-                                ].controls[0].value = f"{int(elapsed_time)} minute ago"
+                                control.content.controls[0].content.controls[1].controls[0].value = f"{int(elapsed_time)} minute ago"
                             else:
-                                control.content.controls[0].content.controls[
-                                    1
-                                ].controls[0].value = f"{int(elapsed_time)} seconds ago"
+                                control.content.controls[0].content.controls[1].controls[0].value = f"{int(elapsed_time)} seconds ago"
                             control.update()
                     else:
                         break
@@ -980,18 +940,10 @@ class ToastsFlexible:
 
             stacks_toast_control = ft.Column(
                 key=self.stacks_toast_key,
-                top=position[0] + self._position_spacing
-                if isinstance(position[0], (int, float))
-                else position[0],
-                left=position[1] + self._position_spacing
-                if isinstance(position[1], (int, float))
-                else position[1],
-                right=position[2] + self._position_spacing
-                if isinstance(position[2], (int, float))
-                else position[2],
-                bottom=position[3] + self._position_spacing
-                if isinstance(position[3], (int, float))
-                else position[3],
+                top=position[0] + self._position_spacing if isinstance(position[0], (int, float)) else position[0],
+                left=position[1] + self._position_spacing if isinstance(position[1], (int, float)) else position[1],
+                right=position[2] + self._position_spacing if isinstance(position[2], (int, float)) else position[2],
+                bottom=position[3] + self._position_spacing if isinstance(position[3], (int, float)) else position[3],
                 alignment=vertical_alignment,
                 horizontal_alignment=horizontal_alignment,
                 spacing=5,
@@ -1020,23 +972,15 @@ class ToastsFlexible:
             if self._title:
                 if self._no_live_time is False:
                     # DESC => Update control text of toast header right show time.
-                    control_toast_ui.content.controls[0].content.controls[1].controls[
-                        0
-                    ].value = "just now"
-                    control_toast_ui.content.controls[0].content.controls[1].controls[
-                        0
-                    ].update()
+                    control_toast_ui.content.controls[0].content.controls[1].controls[0].value = "just now"
+                    control_toast_ui.content.controls[0].content.controls[1].controls[0].update()
             self.on_auto_disapper_toast()
         else:
             if self._title:
                 if self._no_live_time is False:
                     # DESC => Update control text of toast header right show time.
-                    control_toast_ui.content.controls[0].content.controls[1].controls[
-                        0
-                    ].value = "just now"
-                    control_toast_ui.content.controls[0].content.controls[1].controls[
-                        0
-                    ].update()
+                    control_toast_ui.content.controls[0].content.controls[1].controls[0].value = "just now"
+                    control_toast_ui.content.controls[0].content.controls[1].controls[0].update()
                     update_control_value(
                         control=control_toast_ui,
                         interval_update=self._interval_update,
@@ -1070,9 +1014,7 @@ class ToastsFlexible:
             self._bgcolor_header if self._bgcolor_header else ft.colors.INVERSE_SURFACE
         )  # DESC => Set default ft.colors.INVERSE_SURFACE
         self._bgcolor_content = (
-            self._bgcolor_content
-            if self._bgcolor_content
-            else ft.colors.ON_INVERSE_SURFACE
+            self._bgcolor_content if self._bgcolor_content else ft.colors.ON_INVERSE_SURFACE
         )  # DESC => Set default ft.colors.ON_INVERSE_SURFACE
 
         # DESC => Control of toast container.
@@ -1080,9 +1022,7 @@ class ToastsFlexible:
             width=self._width,
             border=ft.border.all(
                 width=0.4,
-                color=ft.colors.with_opacity(
-                    opacity=0.35, color=ft.colors.INVERSE_SURFACE
-                ),
+                color=ft.colors.with_opacity(opacity=0.35, color=ft.colors.INVERSE_SURFACE),
             ),
             border_radius=ft.border_radius.all(value=7),
             # shadow=self._shadow if self._shadow else ft.BoxShadow(spread_radius=0.01, blur_radius=0.3, color=ft.colors.with_opacity(0.25, ft.colors.SHADOW), offset=ft.transform.Offset(x=0, y=1)),
@@ -1096,9 +1036,7 @@ class ToastsFlexible:
                 controls=[
                     # DESC => Control of toast header.
                     ft.Container(
-                        bgcolor=ft.colors.with_opacity(
-                            opacity=0.9, color=self._bgcolor_header
-                        ),
+                        bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_header),
                         padding=ft.padding.only(left=9, top=7, right=8, bottom=7),
                         height=20 + 14 + 5,
                         content=ft.Row(
@@ -1116,9 +1054,7 @@ class ToastsFlexible:
                                         ft.Icon(
                                             name=self._icon,
                                             size=20,
-                                            color=set_color_balance(
-                                                bgcolor=self._bgcolor_header
-                                            ),
+                                            color=set_color_balance(bgcolor=self._bgcolor_header),
                                         )
                                         if isinstance(self._icon, str)
                                         else self._icon
@@ -1132,9 +1068,7 @@ class ToastsFlexible:
                                             expand=True,
                                             value=self._title,
                                             weight=ft.FontWeight.W_500,
-                                            color=set_color_balance(
-                                                bgcolor=self._bgcolor_header
-                                            ),
+                                            color=set_color_balance(bgcolor=self._bgcolor_header),
                                             style=ft.TextThemeStyle.BODY_MEDIUM,
                                             overflow=ft.TextOverflow.ELLIPSIS,
                                         )
@@ -1153,19 +1087,11 @@ class ToastsFlexible:
                                     alignment=ft.MainAxisAlignment.END,
                                     vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                     spacing=8
-                                    if (
-                                        self._auto_close is None
-                                        and self._actions
-                                        and self._desc is None
-                                    )
+                                    if (self._auto_close is None and self._actions and self._desc is None)
                                     else 5
                                     if (self._actions and self._desc is None)
                                     else 3
-                                    if (
-                                        self._auto_close is None
-                                        and self._actions is None
-                                        and self._desc is None
-                                    )
+                                    if (self._auto_close is None and self._actions is None and self._desc is None)
                                     else 3,
                                     controls=[
                                         # DESC => Control of toast header show time.
@@ -1174,9 +1100,7 @@ class ToastsFlexible:
                                             weight=ft.FontWeight.W_400,
                                             style=ft.TextThemeStyle.BODY_MEDIUM,
                                             opacity=0.7,
-                                            color=set_color_balance(
-                                                bgcolor=self._bgcolor_header
-                                            ),
+                                            color=set_color_balance(bgcolor=self._bgcolor_header),
                                         )
                                         if self._no_live_time is False
                                         else ft.VerticalDivider(
@@ -1202,12 +1126,8 @@ class ToastsFlexible:
                                             icon=ft.icons.CLOSE_OUTLINED,
                                             size=20,
                                             no_hover=True,
-                                            on_click=lambda e: self.on_close_toast_event(
-                                                e
-                                            ),
-                                            color=set_color_balance(
-                                                bgcolor=self._bgcolor_header
-                                            ),
+                                            on_click=lambda e: self.on_close_toast_event(e),
+                                            color=set_color_balance(bgcolor=self._bgcolor_header),
                                         )
                                         if self._auto_close is None
                                         else ft.VerticalDivider(
@@ -1225,9 +1145,7 @@ class ToastsFlexible:
                     # DESC => Control of toast content.
                     ft.Container(
                         width=self._width,
-                        bgcolor=ft.colors.with_opacity(
-                            opacity=0.9, color=self._bgcolor_content
-                        ),
+                        bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_content),
                         padding=ft.padding.only(left=9, top=10, right=8, bottom=10),
                         content=ft.Column(
                             spacing=10 if self._actions else 0,
@@ -1244,9 +1162,7 @@ class ToastsFlexible:
                                             value=self._desc,
                                             weight=ft.FontWeight.W_400,
                                             style=ft.TextThemeStyle.BODY_MEDIUM,
-                                            color=set_color_balance(
-                                                bgcolor=self._bgcolor_content
-                                            ),
+                                            color=set_color_balance(bgcolor=self._bgcolor_content),
                                         )
                                         if isinstance(self._desc, str)
                                         else self._desc
@@ -1261,12 +1177,8 @@ class ToastsFlexible:
                                             icon=ft.icons.CLOSE_OUTLINED,
                                             size=20,
                                             no_hover=True,
-                                            on_click=lambda e: self.on_close_toast_event(
-                                                e
-                                            ),
-                                            color=set_color_balance(
-                                                bgcolor=self._bgcolor_content
-                                            ),
+                                            on_click=lambda e: self.on_close_toast_event(e),
+                                            color=set_color_balance(bgcolor=self._bgcolor_content),
                                         )
                                         if (self._title or self._auto_close) is None
                                         else ft.VerticalDivider(
@@ -1278,17 +1190,13 @@ class ToastsFlexible:
                                 ),
                                 # DESC => Control of toast content actions.
                                 ft.Row(
-                                    alignment=self._actions_alignment
-                                    if self._actions_alignment
-                                    else ft.MainAxisAlignment.END,
+                                    alignment=self._actions_alignment if self._actions_alignment else ft.MainAxisAlignment.END,
                                     vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                     spacing=10,
                                     controls=self._actions,
                                 )
                                 if self._actions
-                                else ft.Divider(
-                                    height=0, thickness=0, color=ft.colors.TRANSPARENT
-                                ),
+                                else ft.Divider(height=0, thickness=0, color=ft.colors.TRANSPARENT),
                             ],
                         ),
                     )
@@ -1298,9 +1206,7 @@ class ToastsFlexible:
                     ft.ProgressBar(
                         width=self._width,
                         color=self._color_progress,
-                        bgcolor=ft.colors.with_opacity(
-                            opacity=0.9, color=self._bgcolor_progress
-                        ),
+                        bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_progress),
                         bar_height=1.5,
                         value=0,
                     )

@@ -55,12 +55,7 @@ class UseEnhancedBuff(Task):
 
         self.print(f"Buffs : {buffs_to_do}")
         if buffs_to_do:
-            if self.find_img(target="menu_opened") is None:
-                x, y = uniform(1200, 1250), uniform(650, 690)
-                # else:
-                #     # x, y = temp3[0] + uniform(0, 20), temp3[1] + uniform(0, 15)
-                self.click(x, y)
-                self.better_sleep((0.725, 1.295))
+            self.open_menu()
             x, y = uniform(910, 950), uniform(650, 690)
             self.click(x, y)
             self.better_sleep((1.895, 2.3))

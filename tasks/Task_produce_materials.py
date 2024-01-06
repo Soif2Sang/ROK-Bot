@@ -54,12 +54,8 @@ class ProduceMaterials(Task):
                         "ebony": (uniform(922, 972), uniform(208, 255)),
                         "bones": (uniform(1018, 1064), uniform(208, 255)),
                     }
-                    string = self.data[self.sel]["schedules"][self.current_profile][
-                        f"material_choice_{i}"
-                    ]
-                    self.print(
-                        f"Producing {self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}']}"
-                    )
+                    string = self.data[self.sel]["schedules"][self.current_profile][f"material_choice_{i}"]
+                    self.print(f"Producing {self.data[self.sel]['schedules'][self.current_profile][f'material_choice_{i}']}")
                     self.click(materials[string][0], materials[string][1])
                     self.better_sleep((0.5, 1.2))
             self.close_windows()

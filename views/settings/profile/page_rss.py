@@ -21,22 +21,12 @@ class PageRss(BasePage):
             ),
             ft.Switch(
                 label=translate("Use Yellow presets as gatherers"),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["rss_custom_preset"]
-                else False,
+                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rss_custom_preset"] else False,
                 on_change=lambda _: self.reverse_keyword("rss_custom_preset"),
             ),
             ft.Switch(
-                label=translate(
-                    "Use zoom out method\n(the bot won't read node levels but is safer)"
-                ),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["gather_rss_method"]
-                else False,
+                label=translate("Use zoom out method\n(the bot won't read node levels but is safer)"),
+                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"] else False,
                 on_change=lambda _: self.reverse_keyword("gather_rss_method"),
             ),
         )
@@ -56,7 +46,7 @@ class PageRss(BasePage):
         self.data = self.FileSingleton.get_data()
         if keyword == "gather_rss_method":
             for control in self.profile.content.controls[-7:]:
-                control.controls[2].controls[0].disabled = self.data[
-                    str(self.instance_index)
-                ]["schedules"][str(self.profile_index)]["gather_rss_method"]
+                control.controls[2].controls[0].disabled = self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
+                    "gather_rss_method"
+                ]
         self.profile.initial_page.update()

@@ -13,20 +13,14 @@ class PageTransfer(BasePage):
         self.add_control(
             GenerateCard(
                 level=translate("warning"),
-                subtitle=translate(
-                    "In order to use this feature, you have to purchase a API key on 2captcha.com (this is very cheap!)"
-                ),
+                subtitle=translate("In order to use this feature, you have to purchase a API key on 2captcha.com (this is very cheap!)"),
             ),
-            self.create_normal_switch(
-                "fast_rss_transfer", "Enable faster rss transfer may be riskier"
-            ),
+            self.create_normal_switch("fast_rss_transfer", "Enable faster rss transfer may be riskier"),
             FletColumnRss(self.instance_index, self.profile_index),
             ft.Divider(),
             ft.OutlinedButton(
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set City Position"),
-                on_click=lambda _: self.initial_page.go(
-                    f"/city-layout/{self.instance_index}/{self.profile_index}"
-                ),
+                on_click=lambda _: self.initial_page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
             ),
         )

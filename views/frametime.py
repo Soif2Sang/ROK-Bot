@@ -35,9 +35,7 @@ def is_in_frametime(first, second):
         time_remaining = midnight - now
 
         # Calculate the end_time adjusted for the remaining time until the next day
-        adjusted_end_time = (
-            midnight + timedelta(seconds=time_remaining.seconds)
-        ).time()
+        adjusted_end_time = (midnight + timedelta(seconds=time_remaining.seconds)).time()
 
         return start_time <= current_time <= adjusted_end_time
 
@@ -48,23 +46,15 @@ def random_time_in_frametime(first, second):
         end_time = datetime.strptime(second, "%H:%M").time()
 
         if start_time < end_time:
-            time_diff = (
-                datetime.combine(datetime.min, end_time)
-                - datetime.combine(datetime.min, start_time)
-            ).total_seconds()
+            time_diff = (datetime.combine(datetime.min, end_time) - datetime.combine(datetime.min, start_time)).total_seconds()
         else:
             time_diff = (
-                datetime.combine(datetime.min, end_time)
-                + timedelta(days=1)
-                - datetime.combine(datetime.min, start_time)
+                datetime.combine(datetime.min, end_time) + timedelta(days=1) - datetime.combine(datetime.min, start_time)
             ).total_seconds()
 
         random_seconds = randint(0, int(time_diff))
 
-        new_time = (
-            datetime.combine(datetime.min, start_time)
-            + timedelta(seconds=random_seconds)
-        ).time()
+        new_time = (datetime.combine(datetime.min, start_time) + timedelta(seconds=random_seconds)).time()
 
         return random_seconds
 
@@ -86,9 +76,7 @@ class RowTimezone(ft.Row):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         if start == "00:00" and end == "00:00" and default:
-            self.data[str(instance)]["schedules"][str(profile)]["timing"].append(
-                ["00:00", "00:00"]
-            )
+            self.data[str(instance)]["schedules"][str(profile)]["timing"].append(["00:00", "00:00"])
         self.instance = str(instance)
         self.profile = str(profile)
         self.parent = parent
@@ -101,9 +89,7 @@ class RowTimezone(ft.Row):
             height=50,
             width=100,
         )
-        self.field_stop = ft.TextField(
-            label="End", value=end, on_submit=lambda _: self.sub(), height=50, width=100
-        )
+        self.field_stop = ft.TextField(label="End", value=end, on_submit=lambda _: self.sub(), height=50, width=100)
         self.delete = ft.IconButton(
             icon=ft.icons.DELETE_FOREVER_ROUNDED,
             icon_color="pink600",
@@ -121,9 +107,7 @@ class RowTimezone(ft.Row):
     def pop_banner(self, text):
         self.page.banner = ft.Banner(
             bgcolor=ft.colors.AMBER_100,
-            leading=ft.Icon(
-                ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
-            ),
+            leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
             content=ft.Text(value=text),
             actions=[
                 ft.TextButton("Ok", on_click=self.close_banner),
@@ -135,17 +119,13 @@ class RowTimezone(ft.Row):
 
     def sub(self):
         self.data = self.FileSingleton.get_data()
-        i = self.data[self.instance]["schedules"][self.profile]["timing"].index(
-            [self.start, self.stop]
-        )
+        i = self.data[self.instance]["schedules"][self.profile]["timing"].index([self.start, self.stop])
 
         self.data[self.instance]["schedules"][self.profile]["timing"][i] = [
             self.field_start.value,
             self.field_stop.value,
         ]
-        if not is_valid_time(self.field_start.value) or not is_valid_time(
-            self.field_stop.value
-        ):
+        if not is_valid_time(self.field_start.value) or not is_valid_time(self.field_stop.value):
             self.pop_banner("Wrong format, please fix")
         else:
             self.start, self.stop = self.field_start.value, self.field_stop.value
@@ -176,11 +156,7 @@ class ManagerTimezone(ft.ListView):
                     ft.Switch(
                         label=translate("Enable profile frametime"),
                         active_track_color=color_bank[int(self.profile)],
-                        value=True
-                        if self.data[str(self.instance)]["schedules"][
-                            str(self.profile)
-                        ]["enable_timing"]
-                        else False,
+                        value=True if self.data[str(self.instance)]["schedules"][str(self.profile)]["enable_timing"] else False,
                         on_change=lambda _: self.reverse_keyword("enable_timing"),
                     ),
                     ft.ElevatedButton(
@@ -197,9 +173,9 @@ class ManagerTimezone(ft.ListView):
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
             index = self.profile
-        self.data[str(self.instance)]["schedules"][str(index)][keyword] = not self.data[
-            str(self.instance)
-        ]["schedules"][str(index)][keyword]
+        self.data[str(self.instance)]["schedules"][str(index)][keyword] = not self.data[str(self.instance)]["schedules"][str(index)][
+            keyword
+        ]
         self.FileSingleton.write_data(self.data)
 
     def init(self):
@@ -223,9 +199,7 @@ class ManagerTimezone(ft.ListView):
     def delete(self, tile):
         self.data = self.FileSingleton.get_data()
         self.data[self.instance]["schedules"][self.profile]["timing"].pop(
-            self.data[self.instance]["schedules"][self.profile]["timing"].index(
-                [tile.start, tile.stop]
-            )
+            self.data[self.instance]["schedules"][self.profile]["timing"].index([tile.start, tile.stop])
         )
 
         for i in range(len(self.controls)):

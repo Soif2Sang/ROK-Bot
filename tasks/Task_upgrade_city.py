@@ -16,7 +16,6 @@ class UpgradeCity(Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
 
-
     def task_name(self):
         return "UpgradeCity"
 
@@ -80,17 +79,13 @@ class UpgradeCity(Task):
     def recursive_upgrade(self, type="normal"):
         screen = self.adb.get_cv2_img()
 
-        stones = self.adb.find_multiple_img(
-            target="upgrade_build", confidence=0.7, source=screen
-        )
+        stones = self.adb.find_multiple_img(target="upgrade_build", confidence=0.7, source=screen)
         stones = list(filter(filter_coordinate, stones))
         if stones:
             stones = random.choice(stones)
 
         if not stones:
-            stones = self.find_img(
-                target="city_hall_change_age", confidence=0.7, source=screen
-            )
+            stones = self.find_img(target="city_hall_change_age", confidence=0.7, source=screen)
 
         if stones and self.find_img("building_speedups", source=screen) is None:
             self.click(stones[0] + uniform(0, 20), stones[1] + uniform(0, 30))
@@ -134,9 +129,9 @@ class UpgradeCity(Task):
     @get_name
     def is_city_hall_upgradable(self):
         screen = self.adb.get_cv2_img()
-        if self.find_img(
-            target="city_hall_change_age", confidence=0.7, source=screen
-        ) or self.find_img(target="upgrade_build", confidence=0.7, source=screen):
+        if self.find_img(target="city_hall_change_age", confidence=0.7, source=screen) or self.find_img(
+            target="upgrade_build", confidence=0.7, source=screen
+        ):
             return True
         return False
 
@@ -150,26 +145,19 @@ class UpgradeCity(Task):
 
     @get_name
     def free_constructor(self):
-        if (
-            self.find_img("upgrade_stone") is None
-            and self.find_img("upgrade_stone2") is None
-        ):
+        if self.find_img("upgrade_stone") is None and self.find_img("upgrade_stone2") is None:
             return False
         return True
 
     @get_class
     def run1(self):
-        ch_position = self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "city_hall_position", []
-        )
+        ch_position = self.data[str(self.sel)]["schedules"][self.current_profile].get("city_hall_position", [])
         if not ch_position:
             return
 
         x, y = ch_position
 
-        already_upgrading = self.adb.find_multiple_img(
-            "already_upgrading", confidence=0.7
-        )
+        already_upgrading = self.adb.find_multiple_img("already_upgrading", confidence=0.7)
 
         for co in already_upgrading:
             if x - 120 < co[0] < x + 10 and y - 20 < co[1] < y + 90:
@@ -186,23 +174,15 @@ class UpgradeCity(Task):
 
     @get_name
     def free_worker(self):
-        upgrades_brut = self.adb.find_multiple_img(
-            target="upgrade_stone", confidence=0.78
-        )
-        upgrades_brut.extend(
-            self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.78)
-        )
-        upgrades_brut.extend(
-            self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.78)
-        )
+        upgrades_brut = self.adb.find_multiple_img(target="upgrade_stone", confidence=0.78)
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone2", confidence=0.78))
+        upgrades_brut.extend(self.adb.find_multiple_img(target="upgrade_stone3", confidence=0.78))
         upgrades_final = list(filter(lambda co: co[1] < 480, upgrades_brut))
         return upgrades_final
 
     @get_class
     def run(self):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "upgrade_city_method", "normal"
-        ):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get("upgrade_city_method", "normal"):
             self.run1()
         self.setup_view()
         for i in range(2):

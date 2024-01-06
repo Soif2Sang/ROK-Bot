@@ -19,4 +19,4 @@ class AllianceHelp(Task):
                 if filter_coordinate(co):
                     self.click(co[0] + uniform(3, 7), co[1] + uniform(20, 22))
                     self.print("Successfully helped alliance members !", "green")
-                    self.better_sleep((1, 2))
+                    self.better_sleep((1, 1))

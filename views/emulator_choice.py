@@ -31,9 +31,7 @@ class EmulatorChoice(ft.ResponsiveRow):
         if e.control.data == "bluestacks":
             EmulatorSingleton().setEmulator("bluestacks")
 
-            if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(
-                path_file["HD-Player"]
-            ):
+            if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(path_file["HD-Player"]):
                 self.initial_page.go("/emulator-loading")
                 self.initial_page.update()
 
@@ -53,9 +51,7 @@ class EmulatorChoice(ft.ResponsiveRow):
         elif e.control.data == "ld":
             EmulatorSingleton().setEmulator("ld")
 
-            if not path_file.get("LD-Console", False) or not os.path.exists(
-                path_file["LD-Console"]
-            ):
+            if not path_file.get("LD-Console", False) or not os.path.exists(path_file["LD-Console"]):
                 self.initial_page.go("/emulator-loading")
                 self.initial_page.update()
 

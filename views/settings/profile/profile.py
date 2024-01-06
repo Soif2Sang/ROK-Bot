@@ -46,9 +46,7 @@ class SettingContainer(PageSettings):
         self.create_normal_switch("gather_alliance_pit", "Alliance Pit Gathering")
 
         # ##
-        self.create_advanced_switch(
-            "material_production", "Produce Materials", PageMaterials
-        )
+        self.create_advanced_switch("material_production", "Produce Materials", PageMaterials)
         self.create_advanced_switch("train_troops", "Troops Training", PageTraining)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
         self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
@@ -62,26 +60,18 @@ class SettingContainer(PageSettings):
         self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
         self.create_advanced_switch("scout_fog", "Explore Fog", PageFog)
         self.create_advanced_switch("upgrade_city", "Upgrade City", PageUpgradeCity)
-        self.create_advanced_switch(
-            "academic_research", "Academic Research", PageAcademyResearch
-        )
+        self.create_advanced_switch("academic_research", "Academic Research", PageAcademyResearch)
 
         self.create_advanced_switch("heal_troop", "Troops Healing", PageHeal)
-        self.create_advanced_switch(
-            "transfer_enable", "Transfer Resources", PageTransfer
-        )
+        self.create_advanced_switch("transfer_enable", "Transfer Resources", PageTransfer)
         #
         self.content.controls.append(ft.Divider())
         #
         self.create_normal_switch("auto_reconnect", "Reconnect on Network Issues")
-        self.create_advanced_switch(
-            "auto_log_back", "Log Back on Device Switch", PageLogback
-        )
+        self.create_advanced_switch("auto_log_back", "Log Back on Device Switch", PageLogback)
         self.create_normal_switch("auto_captcha", "Solve Captcha")
         self.create_slow_mode()
-        self.create_advanced_switch(
-            "switch_character", "Switch Characters", PageCharacter
-        )
+        self.create_advanced_switch("switch_character", "Switch Characters", PageCharacter)
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
@@ -89,17 +79,13 @@ class SettingContainer(PageSettings):
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
         elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
             if e.control.value == "":
-                self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword] = method(0)
+                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(0)
             else:
-                self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword] = method(e.control.value)
+                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)
 
     def page_character(self):
@@ -113,9 +99,7 @@ class SettingContainer(PageSettings):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -127,9 +111,7 @@ class SettingContainer(PageSettings):
             ft.Switch(
                 label="Restart the game after switching\nto a new character (prevent freeze)",
                 value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["leave_game_switch_character"]
+                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
                 else False,
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character"),
             )
@@ -148,9 +130,7 @@ class SettingContainer(PageSettings):
             [
                 ft.Row(
                     controls=[
-                        ft.IconButton(
-                            icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                        ),
+                        ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                         ft.Text("Settings", size=20),
                     ],
                 ),
@@ -167,9 +147,7 @@ class SettingContainer(PageSettings):
                     controls=[
                         ft.TextField(
                             label="Minimum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["log_back1"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["log_back1"],
                             width=80,
                             on_change=lambda e: self.submit(e, "log_back1", int),
                             input_filter=ft.NumbersOnlyInputFilter(),
@@ -177,9 +155,7 @@ class SettingContainer(PageSettings):
                         ft.Text("~"),
                         ft.TextField(
                             label="Maximum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["log_back2"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["log_back2"],
                             width=90,
                             on_change=lambda e: self.submit(e, "log_back2", int),
                             input_filter=ft.NumbersOnlyInputFilter(),
@@ -195,17 +171,13 @@ class SettingContainer(PageSettings):
         if index is None:
             index = self.profile_index
         if keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
-            self.data[str(self.instance_index)]["schedules"][str(index)][
-                keyword
-            ] = not self.data[str(self.instance_index)]["schedules"][str(index)][
-                keyword
-            ]
+            self.data[str(self.instance_index)]["schedules"][str(index)][keyword] = not self.data[str(self.instance_index)]["schedules"][
+                str(index)
+            ][keyword]
         else:
             # print(keyword, self.data[str(self.instance_index)][keyword])
 
-            self.data[str(self.instance_index)][keyword] = not self.data[
-                str(self.instance_index)
-            ][keyword]
+            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)
 
     def handleSettings(self, function):
@@ -218,11 +190,7 @@ class SettingContainer(PageSettings):
                 controls=[
                     ft.Switch(
                         label=translate(text),
-                        value=True
-                        if self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ][keyword]
-                        else False,
+                        value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                         on_change=lambda _: self.reverse_keyword(keyword),
                     )
                 ]
@@ -235,11 +203,7 @@ class SettingContainer(PageSettings):
                 controls=[
                     ft.Switch(
                         label=translate(text),
-                        value=True
-                        if self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ][keyword]
-                        else False,
+                        value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                         on_change=lambda _: self.reverse_keyword(keyword),
                     ),
                     ft.Row(
@@ -250,15 +214,12 @@ class SettingContainer(PageSettings):
                                 on_click=lambda _: self.handleSettings(function),
                                 style=ButtonStyle(
                                     shape={
-                                        ft.MaterialState.DEFAULT: RoundedRectangleBorder(
-                                            radius=5
-                                        ),
+                                        ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                                     }
                                 ),
                             )
                         ]
-                    )
-
+                    ),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             )
@@ -270,11 +231,7 @@ class SettingContainer(PageSettings):
                 controls=[
                     ft.Switch(
                         label=translate("Reduce bot speed"),
-                        value=True
-                        if self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["slow_mode"]
-                        else False,
+                        value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["slow_mode"] else False,
                         on_change=lambda _: self.reverse_keyword("slow_mode"),
                     ),
                     ft.Dropdown(
@@ -291,17 +248,10 @@ class SettingContainer(PageSettings):
                             ft.dropdown.Option("2.75x"),
                             ft.dropdown.Option("3.0x"),
                         ],
-                        value=str(
-                            self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["sleep_multiplicator"]
-                        )
-                              + "x",
+                        value=str(self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["sleep_multiplicator"]) + "x",
                         on_change=lambda e: self.submit(e, "sleep_multiplicator", str),
                         height=50,
-                        content_padding=ft.Padding(
-                            left=5, top=3, right=5, bottom=3
-                        ),  # modify to your likings
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                     ),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,

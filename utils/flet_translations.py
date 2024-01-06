@@ -119,7 +119,7 @@ translations = {
     "Set Scout camp position": "Defina a posição do acampamento de Batedores",
     "Upgrade City": "Evoluir Prefeitura",
     "REQUIREMENT": "REQUERIMENTO",
-    "Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the pass but \nit is a safer way to upgrade the city)": "Se você usar o método normal para atualizar a cidade,\nserá necessário configurar a posição da prefeitura!",
+    "Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the wall but \nit is a safer way to upgrade the city)": "Se você usar o método normal para atualizar a cidade,\nserá necessário configurar a posição da prefeitura!",
     "Use normal way to upgrade the city (if unchecked the bot is unable to upgrade the pass but it is a safer way to upgrade the city)": "Use a maneira normal de evoluir a cidade (se desmarcada, o bot não poderá evoluir o passe, mas é uma maneira mais segura de atualizar a cidade)",
     "Set City Hall Position": "Definir posição da prefeitura",
     "Academic Research": "Academia de Pesquisa",
@@ -167,7 +167,7 @@ translations = {
     "Pre-configure your red lineups with commanders who have the same march speed.\nIf you intend to use this feature extensively, I recommend running it for 3-4 hours and enabling the option to redo tasks. This will allow your troops to return to the city for healing.": "Pré-configure suas formações vermelhas com comandantes que tenham a mesma velocidade de marcha.\nSe você pretende usar esse recurso extensivamente, recomendo executá-lo por 3-4 horas e habilitar a opção de refazer tarefas. Isso permitirá que suas tropas retornem à cidade para cura.",
     "Minutes to wait until the bot do the task :": "Minutos a esperar até o bot realizar a tarefa :",
     "Skip second and fourth line": "Pular segunda e quarta linha",
-    "Available troop scan\nfrequency (seconds)": "Frequência de varredura\nde tropa disponível (segundos)"
+    "Available troop scan\nfrequency (seconds)": "Frequência de varredura\nde tropa disponível (segundos)",
 }
 
 

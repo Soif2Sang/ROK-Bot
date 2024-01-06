@@ -15,10 +15,12 @@ class DailyChest(Task):
 
     @get_name
     def close_chest_popup(self):
+        source = self.adb.get_cv2_img()
         for i in range(3):
-            while self.find_img(target=f"popup{i}", confidence=0.7):
+            while self.find_img(target=f"popup{i}", confidence=0.7, source=source):
                 self.click(uniform(1102, 1130), uniform(92, 118))
                 self.better_sleep((2, 4))
+                source = self.adb.get_cv2_img()
 
     @get_name
     def claim_legendary_chest(self):
@@ -32,9 +34,7 @@ class DailyChest(Task):
                     self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
                     self.better_sleep((3, 5))
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(
-                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
-                        )
+                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
                 self.close_windows()
                 self.better_sleep((2.5, 5))
@@ -62,11 +62,13 @@ class DailyChest(Task):
                     self.print("Opening a chest..")
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
                     self.better_sleep((5, 8))
+                    i = 0
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(
-                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
-                        )
+                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
+                        i += 1
+                        if i%5 == 0:
+                            self.check_reconnect()
                 self.better_sleep((1.7, 3))
 
         if entered:

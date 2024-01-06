@@ -35,18 +35,14 @@ class RowFinder(ft.Row):
         self.mot = mot
         self.enhanced_mot = self.mot.split("\\")[0]
         self.text = ft.Text(value=f"Set {self.enhanced_mot} file location")
-        self.entry = ft.TextField(
-            value=self.path_json[self.mot.split("\\")[0]], width=400
-        )
+        self.entry = ft.TextField(value=self.path_json[self.mot.split("\\")[0]], width=400)
         file_picker = ft.FilePicker(on_result=self.on_dialog_result)
         self.controls.append(file_picker)
         self.choice = ft.ElevatedButton(
             "Set file manually...",
             on_click=lambda _: file_picker.pick_files(allow_multiple=False),
         )
-        self.script = ft.ElevatedButton(
-            text="Let the script find it..", on_click=lambda e: self.find(e)
-        )
+        self.script = ft.ElevatedButton(text="Let the script find it..", on_click=lambda e: self.find(e))
 
         self.controls.extend([self.text, self.entry, self.choice, self.script])
 
@@ -64,9 +60,7 @@ class RowFinder(ft.Row):
             open=True,
         )
         if color == ft.colors.AMBER_100:
-            self.page.banner.leading = ft.Icon(
-                ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
-            )
+            self.page.banner.leading = ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40)
 
         self.page.update()
 

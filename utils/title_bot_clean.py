@@ -17,10 +17,12 @@ global user_list_lock
 global current_user_getting_job
 global titles
 global _id
+
 user_list_lock = asyncio.Lock()
 current_user_getting_job = None
 titles = {"justice": [], "duke": [], "architect": [], "scientist": []}
 _id = 0
+
 duration = 30
 token = "MTEwMDM2MTgyNTQ0MDIzOTY3Ng.Gvz3U-.cjhCXxzLs4kNjlqnaZiwJm55-yHRUjKW6oxMks"
 guild_id = 1123944825125867602
@@ -114,9 +116,7 @@ async def title(ctx: lightbulb.Context):
     await user_list_lock.acquire()
     current_user_getting_job = current_user
     print(f"✅ Job started for {current_user['username']} ({current_user['id']})")
-    await async_function(
-        title, current_user["kd"], current_user["x"], current_user["y"]
-    )
+    await async_function(title, current_user["kd"], current_user["x"], current_user["y"])
     print(f"❌ Job ended for {current_user['username']} ({current_user['id']})")
     user_list_lock.release()
     await ctx.respond(await send(title, current_user["username"]))

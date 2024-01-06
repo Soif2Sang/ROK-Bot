@@ -24,9 +24,7 @@ async def send_discord_message(name, message, path):
             if user:
                 file = discord.File(path, filename=path)
 
-                embed = discord.Embed(
-                    title=f"Error on {name}", description=message, color=0xFF0000
-                )
+                embed = discord.Embed(title=f"Error on {name}", description=message, color=0xFF0000)
                 embed.set_image(url="attachment://" + path)
                 await user.send(embed=embed, file=file)
                 print(f"Message sent to user {user.name} ({user.id})")

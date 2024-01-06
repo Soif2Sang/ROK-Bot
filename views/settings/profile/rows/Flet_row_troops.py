@@ -15,9 +15,7 @@ class FletRowTraining(ft.ResponsiveRow):
         self.controls = [
             ft.Switch(
                 label=translate(f"Train {key}"),
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][f"{key}_enable"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_enable"],
                 on_change=lambda e: self.submit(e, f"{key}_enable", bool),
                 col=6,
             ),
@@ -30,15 +28,12 @@ class FletRowTraining(ft.ResponsiveRow):
                     ft.dropdown.Option("t3"),
                     ft.dropdown.Option("t4"),
                     ft.dropdown.Option("t5"),
+                    ft.dropdown.Option("highest"),
                 ],
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][f"{key}_tier"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_tier"],
                 on_change=lambda e: self.submit(e, f"{key}_tier", str),
                 height=40,
-                content_padding=ft.Padding(
-                    left=5, top=3, right=5, bottom=3
-                ),  # modify to your likings
+                content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                 col=6,
             ),
         ]
@@ -52,11 +47,9 @@ class FletRowTraining(ft.ResponsiveRow):
             self.FileSingleton.write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = method(e.control.value)
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)

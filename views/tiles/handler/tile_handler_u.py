@@ -35,9 +35,7 @@ class NavigationBar(ft.Row):
                 shape={
                     ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                 },
-                bgcolor=None
-                if not self.tileManager.initial_page.UPGRADE
-                else ft.colors.AMBER_100,
+                bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100,
             ),
         )
 
@@ -49,16 +47,12 @@ class NavigationBar(ft.Row):
                     ft.TextButton(
                         icon=ft.icons.LINK_OUTLINED,
                         text="Pay with Stripe",
-                        on_click=lambda _: self.initial_page.launch_url(
-                            LinkSingleton().getStripeLink()
-                        ),
+                        on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
                     ),
                     ft.TextButton(
                         icon=ft.icons.LINK_OUTLINED,
                         text="Pay with Crypto",
-                        on_click=lambda _: self.initial_page.launch_url(
-                            LinkSingleton().getSellixLink()
-                        ),
+                        on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
                     ),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -298,9 +292,7 @@ class TileManagerUpgrade(ft.ListView):
                 for key in default_profile:
                     for i in range(1, 4):
                         if key not in data[str(instance)]["schedules"][str(i)]:
-                            data[str(instance)]["schedules"][str(i)][
-                                key
-                            ] = copy.deepcopy(default_profile[key])
+                            data[str(instance)]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
 
             data[str(instance)]["instance"] = instances[str(instance)]["instance"]
             data[str(instance)]["name"] = instances[str(instance)]["name"]
@@ -351,6 +343,7 @@ class TileManagerUpgrade(ft.ListView):
         self.initial_page.update()
 
         # self.padding = ft.padding.only(top=15, left=0, bottom=0)
+
     def get_enabled_sel(self):
         tiles = []
         for tile in self.controls[1:]:
@@ -363,6 +356,8 @@ class TileManagerUpgrade(ft.ListView):
 
     def add_divider(self):
         self.initial_page.logger.add_divider()
+
+
 class StartBar(ft.Row):
     def __init__(self, page, tile_manager: TileManagerUpgrade, **kwargs):
         super().__init__(**kwargs)
@@ -381,12 +376,8 @@ class StartBar(ft.Row):
 
         self.tile_manager = tile_manager
 
-        self.button_start = ft.IconButton(
-            icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start
-        )
-        self.button_stop = ft.IconButton(
-            icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop
-        )
+        self.button_start = ft.IconButton(icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start)
+        self.button_stop = ft.IconButton(icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop)
 
         self.controls.extend([self.button_start, self.button_stop, self.text_status])
 
@@ -399,9 +390,7 @@ class StartBar(ft.Row):
             self.tasks_process.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
-            self.initial_page.generate_toast(
-                "Warning", "Task is frozen, you may need to restart the bot."
-            )
+            self.initial_page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
             print("Task is frozen, you may need to restart the bot.")
 
     def start(self, e):

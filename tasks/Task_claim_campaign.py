@@ -42,15 +42,10 @@ class ClaimCampaign(Task):
             return True
         return False
 
-
     @get_class
     def run(self):
         # Open du menu
-        if self.find_img(target="menu_opened", confidence=0.8) is None:
-            x, y = uniform(1200, 1250), uniform(650, 690)
-            self.click(x, y)
-            self.better_sleep((1.725, 1.995))
-
+        self.open_menu()
         if self.has_notification():
             self.click(uniform(808, 850), uniform(651, 692))
             self.better_sleep((1.3, 2.2))
@@ -63,12 +58,15 @@ class ClaimCampaign(Task):
                 self.print("Claiming the daily rewards from the expedition.")
                 self.click(co[0] + uniform(0, 149), co[1] + uniform(0, 20))
                 self.better_sleep((1.3, 2.2))
-                if self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_ethel"] or self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_items"]:
+                if (
+                    self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_ethel"]
+                    or self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_items"]
+                ):
                     self.click(160, 100)
                     self.better_sleep((1.3, 2.2))
 
                     items = [(626, 466), (800, 466), (990, 466), (626, 600), (800, 600), (990, 600)]
-                    ethel = (1000,275)
+                    ethel = (1000, 275)
                     refresh = (1040, 330)
                     shuffle(items)
 

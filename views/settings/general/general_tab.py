@@ -30,9 +30,7 @@ class InterfaceSettings(ft.Tab):
             self.FileSingleton.write_data(data)
             if keyword == "auto_scroll":
                 for frame in self.page.frames:
-                    self.page.frames[frame].logger.auto_scroll = data["interface"][
-                        keyword
-                    ]
+                    self.page.frames[frame].logger.auto_scroll = data["interface"][keyword]
                 self.initial_page.update()
         if keyword == "enabled":
             data = self.FileSingleton.get_data()

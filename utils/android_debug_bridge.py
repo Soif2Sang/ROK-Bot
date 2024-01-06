@@ -50,13 +50,9 @@ class Adb:
 
         if self.port != int(instances[str(self.number)]["port"]):
             self.data = self.FileSingleton.get_data()
-            self.data[str(self.number)]["instance"] = instances[str(self.number)][
-                "instance"
-            ]
+            self.data[str(self.number)]["instance"] = instances[str(self.number)]["instance"]
             self.data[str(self.number)]["name"] = instances[str(self.number)]["name"]
-            self.data[str(self.number)]["port"] = int(
-                instances[str(self.number)]["port"]
-            )
+            self.data[str(self.number)]["port"] = int(instances[str(self.number)]["port"])
             self.port = int(instances[str(self.number)]["port"])
             self.FileSingleton.write_data(self.data)
 
@@ -106,9 +102,7 @@ class Adb:
 
     def print(self, text: str):
         data = self.FileSingleton.get_data()
-        print(
-            f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}"
-        )
+        print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
         self.FileSingleton.write(self.name, text)
 
     def get_curr_device_screen_img_byte_array(self):
@@ -178,14 +172,20 @@ class Adb:
     def find_img(self, target: str, source: ndarray = None, confidence=0.9):
         try:
             if source is None:
-                pil_image = self.get_curr_device_screen_img()
-                source = array(pil_image)
+                source = self.get_cv2_img()
+            height, width, _ = source.shape
+
+            if height == 720 and width == 1280:
                 if target == "new_troops_button":
                     source = source[0:322, 800:1280]
                 if target == "gem_search_button":
                     source = source[470:600, 0:150]
-
-                source = cvtColor(source, COLOR_BGR2RGB)
+                if target == "button_level":
+                    source = source[720 // 2 - 50 :, :]
+                if target in ["minus_button", "plus_button"]:
+                    source = source[720 // 2 :, :]
+                if target == 'search_button':
+                    source = source[720//2:,:1280//4]
 
             img_to_find = self.images.get_file_name(target)
             # bot.adb.get_cv2_img()
@@ -194,6 +194,12 @@ class Adb:
             if max_val > confidence:
                 if target == "new_troops_button":
                     return max_loc[0] + 800, max_loc[1]
+                if target == "button_level":
+                    return max_loc[0], max_loc[1] + 720 // 2 - 50
+                if target in ["minus_button", "plus_button"]:
+                    return max_loc[0], max_loc[1] + 720 // 2
+                if target == 'search_button':
+                    return max_loc[0], max_loc[1] + 720 // 2
                 return max_loc[0], max_loc[1]
             else:
                 return
@@ -334,16 +340,13 @@ class Adb:
             with open(rf"{string}", "r") as file:
                 data_instance = file.read().split("\n")
         except:
-            print(
-                "The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf"
-            )
+            print("The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
 
         liste_info = []
         for element in data_instance:
-            if (
-                (("bst.instance.Nougat64" in element) and ("adb_port" in element))
-                and "status" not in element
-            ) or (("bst.instance.Nougat64" in element) and ("display_name" in element)):
+            if ((("bst.instance.Nougat64" in element) and ("adb_port" in element)) and "status" not in element) or (
+                ("bst.instance.Nougat64" in element) and ("display_name" in element)
+            ):
                 liste_info.append(element)
 
         dico_instance = {}
@@ -393,12 +396,7 @@ class Adb:
 def img_to_string(pil_image):
     # pil_image.save(resource_path("test.png"))
     tess.pytesseract.tesseract_cmd = "tesseract\\tesseract.exe"
-    result = (
-        tess.image_to_string(pil_image, lang="eng", config="--psm 6")
-        .replace("\t", "")
-        .replace("\n", "")
-        .replace("\f", "")
-    )
+    result = tess.image_to_string(pil_image, lang="eng", config="--psm 6").replace("\t", "").replace("\n", "").replace("\f", "")
     return result
 
 

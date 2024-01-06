@@ -21,18 +21,13 @@ class HuntBarbarians(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while (
-            self.find_img(target=f"{color}_icon", confidence=0.95) is None
-            and self.find_img(target="troops_march_button") is not None
-        ):
+        while self.find_img(target=f"{color}_icon", confidence=0.95) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_text("Error in line-up selection")
-                self.send_discord_message(
-                    "Error in line-up selection, please fix the game"
-                )
+                self.send_discord_message("Error in line-up selection, please fix the game")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -93,20 +88,11 @@ class HuntBarbarians(Task):
 
     @get_name
     def deploy_hunter_old(self):
-        full_area = [
-            (i, y)
-            for i in range(420, 840, 5)
-            for y in range(200, 530, 5)
-            if not (795 > i > 490 and 210 < y < 490)
-        ]
+        full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if not (795 > i > 490 and 210 < y < 490)]
         hunters = 0
         breakloop = False
-        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-            "barbarians_preset"
-        ]:
-            if not self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                "barbarians_preset"
-            ][preset]:
+        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"]:
+            if not self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"][preset]:
                 continue
             sent = False
             if breakloop:
@@ -145,12 +131,7 @@ class HuntBarbarians(Task):
 
     @get_name
     def deploy_hunter(self):
-        full_area = [
-            (i, y)
-            for i in range(420, 840, 5)
-            for y in range(200, 530, 5)
-            if not (795 > i > 490 and 210 < y < 490)
-        ]
+        full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if not (795 > i > 490 and 210 < y < 490)]
 
         hunters = 0
 
@@ -184,12 +165,8 @@ class HuntBarbarians(Task):
         self.click(1100, 640)
         self.better_sleep((1.525, 1.995))
 
-        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-            "barbarians_preset"
-        ]:
-            if self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                "barbarians_preset"
-            ][preset]:
+        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"]:
+            if self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"][preset]:
                 hunters += 1
                 continue
             else:
@@ -211,9 +188,7 @@ class HuntBarbarians(Task):
         nb_to_go = nb_troop
         breakint = 0
         while (nb_to_go > 0) & (breakint != 4):
-            while (
-                co := self.find_img(target="return_button")
-            ) is None and breakint != 4:
+            while (co := self.find_img(target="return_button")) is None and breakint != 4:
                 print(f"[ {current_time()} ] [ {self.name} ] Return button not found")
 
                 y, x = uniform(290, 480), uniform(460, 560)
@@ -261,10 +236,7 @@ class HuntBarbarians(Task):
     @get_name
     def wait_until_kill(self):
         self.print(f"Waiting for the troops to kill the barbarian..")
-        while (
-            self.find_img(target="troop_idle") is None
-            or self.find_img(target="troop_walking") is not None
-        ):
+        while self.find_img(target="troop_idle") is None or self.find_img(target="troop_walking") is not None:
             if not self.adb.is_game_alive():
                 self.run_game()
                 self.leave_city()
@@ -273,25 +245,15 @@ class HuntBarbarians(Task):
             self.check_reconnect()
             self.check_captcha()
             self.better_sleep((8, 15))
-            print(
-                f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian.."
-            )
+            print(f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian..")
 
     @get_class
     def run(self):
-        preset_selected = list(
-            self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                "barbarians_preset"
-            ].values()
-        ).count(True)
+        preset_selected = list(self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"].values()).count(True)
         if preset_selected == 0:
             return self.print("No presets selected, canceling the function", "red")
 
-        wanted_level = int(
-            self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                "barbarians_level"
-            ]
-        )
+        wanted_level = int(self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_level"])
         hunter_selection = False
         self.leave_city()
         self.better_sleep((1, 1.3))
@@ -299,9 +261,7 @@ class HuntBarbarians(Task):
         if nb_hunter == 0:
             return self.print("No PeaceKeeper sent, cancelling the function", "red")
         if not self.enough_action_points():
-            return self.print(
-                "It looks like you are low in AP, cancelling the function", "red"
-            )
+            return self.print("It looks like you are low in AP, cancelling the function", "red")
         while not self.check_ap_box():
             self.run_game()
             self.better_sleep((1.5, 3))
@@ -309,13 +269,9 @@ class HuntBarbarians(Task):
             self.click_loop()  # Clicking on the loop
             self.better_sleep((1, 2))
 
-            self.click(
-                uniform(225, 285), uniform(607, 667)
-            )  # Selecting the barbarian section
+            self.click(uniform(225, 285), uniform(607, 667))  # Selecting the barbarian section
             self.better_sleep((1, 1.3))
-            self.set_search_level(
-                wanted_level
-            )  # Setting the barbarian level to the desired level
+            self.set_search_level(wanted_level)  # Setting the barbarian level to the desired level
 
             self.click(uniform(200, 330), uniform(466, 506))  # Searching the barbarian
             self.better_sleep((1, 2))
@@ -331,17 +287,13 @@ class HuntBarbarians(Task):
                 self.better_sleep((1, 2))
             wanted_level = reduced_level
 
-            self.click(
-                1280 // 2 + uniform(-10, 10), 720 // 2 + uniform(-10, 10)
-            )  # Selecting the barbarian
+            self.click(1280 // 2 + uniform(-10, 10), 720 // 2 + uniform(-10, 10))  # Selecting the barbarian
             self.better_sleep((1, 1.4))
 
             button_attack = self.find_img(target="attack_button")
             if button_attack is None:
                 continue  # Skipping all the code bellow to re-execute the barbarian search
-            self.click(
-                button_attack[0] + uniform(0, 170), button_attack[1] + uniform(0, 40)
-            )
+            self.click(button_attack[0] + uniform(0, 170), button_attack[1] + uniform(0, 40))
             self.better_sleep((1.5, 2))
 
             if not hunter_selection:

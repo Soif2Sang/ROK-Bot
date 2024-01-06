@@ -25,9 +25,7 @@ class FletRowRss(ft.ResponsiveRow):
             ft.Column(
                 controls=[
                     ft.Dropdown(
-                        content_padding=ft.Padding(
-                            left=5, top=3, right=5, bottom=3
-                        ),  # modify to your likings
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label=translate("Node Type"),
                         options=[
                             ft.dropdown.Option("food"),
@@ -37,9 +35,7 @@ class FletRowRss(ft.ResponsiveRow):
                             ft.dropdown.Option("random"),
                             ft.dropdown.Option("nothing"),
                         ],
-                        value=self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ][f"{key}"],
+                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}"],
                         on_change=lambda e: self.submit(e, f"{key}", str),
                     )
                 ],
@@ -49,9 +45,7 @@ class FletRowRss(ft.ResponsiveRow):
             ft.Column(
                 controls=[
                     ft.Dropdown(
-                        content_padding=ft.Padding(
-                            left=5, top=3, right=5, bottom=3
-                        ),  # modify to your likings
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label=translate("Node Level"),
                         options=[
                             ft.dropdown.Option("1"),
@@ -64,13 +58,9 @@ class FletRowRss(ft.ResponsiveRow):
                             ft.dropdown.Option("8"),
                             ft.dropdown.Option("9"),
                         ],
-                        value=self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ][f"{key}_level"],
+                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
                         on_change=lambda e: self.submit(e, f"{key}_level", int),
-                        disabled=self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["gather_rss_method"],
+                        disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"],
                     ),
                 ],
                 col=3,
@@ -85,11 +75,9 @@ class FletRowRss(ft.ResponsiveRow):
             self.FileSingleton.write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = method(e.control.value)
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)
