@@ -128,25 +128,18 @@ class Marauders(Task):
     @get_name
     def wait_until_kill(self):
         self.print(f"Waiting for the troops to kill the barbarian..")
-        while (
-            self.find_img(target="troop_idle") is None
-            or self.find_img(target="troop_walking") is not None
-        ):
+        while self.find_img(target="troop_idle") is None or self.find_img(target="troop_walking") is not None:
             if not self.adb.is_game_alive():
                 self.run_game()
                 return self.run(self.end_time)
             if self.check_log_back():
-                self.print(
-                    "You interrupted killing maraudeurs by connecting from an other device, bot is restarting it"
-                )
+                self.print("You interrupted killing maraudeurs by connecting from an other device, bot is restarting it")
                 return self.run(self.end_time)
             self.script_pause()
             self.check_reconnect()
             self.check_captcha()
             self.better_sleep((8, 15))
-            print(
-                f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian.."
-            )
+            print(f"[ {current_time()} ] [ {self.name} ] Waiting for the troops to kill the barbarian..")
 
     def select_all_troop_zommed_out(self):
         for i in range(2):
@@ -195,9 +188,7 @@ class Marauders(Task):
         button_attack = self.find_img(target="attack_button")
         if button_attack is None:
             return self.adjusted_leave_city(co[0], co[1])
-        self.click(
-            button_attack[0] + uniform(0, 170), button_attack[1] + uniform(0, 40)
-        )
+        self.click(button_attack[0] + uniform(0, 170), button_attack[1] + uniform(0, 40))
         self.better_sleep((1.5, 2))
 
         self.select_troops()
@@ -254,9 +245,7 @@ class Marauders(Task):
         :param: y -> int y map location
         :return: starting location between 0,1,2,3
         """
-        radius = self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "radius"
-        )
+        radius = self.data[str(self.sel)]["schedules"][self.current_profile].get("radius")
         randomization = randint(0, 3)
 
         while randomization == last or None:
@@ -296,9 +285,7 @@ class Marauders(Task):
                 self.adb.shell(string)
                 self.script_pause()
                 self.better_sleep((0.3, 0.5))
-                self.adb.shell(
-                    f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}"
-                )
+                self.adb.shell(f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}")
                 self.better_sleep((0.3, 0.5))
                 self.script_pause()
         self.better_sleep((0.3, 0.5))
@@ -351,37 +338,24 @@ class Marauders(Task):
 
         if random() > 0.7:
             self.check_if_interrupt(screen)
-            co = self.find_img(
-                source=screen, target="verification_button", confidence=0.6
-            )
+            co = self.find_img(source=screen, target="verification_button", confidence=0.6)
             if co is not None:
                 self.check_captcha()
 
         cropped_image = screen[616:710, 1168:1270]
 
-        if (
-            self.find_img(source=cropped_image, target="map_icon", confidence=0.8)
-            is not None
-        ):
+        if self.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
             self.click(uniform(500, 700), uniform(250, 450))
             self.better_sleep((1, 2))
             return self.zoom_out_city()
 
-        if (
-            self.find_img(source=info_screen, target="hammer", confidence=0.8)
-            is not None
-        ):
+        if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
-        if (
-            self.find_img(
-                source=info_screen, target="gem_search_button", confidence=0.8
-            )
-            is not None
-        ):
+        if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
@@ -394,18 +368,13 @@ class Marauders(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while (
-            self.find_img(target=f"{color}_icon", confidence=0.95) is None
-            and self.find_img(target="troops_march_button") is not None
-        ):
+        while self.find_img(target=f"{color}_icon", confidence=0.95) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_text("Error in line-up selection")
-                self.send_discord_message(
-                    "Error in line-up selection, please fix the game"
-                )
+                self.send_discord_message("Error in line-up selection, please fix the game")
                 while True:
                     self.script_pause()
                     sleep(0.1)
@@ -522,12 +491,7 @@ class Marauders(Task):
 
     @get_name
     def deploy_hunter(self):
-        full_area = [
-            (i, y)
-            for i in range(420, 840, 5)
-            for y in range(200, 530, 5)
-            if not (795 > i > 490 and 210 < y < 490)
-        ]
+        full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if not (795 > i > 490 and 210 < y < 490)]
 
         hunters = 0
 
@@ -561,12 +525,8 @@ class Marauders(Task):
         self.click(1100, 640)
         self.better_sleep((1.525, 1.995))
 
-        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-            "barbarians_preset"
-        ]:
-            if self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                "barbarians_preset"
-            ][preset]:
+        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"]:
+            if self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"][preset]:
                 hunters += 1
                 continue
             else:
@@ -620,53 +580,32 @@ class Marauders(Task):
         self.scan_maraudeur()
         self.better_sleep((0.125, 0.195))
         randomization = self.go_to(
-            self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                "city_x", 500
-            ),
-            self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                "city_y", 500
-            ),
+            self.data[str(self.sel)]["schedules"][self.current_profile].get("city_x", 500),
+            self.data[str(self.sel)]["schedules"][self.current_profile].get("city_y", 500),
         )
         # print(f"{randomization = }")
-        radius = (
-            self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                "radius", 50
-            )
-            // 10
-        )
+        radius = self.data[str(self.sel)]["schedules"][self.current_profile].get("radius", 50) // 10
         width = radius
         height = radius
         starting_time = time()
         time_restart = time()
         # print(self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'))
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "gather_gem_duration1"
-        ) > self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "gather_gem_duration2"
-        ):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration1") > self.data[str(self.sel)]["schedules"][
+            self.current_profile
+        ].get("gather_gem_duration2"):
             (
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration1"
-                ],
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration2"
-                ],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration1"],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration2"],
             ) = (
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration2"
-                ],
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration1"
-                ],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration2"],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration1"],
             )
 
         if self.end_time is None:
             self.end_time = starting_time + (300 * 60)
 
         # print(f'starting_time : {datetime.fromtimestamp(starting_time).strftime("%H:%M:%S")} , time to beat : {datetime.fromtimestamp(end_time).strftime("%H:%M:%S")} , {starting_time>end_time = }')
-        self.print(
-            f"Killing marauders till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}"
-        )
+        self.print(f"Killing marauders till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
         while self.end_time > time():
             self.run_game()
             self.scan_maraudeur()
@@ -816,12 +755,8 @@ class Marauders(Task):
             self.better_sleep((1.525, 2.795))
 
             randomization = self.go_to(
-                self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                    "city_x", 500
-                ),
-                self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                    "city_y", 500
-                ),
+                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_x", 500),
+                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_y", 500),
                 randomization,
             )
             self.print(f"Current path n°{randomization}")

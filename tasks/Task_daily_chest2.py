@@ -32,9 +32,7 @@ class DailyChest2(Task):
                     self.click(chest[0] + uniform(20, 100), chest[1] + uniform(10, 40))
                     self.better_sleep((3, 5))
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(
-                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
-                        )
+                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
                 self.click(uniform(25, 55), uniform(20, 56))
                 self.better_sleep((2.5, 5))
@@ -62,9 +60,7 @@ class DailyChest2(Task):
                     self.click(open[0] + uniform(0, 100), open[1] + uniform(10, 40))
                     self.better_sleep((5, 8))
                     while confirm := self.find_img(target="confirm_tavern"):
-                        self.click(
-                            confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40)
-                        )
+                        self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
                 self.better_sleep((1.7, 3))
 

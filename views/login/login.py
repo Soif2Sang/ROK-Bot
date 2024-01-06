@@ -67,16 +67,12 @@ class LoginUI(ft.Column):
                         ft.TextButton(
                             icon=ft.icons.LINK_OUTLINED,
                             text="Pay with Stripe",
-                            on_click=lambda _: self.initial_page.launch_url(
-                                LinkSingleton().getStripeLink()
-                            ),
+                            on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
                         ),
                         ft.TextButton(
                             icon=ft.icons.LINK_OUTLINED,
                             text="Pay with Crypto",
-                            on_click=lambda _: self.initial_page.launch_url(
-                                LinkSingleton().getSellixLink()
-                            ),
+                            on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
                         ),
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
@@ -111,18 +107,13 @@ class LoginUI(ft.Column):
             )
             self.initial_page.update()
 
-
-            if self.initial_page.keyauthapp.login(
-                user=username, password=password, page=self.initial_page
-            ):
+            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
                 update_user_info(password, username)
 
                 self.initial_page.splash = None
                 self.button_login.disabled = False
 
-                target_date = datetime.utcfromtimestamp(
-                    int(self.initial_page.keyauthapp.user_data.expires)
-                )
+                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
 
                 current_date = datetime.utcnow()
                 days = (target_date - current_date).days
@@ -133,9 +124,7 @@ class LoginUI(ft.Column):
 
                 ApiSingleton().setApiKey(self.initial_page.keyauthapp.var("2captcha"))
 
-                self.initial_page.subscription_checker = threading.Thread(
-                    target=self.verify_subscription, args=(username, password)
-                )
+                self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
                 # self.initial_page.subscription_checker.start()
             else:
                 sleep(5)
@@ -165,12 +154,8 @@ class LoginUI(ft.Column):
                 hash_to_check=getchecksum(),
             )
 
-            if self.initial_page.keyauthapp.login(
-                user=username, password=password, page=self.initial_page
-            ):
-                target_date = datetime.utcfromtimestamp(
-                    int(self.initial_page.keyauthapp.user_data.expires)
-                )
+            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
+                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
 
                 current_date = datetime.utcnow()
                 days_remaining = (target_date - current_date).days
@@ -245,12 +230,8 @@ class LoginUI(ft.Column):
 
         return self.controls.extend(
             [
-                ft.Row(
-                    [self.textfield_username], alignment=ft.MainAxisAlignment.CENTER
-                ),
-                ft.Row(
-                    [self.textfield_password], alignment=ft.MainAxisAlignment.CENTER
-                ),
+                ft.Row([self.textfield_username], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row([self.textfield_password], alignment=ft.MainAxisAlignment.CENTER),
                 r,
             ]
         )

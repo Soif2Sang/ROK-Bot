@@ -71,16 +71,15 @@ class GatherRssZoom(GatherRss):
             self.data[str(self.sel)]["schedules"][self.current_profile][self.node_place]
             == "random"
         ):
-            node_type = choice(["food", "wood", "stone", "gold"])
+            node_types = ["food", "wood", "stone", "gold"]
         else:
-            node_type = self.data[str(self.sel)]["schedules"][self.current_profile][
-                self.node_place
-            ]
-
-        list_nodes = [f"{node_type}_icon_zoom"]
-        for element in ["down", "up"]:
-            for element2 in ["left", "right"]:
-                list_nodes.append(f"{node_type}_{element}_{element2}_icon_zoom")
+            node_types = [self.data[str(self.sel)]["schedules"][self.current_profile][self.node_place]]
+        list_nodes = []
+        for node_type in node_types:
+            list_nodes.append(f"{node_type}_icon_zoom")
+            for element in ["down", "up"]:
+                for element2 in ["left", "right"]:
+                    list_nodes.append(f"{node_type}_{element}_{element2}_icon_zoom")
         co = None
         for icon in list_nodes:
             co = self.validate_co(
@@ -140,12 +139,8 @@ class GatherRssZoom(GatherRss):
 
     @get_name
     def swipe_scan(self, scan, direction):
-        self.script_pause()
-        # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
         direction()
         screen = self.adb.get_cv2_img()
-
-        info_screen = screen[470:700, 0:115]
 
         if random() > 0.9:
             self.close_windows()
@@ -153,41 +148,30 @@ class GatherRssZoom(GatherRss):
         if random() > 0.7:
             if self.check_if_interrupt(screen):
                 return self.run(self.end_time)
-            co = self.find_img(
-                source=screen, target="verification_button", confidence=0.6
-            )
-            if co is not None:
+
+            if self.find_img(source=screen[:720//2,:], target="verification_button", confidence=0.6):
                 self.check_captcha()
+                screen = self.adb.get_cv2_img()
 
-        cropped_image = screen[616:710, 1168:1270]
+        info_screen = screen[470:, 0:115]
+        cropped_image = screen[610:, 1150:]
 
-        if (
-            self.find_img(source=cropped_image, target="map_icon", confidence=0.8)
-            is not None
-        ):
+        if self.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
             self.click(uniform(500, 700), uniform(250, 450))
             self.better_sleep((1, 2))
             return self.zoom_out_city()
 
-        if (
-            self.find_img(source=info_screen, target="hammer", confidence=0.8)
-            is not None
-        ):
+        if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
-        if (
-            self.find_img(
-                source=info_screen, target="gem_search_button", confidence=0.8
-            )
-            is not None
-        ):
+        if self.find_img(source=screen, target="gem_search_button", confidence=0.8) is not None:
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
-        self.better_sleep((0.5, 0.7))
+        self.better_sleep((0.7, 0.9))
         return scan()
 
     @get_class
@@ -202,15 +186,16 @@ class GatherRssZoom(GatherRss):
         ):
             return
         self.check_captcha()
-        self.check_reconnect()
-        self.check_log_back()
-        self.leave_kd_buff()
+        screen = self.check_reconnect()
+        screen = self.leave_kd_buff(screen)
+        self.check_log_back(screen)
 
         if node_place is None:
             self.leave_city()
         else:
             self.go_back_to_city()
-        self.better_sleep((1.5, 2))
+
+        # self.better_sleep((1.5, 2))
         self.zoom_out_city()
 
         if self.node_place is None:

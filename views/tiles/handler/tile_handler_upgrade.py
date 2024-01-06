@@ -82,10 +82,9 @@ class TileManagerUpgrade(ft.ListView):
 
         liste_info = []
         for element in data_instance:
-            if (
-                (("bst.instance.Nougat64" in element) and ("adb_port" in element))
-                and "status" in element
-            ) or (("bst.instance.Nougat64" in element) and ("display_name" in element)):
+            if ((("bst.instance.Nougat64" in element) and ("adb_port" in element)) and "status" in element) or (
+                ("bst.instance.Nougat64" in element) and ("display_name" in element)
+            ):
                 liste_info.append(element)
         tab_instance = []
         for i in range(0, len(liste_info), 2):
@@ -249,9 +248,7 @@ class TileManagerUpgrade(ft.ListView):
                 for key2 in default_dic["schedules"][1]:
                     for i in range(1, 4):
                         if key2 not in data[str(key)]["schedules"][str(i)]:
-                            data[str(key)]["schedules"][str(i)][key2] = default_dic[
-                                "schedules"
-                            ][1][key2]
+                            data[str(key)]["schedules"][str(i)][key2] = default_dic["schedules"][1][key2]
             data[str(key)]["instance"] = instances[str(key)]["instance"]
             data[str(key)]["name"] = instances[str(key)]["name"]
             data[str(key)]["port"] = int(instances[str(key)]["port"])
@@ -300,12 +297,8 @@ class StartBar(ft.Row):
         self.started = False
         self.stopped = False
 
-        self.button_start = ft.IconButton(
-            icon=ft.icons.NOT_STARTED_OUTLINED, on_click=lambda _: self.start()
-        )
-        self.button_stop = ft.IconButton(
-            icon=ft.icons.STOP_OUTLINED, disabled=True, on_click=lambda _: self.stop()
-        )
+        self.button_start = ft.IconButton(icon=ft.icons.NOT_STARTED_OUTLINED, on_click=lambda _: self.start())
+        self.button_stop = ft.IconButton(icon=ft.icons.STOP_OUTLINED, disabled=True, on_click=lambda _: self.stop())
 
         self.controls.extend([self.button_start, self.button_stop, self.text_status])
 

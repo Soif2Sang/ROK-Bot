@@ -49,17 +49,13 @@ class BasePage:
                 self.data[str(self.instance_index)][keyword] = method(e.control.value)
         elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
             if e.control.value.strip() == "":
-                self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword] = method(0)
+                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(0)
             else:
-                self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword] = method(e.control.value)
+                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)
 
     def reverse_keyword(self, keyword: str):
@@ -70,24 +66,16 @@ class BasePage:
             self.FileSingleton.write_data(data)
             if keyword == "auto_scroll":
                 for frame in self.profile.initial_page.frames:
-                    self.profile.initial_page.frames[frame].logger.auto_scroll = data[
-                        "interface"
-                    ][keyword]
+                    self.profile.initial_page.frames[frame].logger.auto_scroll = data["interface"][keyword]
                 self.initial_page.update()
         elif keyword == "enabled":
             data["discord"]["enabled"] = not data["discord"].get(keyword, False)
         elif keyword == "leave_game_loop":
-            data[str(self.instance_index)][keyword] = not self.data[
-                str(self.instance_index)
-            ][keyword]
+            data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         else:
-            data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = not self.data[str(self.instance_index)]["schedules"][
-                str(self.profile_index)
-            ][
-                keyword
-            ]
+            data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = not self.data[str(self.instance_index)][
+                "schedules"
+            ][str(self.profile_index)][keyword]
 
         self.data = data
 
@@ -97,11 +85,7 @@ class BasePage:
         self.data = self.FileSingleton.get_data()
         return ft.Switch(
             label=translate(text),
-            value=True
-            if self.data[str(self.instance_index)]["schedules"][
-                str(self.profile_index)
-            ][keyword]
-            else False,
+            value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
             on_change=lambda _: self.reverse_keyword(keyword),
         )
 
@@ -112,11 +96,7 @@ class BasePage:
                 controls=[
                     ft.Switch(
                         label=translate(text),
-                        value=True
-                        if self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ][keyword]
-                        else False,
+                        value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                         on_change=lambda _: self.reverse_keyword(keyword),
                     ),
                     ft.OutlinedButton(
@@ -125,9 +105,7 @@ class BasePage:
                         on_click=lambda _: function(),
                         style=ButtonStyle(
                             shape={
-                                ft.MaterialState.DEFAULT: RoundedRectangleBorder(
-                                    radius=5
-                                ),
+                                ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                             }
                         ),
                     ),
@@ -140,9 +118,7 @@ class BasePage:
                     controls=[
                         ft.Switch(
                             label=translate(text),
-                            value=True
-                            if self.data[str(self.instance_index)][keyword]
-                            else False,
+                            value=True if self.data[str(self.instance_index)][keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
@@ -151,9 +127,7 @@ class BasePage:
                             on_click=lambda _: function(),
                             style=ButtonStyle(
                                 shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(
-                                        radius=5
-                                    ),
+                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                                 },
                             ),
                         ),

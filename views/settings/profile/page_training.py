@@ -29,8 +29,6 @@ class PageTraining(BasePage):
             ft.OutlinedButton(
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set Training camps position"),
-                on_click=lambda _: self.initial_page.go(
-                    f"/city-layout/{self.instance_index}/{self.profile_index}"
-                ),
+                on_click=lambda _: self.initial_page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
             )
         )

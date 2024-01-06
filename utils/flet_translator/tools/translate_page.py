@@ -51,9 +51,7 @@ class TranslateFletPage:
             try:
                 from easynmt import EasyNMT
             except:
-                raise ImportError(
-                    "Please install the easynmt package:\npip install EasyNMT"
-                )
+                raise ImportError("Please install the easynmt package:\npip install EasyNMT")
             # store ML models
             self.opusMT_model = EasyNMT("opus-mt")
 
@@ -95,9 +93,7 @@ class TranslateFletPage:
 
         if update_in_async:
             for con in self.page.controls:
-                translate_control_content(
-                    self, con, self.__use_internet, update_in_async
-                )
+                translate_control_content(self, con, self.__use_internet, update_in_async)
         else:
             for con in self.page.controls:
                 threading.Thread(
@@ -127,9 +123,7 @@ class TranslateFletPage:
         try:
             from easynmt import EasyNMT
         except:
-            raise ImportError(
-                "Please install the easynmt package:\npip install EasyNMT"
-            )
+            raise ImportError("Please install the easynmt package:\npip install EasyNMT")
         self.__use_internet = False
         # store ML models
         self.opusMT_model = EasyNMT("opus-mt")

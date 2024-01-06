@@ -31,9 +31,7 @@ class NavigationBar(ft.Row):
                 shape={
                     ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                 },
-                bgcolor=None
-                if not self.tileManager.initial_page.UPGRADE
-                else ft.colors.AMBER_100,
+                bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100,
             ),
         )
 
@@ -45,16 +43,12 @@ class NavigationBar(ft.Row):
                     ft.TextButton(
                         icon=ft.icons.LINK_OUTLINED,
                         text="Pay with Stripe",
-                        on_click=lambda _: self.initial_page.launch_url(
-                            LinkSingleton().getStripeLink()
-                        ),
+                        on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
                     ),
                     ft.TextButton(
                         icon=ft.icons.LINK_OUTLINED,
                         text="Pay with Crypto",
-                        on_click=lambda _: self.initial_page.launch_url(
-                            LinkSingleton().getSellixLink()
-                        ),
+                        on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
                     ),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -293,9 +287,7 @@ class TileHandler(ft.ListView):
                 for key in default_profile:
                     for i in range(1, 4):
                         if key not in data[str(instance)]["schedules"][str(i)]:
-                            data[str(instance)]["schedules"][str(i)][
-                                key
-                            ] = copy.deepcopy(default_profile[key])
+                            data[str(instance)]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
 
             data[str(instance)]["instance"] = instances[str(instance)]["instance"]
             data[str(instance)]["name"] = instances[str(instance)]["name"]

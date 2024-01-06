@@ -59,9 +59,7 @@ async def title(ctx: lightbulb.Context):
     title = ctx.options.title.lower()
 
     if title not in titles:
-        await ctx.respond(
-            "You may have misspelled your title request. Unable to proceed."
-        )
+        await ctx.respond("You may have misspelled your title request. Unable to proceed.")
 
     titles[title].append(
         {
@@ -86,17 +84,11 @@ async def title(ctx: lightbulb.Context):
 
         print(f"Job started for {current_user['username']}")
 
-        if await async_function(
-            title, current_user["kd"], current_user["x"], current_user["y"]
-        ):
-            await ctx.respond(
-                f"{title} is now assigned to {current_user['username']} for {duration} sec."
-            )
+        if await async_function(title, current_user["kd"], current_user["x"], current_user["y"]):
+            await ctx.respond(f"{title} is now assigned to {current_user['username']} for {duration} sec.")
             await ctx.respond(await get_current_queue(title))
         else:
-            await ctx.respond(
-                f"Unable to assign {title.capitalize()} to {current_user['username']}."
-            )
+            await ctx.respond(f"Unable to assign {title.capitalize()} to {current_user['username']}.")
             await ctx.respond(await get_current_queue(title))
 
         await waitForClosure(title, current_user)
@@ -108,16 +100,10 @@ async def title(ctx: lightbulb.Context):
 
         print(f"Job started for {current_user['username']}")
 
-        if await async_function(
-            title, current_user["kd"], current_user["x"], current_user["y"]
-        ):
-            await ctx.respond(
-                f"{title} is now assigned to {current_user['username']} for {duration} sec."
-            )
+        if await async_function(title, current_user["kd"], current_user["x"], current_user["y"]):
+            await ctx.respond(f"{title} is now assigned to {current_user['username']} for {duration} sec.")
         else:
-            await ctx.respond(
-                f"Unable to assign {title.capitalize()} to {current_user['username']}."
-            )
+            await ctx.respond(f"Unable to assign {title.capitalize()} to {current_user['username']}.")
         print(f"Job ended for {current_user['username']}")
 
         await waitForClosure(title, current_user)

@@ -172,9 +172,7 @@ class TwoCaptcha:
             proxy           =  {'type': 'HTTPS', 'uri': 'login:password@IP_address:PORT'})
         """
 
-        result = self.solve(
-            gt=gt, challenge=challenge, url=url, method="geetest", **kwargs
-        )
+        result = self.solve(gt=gt, challenge=challenge, url=url, method="geetest", **kwargs)
         return result
 
     def hcaptcha(self, sitekey, url, **kwargs):
@@ -428,9 +426,7 @@ class TwoCaptcha:
         if isinstance(file, np.ndarray):
             # Assuming data is an image represented as a NumPy array
             # Convert the NumPy array to base64
-            _, im_arr = cv2.imencode(
-                ".jpg", file
-            )  # im_arr: image in Numpy one-dim array format.
+            _, im_arr = cv2.imencode(".jpg", file)  # im_arr: image in Numpy one-dim array format.
             im_bytes = im_arr.tobytes()
             im_b64 = base64.b64encode(im_bytes)
             return {"method": "base64", "body": im_b64}
@@ -441,9 +437,7 @@ class TwoCaptcha:
         if file.startswith("http"):
             img_resp = requests.get(file)
             if img_resp.status_code != 200:
-                raise ValidationException(
-                    f"File could not be downloaded from url: {file}"
-                )
+                raise ValidationException(f"File could not be downloaded from url: {file}")
             return {
                 "method": "base64",
                 "body": b64encode(img_resp.content).decode("utf-8"),

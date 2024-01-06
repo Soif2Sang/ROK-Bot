@@ -96,9 +96,7 @@ class selfApi:
                 os.system(f"start {download_link}")
                 kill_app()
             else:
-                print(
-                    "Invalid Version, Contact owner to add download link to latest app version"
-                )
+                print("Invalid Version, Contact owner to add download link to latest app version")
                 kill_app()
 
         if not json["success"]:
@@ -148,19 +146,14 @@ class selfApi:
             if wid1 != hwid:
                 if self.page is not None:
                     self.log(f"user :{user} tried connecting on {public_ip}")
-                    self.page.generate_toast("Something wrong occurred",
-                                             "Hardware id doesn't match, contact the admin"
-                                             )
+                    self.page.generate_toast("Something wrong occurred", "Hardware id doesn't match, contact the admin")
                 print("Hardware id doesn't match")
                 return False
         else:
             if (wid1 != hwid) and (wid2 != hwid):
                 if self.page is not None:
                     self.log(f"user :{user} tried connecting on {public_ip}")
-                    self.page.generate_toast(
-                        "Something wrong occurred",
-                        "Hardware id doesn't match, contact the admin"
-                    )
+                    self.page.generate_toast("Something wrong occurred", "Hardware id doesn't match, contact the admin")
                 print("Hardware id doesn't match")
                 return False
 
@@ -175,16 +168,12 @@ class selfApi:
                             ft.TextButton(
                                 icon=ft.icons.LINK_OUTLINED,
                                 text="Pay with Stripe",
-                                on_click=lambda _: self.page.launch_url(
-                                    LinkSingleton().getStripeLink()
-                                ),
+                                on_click=lambda _: self.page.launch_url(LinkSingleton().getStripeLink()),
                             ),
                             ft.TextButton(
                                 icon=ft.icons.LINK_OUTLINED,
                                 text="Pay with Crypto",
-                                on_click=lambda _: self.page.launch_url(
-                                    LinkSingleton().getSellixLink()
-                                ),
+                                on_click=lambda _: self.page.launch_url(LinkSingleton().getSellixLink()),
                             ),
                         ]
                     )
@@ -195,9 +184,7 @@ class selfApi:
                     ft.Banner(
                         content=content,
                         actions=[
-                            ft.TextButton(
-                                "Close", on_click=lambda e: page.close_banner()
-                            ),
+                            ft.TextButton("Close", on_click=lambda e: page.close_banner()),
                         ],
                         content_padding=ft.padding.all(5),
                     )
@@ -398,7 +385,7 @@ class selfApi:
         except requests.exceptions.Timeout:
             if deadstop < 5:
                 if self.page is not None:
-                    self.page.generate_toast("Something wrong occurred","Request timed out.. Please wait few minutes")
+                    self.page.generate_toast("Something wrong occurred", "Request timed out.. Please wait few minutes")
                 print("Request timed out")
         except requests.exceptions.ConnectionError:
             if deadstop < 5:
@@ -411,9 +398,7 @@ class selfApi:
     # region user_data
 
     class user_data_c:
-        username = (
-            ip
-        ) = hwid = expires = createdate = lastlogin = subscription = subscriptions = ""
+        username = ip = hwid = expires = createdate = lastlogin = subscription = subscriptions = ""
 
     user_data = user_data_c()
     app_data = application_data_c()
@@ -489,9 +474,7 @@ class encryption:
 
             _iv = SHA256.new(iv.encode()).hexdigest()[:16]
 
-            return encryption.encrypt_string(
-                message.encode(), _key.encode(), _iv.encode()
-            ).decode()
+            return encryption.encrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
         except:
             print(
                 "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username"
@@ -505,9 +488,7 @@ class encryption:
 
             _iv = SHA256.new(iv.encode()).hexdigest()[:16]
 
-            return encryption.decrypt_string(
-                message.encode(), _key.encode(), _iv.encode()
-            ).decode()
+            return encryption.decrypt_string(message.encode(), _key.encode(), _iv.encode()).decode()
         except:
             print(
                 "Invalid Application Information. Long text is secret short text is ownerid. Name is supposed to be app name not username"

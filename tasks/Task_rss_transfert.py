@@ -28,9 +28,7 @@ class RssTransfer(Task):
 
         # cv2.imwrite("transport.png", transport_capacity)
         # cv2.imwrite("tax.png", tax_rate)
-        transport_capacity = self.extract_text(
-            transport_capacity, allowlist="0123456789/,"
-        )
+        transport_capacity = self.extract_text(transport_capacity, allowlist="0123456789/,")
         transport_capacity = int(transport_capacity.split("/")[1].replace(",", ""))
 
         tax_rate = self.extract_text(tax_rate, allowlist="0123456789%")
@@ -66,9 +64,7 @@ class RssTransfer(Task):
         if deadstop == 3:
             raise ValueError()
 
-        city = self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-            f"city_transfer"
-        ]
+        city = self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"city_transfer"]
         self.click(city[0] + uniform(-10, 10), city[1] + uniform(-10, 10))
         self.better_sleep((1, 2))
         co = self.find_img(target="assist_button")
@@ -102,14 +98,10 @@ class RssTransfer(Task):
 
     @get_name
     def better_sleep(self, limits: tuple[float, float]):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "fast_rss_transfer", False
-        ):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get("fast_rss_transfer", False):
             a = limits[0]
             if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
-                a *= self.data[str(self.sel)]["schedules"][self.current_profile][
-                    "sleep_multiplicator"
-                ]
+                a *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
 
             interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
             num_intervals = int(a / interval_duration)
@@ -138,12 +130,7 @@ class RssTransfer(Task):
         to_send = []
         for type in ["food", "wood", "stone", "gold"]:
             rss_sent = 0
-            transfert_wanted = (
-                self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                    f"transfer_{type}"
-                ]
-                * 1_000_000
-            )
+            transfert_wanted = self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"transfer_{type}"] * 1_000_000
             loop = int(transfert_wanted / transportation_capacity)
             if transportation_capacity * loop < transfert_wanted:
                 loop += 1
@@ -158,9 +145,7 @@ class RssTransfer(Task):
             self.send_rss(type)
             print(f"{type} amount sent : {total_sent[type]}")
 
-            if self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                "fast_rss_transfer", False
-            ):
+            if self.data[str(self.sel)]["schedules"][self.current_profile].get("fast_rss_transfer", False):
                 self.check_captcha(chest=False)
             else:
                 self.check_captcha(chest=True)

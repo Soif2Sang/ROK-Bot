@@ -34,10 +34,7 @@ class AllianceDonation(Task):
     @get_name
     def open_alliance_menu(self):
         # Open du menu
-        if self.find_img(target="menu_opened", confidence=0.8) is None:
-            x, y = uniform(1200, 1250), uniform(650, 690)
-            self.click(x, y)
-            self.better_sleep((1.725, 1.995))
+        self.open_menu()
         # Open alliance menu
         x, y = uniform(1010, 1050), uniform(650, 690)
         self.click(x, y)
@@ -55,17 +52,13 @@ class AllianceDonation(Task):
 
             source = self.adb.get_cv2_img()
 
-            techs = self.adb.find_multiple_img(
-                target="tech", source=source, confidence=0.7
-            )
-            cards = self.adb.find_multiple_img(
-                target="research_card", source=source, confidence=0.9
-            )
+            techs = self.adb.find_multiple_img(target="tech", source=source, confidence=0.7)
+            cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
 
             duos = set()
             for card in cards:
                 for tech in techs:
-                    if (card[1] > tech[1] > card[1] -50) and (card[0] + 50 > tech[0] > card[0] -100):
+                    if (card[1] > tech[1] > card[1] - 50) and (card[0] + 50 > tech[0] > card[0] - 100):
                         duos.add(card)
 
             nb_check = 0
@@ -77,11 +70,8 @@ class AllianceDonation(Task):
                 donation_logo = random.choice(list(duos))
                 duos.remove(donation_logo)
 
-                self.click(
-                    donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10)
-                )
+                self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
                 self.better_sleep((1, 2))
-
 
                 if not self.find_img(target="donate_button"):
                     cos = self.adb.find_multiple_img(target="close_window", confidence=0.7)

@@ -13,9 +13,7 @@ class PageRedo(BasePage):
             GenerateCard(
                 level="warning",
                 title=translate("Time to wait until the bot do the task again."),
-                subtitle=translate(
-                    "You need to be aware that using tight timings can lead to unwanted behaviors."
-                ),
+                subtitle=translate("You need to be aware that using tight timings can lead to unwanted behaviors."),
             ),
             ft.Switch(
                 label=translate("Close the game after all the tasks are done"),
@@ -33,24 +31,16 @@ class PageRedo(BasePage):
                     controls=[
                         ft.TextField(
                             label=translate("Minimum"),
-                            value=self.data[str(self.instance_index)][
-                                "time_to_wait_loop1"
-                            ],
-                            on_change=lambda e: self.submit(
-                                e, "time_to_wait_loop1", int
-                            ),
+                            value=self.data[str(self.instance_index)]["time_to_wait_loop1"],
+                            on_change=lambda e: self.submit(e, "time_to_wait_loop1", int),
                             content_padding=ft.padding.all(10),
                             col=4,
                             input_filter=ft.NumbersOnlyInputFilter(),
                         ),
                         ft.TextField(
                             label=translate("Maximum"),
-                            value=self.data[str(self.instance_index)][
-                                "time_to_wait_loop2"
-                            ],
-                            on_change=lambda e: self.submit(
-                                e, "time_to_wait_loop2", int
-                            ),
+                            value=self.data[str(self.instance_index)]["time_to_wait_loop2"],
+                            on_change=lambda e: self.submit(e, "time_to_wait_loop2", int),
                             content_padding=ft.padding.all(10),
                             col=4,
                             input_filter=ft.NumbersOnlyInputFilter(),

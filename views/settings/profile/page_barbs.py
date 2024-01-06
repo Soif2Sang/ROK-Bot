@@ -25,14 +25,10 @@ class PageBarbs(BasePage):
                     ft.Dropdown(
                         width=70,
                         height=50,
-                        content_padding=ft.Padding(
-                            left=5, top=3, right=5, bottom=3
-                        ),  # modify to your likings
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         options=[ft.dropdown.Option(str(i)) for i in range(1, 56)],
                         on_change=lambda e: self.submit(e, "barbarians_level", str),
-                        value=self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["barbarians_level"],
+                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["barbarians_level"],
                     ),
                 ],
                 width=300,
@@ -40,12 +36,7 @@ class PageBarbs(BasePage):
             ft.Divider(),
             ft.Text(value=translate("Peacekeeper presets")),
             ft.Column(
-                controls=[
-                    FletRowPresets(
-                        self.instance_index, self.profile_index, str(preset_index)
-                    )
-                    for preset_index in range(1, 8)
-                ],
+                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in range(1, 8)],
                 wrap=True,
                 spacing=10,
                 run_spacing=10,

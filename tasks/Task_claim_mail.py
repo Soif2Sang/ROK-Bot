@@ -22,10 +22,7 @@ class ClaimMail(Task):
         lower_red = np.array([0, 0, 200])  # Adjust these values as needed
         upper_red = np.array([10, 10, 255])  # Adjust these values as needed
 
-        if not (
-            np.all(screen[551, 1263] >= lower_red)
-            and np.all(screen[551, 1263] <= upper_red)
-        ):
+        if not (np.all(screen[551, 1263] >= lower_red) and np.all(screen[551, 1263] <= upper_red)):
             return
 
         self.click(1230, 570)
@@ -39,9 +36,7 @@ class ClaimMail(Task):
         for pixel in pixel_list:
             selected_pixel = screen[pixel[1], pixel[0]]
 
-            if np.all(selected_pixel >= lower_red) and np.all(
-                selected_pixel <= upper_red
-            ):
+            if np.all(selected_pixel >= lower_red) and np.all(selected_pixel <= upper_red):
                 self.click(pixel[0] - 20, 40)
                 self.better_sleep((1, 2))
                 self.click(111, 668)

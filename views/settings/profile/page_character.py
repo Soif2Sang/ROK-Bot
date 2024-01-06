@@ -12,18 +12,12 @@ class PageCharacter(BasePage):
         self.add_control(
             GenerateCard(
                 level="notice",
-                subtitle=translate(
-                    "Keep in mind that it will iterate on all of your favorite characters, it goes from top to bottom"
-                ),
+                subtitle=translate("Keep in mind that it will iterate on all of your favorite characters, it goes from top to bottom"),
             ),
             ft.Switch(
-                label=translate(
-                    "Restart the game after switching\nto a new character (prevent freeze)"
-                ),
+                label=translate("Restart the game after switching\nto a new character (prevent freeze)"),
                 value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["leave_game_switch_character"]
+                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
                 else False,
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character"),
             ),

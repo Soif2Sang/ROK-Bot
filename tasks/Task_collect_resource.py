@@ -53,9 +53,7 @@ class CollectResource(Task):
         for task in tasks:
             result = task()
             if result is not None:
-                self.print(
-                    f"{task.__name__.replace('collect_', '')} successfully claimed"
-                )
+                self.print(f"{task.__name__.replace('collect_', '')} successfully claimed")
                 tab.append(result)
             else:
                 self.print(f"Unable to find {task.__name__.replace('collect_', '')}")

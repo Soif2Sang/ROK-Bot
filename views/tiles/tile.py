@@ -32,11 +32,7 @@ class ConfigOverrider(ft.PopupMenuButton):
 
         for vm in vms:
             if str(vm[0]) != self.index:
-                self.items.append(
-                    ft.PopupMenuItem(
-                        text=vm[1], on_click=self.override_settings, data=vm[0]
-                    )
-                )
+                self.items.append(ft.PopupMenuItem(text=vm[1], on_click=self.override_settings, data=vm[0]))
 
     def update_config(self):
         self.config = self.fileSingleton.get_data()[self.index]
@@ -95,12 +91,8 @@ class Tile(ft.Row):
             selected_icon=ft.icons.SETTINGS,
             on_click=self.select,
         )
-        self.button_start = ft.IconButton(
-            icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start
-        )
-        self.button_stop = ft.IconButton(
-            icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop
-        )
+        self.button_start = ft.IconButton(icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start)
+        self.button_stop = ft.IconButton(icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop)
 
         self.config_overrider = ConfigOverrider(self.initial_page, number)
         self.text_name = ft.Text(value=data[str(number)]["name"], width=80)
@@ -132,9 +124,7 @@ class Tile(ft.Row):
             self.initial_page.body.controls.pop()
 
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(
-                self.initial_page, self.number
-            )
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
         self.initial_page.update()
@@ -186,9 +176,7 @@ class Tile(ft.Row):
             self.tasks_process.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
-            self.initial_page.generate_toast(
-                "Warning", "Task is frozen, you may need to restart the bot."
-            )
+            self.initial_page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
             print("Task is frozen, you may need to restart the bot.")
 
     def set_text(self, phrase: str):
@@ -200,16 +188,12 @@ class Tile(ft.Row):
 
     def add_text(self, phrase: str, color=None):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(
-                self.initial_page, self.number
-            )
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(
-                self.initial_page, self.number
-            )
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_divider()

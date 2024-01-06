@@ -12,7 +12,7 @@ from tasks.Task_alliance_help import AllianceHelp
 from utils.functions import get_class, get_name
 
 # from utils.easyOcr import Reader
-
+from collections.abc import Callable
 
 class GatherGem(Task):
     def __init__(self, MainTask: Task):
@@ -57,7 +57,7 @@ class GatherGem(Task):
         """
         i = 0
         self.print("Clicking on the node..")
-        while self.find_img(target="resource_gather_button", confidence=0.70) is None:
+        while (co:=self.find_img(target="resource_gather_button", confidence=0.70)) is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -65,7 +65,6 @@ class GatherGem(Task):
             if i == 4:
                 return False
         self.better_sleep((1.0, 1.395))
-        co = self.find_img(target="resource_gather_button", confidence=0.70)
         if co is not None:
             x, y = co[0], co[1]
             self.click(x + uniform(0, 150), y + uniform(0, 30))
@@ -82,18 +81,13 @@ class GatherGem(Task):
         """
         deadstop = 0
 
-        while (
-            self.find_img(target=f"{color}_icon", confidence=0.95) is None
-            and self.find_img(target="troops_march_button") is not None
-        ):
+        while self.find_img(target=f"{color}_icon", confidence=0.95) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_text("Error in line-up selection")
-                self.send_discord_message(
-                    "Error in line-up selection, human interaction required."
-                )
+                self.send_discord_message("Error in line-up selection, human interaction required.")
                 while True:
                     self.script_pause()
                     sleep(0.1)
@@ -119,12 +113,8 @@ class GatherGem(Task):
             self.scan_gem()
             self.better_sleep((0.125, 0.195))
             self.go_city(
-                self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                    "city_x", 500
-                ),
-                self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                    "city_y", 500
-                ),
+                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_x", 500),
+                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_y", 500),
             )
 
     @get_name
@@ -173,9 +163,7 @@ class GatherGem(Task):
                 self.nodes_gathered += 1
                 return True
 
-            if (
-                self.find_img(target="march_bar") is not None
-            ) and self.free_troop_selection():
+            if (self.find_img(target="march_bar") is not None) and self.free_troop_selection():
                 self.click(1210, 100)
                 self.better_sleep((0.5, 0.7))
                 return self.send_new_troop(deadstop=deadstop + 1)
@@ -196,20 +184,14 @@ class GatherGem(Task):
         self.print("Trying to send the nearest troop..")
         try:
             for i in range(1, 4):
-                points = self.adb.find_multiple_img(
-                    target=f"back_icon{i}", confidence=0.85
-                )
+                points = self.adb.find_multiple_img(target=f"back_icon{i}", confidence=0.85)
                 if points:
                     break
             if not points:
                 return False
 
-            if not self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                "gather_gem_compare_march_duration"
-            ):
-                self.click(
-                    points[0][0] + uniform(-20, 0), points[0][1] + uniform(-20, 0)
-                )
+            if not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_compare_march_duration"):
+                self.click(points[0][0] + uniform(-20, 0), points[0][1] + uniform(-20, 0))
                 self.better_sleep((1, 1.7))
                 co = self.find_img(target="march_bar", confidence=0.8)
                 if co:
@@ -226,9 +208,7 @@ class GatherGem(Task):
 
             timer = []
             for i in range(len(points)):
-                self.click(
-                    points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0)
-                )
+                self.click(points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0))
                 self.better_sleep((1, 1.7))
                 pil_image = self.adb.get_curr_device_screen_img()
                 cv_image = self.pil_to_array(pil_image)
@@ -242,9 +222,7 @@ class GatherGem(Task):
                     # 991 996 1021 1027
 
                     # cv2.imwrite("test.png",cropped_image)
-                    string = self.extract_text(
-                        img=cropped_image, allowlist="1234567890:"
-                    )
+                    string = self.extract_text(img=cropped_image, allowlist="1234567890:")
                     # string = string.replace(":","")
                     self.debug(string)
 
@@ -338,6 +316,8 @@ class GatherGem(Task):
     def check_if_interrupt(self, screen=None):
         if not self.adb.is_game_alive():
             return True
+        if screen is None:
+            screen = self.adb.get_cv2_img()
         self.check_download_page(screen)
         self.leave_kd_buff(screen)
         self.check_reconnect(screen)
@@ -418,9 +398,7 @@ class GatherGem(Task):
             # if co is None:
             #     co = self.validate_co(
             #         self.find_img(source=screen, target=icon[1], confidence=0.77))
-            co = self.validate_co(
-                self.find_img(source=screen, target=icon, confidence=0.795)
-            )
+            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.795))
             if (co is not None) and ((co[0], co[1]) not in already_verified):
                 if self.already_mining(co[0], co[1], screen):
                     self.print(f"Node is occupied - x: {co[0]} y:{co[1]}")
@@ -452,34 +430,23 @@ class GatherGem(Task):
 
                 screen = self.adb.get_cv2_img()
                 cv_image = screen[0:100, 0:800]
-                if (
-                    self.find_img(target="block_icon", source=cv_image, confidence=0.9)
-                    is not None
-                ):
-                    self.print(
-                        "Bot detected the block icon, now cancelling the function.."
-                    )
+                if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
+                    self.print("Bot detected the block icon, now cancelling the function..")
                     self.block = True
                     return
 
                 if self.find_cross(notify=False):
                     break
 
-                if not self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                    "gather_gem_swipe_check"
-                ):
+                if not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_swipe_check"):
                     if not self.click_on_node():
                         break
                     if self.send_troop_to_node():
                         break
 
                     scan_frequency = randint(
-                        self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                            "gem_check1"
-                        ),
-                        self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                            "gem_check2"
-                        ),
+                        self.data[str(self.sel)]["schedules"][self.current_profile].get("gem_check1"),
+                        self.data[str(self.sel)]["schedules"][self.current_profile].get("gem_check2"),
                     )
 
                     self.print(f"Script is paused for {scan_frequency} seconds")
@@ -510,9 +477,7 @@ class GatherGem(Task):
                             ):
                                 self.print("This node can be gathered.")
                                 break
-                            if self.data[str(self.sel)]["schedules"][
-                                self.current_profile
-                            ].get("alliance_help"):
+                            if self.data[str(self.sel)]["schedules"][self.current_profile].get("alliance_help"):
                                 AllianceHelp(self).run()
                             scan_frequency_timer = 0
                 else:
@@ -527,51 +492,33 @@ class GatherGem(Task):
                         if self.send_troop_to_node():
                             break
 
-                    if (
-                        self.find_img(target="back_normal_view", confidence=0.9)
-                        is not None
-                        or self.free_troop_commander_list()
-                    ):
+                    if self.find_img(target="back_normal_view", confidence=0.9) is not None or self.free_troop_commander_list():
                         self.print("This node can be gathered.")
                         if not self.click_on_node():
                             break
                         if self.send_troop_to_node():
                             break
 
-                    if (
-                        self.find_img(target="extend_troops", confidence=0.9)
-                        is not None
-                    ):
+                    if self.find_img(target="extend_troops", confidence=0.9) is not None:
                         if default:
                             self.commander_selection_down()
                         else:
                             self.commander_selection_up()
 
-                    if (
-                        self.find_img(target="back_normal_view", confidence=0.9)
-                        is not None
-                        or self.free_troop_commander_list()
-                    ):
+                    if self.find_img(target="back_normal_view", confidence=0.9) is not None or self.free_troop_commander_list():
                         self.print("This node can be gathered.")
                         if not self.click_on_node():
                             break
                         if self.send_troop_to_node():
                             break
 
-                    if (
-                        self.find_img(target="extend_troops", confidence=0.9)
-                        is not None
-                    ):
+                    if self.find_img(target="extend_troops", confidence=0.9) is not None:
                         if default:
                             self.commander_selection_down()
                         else:
                             self.commander_selection_up()
 
-                    if (
-                        self.find_img(target="back_normal_view", confidence=0.9)
-                        is not None
-                        or self.free_troop_commander_list()
-                    ):
+                    if self.find_img(target="back_normal_view", confidence=0.9) is not None or self.free_troop_commander_list():
                         self.print("This node can be gathered.")
                         if not self.click_on_node():
                             break
@@ -586,9 +533,7 @@ class GatherGem(Task):
                     if self.check_if_interrupt():
                         return self.run(self.end_time)
 
-                    if self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                        "alliance_help"
-                    ):
+                    if self.data[str(self.sel)]["schedules"][self.current_profile].get("alliance_help"):
                         AllianceHelp(self).run()
             # self.better_sleep((1, 1.895))
             self.close_windows()
@@ -603,9 +548,7 @@ class GatherGem(Task):
         :param: y -> int y map location
         :return: starting location between 0,1,2,3
         """
-        radius = self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "radius"
-        )
+        radius = self.data[str(self.sel)]["schedules"][self.current_profile].get("radius")
         randomization = randint(0, 3)
 
         while randomization == last or None:
@@ -646,9 +589,7 @@ class GatherGem(Task):
                 self.adb.shell(string)
                 self.script_pause()
                 self.better_sleep((0.3, 0.5))
-                self.adb.shell(
-                    f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}"
-                )
+                self.adb.shell(f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}")
                 self.better_sleep((0.3, 0.5))
                 self.script_pause()
         self.better_sleep((0.3, 0.5))
@@ -698,9 +639,7 @@ class GatherGem(Task):
                 self.adb.shell(string)
                 self.script_pause()
                 self.better_sleep((0.3, 0.5))
-                self.adb.shell(
-                    f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}"
-                )
+                self.adb.shell(f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}")
                 self.better_sleep((0.3, 0.5))
                 self.script_pause()
         self.better_sleep((0.3, 0.5))
@@ -726,13 +665,9 @@ class GatherGem(Task):
         self.better_sleep((1, 2))
 
     @get_name
-    def swipe_scan(self, scan, direction):
-        # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
+    def swipe_scan(self, scan: Callable, direction: Callable):
         direction()
         screen = self.adb.get_cv2_img()
-
-        info_screen = screen[470:700, 0:115]
-        cropped_image = screen[420:540, 480:810]
 
         if random() > 0.9:
             self.close_windows()
@@ -740,37 +675,26 @@ class GatherGem(Task):
         if random() > 0.7:
             if self.check_if_interrupt(screen):
                 return self.run(self.end_time)
-            co = self.find_img(
-                source=screen, target="verification_button", confidence=0.6
-            )
-            if co is not None:
+
+            if self.find_img(source=screen[:720//2,:], target="verification_button", confidence=0.6):
                 self.check_captcha()
+                screen = self.adb.get_cv2_img()
 
-        cropped_image = screen[616:710, 1168:1270]
+        info_screen = screen[470:, 0:115]
+        cropped_image = screen[610:, 1150:]
 
-        if (
-            self.find_img(source=cropped_image, target="map_icon", confidence=0.8)
-            is not None
-        ):
+        if self.find_img(source=cropped_image, target="map_icon", confidence=0.8) is not None:
             self.click(uniform(500, 700), uniform(250, 450))
             self.better_sleep((1, 2))
             return self.zoom_out_city()
 
-        if (
-            self.find_img(source=info_screen, target="hammer", confidence=0.8)
-            is not None
-        ):
+        if self.find_img(source=info_screen, target="hammer", confidence=0.8) is not None:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
 
-        if (
-            self.find_img(
-                source=info_screen, target="gem_search_button", confidence=0.8
-            )
-            is not None
-        ):
+        if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
             self.zoom_out_city()
             self.better_sleep((2, 3))
 

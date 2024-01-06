@@ -33,9 +33,7 @@ class SettingContainer(ft.Container):
         self.padding = ft.padding.only(top=5, left=0, bottom=0)
         # self.color_choice = color_bank[self.profile_index]
 
-        self.content: ft.ListView = ft.ListView(
-            height=400, expand=1, padding=1, spacing=6
-        )
+        self.content: ft.ListView = ft.ListView(height=400, expand=1, padding=1, spacing=6)
 
         # self.theme = ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
         # self.init()
@@ -62,15 +60,11 @@ class SettingContainer(ft.Container):
         self.create_advanced_switch("gather_rss", "Resources Gathering", PageRss)
         self.create_normal_switch("collect_ressource", "Collect City Resources")
         self.create_normal_switch("use_enhanced_buff", "Apply Enhanced Buff")
-        self.create_advanced_switch(
-            "buy_merchant", "Buy Mysterious Merchant", PageBuyMerchant
-        )
+        self.create_advanced_switch("buy_merchant", "Buy Mysterious Merchant", PageBuyMerchant)
         self.create_normal_switch("check_donation", "Donate to Alliance")
         self.create_normal_switch("gather_alliance_pit", "Alliance Pit Gathering")
 
-        self.create_advanced_switch(
-            "material_production", "Produce Materials", PageMaterials
-        )
+        self.create_advanced_switch("material_production", "Produce Materials", PageMaterials)
         self.create_advanced_switch("train_troops", "Troops Training", PageTraining)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
         self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
@@ -84,26 +78,18 @@ class SettingContainer(ft.Container):
         self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
         self.create_advanced_switch("scout_fog", "Explore Fog", PageFog)
         self.create_advanced_switch("upgrade_city", "Upgrade City", PageUpgradeCity)
-        self.create_advanced_switch(
-            "academic_research", "Academic Research", PageAcademyResearch
-        )
+        self.create_advanced_switch("academic_research", "Academic Research", PageAcademyResearch)
 
         self.create_advanced_switch("heal_troop", "Troops Healing", PageHeal)
-        self.create_advanced_switch(
-            "transfer_enable", "Transfer Resources", PageTransfer
-        )
+        self.create_advanced_switch("transfer_enable", "Transfer Resources", PageTransfer)
 
         self.content.controls.append(ft.Divider())
 
         self.create_normal_switch("auto_reconnect", "Reconnect on Network Issues")
-        self.create_advanced_switch(
-            "auto_log_back", "Log Back on Device Switch", PageLogback
-        )
+        self.create_advanced_switch("auto_log_back", "Log Back on Device Switch", PageLogback)
         self.create_normal_switch("auto_captcha", "Solve Captcha")
         self.create_slow_mode()
-        self.create_advanced_switch(
-            "switch_character", "Switch Characters", PageCharacter
-        )
+        self.create_advanced_switch("switch_character", "Switch Characters", PageCharacter)
 
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
@@ -112,15 +98,11 @@ class SettingContainer(ft.Container):
         print(self.data[str(self.instance_index)]["schedules"][str(index)][keyword])
 
         if keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
-            self.data[str(self.instance_index)]["schedules"][str(index)][
-                keyword
-            ] = not self.data[str(self.instance_index)]["schedules"][str(index)][
-                keyword
-            ]
-        else:
-            self.data[str(self.instance_index)][keyword] = not self.data[
-                str(self.instance_index)
+            self.data[str(self.instance_index)]["schedules"][str(index)][keyword] = not self.data[str(self.instance_index)]["schedules"][
+                str(index)
             ][keyword]
+        else:
+            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
 
         print(self.data[str(self.instance_index)]["schedules"][str(index)][keyword])
         self.FileSingleton.write_data(self.data)
@@ -133,11 +115,7 @@ class SettingContainer(ft.Container):
             ft.Switch(
                 label=translate(text),
                 # active_track_color=self.color_choice,
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword]
-                else False,
+                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                 on_change=lambda _: self.reverse_keyword(keyword),
             )
         )
@@ -150,17 +128,13 @@ class SettingContainer(ft.Container):
             # return self.FileSingleton.write_data(self.data)
         elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
             if e.control.value == "":
-                self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword] = method(0)
+                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(0)
             else:
-                self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword] = method(e.control.value)
+                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)
 
     def create_advanced_switch(self, keyword: str, text: str, function):
@@ -172,11 +146,7 @@ class SettingContainer(ft.Container):
                         ft.Switch(
                             label=translate(text),
                             # active_track_color=self.color_choice,
-                            value=True
-                            if self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ][keyword]
-                            else False,
+                            value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
@@ -199,9 +169,7 @@ class SettingContainer(ft.Container):
                         ft.Switch(
                             label=translate(text),
                             # active_track_color=self.color_choice,
-                            value=True
-                            if self.data[str(self.instance_index)][keyword]
-                            else False,
+                            value=True if self.data[str(self.instance_index)][keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
@@ -225,11 +193,7 @@ class SettingContainer(ft.Container):
                     ft.Switch(
                         label="Reduce bot speed",
                         # active_track_color=self.color_choice,
-                        value=True
-                        if self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["slow_mode"]
-                        else False,
+                        value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["slow_mode"] else False,
                         on_change=lambda _: self.reverse_keyword("slow_mode"),
                     ),
                     ft.Dropdown(
@@ -246,12 +210,7 @@ class SettingContainer(ft.Container):
                             ft.dropdown.Option("2.75x"),
                             ft.dropdown.Option("3.0x"),
                         ],
-                        value=str(
-                            self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["sleep_multiplicator"]
-                        )
-                        + "x",
+                        value=str(self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["sleep_multiplicator"]) + "x",
                         on_change=lambda e: self.submit(e, "sleep_multiplicator", str),
                         height=50,
                         # content_padding=ft.Padding(left=5, top=3, right=5, bottom=3)  # modify to your likings

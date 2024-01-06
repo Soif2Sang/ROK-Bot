@@ -22,10 +22,7 @@ class PageUpgradeCity(BasePage):
                     "Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the wall but \nit is a safer way to upgrade the city)"
                 ),
                 on_change=self.submit_upgrade_mode,
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["upgrade_city_method"]
-                == "normal",
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["upgrade_city_method"] == "normal",
                 width=300,
             ),
         )
@@ -34,15 +31,13 @@ class PageUpgradeCity(BasePage):
             ft.OutlinedButton(
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set City Hall Position"),
-                on_click=lambda _: self.initial_page.go(
-                    f"/city-layout/{self.instance_index}/{self.profile_index}"
-                ),
+                on_click=lambda _: self.initial_page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
             )
         )
 
     def submit_upgrade_mode(self, e):
         self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-            "upgrade_city_method"
-        ] = ("normal" if e.control.value else "safest")
+        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["upgrade_city_method"] = (
+            "normal" if e.control.value else "safest"
+        )
         self.FileSingleton.write_data(self.data)

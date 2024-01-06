@@ -27,9 +27,7 @@ class GatherGemSpiral(GatherGem):
         return super().recenter(deadstop)
 
     def go_back_to_city(self, deadstop=0):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "recenter_feature", False
-        ):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get("recenter_feature", False):
             return super().go_back_to_city(deadstop)
 
     @get_name
@@ -54,9 +52,7 @@ class GatherGemSpiral(GatherGem):
                 self.adb.shell(string)
                 self.script_pause()
                 self.better_sleep((0.3, 0.5))
-                self.adb.shell(
-                    f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}"
-                )
+                self.adb.shell(f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}")
                 self.better_sleep((0.3, 0.5))
                 self.script_pause()
         self.better_sleep((0.3, 0.5))
@@ -87,10 +83,7 @@ class GatherGemSpiral(GatherGem):
         Gather gems
         """
         self.end_time = end_time
-        if (
-            EmulatorSingleton().getEmulator() == "bluestacks"
-            and not self.random_macro()
-        ):
+        if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
             return
 
         self.run_game()
@@ -103,59 +96,35 @@ class GatherGemSpiral(GatherGem):
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
 
-        enable_gem_node_limit = self.data[self.sel]["schedules"][self.current_profile][
-            "gather_gem_enable_node_limit"
-        ]
-        gem_node_limit = self.data[self.sel]["schedules"][self.current_profile][
-            "gather_gem_note_limit"
-        ]
+        enable_gem_node_limit = self.data[self.sel]["schedules"][self.current_profile]["gather_gem_enable_node_limit"]
+        gem_node_limit = self.data[self.sel]["schedules"][self.current_profile]["gather_gem_note_limit"]
 
         starting_time = time()
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "gather_gem_duration1"
-        ) > self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "gather_gem_duration2"
-        ):
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration1") > self.data[str(self.sel)]["schedules"][
+            self.current_profile
+        ].get("gather_gem_duration2"):
             (
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration1"
-                ],
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration2"
-                ],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration1"],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration2"],
             ) = (
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration2"
-                ],
-                self.data[self.sel]["schedules"][self.current_profile][
-                    "gather_gem_duration1"
-                ],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration2"],
+                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration1"],
             )
 
         if self.end_time is None:
             self.end_time = starting_time + (
                 randint(
-                    self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                        "gather_gem_duration1"
-                    ),
-                    self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                        "gather_gem_duration2"
-                    ),
+                    self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration1"),
+                    self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration2"),
                 )
                 * 60
             )
 
-        self.print(
-            f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}"
-        )
+        self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
 
         self.go_back_to_city()
 
-        max_distance = int(
-            self.data[str(self.sel)]["schedules"][self.current_profile].get("radius")
-            // 4
-            * 1.3
-        )
+        max_distance = int(self.data[str(self.sel)]["schedules"][self.current_profile].get("radius") // 4 * 1.3)
 
         swipes = {
             self.swipe_up: self.swipe_right,
@@ -165,8 +134,7 @@ class GatherGemSpiral(GatherGem):
         }
 
         while self.end_time > time() and (
-            enable_gem_node_limit == False
-            or (enable_gem_node_limit and self.nodes_gathered < gem_node_limit)
+            enable_gem_node_limit == False or (enable_gem_node_limit and self.nodes_gathered < gem_node_limit)
         ):
             self.scan_gem()
 

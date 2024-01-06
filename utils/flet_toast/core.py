@@ -258,9 +258,7 @@ class OverlayPageManger:
             else:
                 return None
 
-    def get_control_specific_with_filtering(
-        self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None
-    ):
+    def get_control_specific_with_filtering(self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None):
         """Get control specific with filtering of in overlay list.
 
         Args:
@@ -279,9 +277,7 @@ class OverlayPageManger:
             )
         )
 
-    def remove_control_specific_with_filtering(
-        self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None
-    ):
+    def remove_control_specific_with_filtering(self, attribute_control: str, attr_value_match: str, page: Optional[Page] = None):
         """Remove control specific with filtering of in overlay list.
 
         Args:
@@ -308,9 +304,7 @@ class OverlayPageManger:
                 controls_filter.remove(control)
         _page.update()
 
-    def remove_control_specific_with_same(
-        self, control_compring: Control, page: Optional[Page] = None
-    ):
+    def remove_control_specific_with_same(self, control_compring: Control, page: Optional[Page] = None):
         """Remove control specific with if same of in overlay list.
 
         Args:
@@ -384,9 +378,7 @@ class OverlayPageManger:
         else:
             return filtering
 
-    def append_controls_in_specific_route(
-        self, controls: Control, route_display: str, page: Optional[Page] = None
-    ):
+    def append_controls_in_specific_route(self, controls: Control, route_display: str, page: Optional[Page] = None):
         """Append control in specific page route to display.
 
         Args:
@@ -409,9 +401,7 @@ class OverlayPageManger:
             else:
                 return controls
         else:
-            self.remove_control_specific_with_same(
-                control_compring=controls, page=_page
-            )
+            self.remove_control_specific_with_same(control_compring=controls, page=_page)
 
     def append_controls_in_specific_route_with_filtering(
         self,

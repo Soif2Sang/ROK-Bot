@@ -25,9 +25,7 @@ class PageMarauders(BasePage):
                             controls=[
                                 ft.TextField(
                                     label=translate("Your kingdom :"),
-                                    value=self.data[str(self.instance_index)][
-                                        "schedules"
-                                    ][str(self.profile_index)]["kingdom"],
+                                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kingdom"],
                                     content_padding=ft.padding.all(10),
                                     on_change=lambda e: self.submit(e, "kingdom", str),
                                 )
@@ -38,9 +36,7 @@ class PageMarauders(BasePage):
                             controls=[
                                 ft.TextField(
                                     label=translate("Area location X coordinates :"),
-                                    value=self.data[str(self.instance_index)][
-                                        "schedules"
-                                    ][str(self.profile_index)]["city_x"],
+                                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_x"],
                                     content_padding=ft.padding.all(10),
                                     on_change=lambda e: self.submit(e, "city_x", int),
                                     input_filter=ft.NumbersOnlyInputFilter(),
@@ -52,9 +48,7 @@ class PageMarauders(BasePage):
                             controls=[
                                 ft.TextField(
                                     label=translate("Area location Y coordinates :"),
-                                    value=self.data[str(self.instance_index)][
-                                        "schedules"
-                                    ][str(self.profile_index)]["city_y"],
+                                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_y"],
                                     content_padding=ft.padding.all(10),
                                     on_change=lambda e: self.submit(e, "city_y", int),
                                     input_filter=ft.NumbersOnlyInputFilter(),
@@ -73,9 +67,9 @@ class PageMarauders(BasePage):
                         controls=[
                             ft.TextField(
                                 label=translate("Minimum Killing Duration (mins)"),
-                                value=self.data[str(self.instance_index)]["schedules"][
-                                    str(self.profile_index)
-                                ]["kill_marauders_duration"][0],
+                                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kill_marauders_duration"][
+                                    0
+                                ],
                                 content_padding=ft.padding.all(10),
                                 on_change=lambda e: self.submit_marauders(e, 0),
                                 input_filter=ft.NumbersOnlyInputFilter(),
@@ -87,9 +81,9 @@ class PageMarauders(BasePage):
                         controls=[
                             ft.TextField(
                                 label=translate("Maximum Killing Duration (mins)"),
-                                value=self.data[str(self.instance_index)]["schedules"][
-                                    str(self.profile_index)
-                                ]["kill_marauders_duration"][1],
+                                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kill_marauders_duration"][
+                                    1
+                                ],
                                 content_padding=ft.padding.all(10),
                                 on_change=lambda e: self.submit_marauders(e, 1),
                                 input_filter=ft.NumbersOnlyInputFilter(),
@@ -102,12 +96,7 @@ class PageMarauders(BasePage):
             ft.Divider(),
             ft.Text(value=translate("Peacekeeper presets")),
             ft.Column(
-                controls=[
-                    FletRowPresets(
-                        self.instance_index, self.profile_index, str(preset_index)
-                    )
-                    for preset_index in range(1, 8)
-                ],
+                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in range(1, 8)],
                 wrap=True,
                 spacing=10,
                 run_spacing=10,
@@ -117,11 +106,7 @@ class PageMarauders(BasePage):
 
     def submit_marauders(self, e, index):
         self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-            "kill_marauders_duration"
-        ][index] = (
-            e.control.value
-            if e.control.value is not None or e.control.value != ""
-            else 0
+        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kill_marauders_duration"][index] = (
+            e.control.value if e.control.value is not None or e.control.value != "" else 0
         )
         self.FileSingleton.write_data(self.data)

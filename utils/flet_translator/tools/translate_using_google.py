@@ -15,9 +15,7 @@ def translate_using_google(src: str, from_language: str, into_language: str):
         num = num + 1
 
     sents.append(current_sent)
-    res = GoogleTranslator(source=from_language, target=into_language).translate_batch(
-        sents
-    )
+    res = GoogleTranslator(source=from_language, target=into_language).translate_batch(sents)
 
     full_res = ""
     for i in res:

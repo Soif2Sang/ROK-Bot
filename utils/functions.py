@@ -54,10 +54,7 @@ def string_to_co(string):
     matches_x = re.findall(pattern_x, string)
     matches_y = re.findall(pattern_y, string)
 
-    return [
-        (int(pair[0]) + 441, int(pair[1]) + 101)
-        for pair in list(zip(matches_x, matches_y))
-    ]
+    return [(int(pair[0]) + 441, int(pair[1]) + 101) for pair in list(zip(matches_x, matches_y))]
 
 
 def string_to_co_slide(string):
@@ -78,9 +75,7 @@ def get_time(func):
         end_time = perf_counter()
 
         if 0 and func.__name__ == "check_captcha":
-            print(
-                f'[ {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}'
-            )
+            print(f'[ {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
             self.FileSingleton.write(
                 self.name,
                 f"INFO : Verification made in {(end_time - start_time):0.1f}\n",
@@ -119,16 +114,10 @@ def get_name(func):
 
         if func.__name__ == "set_timer":
             args_str = [toString(arg) for arg in args] if args is not None else []
-            kwargs_str = (
-                [f"{key}={toString(value)}" for key, value in kwargs.items()]
-                if kwargs is not None
-                else []
-            )
+            kwargs_str = [f"{key}={toString(value)}" for key, value in kwargs.items()] if kwargs is not None else []
             arg_str = ", ".join(args_str + kwargs_str)
 
-            timestamp = (
-                f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
-            )
+            timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
             message = f"[ {colorize_name(self.name)} ] {func.__name__}({arg_str})"
 
             print(f"{timestamp} {message}")
@@ -137,11 +126,7 @@ def get_name(func):
 
         if DEBUG:
             args_str = [toString(arg) for arg in args] if args is not None else []
-            kwargs_str = (
-                [f"{key}={toString(value)}" for key, value in kwargs.items()]
-                if kwargs is not None
-                else []
-            )
+            kwargs_str = [f"{key}={toString(value)}" for key, value in kwargs.items()] if kwargs is not None else []
             arg_str = ", ".join(args_str + kwargs_str)
 
             if func_output is True or func_output is False or func_output is None:
@@ -153,9 +138,7 @@ def get_name(func):
             else:
                 output_str = f"Unexpected, {type(func_output)}"
 
-            timestamp = (
-                f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
-            )
+            timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
             message = f"[ {colorize_name(self.name)} ] {func.__name__}({arg_str}): {colorize_output(output_str)}"
 
             print(f"{timestamp} {message}")
@@ -284,15 +267,15 @@ def get_dic_instances_ld():
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
     emulators = result.stdout.split("\n")
-    if emulators[-1] == '':
+    if emulators[-1] == "":
         emulators.pop()
 
-    if emulators[-1][0] == ',':
+    if emulators[-1][0] == ",":
         emulators.pop()
 
     final = []
     for emulator in emulators:
-        if emulator.split(',')[0] != '':
+        if emulator.split(",")[0] != "":
             final.append(emulator)
 
     liste = {}
@@ -320,7 +303,7 @@ def get_current_instances_ld(data: dict):
 
     final = []
     for emulator in emulators:
-        if emulator.split(',')[0] != '':
+        if emulator.split(",")[0] != "":
             final.append(emulator)
 
     liste = []

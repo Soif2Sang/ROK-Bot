@@ -20,9 +20,7 @@ class FletRowMaterial(ft.Row):
             ft.Dropdown(
                 width=140,
                 height=50,
-                content_padding=ft.Padding(
-                    left=5, top=3, right=5, bottom=3
-                ),  # modify to your likings
+                content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                 label="Type",
                 options=[
                     ft.dropdown.Option("leather"),
@@ -30,9 +28,7 @@ class FletRowMaterial(ft.Row):
                     ft.dropdown.Option("ebony"),
                     ft.dropdown.Option("bones"),
                 ],
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][f"material_choice_{i}"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"material_choice_{i}"],
                 on_change=lambda e: self.submit(e, f"material_choice_{i}", str),
             ),
         ]
@@ -44,11 +40,9 @@ class FletRowMaterial(ft.Row):
             self.FileSingleton.write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = method(e.control.value)
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)

@@ -41,7 +41,6 @@ def Main(page: ft.Page, days=950):
     page.go("/")
     page.tile_manager.refresh()
 
-
     REMOTE_VERSION = page.keyauthapp.var("version")
     try:
         version_json = json.loads(REMOTE_VERSION)
@@ -52,7 +51,6 @@ def Main(page: ft.Page, days=950):
     GLOBAL_MESSAGE = page.keyauthapp.var("message")
     PERSONAL_MESSAGE = page.keyauthapp.getvar("message").replace("None", "")
     if version_json["version"] > VERSION:
-
         if version_json["force"]:
             page.launch_url(version_json["download_link"])
             time.sleep(1)
@@ -101,22 +99,20 @@ def Main(page: ft.Page, days=950):
                     width=100,
                     action_style="filled",
                     disabled=False,
-                    on_click=lambda e: page.launch_url(
-                        version_json["download_link"]
-                    ),
+                    on_click=lambda e: page.launch_url(version_json["download_link"]),
                 )
             ],
         )
 
     try:
         message_json = json.loads(GLOBAL_MESSAGE)
-        if int(message_json['end']) > time.time() > int(message_json['start']):
+        if int(message_json["end"]) > time.time() > int(message_json["start"]):
             ToastsFlexible(
                 page=page,
                 icon=ft.icons.NOTIFICATION_IMPORTANT_OUTLINED,
                 title="Announcements",
                 bgcolor_title="red",
-                desc=message_json['message'],
+                desc=message_json["message"],
                 auto_close=None,
                 trigger=None,
                 set_history=toasts_history,
@@ -127,9 +123,10 @@ def Main(page: ft.Page, days=950):
 
     try:
         message_json = json.loads(PERSONAL_MESSAGE)
-        if (not message_json['read']) and (int(message_json['end']) > time.time() > int(message_json['start'])):
+        if (not message_json["read"]) and (int(message_json["end"]) > time.time() > int(message_json["start"])):
+
             def accept_message(e):
-                message_json['read'] = True
+                message_json["read"] = True
                 page.keyauthapp.setvar("message", json.dumps(message_json))
 
             ToastsFlexible(
@@ -137,7 +134,7 @@ def Main(page: ft.Page, days=950):
                 icon=ft.icons.ANNOUNCEMENT_OUTLINED,
                 title="Private Messages",
                 bgcolor_title=ft.colors.BLUE_300,
-                desc=message_json['message'],
+                desc=message_json["message"],
                 auto_close=None,
                 trigger=None,
                 set_history=toasts_history,
@@ -152,6 +149,7 @@ def Main(page: ft.Page, days=950):
             )
     except:
         pass
+
 
 if __name__ == "__main__":
     ft.app(target=Main, view=ft.FLET_APP)

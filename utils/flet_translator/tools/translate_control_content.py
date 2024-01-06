@@ -33,12 +33,7 @@ def translate_control_content(
     for p in allowed_props_to_translate:
         if hasattr(control, str(p)):
             value = getattr(control, str(p))
-            if (
-                use_internet
-                and value != None
-                and not isinstance(value, bool)
-                and not isinstance(value, int)
-            ):
+            if use_internet and value != None and not isinstance(value, bool) and not isinstance(value, int):
                 r = translate_using_google(
                     src=value,
                     from_language=TranslateFletPage_class.from_language.value,
@@ -46,12 +41,7 @@ def translate_control_content(
                 )
                 setattr(control, str(p), str(r))
 
-            elif (
-                use_internet == False
-                and value != None
-                and not isinstance(value, bool)
-                and not isinstance(value, int)
-            ):
+            elif use_internet == False and value != None and not isinstance(value, bool) and not isinstance(value, int):
                 r = translate_using_opusMT(
                     Translatemodel=TranslateFletPage_class.opusMT_model,
                     src=value,

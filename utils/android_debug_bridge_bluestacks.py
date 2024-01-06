@@ -20,20 +20,19 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.android_debug_bridge import Adb
-from utils.functions import FileSingleton, current_time, get_dic_instances_ld
+from utils.functions import FileSingleton, current_time, get_dic_instances
 from utils.resources import ImageSingleton
+from utils.android_debug_bridge import Adb
 
 bridge = None
 
 
-class AdbLd(Adb):
+class AdbBluestacks(Adb):
     def __init__(self, number: str, host="127.0.0.1", port=5037):
         super().__init__(number, host, port)
-        self.is_ld = True
 
     def update_port(self):
-        instances = get_dic_instances_ld()
+        instances = get_dic_instances()
 
         if str(self.number) not in instances:
             return
@@ -46,19 +45,18 @@ class AdbLd(Adb):
             self.port = int(instances[str(self.number)]["port"])
             self.FileSingleton.write_data(self.data)
 
-    def connect_to_device(self, host="emulator"):
+    def connect_to_device(self, host="127.0.0.1"):
         path = self.FileSingleton.get_path()
         self.update_port()
 
-        adb_path = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
-        cmd = f"{adb_path} connect {host}-{self.port}"
+        adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
+        cmd = f"{adb_path} connect {host}:{self.port}"
         subprocess.Popen(cmd)
 
-    def get_device(self, host="emulator", fail=0):
+    def get_device(self, host="127.0.0.1", fail=0):
         try:
             self.port = str(self.data[str(self.number)]["port"])
-            device = self.client.device(f"{host}-{self.port}")
-            # print(device)
+            device = self.client.device(f"{host}:{self.port}")
             if device is None:
                 self.print(f"INFO : Device is None, trying to reconnect..")
                 self.connect_to_device()
@@ -68,7 +66,7 @@ class AdbLd(Adb):
                     return
                 if device is None:
                     return self.get_device()
-            # print(device)
+
             return device
         except Exception as e:
             traceback.print_exc()
@@ -76,7 +74,7 @@ class AdbLd(Adb):
 
             self.update_port()
             path = self.FileSingleton.get_path()
-            cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
+            cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
             subprocess.Popen(cmd)
 
             self.print(f"Adb restarting..")
@@ -98,11 +96,12 @@ class AdbLd(Adb):
             return max_loc[0], max_loc[1]
         else:
             return
-
     def is_game_alive(self):
-        string = "dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'"
-        a = self.shell(string)
-        return "lilithgame" in a or "rok" in a or "lilithgames" in a
+        # string = "dumpsys activity activities | grep mFocusedActivity"
+        a = self.get_device().get_top_activity()
+        if a:
+            return "lilithgame" in str(a) or "rok" in str(a) or "lilithgames" in str(a)
+        return False
 
     #
     # def resource_amount_image_to_string(self):

@@ -14,36 +14,28 @@ class FletColumnRss(ft.Column):
         self.controls = [
             ft.TextField(
                 label=translate("Million of Food to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["transfer_food"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_food"],
                 on_change=lambda e: self.submit(e, f"transfer_food", int),
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
             ),
             ft.TextField(
                 label=translate("Million of Wood to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["transfer_wood"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_wood"],
                 on_change=lambda e: self.submit(e, f"transfer_wood", int),
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
             ),
             ft.TextField(
                 label=translate("Million of Stone to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["transfer_stone"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_stone"],
                 on_change=lambda e: self.submit(e, f"transfer_stone", int),
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
             ),
             ft.TextField(
                 label=translate("Million of Gold to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["transfer_gold"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_gold"],
                 on_change=lambda e: self.submit(e, f"transfer_gold", int),
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
@@ -53,7 +45,7 @@ class FletColumnRss(ft.Column):
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
 
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-            keyword
-        ] = (method(e.control.value) if e.control.value != "" else 0)
+        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = (
+            method(e.control.value) if e.control.value != "" else 0
+        )
         self.FileSingleton.write_data(self.data)

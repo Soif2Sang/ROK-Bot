@@ -16,15 +16,13 @@ class FletRowPresets(ft.Row):
             ft.Checkbox(
                 label=f"Preset {preset_index}",
                 on_change=lambda e: self.submit(e),
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["barbarians_preset"][preset_index],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["barbarians_preset"][preset_index],
             )
         ]
 
     def submit(self, e):
         self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-            "barbarians_preset"
-        ][self.preset_index] = bool(e.control.value)
+        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["barbarians_preset"][self.preset_index] = bool(
+            e.control.value
+        )
         self.FileSingleton.write_data(self.data)

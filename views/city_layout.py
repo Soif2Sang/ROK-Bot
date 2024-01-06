@@ -19,16 +19,10 @@ def image_to_base64(image_byte):
     return encoded_string.decode("utf-8")
 
 
-def viewCityLayout(
-    page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket
-) -> ft.View:
+def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket) -> ft.View:
     page.window_width = 900
     page.window_height = 500
-    image_byte = image_to_base64(
-        page.tile_manager.tiles[
-            str(params.instance_index)
-        ].runner.adb.get_curr_device_screen_img_bytesIO()
-    )
+    image_byte = image_to_base64(page.tile_manager.tiles[str(params.instance_index)].runner.adb.get_curr_device_screen_img_bytesIO())
 
     def returnHome():
         page.window_width = 450
@@ -42,16 +36,12 @@ def viewCityLayout(
                 bgcolor=ft.colors.SURFACE_VARIANT,
                 content=ft.Row(
                     controls=[
-                        ft.IconButton(
-                            icon=ft.icons.ARROW_BACK, on_click=lambda _: returnHome()
-                        ),
+                        ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: returnHome()),
                         ft.Text(value="Go back"),
                     ]
                 ),
             ),
-            ft.Text(
-                value="Click on the building button you wanna set, then click in the center of the building."
-            ),
+            ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
             CityPlacement(image_byte, params.instance_index, params.profile_index),
         ],
     )
@@ -134,9 +124,7 @@ class CityPlacement(ft.Container):
 
         try:
             self.data = self.FileSingleton.get_data()
-            self.data[str(self.instance)]["schedules"][str(self.profile)][
-                self.current_build
-            ] = (int(e.local_x * 2), int(e.local_y * 2))
+            self.data[str(self.instance)]["schedules"][str(self.profile)][self.current_build] = (int(e.local_x * 2), int(e.local_y * 2))
 
         except Exception:
             traceback.print_exc()
@@ -173,22 +161,14 @@ class CityPlacement(ft.Container):
         print(e.control.key)
         try:
             self.data = self.FileSingleton.get_data()
-            print(
-                self.data[str(self.instance)]["schedules"][str(self.profile)][
-                    e.control.key
-                ]
-            )
+            print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.key])
 
-            self.data[str(self.instance)]["schedules"][str(self.profile)][
-                e.control.key
-            ] = []
+            self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.key] = []
 
         except Exception:
             traceback.print_exc()
             return
-        print(
-            self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.key]
-        )
+        print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.key])
 
         self.FileSingleton.write_data(self.data)
         self.page.update()

@@ -12,9 +12,7 @@ class PageLogback(BasePage):
             ft.Text(
                 spans=[
                     ft.TextSpan(
-                        text=translate(
-                            "Time to wait before the bot log  back from your connection(minutes):"
-                        ),
+                        text=translate("Time to wait before the bot log  back from your connection(minutes):"),
                         style=ft.TextStyle(size=15),
                     )
                 ]
@@ -23,9 +21,7 @@ class PageLogback(BasePage):
                 controls=[
                     ft.TextField(
                         label=translate("Minimum"),
-                        value=self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["log_back1"],
+                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["log_back1"],
                         width=80,
                         on_change=lambda e: self.submit(e, "log_back1", int),
                         input_filter=ft.NumbersOnlyInputFilter(),
@@ -33,9 +29,7 @@ class PageLogback(BasePage):
                     ft.Text("~"),
                     ft.TextField(
                         label=translate("Maximum"),
-                        value=self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["log_back2"],
+                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["log_back2"],
                         width=90,
                         on_change=lambda e: self.submit(e, "log_back2", int),
                         input_filter=ft.NumbersOnlyInputFilter(),

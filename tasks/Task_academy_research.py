@@ -5,7 +5,8 @@ from tasks.Task_alliance_help import AllianceHelp
 from utils.functions import get_class
 
 
-class AcademyResearch(Task):
+class \
+        AcademyResearch(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
@@ -15,9 +16,7 @@ class AcademyResearch(Task):
 
     @get_name
     def academy_coordinates(self):
-        return self.data[str(self.sel)]["schedules"][self.current_profile].get(
-            "academy_position", []
-        )
+        return self.data[str(self.sel)]["schedules"][self.current_profile].get("academy_position", [])
 
     @get_name
     def enter_academy(self):
@@ -25,8 +24,8 @@ class AcademyResearch(Task):
             x, y = self.academy_coordinates()
             self.click(x, y)
             self.better_sleep((0.9, 1.5))
-        if self.adb.find_img("building_speedups") is None:
-            if co := self.adb.find_img("academy"):
+        if self.find_img("building_speedups") is None:
+            if co := self.find_img("academy"):
                 self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
                 self.better_sleep((0.9, 1.5))
                 return True
@@ -40,17 +39,13 @@ class AcademyResearch(Task):
     def select_tech(self, swipes=0):
         i = 0
         source = self.adb.get_cv2_img()
-        techs = self.adb.find_multiple_img(
-            target="research_tech", source=source, confidence=0.7
-        )
-        cards = self.adb.find_multiple_img(
-            target="research_card", source=source, confidence=0.9
-        )
+        techs = self.adb.find_multiple_img(target="research_tech", source=source, confidence=0.7)
+        cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
 
         duos = set()
         for card in cards:
             for tech in techs:
-                if (card[1] > tech[1] > card[1] -50) and (card[0] + 50 > tech[0] > card[0] -100):
+                if (card[1] > tech[1] > card[1] - 50) and (card[0] + 50 > tech[0] > card[0] - 100):
                     duos.add(card)
 
         if duos:
