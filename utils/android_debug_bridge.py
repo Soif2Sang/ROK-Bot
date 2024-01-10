@@ -22,6 +22,7 @@ from ppadb.client import Client as PPADBClient
 
 from utils.functions import FileSingleton, current_time, get_dic_instances
 from utils.resources import ImageSingleton
+import threading
 
 bridge = None
 
@@ -41,6 +42,8 @@ class UnknownDeviceException(Exception):
 
 
 class Adb:
+    adb_restart_lock = threading.Lock()
+
     def __init__(self, number: str, host="127.0.0.1", port=5037):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
@@ -70,6 +73,23 @@ class Adb:
             self.data[self.number]["port"] = int(instances[self.number]["port"])
             self.port = int(instances[self.number]["port"])
             self.FileSingleton.write_data(self.data)
+
+    def stop_server(self):
+        raise NotImplementedError("Method 'stop_server' is not implemented in the base class.")
+
+    def start_server(self):
+        raise NotImplementedError("Method 'start_server' is not implemented in the base class.")
+    
+    def get_device(self, host="127.0.0.1", fail=0):
+        raise NotImplementedError("Method 'get_device' is not implemented in the base class.")
+
+    def restart_adb_server(self):
+        with Adb.adb_restart_lock:
+            self.stop_server()
+            time.sleep(5)
+            self.start_server()
+            time.sleep(5)
+            self.connect_to_device()
 
     def wait_boot_complete(self, timeout=100, timedelta=1):
         raise NotImplementedError("Method 'wait_boot_complete' is not implemented in the base class.")
@@ -112,13 +132,10 @@ class Adb:
             adb_path = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
             cmd = f"{adb_path} connect {host}-{self.port}"
 
-        subprocess.run(cmd)
+        subprocess.Popen(cmd)
 
     def get_client_devices(self):
         return self.client.devices()
-
-    def get_device(self, host="127.0.0.1", fail=0):
-        raise NotImplementedError("Method 'get_device' is not implemented in the base class.")
 
     def print(self, text: str):
         data = self.FileSingleton.get_data()
@@ -292,15 +309,40 @@ class Adb:
         self.shell(string)
         return
 
-    def shell(self, string):
-        device = self.get_device()
-        try:
-            return device.shell(string)
-        except RuntimeError:
-            print("Cannot use shell")
-            sleep(3)
-            self.connect_to_device()
-            return self.shell(string)
+
+    def shell(self, string, max_attempts=5, timeout=2):
+        for attempt in range(max_attempts):
+            try:
+                device = self.get_device()
+                return device.shell(string)
+            except RuntimeError or DeviceNotFoundException:
+                self.print("Cannot use shell")
+                self.restart_adb_server()
+
+        raise DeviceNotFoundException("Unable to execute shell command after multiple attempts")
+
+            
+        
+
+    # def shell(self, command, fail = 0, timeout=120):
+    #     end_time = time() + timeout
+
+    #     while True:
+    #         try:
+    #             result = self.shell(command)
+    #         except RuntimeError as e:
+    #             self.print(str(e))
+    #             sleep(0.5)
+    #             continue
+    #         except DeviceNotFoundException as e:
+    #             self.print(str(e))
+    #             sleep(0.5)
+    #             continue
+
+    #         if time() > end_time:
+    #             raise TimeoutError()
+    #         elif timedelta > 0:
+    #             sleep(timedelta)
 
     def swipe(self, x, y, x2, y2):
         string = f"input swipe {x} {y} {x2} {y2} 420"

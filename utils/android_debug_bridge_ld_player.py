@@ -27,25 +27,20 @@ class AdbLd(Adb):
         cmd = "getprop sys.boot_completed"
 
         end_time = time() + timeout
-        path = self.FileSingleton.get_path()
 
         while True:
             try:
-                cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s emulator-{self.port} shell getprop sys.boot_completed"
-
-                result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-                print(result.stdout)
-
+                result = self.shell(cmd)
             except RuntimeError as e:
                 self.print(str(e))
-                sleep(0.5)
+                sleep(3)
                 continue
             except DeviceNotFoundException as e:
                 self.print(str(e))
-                sleep(0.5)
+                sleep(3)
                 continue
 
-            if result.stdout.strip() == "1":
+            if result.strip() == "1":
                 return True
 
             if time() > end_time:
@@ -53,26 +48,54 @@ class AdbLd(Adb):
             elif timedelta > 0:
                 sleep(timedelta)
 
-    def get_device(self, host="emulator", fail=0):
+    # def get_device(self, host="127.0.0.1", fail=0):
+    #     try:
+    #         self.port = str(self.data[str(self.number)]["port"])
+    #         device = self.client.device(f"{host}:{self.port}")
+
+    #         if device is None:
+    #             self.print(f"INFO : Device is None, trying to reconnect..")
+    #             sleep(2)
+
+    #             if device is None and fail > 45:
+    #                 return
+    #             if device is None:
+    #                 return self.get_device()
+
+    #         return device
+        
+    #     except Exception as e:
+    #         traceback.print_exc()
+    #         self.print("EXCEPTION : Error in connect to device")
+
+    #         self.update_port()
+    #         self.start_server()
+
+    #         self.print(f"Adb restarting..")
+    #         sleep(20)
+    #         self.print(f"Connecting to the device..")
+
+    #         self.connect_to_device()
+
+    #         sleep(5)
+    #         return self.get_device()
+            
+
+    def get_device(self, host="127.0.0.1", max_attempts=10, timeout=2):
         self.port = str(self.data[str(self.number)]["port"])
-        device = self.client.device(f"{host}-{self.port}")
+        
+        for attempt in range(max_attempts):
+            device = self.client.device(f"{host}:{self.port}")
 
-        if device is None and fail < 15:
-            self.print(f"fail {fail}")
-            return self.get_device(fail=fail + 1)
+            if device is not None:
+                return device
 
-        elif device is None and fail == 15:
-            self.print(f"fail {fail}")
-            self.stop_server()
-            sleep(1)
-            self.start_server()
-            sleep(1)
-            return self.get_device(fail=fail + 1)
+            self.print(f"Device Not Found")
+            time.sleep(timeout)
+            self.update_port()
 
-        elif device is None and fail > 15:
-            self.print(f"fail {fail}")
-            raise DeviceNotFoundException(f"{host}-{self.port}")
-        return device
+        raise DeviceNotFoundException(f"{host}:{self.port}")
+
 
     def stop_server(self):
         path = self.FileSingleton.get_path()
