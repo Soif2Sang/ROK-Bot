@@ -4,6 +4,9 @@ import traceback
 import flet as ft
 import flet_route
 
+from utils.android_debug_bridge_bluestacks import AdbBluestacks
+from utils.android_debug_bridge_ld_player import AdbLd
+from utils.singletons import EmulatorSingleton
 from utils.functions import FileSingleton
 
 
@@ -22,7 +25,14 @@ def image_to_base64(image_byte):
 def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket) -> ft.View:
     page.window_width = 900
     page.window_height = 500
-    image_byte = image_to_base64(page.tile_manager.tiles[str(params.instance_index)].runner.adb.get_curr_device_screen_img_bytesIO())
+    emulator_choice = EmulatorSingleton().getEmulator()
+
+    if emulator_choice == "bluestacks":
+        adb = AdbBluestacks(str(params.instance_index))
+    else:
+        adb = AdbLd(str(params.instance_index))
+
+    image_byte = image_to_base64(adb.get_curr_device_screen_img_bytesIO())
 
     def returnHome():
         page.window_width = 450

@@ -35,39 +35,24 @@ class TroopTraining(Task):
         shuffle(names)
         for name in names:
             print(name)
-            if self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                f"{name}_enable"
-            ]:
-                position = self.data[str(self.sel)]["schedules"][
-                    str(self.current_profile)
-                ][f"{name}_camp"]
+            if self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_enable"]:
+                position = self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_camp"]
                 print(position)
                 if position is None or len(list(position)) < 2:
                     continue
                 print("here")
                 for i in range(2):
-                    self.click(
-                        position[0] + uniform(-8, 8), position[1] + uniform(-8, 8)
-                    )
+                    self.click(position[0] + uniform(-8, 8), position[1] + uniform(-8, 8))
                     self.better_sleep((1.2, 3))
-                if (
-                    co := self.find_img(target=f"cod_{name}_badge", confidence=0.75)
-                ) is None:
+                if (co := self.find_img(target=f"cod_{name}_badge", confidence=0.75)) is None:
                     self.print(f"Unable to locate {name}")
                     continue
-                if (
-                    self.find_img(target=f"cod_training_speed", confidence=0.8)
-                    is not None
-                ):
+                if self.find_img(target=f"cod_training_speed", confidence=0.8) is not None:
                     self.print(f"Already training {name}")
                     continue
                 self.click(co[0] + uniform(-8, 8), co[1] + uniform(-8, 8))
                 self.better_sleep((1.2, 2.3))
-                co = pos[
-                    self.data[str(self.sel)]["schedules"][str(self.current_profile)][
-                        f"{name}_tier"
-                    ]
-                ]
+                co = pos[self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_tier"]]
                 self.click(co[0] + uniform(-15, 15), co[1] + uniform(-15, 15))
                 self.better_sleep((1.2, 2.3))
                 self.click(uniform(1000, 1100), uniform(615, 650))

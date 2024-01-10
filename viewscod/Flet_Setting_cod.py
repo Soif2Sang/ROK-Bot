@@ -24,9 +24,7 @@ class SettingContainer(ft.Container):
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.color_choice = color_bank[self.profile_index]
-        self.content: ft.ListView = ft.ListView(
-            height=500, expand=0, padding=1, width=300, spacing=2
-        )
+        self.content: ft.ListView = ft.ListView(height=500, expand=0, padding=1, width=300, spacing=2)
         self.init()
 
     def nextView(self, page, params, basket):
@@ -47,9 +45,7 @@ class SettingContainer(ft.Container):
                         ]
                     ),
                 ),
-                ft.Text(
-                    value="Click on the building button you wanna set, then click in the center of the building."
-                ),
+                ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
                 CityPlacement(self.instance_index, self.profile_index),
             ],
         )
@@ -68,9 +64,7 @@ class SettingContainer(ft.Container):
         self.create_normal_switch("check_donation", "Alliance donation")
         # self.create_advanced_switch("material_production", "Material Production", self.page_materials)
         self.create_advanced_switch("train_troops", "Train troops", self.page_troops)
-        self.create_advanced_switch(
-            "academy_research", "Academy Research", self.show_cords_page
-        )
+        self.create_advanced_switch("academy_research", "Academy Research", self.show_cords_page)
         self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
         self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
         # self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
@@ -114,13 +108,11 @@ class SettingContainer(ft.Container):
             return self.FileSingleton.write_data(self.data)
 
         if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = method(e.control.value)
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)
 
     def page_gems(self):
@@ -135,9 +127,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -154,9 +144,7 @@ class SettingContainer(ft.Container):
                 ft.Divider(),
                 ft.TextField(
                     label="Your kingdom :",
-                    value=self.data[str(self.instance_index)]["schedules"][
-                        str(self.profile_index)
-                    ]["kingdom"],
+                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kingdom"],
                     width=300,
                     content_padding=ft.padding.all(10),
                     on_change=lambda e: self.submit(e, "kingdom", str),
@@ -164,9 +152,7 @@ class SettingContainer(ft.Container):
                 ft.Divider(),
                 ft.TextField(
                     label="Area location X coordinates :",
-                    value=self.data[str(self.instance_index)]["schedules"][
-                        str(self.profile_index)
-                    ]["city_x"],
+                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_x"],
                     width=300,
                     content_padding=ft.padding.all(10),
                     on_change=lambda e: self.submit(e, "city_x", int),
@@ -174,9 +160,7 @@ class SettingContainer(ft.Container):
                 ft.Divider(),
                 ft.TextField(
                     label="Area location Y coordinates :",
-                    value=self.data[str(self.instance_index)]["schedules"][
-                        str(self.profile_index)
-                    ]["city_y"],
+                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_y"],
                     width=300,
                     content_padding=ft.padding.all(10),
                     on_change=lambda e: self.submit(e, "city_y", int),
@@ -184,9 +168,7 @@ class SettingContainer(ft.Container):
                 ft.Divider(),
                 ft.TextField(
                     label="Scanning radius (km) :",
-                    value=self.data[str(self.instance_index)]["schedules"][
-                        str(self.profile_index)
-                    ]["radius"],
+                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["radius"],
                     width=300,
                     content_padding=ft.padding.all(10),
                     on_change=lambda e: self.submit(e, "radius", int),
@@ -197,26 +179,18 @@ class SettingContainer(ft.Container):
                         ft.Text("Mining duration (mins)"),
                         ft.TextField(
                             label="Minimum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["gather_gem_duration1"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_duration1"],
                             width=80,
                             content_padding=ft.padding.all(10),
-                            on_change=lambda e: self.submit(
-                                e, "gather_gem_duration1", int
-                            ),
+                            on_change=lambda e: self.submit(e, "gather_gem_duration1", int),
                         ),
                         ft.Text("~"),
                         ft.TextField(
                             label="Maximum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["gather_gem_duration2"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_duration2"],
                             width=90,
                             content_padding=ft.padding.all(10),
-                            on_change=lambda e: self.submit(
-                                e, "gather_gem_duration2", int
-                            ),
+                            on_change=lambda e: self.submit(e, "gather_gem_duration2", int),
                         ),
                     ]
                 ),
@@ -226,9 +200,7 @@ class SettingContainer(ft.Container):
                         ft.Text("Available troop scan frequency"),
                         ft.TextField(
                             label="Minimum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["gem_check1"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gem_check1"],
                             width=80,
                             content_padding=ft.padding.all(10),
                             on_change=lambda e: self.submit(e, "gem_check1", int),
@@ -236,9 +208,7 @@ class SettingContainer(ft.Container):
                         ft.Text("~"),
                         ft.TextField(
                             label="Maximum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["gem_check2"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gem_check2"],
                             width=90,
                             content_padding=ft.padding.all(10),
                             on_change=lambda e: self.submit(e, "gem_check2", int),
@@ -248,21 +218,13 @@ class SettingContainer(ft.Container):
                 ft.Switch(
                     label="Restart the game randomly",
                     active_track_color=self.color_choice,
-                    value=True
-                    if self.data[str(self.instance_index)]["schedules"][
-                        str(self.profile_index)
-                    ]["restart_game"]
-                    else False,
+                    value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["restart_game"] else False,
                     on_change=lambda _: self.reverse_keyword("restart_game"),
                 ),
                 ft.Switch(
                     label="Experimental feature",
                     active_track_color=self.color_choice,
-                    value=True
-                    if self.data[str(self.instance_index)]["schedules"][
-                        str(self.profile_index)
-                    ]["gem_experimental"]
-                    else False,
+                    value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gem_experimental"] else False,
                     on_change=lambda _: self.reverse_keyword("gem_experimental"),
                 ),
             ]
@@ -282,9 +244,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -330,9 +290,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -365,9 +323,7 @@ class SettingContainer(ft.Container):
             [
                 ft.Row(
                     controls=[
-                        ft.IconButton(
-                            icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                        ),
+                        ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                         ft.Text("Settings", size=20),
                     ],
                 ),
@@ -377,18 +333,14 @@ class SettingContainer(ft.Container):
                         ft.Text("Scout duration (mins)"),
                         ft.TextField(
                             label="Minimum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["scout_duration1"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["scout_duration1"],
                             width=80,
                             on_change=lambda e: self.submit(e, "scout_duration1", int),
                         ),
                         ft.Text("~"),
                         ft.TextField(
                             label="Maximum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["scout_duration2"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["scout_duration2"],
                             width=90,
                             on_change=lambda e: self.submit(e, "scout_duration2", int),
                         ),
@@ -405,9 +357,7 @@ class SettingContainer(ft.Container):
         self.update()
 
     def show_cords_page(self):
-        self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen(
-            "city"
-        )
+        self.page.tile_manager.tiles[str(self.instance_index)].runner.adb.save_screen("city")
         self.page.go(f"/city-layout/{self.instance_index}/{self.profile_index}")
 
     def page_heal(self):
@@ -422,18 +372,14 @@ class SettingContainer(ft.Container):
             [
                 ft.Row(
                     controls=[
-                        ft.IconButton(
-                            icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                        ),
+                        ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                         ft.Text("Settings", size=20),
                     ],
                 ),
                 ft.Divider(),
                 ft.TextField(
                     label="Heal batch :",
-                    value=self.data[str(self.instance_index)]["schedules"][
-                        str(self.profile_index)
-                    ]["healing_count"],
+                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["healing_count"],
                     width=300,
                     on_change=lambda e: self.submit(e, "healing_count", int),
                 ),
@@ -458,9 +404,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -497,25 +441,20 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
         )
         self.content.controls.append(
             ft.Text(
-                value="/!\ This feature require a custom ApiKey /!\ \n"
-                "/!\ This feature is on beta and may crash /!\ \n",
+                value="/!\ This feature require a custom ApiKey /!\ \n" "/!\ This feature is on beta and may crash /!\ \n",
                 size=15,
                 color="red",
             )
         )
         self.content.controls.append(ft.Divider())
-        self.content.controls.append(
-            FletColumnRss(self.instance_index, self.profile_index)
-        )
+        self.content.controls.append(FletColumnRss(self.instance_index, self.profile_index))
         self.content.controls.append(ft.Divider())
         self.content.controls.append(
             ft.OutlinedButton(
@@ -537,9 +476,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -562,9 +499,7 @@ class SettingContainer(ft.Container):
                             width=50,
                             options=[ft.dropdown.Option(str(i)) for i in range(1, 56)],
                             on_change=lambda e: self.submit(e, "barbarians_level", str),
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["barbarians_level"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["barbarians_level"],
                         ),
                     ],
                     width=300,
@@ -572,12 +507,7 @@ class SettingContainer(ft.Container):
                 ft.Divider(),
                 ft.Text(value="Peacekeeper presets"),
                 ft.Column(
-                    controls=[
-                        FletRowPresets(
-                            self.instance_index, self.profile_index, str(preset_index)
-                        )
-                        for preset_index in range(1, 8)
-                    ],
+                    controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in range(1, 8)],
                     wrap=True,
                     spacing=10,
                     run_spacing=10,
@@ -598,9 +528,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -626,18 +554,14 @@ class SettingContainer(ft.Container):
                         ft.Dropdown(
                             width=140,
                             height=50,
-                            content_padding=ft.Padding(
-                                left=5, top=3, right=5, bottom=3
-                            ),  # modify to your likings
+                            content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                             label="Minutes",
                             options=[
                                 ft.dropdown.Option("5"),
                                 ft.dropdown.Option("10"),
                                 ft.dropdown.Option("30"),
                             ],
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["rally_time"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rally_time"],
                             on_change=lambda e: self.submit(e, "rally_time", int),
                         ),
                     ]
@@ -652,18 +576,14 @@ class SettingContainer(ft.Container):
                         ft.Dropdown(
                             width=140,
                             height=50,
-                            content_padding=ft.Padding(
-                                left=5, top=3, right=5, bottom=3
-                            ),  # modify to your likings
+                            content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                             label="Type",
                             options=[
                                 ft.dropdown.Option("cav"),
                                 ft.dropdown.Option("inf"),
                                 ft.dropdown.Option("archers"),
                             ],
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["rally_type"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rally_type"],
                             on_change=lambda e: self.submit(e, "rally_type", str),
                         ),
                     ]
@@ -684,9 +604,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -699,9 +617,7 @@ class SettingContainer(ft.Container):
                 label="Restart the game after switching\nto a new character (prevent freeze)",
                 active_track_color=self.color_choice,
                 value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ]["leave_game_switch_character"]
+                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
                 else False,
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character"),
             )
@@ -721,9 +637,7 @@ class SettingContainer(ft.Container):
             [
                 ft.Row(
                     controls=[
-                        ft.IconButton(
-                            icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                        ),
+                        ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                         ft.Text("Settings", size=20),
                     ],
                 ),
@@ -740,18 +654,14 @@ class SettingContainer(ft.Container):
                     controls=[
                         ft.TextField(
                             label="Minimum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["log_back1"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["log_back1"],
                             width=80,
                             on_change=lambda e: self.submit(e, "log_back1", int),
                         ),
                         ft.Text("~"),
                         ft.TextField(
                             label="Maximum",
-                            value=self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["log_back2"],
+                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["log_back2"],
                             width=90,
                             on_change=lambda e: self.submit(e, "log_back2", int),
                             input_filter=ft.NumbersOnlyInputFilter(),
@@ -775,9 +685,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -792,11 +700,7 @@ class SettingContainer(ft.Container):
                         ft.Switch(
                             label="Profile n°1",
                             active_track_color="#3b8ed0",
-                            value=True
-                            if self.data[str(self.instance_index)]["schedules"][str(1)][
-                                "enabled"
-                            ]
-                            else False,
+                            value=True if self.data[str(self.instance_index)]["schedules"][str(1)]["enabled"] else False,
                             on_change=lambda _: self.reverse_keyword("enabled", 1),
                         ),
                         ft.ElevatedButton(
@@ -813,11 +717,7 @@ class SettingContainer(ft.Container):
                         ft.Switch(
                             label="Profile n°2",
                             active_track_color="#ba4543",
-                            value=True
-                            if self.data[str(self.instance_index)]["schedules"][str(2)][
-                                "enabled"
-                            ]
-                            else False,
+                            value=True if self.data[str(self.instance_index)]["schedules"][str(2)]["enabled"] else False,
                             on_change=lambda _: self.reverse_keyword("enabled", 2),
                         ),
                         ft.ElevatedButton(
@@ -834,11 +734,7 @@ class SettingContainer(ft.Container):
                         ft.Switch(
                             label="Profile n°3",
                             active_track_color="#dec433",
-                            value=True
-                            if self.data[str(self.instance_index)]["schedules"][str(3)][
-                                "enabled"
-                            ]
-                            else False,
+                            value=True if self.data[str(self.instance_index)]["schedules"][str(3)]["enabled"] else False,
                             on_change=lambda _: self.reverse_keyword("enabled", 3),
                         ),
                         ft.ElevatedButton(
@@ -867,9 +763,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.IconButton(
-                        icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()
-                    ),
+                    ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
                     ft.Text("Settings", size=20),
                 ],
             )
@@ -890,32 +784,22 @@ class SettingContainer(ft.Container):
                         )
                     ]
                 ),
-                ft.Text(
-                    "Time to wait before\nthe bot re-do the tasks selected  (mins):"
-                ),
+                ft.Text("Time to wait before\nthe bot re-do the tasks selected  (mins):"),
                 ft.Row(
                     controls=[
                         ft.TextField(
                             label="Minimum",
-                            value=self.data[str(self.instance_index)][
-                                "time_to_wait_loop1"
-                            ],
+                            value=self.data[str(self.instance_index)]["time_to_wait_loop1"],
                             width=80,
-                            on_change=lambda e: self.submit(
-                                e, "time_to_wait_loop1", int
-                            ),
+                            on_change=lambda e: self.submit(e, "time_to_wait_loop1", int),
                             input_filter=ft.NumbersOnlyInputFilter(),
                         ),
                         ft.Text("~"),
                         ft.TextField(
                             label="Maximum",
-                            value=self.data[str(self.instance_index)][
-                                "time_to_wait_loop2"
-                            ],
+                            value=self.data[str(self.instance_index)]["time_to_wait_loop2"],
                             width=90,
-                            on_change=lambda e: self.submit(
-                                e, "time_to_wait_loop2", int
-                            ),
+                            on_change=lambda e: self.submit(e, "time_to_wait_loop2", int),
                             input_filter=ft.NumbersOnlyInputFilter(),
                         ),
                     ]
@@ -933,17 +817,13 @@ class SettingContainer(ft.Container):
         if index is None:
             index = self.profile_index
         if keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
-            self.data[str(self.instance_index)]["schedules"][str(index)][
-                keyword
-            ] = not self.data[str(self.instance_index)]["schedules"][str(index)][
-                keyword
-            ]
+            self.data[str(self.instance_index)]["schedules"][str(index)][keyword] = not self.data[str(self.instance_index)]["schedules"][
+                str(index)
+            ][keyword]
         else:
             # print(keyword,self.data[str(self.instance_index)][keyword])
 
-            self.data[str(self.instance_index)][keyword] = not self.data[
-                str(self.instance_index)
-            ][keyword]
+            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
         self.FileSingleton.write_data(self.data)
 
     def create_normal_switch(self, keyword: str, text: str):
@@ -952,11 +832,7 @@ class SettingContainer(ft.Container):
             ft.Switch(
                 label=text,
                 active_track_color=self.color_choice,
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][keyword]
-                else False,
+                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                 on_change=lambda _: self.reverse_keyword(keyword),
             )
         )
@@ -970,11 +846,7 @@ class SettingContainer(ft.Container):
                         ft.Switch(
                             label=text,
                             active_track_color=self.color_choice,
-                            value=True
-                            if self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ][keyword]
-                            else False,
+                            value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
@@ -984,9 +856,7 @@ class SettingContainer(ft.Container):
                             on_click=lambda _: function(),
                             style=ButtonStyle(
                                 shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(
-                                        radius=5
-                                    ),
+                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                                 }
                             ),
                         ),
@@ -1001,9 +871,7 @@ class SettingContainer(ft.Container):
                         ft.Switch(
                             label=text,
                             active_track_color=self.color_choice,
-                            value=True
-                            if self.data[str(self.instance_index)][keyword]
-                            else False,
+                            value=True if self.data[str(self.instance_index)][keyword] else False,
                             on_change=lambda _: self.reverse_keyword(keyword),
                         ),
                         ft.OutlinedButton(
@@ -1013,9 +881,7 @@ class SettingContainer(ft.Container):
                             on_click=lambda _: function(),
                             style=ButtonStyle(
                                 shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(
-                                        radius=5
-                                    ),
+                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                                 },
                             ),
                         ),
@@ -1032,9 +898,7 @@ class SettingContainer(ft.Container):
                         label="Kill barbs with AP",
                         active_track_color=self.color_choice,
                         value=True
-                        if self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["defeat_barbarians"]
+                        if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["defeat_barbarians"]
                         else False,
                         on_change=lambda _: self.reverse_keyword("defeat_barbarians"),
                     )
@@ -1050,19 +914,13 @@ class SettingContainer(ft.Container):
                     ft.Switch(
                         label="Slow mode",
                         active_track_color=self.color_choice,
-                        value=True
-                        if self.data[str(self.instance_index)]["schedules"][
-                            str(self.profile_index)
-                        ]["slow_mode"]
-                        else False,
+                        value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["slow_mode"] else False,
                         on_change=lambda _: self.reverse_keyword("slow_mode"),
                     ),
                     ft.Dropdown(
                         width=140,
                         height=50,
-                        content_padding=ft.Padding(
-                            left=5, top=3, right=5, bottom=3
-                        ),  # modify to your likings
+                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         label="Multiplicator",
                         options=[
                             ft.dropdown.Option("1.0x"),
@@ -1075,12 +933,7 @@ class SettingContainer(ft.Container):
                             ft.dropdown.Option("2.75x"),
                             ft.dropdown.Option("3.0x"),
                         ],
-                        value=str(
-                            self.data[str(self.instance_index)]["schedules"][
-                                str(self.profile_index)
-                            ]["sleep_multiplicator"]
-                        )
-                        + "x",
+                        value=str(self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["sleep_multiplicator"]) + "x",
                         on_change=lambda e: self.submit(e, "sleep_multiplicator", str),
                     ),
                 ],

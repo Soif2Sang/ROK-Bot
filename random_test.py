@@ -1,50 +1,31 @@
-import subprocess
+import win32con
+import win32gui
+import win32ui
 
-file_path = r"C:\LDPlayer\LDPlayer9\ldconsole.exe"
-
-
-def get_dic_instances():
-    argument = "list2"
-    command = [file_path, argument]
-    result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
-
-    # Print the captured output
-    print("Captured Output:", result.stdout.split("\n"))
-
-    emulators = result.stdout.split("\n")
-    emulators.pop()
-
-    liste = {}
-    for emulator in emulators:
-        emulator = emulator.split(",")
-        liste[emulator[0]] = {
-            "name": emulator[1],
-            "instance": emulator[0],
-            "port": 5554 + 2 * int(emulator[0]),
-        }
-
-    return liste
+def background_screenshot(hwnd, width, height):
+    wDC = win32gui.GetWindowDC(hwnd)
+    dcObj=win32ui.CreateDCFromHandle(wDC)
+    cDC=dcObj.CreateCompatibleDC()
+    dataBitMap = win32ui.CreateBitmap()
+    dataBitMap.CreateCompatibleBitmap(dcObj, width, height)
+    cDC.SelectObject(dataBitMap)
+    cDC.BitBlt((0,0),(width, height) , dcObj, (0,0), win32con.SRCCOPY)
+    dataBitMap.SaveBitmapFile(cDC, 'screenshot.bmp')
+    dcObj.DeleteDC()
+    cDC.DeleteDC()
+    win32gui.ReleaseDC(hwnd, wDC)
+    win32gui.DeleteObject(dataBitMap.GetHandle())
 
 
-def get_current_instances(data: dict):
-    argument = "runninglist"
-    command = [file_path, argument]
-    result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+windowname = 'Rise of Kingdoms'
+hwnd = win32gui.FindWindow(None, windowname)
 
-    emulators = result.stdout.split("\n")
-    emulators.pop()
-
-    liste = []
-
-    for emulator in emulators:
-        for e in data.values():
-            if e["name"] == emulator:
-                liste.append((e["instance"], e["name"]))
-    return liste
+# Get window bounds
+left, top, right, bot = win32gui.GetWindowRect(hwnd)
+w = right - left
+h = bot - top
 
 
-def get_all_vms_running():
-    return get_current_instances(get_dic_instances())
+background_screenshot(hwnd, w, h)
 
 
-get_all_vms_running()

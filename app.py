@@ -6,7 +6,7 @@ import traceback
 from time import sleep
 
 import flet as ft
-from flet_route import Routing, path
+from flet_route import Routing, path, Basket, Params
 
 
 try:
@@ -25,13 +25,14 @@ try:
     )
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastsFlexible
-    from utils.functions import FileSingleton, getchecksum
+    from utils.functions import FileSingleton, getchecksum, get_dic_instances, get_dic_instances_ld
     from utils.singletons import EmulatorSingleton, LinkSingleton
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
     from views.login.login import LoginUI
     from views.main import Main
     from views.profile_settings import viewProfileSettings
+    from views.group_choice import EmulatorGroup
 except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -40,9 +41,7 @@ except Exception as e:
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
-        page.add(
-            ft.Text("An error occurred, a log message have been sent to the developer")
-        )
+        page.add(ft.Text("An error occurred, a log message have been sent to the developer"))
         page.add(ft.Text(value=traceback_str, color="red"))
         page.update()
 
@@ -100,7 +99,7 @@ def main(page: ft.Page):
     page.UPGRADE = False
     page.body = ft.Column()
 
-    def generate_toast(title, description, icon=ft.icons.INFO, bgcolor_title="AMBER"):
+    def generate_toast(title, description, icon=ft.icons.INFO, bgcolor_title="RED"):
         ToastsFlexible(
             page=page,
             icon=icon,
@@ -133,6 +132,11 @@ def main(page: ft.Page):
             clear=True,
             view=viewProfileSettings,
         ),
+        path(
+            url='/group-choice',
+            clear=True,
+            view=group_choice
+        )
     ]
 
     page.routing = Routing(
@@ -148,11 +152,11 @@ def main(page: ft.Page):
         LinkSingleton().setSellixLink(page.keyauthapp.var("sellix"))
 
 
-def index(page: ft.Page, params, basket):
+def index(page: ft.Page, params: Params, basket: Basket):
     return ft.View(route="/", controls=page.body.controls)
 
 
-def loading_files(page: ft.Page, params, basket):
+def loading_files(page: ft.Page, params: Params, basket: Basket):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
@@ -164,7 +168,7 @@ def loading_files(page: ft.Page, params, basket):
     )
 
 
-def emulator_choice(page: ft.Page, params, basket):
+def emulator_choice(page: ft.Page, params: Params, basket: Basket):
     page.window_width = 1920 / 2
     page.window_height = 1080 / 2
 
@@ -174,9 +178,7 @@ def emulator_choice(page: ft.Page, params, basket):
         if "bluestacks" in e.control.data:
             EmulatorSingleton().setEmulator("bluestacks")
 
-            if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(
-                path_file["HD-Player"]
-            ):
+            if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(path_file["HD-Player"]):
                 page.go("/emulator-loading")
                 page.update()
 
@@ -196,9 +198,7 @@ def emulator_choice(page: ft.Page, params, basket):
         elif "ld" in e.control.data:
             EmulatorSingleton().setEmulator("ld")
 
-            if not path_file.get("LD-Console", False) or not os.path.exists(
-                path_file.get("LD-Console", "fzfgrerg")
-            ):
+            if not path_file.get("LD-Console", False) or not os.path.exists(path_file.get("LD-Console", "fzfgrerg")):
                 page.go("/emulator-loading")
                 page.update()
 
@@ -283,6 +283,38 @@ def login(page: ft.Page, params, basket):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         padding=0,
     )
+
+
+def group_choice(page: ft.Page, params, basket):
+    emulator = EmulatorSingleton().getEmulator()
+
+    if emulator == "bluestacks":
+        instances = get_dic_instances()
+    else:
+        instances = get_dic_instances_ld()
+
+    instances = [(instance, instance) for instance in instances]
+
+    controls = [
+        ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.IconButton(
+                        icon=ft.icons.ARROW_BACK,
+                        on_click=lambda _: page.go('/'),
+                    ),
+                    ft.Text(value="Back", size=20),
+                ],
+            ),
+            padding=ft.padding.only(top=5, left=0, bottom=0),
+        ),
+        ft.Divider(),
+    ]
+
+    for instance in instances:
+        controls.append(EmulatorGroup(instance, instances))
+
+    return ft.View(route="/group-choice", controls=controls)
 
 
 if __name__ == "__main__":

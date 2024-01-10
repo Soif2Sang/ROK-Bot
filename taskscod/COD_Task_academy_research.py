@@ -27,9 +27,7 @@ class AcademyResearch(Task):
 
     @get_class
     def run(self):
-        if not self.data[self.sel]["schedules"][self.current_profile][
-            "research_center"
-        ]:
+        if not self.data[self.sel]["schedules"][self.current_profile]["research_center"]:
             return
         co = self.data[self.sel]["schedules"][self.current_profile]["research_center"]
         self.click(co[0], co[1])

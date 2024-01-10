@@ -85,6 +85,7 @@ class Task:
         if self.tile.stopped:
             self.set_text(f"[{current_time()}] You stopped the bot", "Red")
             self.set_divider()
+            self.set_status("")
             self.debug("You stopped the bot")
             sys.exit(1)
 
@@ -111,6 +112,7 @@ class Task:
             seconds -= 1
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
             self.better_sleep((1, 1))
+        self.set_status("")
 
     def update_data(self):
         self.data = self.FileSingleton.get_data()
@@ -150,11 +152,14 @@ class Task:
             self.set_text("")
 
     @get_name
-    def send_discord_message(self, message):
+    def send_discord_message(self, message, image=True):
         if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
             # loop = asyncio.get_event_loop()
-            self.adb.save_screen(f"{self.name}_error")
-            asyncio.run(send_discord_message(self.name, message, f"{self.name}_error.png"))
+            if image:
+                self.adb.save_screen(f"{self.name}_error")
+                asyncio.run(send_discord_message(self.name, message, f"{self.name}_error.png"))
+            else:
+                asyncio.run(send_discord_message(self.name, message))
 
     @get_name
     def click(self, x, y):
@@ -266,8 +271,8 @@ class Task:
                 self.print("/!\ FIX IT !! /!\ ", "red")
             return False
 
-    def generate_toast(self, title, description, icon=ft.icons.INFO):
-        self.tile.initial_page.generate_toast(title, description, icon=ft.icons.INFO)
+    def generate_toast(self, title, description, icon=ft.icons.INFO, bgcolor_title="RED"):
+        self.tile.initial_page.generate_toast(title, description, icon=icon, bgcolor_title=bgcolor_title)
 
     @get_name
     def open_menu(self):
@@ -315,6 +320,7 @@ class Task:
     def click_loop(self) -> None:
         if not self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
             self.print(f"Loop icon not found, leaving the city")
+            self.close_windows()
             self.leave_city()
             self.better_sleep((2, 3))
         x = uniform(33, 76)
@@ -484,80 +490,127 @@ class Task:
 
         return result
 
+    # @get_name
+    # def run_game(self, count=0) -> None:
+    #     # print(self.adb.is_game_alive())
+    #     a = self.adb.is_game_alive()
+    #     if not a:
+    #         self.print(f"Looks like game is not running", ft.colors.RED_300)
+    #         co = self.find_img(target="rokicon", confidence=0.8)
+    #         if co is not None:
+    #             self.click(co[0] + 10, co[1] + 10)
+    #             self.better_sleep((5, 5))
+    #             return self.wait_until_connected()
+    #         else:
+    #             if count == 0:
+    #                 self.adb.home_button()
+    #                 self.better_sleep((5, 5))
+    #                 return self.run_game(count=1)
+    #             if count == 1:
+    #                 if self.language is None or self.language == "eng":
+    #                     for _ in range(2):
+    #                         string = self.adb.shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
+    #                         self.FileSingleton.write(
+    #                             self.name,
+    #                             f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+    #                         )
+    #                         if "Error" in str(string):
+    #                             break
+    #                         if "Activity not started" not in str(string):
+    #                             self.print("Starting the game !")
+    #                             self.wait_until_connected()
+    #                             self.language = "eng"
+    #                             return self.run_game(count=2)
+    #                         if "Activity not started" in str(string):
+    #                             return
+    #                 if self.language is None or self.language == "vn":
+    #                     for i in range(2):
+    #                         string = self.adb.shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
+    #                         self.FileSingleton.write(
+    #                             self.name,
+    #                             f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+    #                         )
+    #                         if "Error" in str(string):
+    #                             # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
+    #                             return
+    #                         if "Activity not started" not in str(string):
+    #                             self.print("Starting the game !")
+    #                             self.wait_until_connected()
+    #                             self.language = "vn"
+    #                             return self.run_game(count=2)
+    #                         if "Activity not started" in str(string):
+    #                             return
+    #                 if self.language is None or self.language == "kr":
+    #                     for i in range(2):
+    #                         string = self.adb.shell("am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity")
+    #                         self.FileSingleton.write(
+    #                             self.name,
+    #                             f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+    #                         )
+    #                         if "Error" in str(string):
+    #                             # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
+    #                             return
+    #                         if "Activity not started" not in str(string):
+    #                             self.print("Starting the game !")
+    #                             self.wait_until_connected()
+    #                             self.language = "kr"
+    #                             return self.run_game(count=2)
+    #                         if "Activity not started" in str(string):
+    #                             return
+    #
+    #             self.print("ERROR CANNOT START THE GAME.")
+    #             self.send_discord_message("ERROR CANNOT START THE GAME.")
+    #             while True:
+    #                 self.set_status("ERROR CANNOT START GAME")
+    #                 self.script_pause()
+    #                 sleep(1)
+
     @get_name
     def run_game(self, count=0) -> None:
-        # print(self.adb.is_game_alive())
         a = self.adb.is_game_alive()
+
         if not a:
-            self.print(f"Looks like game is not running")
+            self.print(f"Looks like the game is not running", ft.colors.RED_300)
             co = self.find_img(target="rokicon", confidence=0.8)
+
             if co is not None:
                 self.click(co[0] + 10, co[1] + 10)
-                self.better_sleep((3, 3))
+                self.better_sleep((10, 10))
                 return self.wait_until_connected()
             else:
                 if count == 0:
                     self.adb.home_button()
                     self.better_sleep((3, 3))
                     return self.run_game(count=1)
-                if count == 1:
-                    if self.language is None or self.language == "eng":
-                        for _ in range(2):
-                            string = self.adb.shell("am start -n com.lilithgame.roc.gp/com.harry.engine.MainActivity")
-                            self.FileSingleton.write(
-                                self.name,
-                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
-                            )
-                            if "Error" in str(string):
-                                break
-                            if "Activity not started" not in str(string):
-                                self.print("Starting the game !")
-                                self.wait_until_connected()
-                                self.language = "eng"
-                                return self.run_game(count=2)
-                            if "Activity not started" in str(string):
-                                return
-                    if self.language is None or self.language == "vn":
-                        for i in range(2):
-                            string = self.adb.shell("am start -n com.rok.gp.vn/com.harry.engine.MainActivity")
-                            self.FileSingleton.write(
-                                self.name,
-                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
-                            )
-                            if "Error" in str(string):
-                                # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
-                                return
-                            if "Activity not started" not in str(string):
-                                self.print("Starting the game !")
-                                self.wait_until_connected()
-                                self.language = "vn"
-                                return self.run_game(count=2)
-                            if "Activity not started" in str(string):
-                                return
-                    if self.language is None or self.language == "kr":
-                        for i in range(2):
-                            string = self.adb.shell("am start -n com.lilithgame.rok.gpkr/com.harry.engine.MainActivity")
-                            self.FileSingleton.write(
-                                self.name,
-                                f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
-                            )
-                            if "Error" in str(string):
-                                # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] shell dumpsys activity activities')
-                                return
-                            if "Activity not started" not in str(string):
-                                self.print("Starting the game !")
-                                self.wait_until_connected()
-                                self.language = "kr"
-                                return self.run_game(count=2)
-                            if "Activity not started" in str(string):
-                                return
 
-                self.print("ERROR CANNOT START THE GAME.")
+                languages = ["eng", "vn", "kr"]
+                for language in languages:
+                    if self.language is None or self.language == language:
+                        package_name = {"eng": "com.lilithgame.roc.gp", "vn": "com.rok.gp.vn", "kr": "com.lilithgame.rok.gpkr"}[language]
+
+                        string = self.adb.shell(f"am start -n {package_name}/com.harry.engine.MainActivity")
+                        self.FileSingleton.write(
+                            self.name,
+                            f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+                        )
+
+                        if "Error" in str(string):
+                            break
+                        if "Activity not started" not in str(string):
+                            self.print("Starting the game!", ft.colors.GREEN_200)
+                            self.better_sleep((5, 5))
+                            self.wait_until_connected()
+                            self.language = language
+                            return self.run_game(count=2)
+                        else:
+                            return
+                self.print("ERROR CANNOT START THE GAME.", ft.colors.RED)
                 self.send_discord_message("ERROR CANNOT START THE GAME.")
+                self.tile.initial_page.keyauthapp.log(string)
                 while True:
                     self.set_status("ERROR CANNOT START GAME")
                     self.script_pause()
-                    sleep(1)
+                    self.better_sleep((1,1))
 
     # @get_name
     def better_sleep(self, limits: tuple[float, float]):
@@ -644,7 +697,7 @@ class Task:
             self.better_sleep((2, 3))
         except Exception as e:
             self.debug(e)
-            self.print("Cannot resolve this captcha slider!")
+            self.print("Cannot resolve this captcha slider!", ft.colors.RED)
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_str = "".join(traceback_list)
@@ -714,7 +767,7 @@ class Task:
                 self.run_game()
                 return True
             else:
-                self.set_text("Auto Log-back off", "red")
+                self.set_text("Auto Log-back off", ft.colors.RED)
                 self.send_discord_message("The game got disconnected, Log-back off.")
                 while True:
                     self.script_pause()
@@ -1094,8 +1147,8 @@ class Task:
         return (
             self.find_img(
                 target="checkpoint_star",
-                source=self.adb.get_cv2_img()[:70, 200:600],
-                confidence=0.9,
+                source=self.adb.get_cv2_img()[:60, 380:600],
+                confidence=0.95,
             )
             is None
         )
@@ -1104,8 +1157,10 @@ class Task:
         return self.data.get(self.sel).get("schedules").get(self.current_profile)
 
     @get_name
-    def close_windows(self):
-        image = self.adb.get_cv2_img()
+    def close_windows(self, screen=None):
+        if screen is None:
+            image = self.adb.get_cv2_img()
+
         while cos := self.adb.find_multiple_img(target="close_window", source=image[: 720 // 2, 1280 // 2 :]):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
@@ -1436,7 +1491,7 @@ class Task:
                         and ((pixel[0] != 2) and (pixel[1] != 4) and (pixel[2] != 183))
                     )
                     or ((pixel[0] < 2) and (116 < pixel[1] < 119) and (175 < pixel[2] < 179))
-                    or ((pixel[0] < 5) and (142 < pixel[1] < 150) and (190 < pixel[2] < 200) and (pixel[2] != 193))
+                    or ((pixel[0] < 5) and (142 < pixel[1] < 150) and (190 < pixel[2] < 200) and (pixel[2] != 193) and (pixel[2] != 192))
                     or ((pixel[0] < 10) and (pixel[1] > 187) and (pixel[2] < 10))
                     or (pixel in occupied_colors)
                 ) and (pixel not in whitelist):

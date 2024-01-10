@@ -67,7 +67,7 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.initial_page.update()
 
 
-class Tile(ft.Row):
+class Tile(ft.Container):
     def __init__(self, page, number, **kwargs):
         super().__init__(**kwargs)
         self.FileSingleton = FileSingleton()
@@ -98,14 +98,16 @@ class Tile(ft.Row):
         self.text_name = ft.Text(value=data[str(number)]["name"], width=80)
         self.text_status = ft.Text(value="", width=120)
 
-        self.vertical_alignment = ft.CrossAxisAlignment.CENTER
-        self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
+        self.border_radius = 3
+        self.bgcolor = ft.colors.SURFACE
+        self.on_click = self.select
+        self.on_hover = self.hover
 
-        self.controls.extend(
+        self.content = ft.Row(
             [
                 ft.Row(
                     controls=[
-                        self.button_select,
+                        # self.button_select,
                         self.button_start,
                         self.button_stop,
                         self.text_name,
@@ -113,8 +115,18 @@ class Tile(ft.Row):
                     ]
                 ),
                 self.config_overrider,
-            ]
+            ],
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
+
+    def hover(self, e):
+        e.control.bgcolor = (
+            ft.colors.SURFACE_VARIANT
+            if (e.data == "true" or self.initial_page.body.controls[-1] == self.initial_page.frames.get(self.number, False))
+            else ft.colors.SURFACE
+        )
+        self.initial_page.update()
 
     def select(self, e):
         self.initial_page.tile_manager.unselect_all()
@@ -127,6 +139,7 @@ class Tile(ft.Row):
             self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
+        self.bgcolor = ft.colors.SURFACE_VARIANT
         self.initial_page.update()
 
     def start(self, e):

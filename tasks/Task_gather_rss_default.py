@@ -61,48 +61,57 @@ class GatherRssDefault(GatherRss):
     @get_name
     def minable(self) -> bool:
         screen = self.adb.get_cv2_img()
-        if self.find_img(target="search_button", source=screen[720//2:,:1280//4]) is None and not self.find_cross(screen[230:480, 441:814]):
+        if self.find_img(target="search_button", source=screen[720 // 2 :, : 1280 // 4]) is None and not self.find_cross(
+            screen[230:480, 441:814]
+        ):
             return True
         # self.print("Unable to gather this node")
         return False
 
     @get_class
-    def run(self, node_place=None, node_type=None, resolved=False, level_decrease=0):
+    def run(self, node_place="First", node_type=None, resolved=False, level_decrease=0):
         self.run_game()
         if not resolved:
             resolved = self.check_captcha()
 
-        self.check_reconnect()
-        self.check_log_back()
-        self.check_download_page()
+        if node_place == "First":
+            screen = self.check_reconnect(self.adb.get_cv2_img())
+            screen = self.check_download_page(screen)
+            self.check_log_back(screen)
 
-        if node_place is None:
-            node_place = "First"
-
-        if node_place == "Done":
+        elif node_place == "Done":
             self.click(uniform(600, 700), (uniform(250, 400)))
             self.better_sleep((2, 4))
             return
 
-        if self.data[str(self.sel)]["schedules"][self.current_profile][node_place] == "nothing":
-            return
+        if node_type is None:
+            result = self.data[str(self.sel)]["schedules"][self.current_profile][node_place]
+            if result == "nothing":
+                return
+            elif result == "random":
+                result = choice(["food", "wood", "stone", "gold"])
+            # else:
+            node_type = result
 
-        if self.data[str(self.sel)]["schedules"][self.current_profile][node_place] == "random":
-            if node_type is None:
-                node_type = choice(["food", "wood", "stone", "gold"])
-        else:
-            node_type = self.data[str(self.sel)]["schedules"][self.current_profile][node_place]
+        # if self.data[str(self.sel)]["schedules"][self.current_profile][node_place] == "nothing":
+        #     return
+        #
+        # if self.data[str(self.sel)]["schedules"][self.current_profile][node_place] == "random":
+        #     if node_type is None:
+        #         node_type = choice(["food", "wood", "stone", "gold"])
+        # else:
+        #     node_type = self.data[str(self.sel)]["schedules"][self.current_profile][node_place]
 
         self.leave_city_simple()
 
         if self.free_troop_commander_list():
-            self.check_log_back()
             self.check_reconnect()
+            self.check_log_back()
             self.click_loop()
 
-            self.print(f"Looking for : {node_type}")
+            print(f"Looking for : {node_type}")
             x, y = self.select_resource_type(node_type)
-
+            print(x,y)
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
@@ -114,7 +123,7 @@ class GatherRssDefault(GatherRss):
             self.set_search_level(
                 self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_place}_level") - level_decrease
             )
-            self.better_sleep((0.925, 2.795))
+            self.better_sleep((1.925, 2.795))
             self.click_search_by_node_type(node_type)
             self.better_sleep((5, 8))
 

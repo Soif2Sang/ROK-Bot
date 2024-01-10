@@ -59,9 +59,7 @@ class FletIcons(ft.UserControl):
 
     def build(self):
         self.initialize()
-        return [
-            ft.Column(controls=[ft.TextField(on_submit=self.on_type), self.gridview])
-        ]
+        return [ft.Column(controls=[ft.TextField(on_submit=self.on_type), self.gridview])]
 
 
 def configuration(self):
@@ -112,9 +110,7 @@ def main(page):
         pattern = r"\b\w*{}\w*\b".format(re.escape(e.control.value))
         i = 0
         for num, x in enumerate(page.dic.keys()):
-            matches = re.findall(
-                rf"\b\w*{e.control.value}\w*\b", x, flags=re.IGNORECASE
-            )
+            matches = re.findall(rf"\b\w*{e.control.value}\w*\b", x, flags=re.IGNORECASE)
             if matches:
                 print(x)
                 if i % 10 == 0:

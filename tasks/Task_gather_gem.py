@@ -318,9 +318,9 @@ class GatherGem(Task):
             return True
         if screen is None:
             screen = self.adb.get_cv2_img()
-        self.check_download_page(screen)
-        self.leave_kd_buff(screen)
-        self.check_reconnect(screen)
+        screen = self.check_download_page(screen)
+        screen = self.leave_kd_buff(screen)
+        screen = self.check_reconnect(screen)
         if self.check_log_back(screen):
             return True
         return False

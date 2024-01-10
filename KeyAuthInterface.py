@@ -122,7 +122,9 @@ def main(page: ft.Page):
             page.update()
 
     def extend_user(username, duration):
-        url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=extend&user={username}&sub=default&expiry={duration}&activeOnly=0"
+        url = (
+            f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=extend&user={username}&sub=default&expiry={duration}&activeOnly=0"
+        )
 
         headers = {"accept": "application/json"}
 

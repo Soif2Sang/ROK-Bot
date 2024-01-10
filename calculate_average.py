@@ -33,9 +33,7 @@ import cv2
 def find_img(target):
     img_to_find = images.get_file_name(target)
 
-    result = cv2.matchTemplate(
-        cv2.imread("captcha_slider.png"), img_to_find, cv2.TM_CCOEFF_NORMED
-    )
+    result = cv2.matchTemplate(cv2.imread("captcha_slider.png"), img_to_find, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
 
     return max_val

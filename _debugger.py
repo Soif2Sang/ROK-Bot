@@ -1,5 +1,6 @@
 import datetime
 import json
+import subprocess
 from random import randint, uniform
 from threading import Thread
 from time import time
@@ -13,7 +14,7 @@ import win32gui
 from MTM import matchTemplates
 
 from Task_claim_campaign import ClaimCampaign
-from android_debug_bridge import Adb
+from android_debug_bridge_bluestacks import AdbBluestacks
 from twocaptcha import TwoCaptcha
 
 import taskscod.COD_Task_daily_vip
@@ -34,7 +35,7 @@ from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_daily_chest2 import DailyChest2
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_gather_gem_default import GatherGem
-from tasks.Task_gather_rss_default import GatherRss
+from tasks.Task_gather_rss_default import GatherRss, GatherRssDefault
 from tasks.Task_hunt_barbarians import HuntBarbarians
 from tasks.Task_kingdom_ranking import KingdomRanking
 from tasks.Task_maraudeurs import Marauders
@@ -44,6 +45,7 @@ from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.singletons import FileSingleton
+
 # from utils.android_debug_bridge import *
 DEBUG = True
 
@@ -92,7 +94,7 @@ class Bot:
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.merchant = BuyMerchant(self.main_task)
-        self.rss = GatherRss(self.main_task)
+        self.rss = GatherRssDefault(self.main_task)
         # self.rss2  =  GatherRss2(self.main_task)
         self.AlliancePit = AlliancePit(self.main_task)
         self.research = AcademyResearch(self.main_task)
@@ -105,6 +107,7 @@ class Bot:
         self.ranks = KingdomRanking(self.main_task)
         self.mails = ClaimMail(self.main_task)
         from tasks.Task_alliance_help import AllianceHelp
+
         self.expedition = ClaimCampaign(self.main_task)
         self.help = AllianceHelp(self.main_task)
         self.training = TroopTraining(self.main_task)
@@ -128,9 +131,7 @@ def create_instance(number: int, master):
     adb = AdbLd(number)
     bot = Bot(adb)
     bot.adb.connect_to_device()
-    bot.task.set_status = lambda text, color=None: print(
-        f"[ {bot.task.name} ] Status = {text}"
-    )
+    bot.task.set_status = lambda text, color=None: print(f"[ {bot.task.name} ] Status = {text}")
     bot.task.print = lambda text, color=None: print(f"[ {bot.task.name} ] {text}")
     bot.task.current_profile = "1"
     frame = object()
@@ -172,7 +173,8 @@ def get_bot(number):
 
     bot.adb.pause = False
     bot.main_task.print = lambda txt: print(txt)
-    bot.main_task.set_text = lambda txt: print(txt)
+    bot.main_task.set_status = lambda txt: print(txt)
+    bot.main_task.set_text = lambda txt, _=None: print(txt)
     bot.main_task.status = lambda txt: print(txt)
     bot.main_task.script_pause = lambda: print("")
 
@@ -202,73 +204,49 @@ if __name__ == "__main__":
     # upgrade_all()
 
     # print(TwoCaptcha("9c5059a65dd40980bd2fc113f616060e").balance())
+    from ppadb.client import Client as PPADBClient
 
-    bot = get_bot("3")
-    # bot.vip.run()
-    print(bot.alliance.donate_to_alliance())
-    # print(bot.runner.)
+    fS = FileSingleton()
+    data = fS.get_path()
+
+    # adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
+    # cmd = f"{adb_path} connect 127.0.0.1-5564"
+    # subprocess.Popen(cmd)
+    # host, port = "127.0.0.1", 5037
+    # client = PPADBClient(host="127.0.0.1", port=5037)
+    # print()
+    # d = client.device("emulator-5554")
+    # print(d)
+    # print(d.screencap())
+
+    def check_emulator_status(emulator_id):
+        path = fS.get_path()
+        cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {emulator_id} shell getprop sys.boot_completed"
+        command = f"adb "
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        print(result.stdout)
+        return result.stdout.strip() == "1"
+
+    AdbLd('1', 'emulator', 5556).wait_boot_complete()
+
+    while True:
+        print(check_emulator_status("emulator-5556"))
     exit()
-    bot.research.donate_to_alliance()
-    exit()
+    client = PPADBClient(host="127.0.0.1", port=5037)
+    devices = client.devices()
 
-    hwnd = win32gui.FindWindow(None, bot.task.adb.name)
-    print(bot.task.adb.name)
-    hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
-
-    # print(hwnd ,hwndChild)
-    bot.task.script_pause()
-    bot.task.script_pause()
-    win32gui.SendMessage(hwndChild, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-    bot.task.better_sleep((0.45, 0.45))
-    win32gui.SendMessage(hwndChild, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-    bot.task.better_sleep((1.4, 2))
-    bot.task.script_pause()
-    win32gui.SendMessage(hwndChild, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-    bot.task.better_sleep((0.17, 0.17))
-    win32gui.SendMessage(hwndChild, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-    bot.task.better_sleep((1.4, 2))
-
-    exit()
-    icons = []
-    for i in range(14):
-        icons.append((f"GemDeposit{i}", bot.adb.images.get_file_name(f"GemDeposit{i}")))
-    total = 0
-    for icon in icons:
-        # co = self.validate_co(
-        #     self.find_img(source=screen, target=icon[0], confidence=0.77))
-        # if co is None:
-        #     co = self.validate_co(
-        #         self.find_img(source=screen, target=icon[1], confidence=0.77))
-        screen = bot.adb.get_cv2_img()
-        start = time()
-
-        bot.task.find_img(source=screen, target=icon[0], confidence=0.795)
-        print(f"It took {time() - start}")
-        total += start
-
-    print(f"It took {total}")
     start = time()
-
-    matchTemplates(listTemplates=icons, image=screen, score_threshold=0.795)
-    print(f"It took {time() - start}")
-
-    exit()
-    print(bot.task.find_img("building_speedups", confidence=0.7))
-    exit()
-    techs = bot.task.adb.find_multiple_img(target="research_tech", confidence=0.7)
-    cards = bot.task.adb.find_multiple_img(target="research_card", confidence=0.9)
-    print(techs)
-    print(cards)
-    duos = set()
-    for card in cards:
-        for tech in techs:
-            if (tech[1] > card[1] and tech[1] < card[1] + 100) and (
-                tech[0] > card[0] - 150 and tech[0] < card[0]
-            ):
-                duos.add(card)
-    print(duos)
-    exit()
+    print("Start", time() - start)
+    a = AdbLd("5")
+    print(a.wait_boot_complete(30, 0))
+    print("boot complete", time() - start)
+    # bot = get_bot("3")
+    # bot.rss.run()
+    # bot.alliance.run()
+    # print(bot.task.in_city())
+    # bot.rss.run()
+    # file = cv2.imread('screenshot_test.png')
+    # print(bot.task.find_img(target='checkpoint_star',source=file[:70, 200:600]))
+    # bot.vip.run()
+    # bot.rss.run()
+    # bot.task.close_windows()

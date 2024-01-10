@@ -42,10 +42,7 @@ class Task:
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             sleep(1)
             seconds -= 1
-            condition = (
-                ":" in self.tile.text_status.value
-                and self.tile.text_status.value != "00:00:01"
-            )
+            condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
 
     @get_name
     def update_data(self):
@@ -68,9 +65,7 @@ class Task:
     @get_name
     def send_discord_message(self, message):
         if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
-            return discord_bot.send_message(
-                self.data["discord"]["user_id"], f"[{current_time()}] {message}"
-            )
+            return discord_bot.send_message(self.data["discord"]["user_id"], f"[{current_time()}] {message}")
 
     @get_name
     def click(self, x, y):
@@ -223,18 +218,8 @@ class Task:
         b = limits[1]
         if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
             # self.set_text(tuple,tuple[0])
-            a = (
-                a
-                * self.data[str(self.sel)]["schedules"][self.current_profile][
-                    "sleep_multiplicator"
-                ]
-            )
-            b = (
-                b
-                * self.data[str(self.sel)]["schedules"][self.current_profile][
-                    "sleep_multiplicator"
-                ]
-            )
+            a = a * self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
+            b = b * self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
         sleep(uniform(a, b))
 
     def script_pause(self):
@@ -243,25 +228,19 @@ class Task:
         if self.tile.stopped:
             self.tile.stopped = False
             self.set_text(f"[{current_time()}] You stopped the bot", "Red")
-            print(
-                f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot"
-            )
+            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You stopped the bot")
             sys.exit(1)
 
         while not self.tile.paused:
             if not said:
                 # self.print(f"You is paused.","Yellow")
                 self.set_text(f"[{current_time()}] Script is paused.", "orange")
-                print(
-                    f"[ {date.today()} {current_time()} ] [ {self.name} ] Script is paused."
-                )
+                print(f"[ {date.today()} {current_time()} ] [ {self.name} ] Script is paused.")
                 said = True
                 # self.set_text("Script paused.")
         if said:
             self.set_text(f"[{current_time()}] You resumed the script.", "Green")
-            print(
-                f"[ {date.today()} {current_time()} ] [ {self.name} ] You resumed the script."
-            )
+            print(f"[ {date.today()} {current_time()} ] [ {self.name} ] You resumed the script.")
 
     @get_name
     def check_log_back(self, cv_image=None):
@@ -277,45 +256,21 @@ class Task:
             else:
                 co = self.find_img(source=cv_image, target="reconnect", confidence=0.9)
         if co is not None:
-            if (
-                self.data.get(self.sel)
-                .get("schedules")
-                .get(self.current_profile)
-                .get("auto_log_back", False)
-            ):
-                if self.data.get(self.sel).get("schedules").get(
-                    self.current_profile
-                ).get("log_back1") > self.data.get(self.sel).get("schedules").get(
-                    self.current_profile
-                ).get(
-                    "log_back2"
-                ):
+            if self.data.get(self.sel).get("schedules").get(self.current_profile).get("auto_log_back", False):
+                if self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back1") > self.data.get(self.sel).get(
+                    "schedules"
+                ).get(self.current_profile).get("log_back2"):
                     (
-                        self.data[self.sel]["schedules"][self.current_profile][
-                            "log_back1"
-                        ],
-                        self.data[self.sel]["schedules"][self.current_profile][
-                            "log_back2"
-                        ],
+                        self.data[self.sel]["schedules"][self.current_profile]["log_back1"],
+                        self.data[self.sel]["schedules"][self.current_profile]["log_back2"],
                     ) = (
-                        self.data[self.sel]["schedules"][self.current_profile][
-                            "log_back2"
-                        ],
-                        self.data[self.sel]["schedules"][self.current_profile][
-                            "log_back1"
-                        ],
+                        self.data[self.sel]["schedules"][self.current_profile]["log_back2"],
+                        self.data[self.sel]["schedules"][self.current_profile]["log_back1"],
                     )
 
                 value = randint(
-                    self.data.get(self.sel)
-                    .get("schedules")
-                    .get(self.current_profile)
-                    .get("log_back1"),
-                    self.data.get(self.sel)
-                    .get("schedules")
-                    .get(self.current_profile)
-                    .get("log_back2")
-                    * 60,
+                    self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back1"),
+                    self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back2") * 60,
                 ) + randint(0, 59)
                 self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
                 for i in range(value):
@@ -355,12 +310,7 @@ class Task:
             co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
 
         if co is not None:
-            if (
-                self.data.get(self.sel)
-                .get("schedules")
-                .get(self.current_profile)
-                .get("auto_reconnect", False)
-            ):
+            if self.data.get(self.sel).get("schedules").get(self.current_profile).get("auto_reconnect", False):
                 print(co)
                 if cv_image is not None:
                     a = (co[0] + uniform(0, 100) + 480, 420 + co[1] + uniform(0, 20))
@@ -375,9 +325,7 @@ class Task:
                 return self.adb.get_cv2_img()
             else:
                 self.print("Reconnection disabled", "red")
-                self.send_discord_message(
-                    "The game got disconnected, auto-Reconnection off."
-                )
+                self.send_discord_message("The game got disconnected, auto-Reconnection off.")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -466,10 +414,7 @@ class Task:
         :return: True if in city, False if not
         """
         cv_image = self.adb.get_cv2_img()
-        return (
-            self.find_img(target="cod_city_hammer", source=cv_image, confidence=0.9)
-            is not None
-        )
+        return self.find_img(target="cod_city_hammer", source=cv_image, confidence=0.9) is not None
 
     @get_name
     def close_windows(self):

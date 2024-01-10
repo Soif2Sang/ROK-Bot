@@ -67,11 +67,7 @@ class LoginButton(ft.FilledButton):
                 sys.exit(1)
         try:
             if self.keyauthapp.login(user=username, password=password, page=self.page):
-                date_brut = (
-                    datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires))
-                    .strftime("%Y-%m-%d %H:%M:%S")
-                    .split(" ")[0]
-                )
+                date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime("%Y-%m-%d %H:%M:%S").split(" ")[0]
                 heures = date_brut.split("-")
                 future = date(int(heures[0]), int(heures[1]), int(heures[2]))
                 diff = future - date.today()
@@ -125,11 +121,7 @@ class LoginButton(ft.FilledButton):
             if "user" not in data:
                 data["user"] = {"username": username, "password": password}
                 write_data(data)
-            date_brut = (
-                datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires))
-                .strftime("%Y-%m-%d %H:%M:%S")
-                .split(" ")[0]
-            )
+            date_brut = datetime.utcfromtimestamp(int(self.keyauthapp.user_data.expires)).strftime("%Y-%m-%d %H:%M:%S").split(" ")[0]
             heures = date_brut.split("-")
             future = date(int(heures[0]), int(heures[1]), int(heures[2]))
             diff = future - date.today()
@@ -152,9 +144,7 @@ class LoginButton(ft.FilledButton):
     def pop_banner(self, text):
         self.page.banner = ft.Banner(
             bgcolor=ft.colors.AMBER_100,
-            leading=ft.Icon(
-                ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
-            ),
+            leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
             content=ft.Text(value=text),
             actions=[
                 ft.TextButton("Ok", on_click=self.close_banner),
@@ -206,11 +196,7 @@ def main(page: ft.Page):
 
     page.window_width = 330
     page.window_height = 330
-    page.add(
-        ft.TextField(
-            label="Username", width=300, value=data.get("user", {}).get("username", "")
-        )
-    )
+    page.add(ft.TextField(label="Username", width=300, value=data.get("user", {}).get("username", "")))
     page.add(
         ft.TextField(
             label="Password",
@@ -244,9 +230,7 @@ from threading import Thread
 from pyprotector import PythonProtector
 
 # -- Define Constants
-LOGGING_PATH = (
-    Path.home() / "AppData/Roaming/PythonProtector/logs/[Security].log"
-)  # -- This can be any path
+LOGGING_PATH = Path.home() / "AppData/Roaming/PythonProtector/logs/[Security].log"  # -- This can be any path
 
 # -- Construct Class
 

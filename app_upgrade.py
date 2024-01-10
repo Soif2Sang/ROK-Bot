@@ -10,12 +10,16 @@ import flet as ft
 from flet_route import Routing, path
 
 import views.tiles.tile
+from views.settings.general._settings import AllSettings
+from utils.Components.card import GenerateCard
+from utils.flet_translations import translate
+from views.group_choice import EmulatorGroup
 from utils.auth import selfApi
 from utils.Components.AnimatedCard import AnimatedCard
 from utils.Components.filescan import generate_filescan
 from utils.Components.maintenance import generate_maintenance
 from utils.constants import BREZILIAN, toasts_history
-from utils.functions import FileSingleton, getchecksum
+from utils.functions import FileSingleton, getchecksum, get_dic_instances, get_dic_instances_ld
 from views.login.login import LoginUI
 
 from utils.flet_toast.core import Position
@@ -36,9 +40,7 @@ except Exception as e:
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
-        page.add(
-            ft.Text("An error occurred, a log message have been sent to the developer")
-        )
+        page.add(ft.Text("An error occurred, a log message have been sent to the developer"))
         page.add(ft.Text(value=traceback_str, color="red"))
         page.update()
 
@@ -134,6 +136,8 @@ def main(page: ft.Page):
             clear=True,
             view=viewProfileSettings,
         ),
+        path(url="/group-choice", clear=True, view=group_choice),
+        path(url="/settings", clear=True, view=settings)
     ]
 
     page.routing = Routing(
@@ -176,9 +180,7 @@ def emulator_choice(page: ft.Page, params, basket):
         if "bluestacks" in e.control.data:
             EmulatorSingleton().setEmulator("bluestacks")
 
-            if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(
-                path_file["HD-Player"]
-            ):
+            if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(path_file["HD-Player"]):
                 page.go("/emulator-loading")
                 page.update()
 
@@ -198,9 +200,7 @@ def emulator_choice(page: ft.Page, params, basket):
         elif "ld" in e.control.data:
             EmulatorSingleton().setEmulator("ld")
 
-            if not path_file.get("LD-Console", False) or not os.path.exists(
-                path_file.get("LD-Console", "fzfgrerg")
-            ):
+            if not path_file.get("LD-Console", False) or not os.path.exists(path_file.get("LD-Console", "fzfgrerg")):
                 page.go("/emulator-loading")
                 page.update()
 
@@ -208,6 +208,10 @@ def emulator_choice(page: ft.Page, params, basket):
                     path_file["LD-Console"] = result
                     with open("./path.json", "w", encoding="UTF-8") as f:
                         json.dump(path_file, f, indent=2)
+                else:
+                    page.generate_toast("LD9 Missing", "Unable to load LD Player 9 Configuration")
+                    while 1:
+                        sleep(1)
 
             cmd = f"{path_file['LD-Console'].replace('ldconsole', 'adb')} start-server"
             subprocess.Popen(cmd)
@@ -281,6 +285,61 @@ def login(page: ft.Page, params, basket):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         padding=0,
     )
+
+def settings(page: ft.Page, params, basket):
+    controls = [ft.Row(
+            controls=[
+                ft.IconButton(
+                    icon=ft.icons.ARROW_BACK,
+                    on_click=lambda _: page.go("/"),
+                ),
+                ft.Text(value="Back", size=20),
+            ])
+
+    , ft.Divider(height=1), AllSettings(page, '0')]
+
+    return ft.View(route="/settings", controls=controls)
+
+def group_choice(page: ft.Page, params, basket):
+    emulator = EmulatorSingleton().getEmulator()
+
+    if emulator == "bluestacks":
+        instances = get_dic_instances()
+    else:
+        instances = get_dic_instances_ld()
+
+    instances = [(instance, instance) for instance in instances]
+
+    controls = [
+        ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.IconButton(
+                        icon=ft.icons.ARROW_BACK,
+                        on_click=lambda _: page.go("/"),
+                    ),
+                    ft.Text(value="Back", size=20),
+                ],
+            ),
+            padding=ft.padding.only(top=5, left=0, bottom=0),
+        ),
+        ft.Divider(),
+    ]
+
+    inside = []
+    inside.append(
+        GenerateCard(
+            subtitle=translate(
+                    "You can assign each emulator to a specific group. When the bot is initiated, all groups will simultaneously start their initial emulator, perform actions, close it, and then proceed to the next emulator in sequence. This ensures that emulators are opened only when actively performing tasks"
+            )
+        )
+    )
+    for instance in instances:
+        inside.append(EmulatorGroup(instance, instances))
+
+    controls.append(ft.ListView(controls=inside, expand=1))
+
+    return ft.View(route="/group-choice", controls=controls)
 
 
 if __name__ == "__main__":
