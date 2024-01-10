@@ -4,7 +4,7 @@ import subprocess
 import traceback
 from datetime import date
 from os.path import exists
-from time import sleep
+from time import sleep, time
 
 import pytesseract as tess
 from cv2 import (
@@ -26,6 +26,20 @@ from utils.resources import ImageSingleton
 bridge = None
 
 
+class DeviceNotFoundException(Exception):
+    def __init__(self, device_name):
+        self.device_name = device_name
+        message = f"Device not found: {device_name}"
+        super().__init__(message)
+
+
+class UnknownDeviceException(Exception):
+    def __init__(self, device_number):
+        self.device_number = device_number
+        message = f"Unknown device with number: {device_number}"
+        super().__init__(message)
+
+
 class Adb:
     def __init__(self, number: str, host="127.0.0.1", port=5037):
         self.FileSingleton = FileSingleton()
@@ -34,7 +48,7 @@ class Adb:
         self.host = host
         self.port = port
         self.number = number
-        self.name = self.data[str(self.number)]["name"]
+        self.name = self.data[self.number]["name"]
         self.images = ImageSingleton()
         self.is_ld = False
 
@@ -42,67 +56,73 @@ class Adb:
         print(f"JsonNumber:{self.number} port:{self.port}")
         return f"JsonNumber:{self.number} port:{self.port}"
 
-    def update_port(self):
-        instances = get_dic_instances()
+    def update_port(self, instances=None):
+        if instances is None:
+            instances = []
 
-        if str(self.number) not in instances:
-            return
+        if self.number not in instances:
+            raise UnknownDeviceException(f"{self.host}/{self.port}")
 
-        if self.port != int(instances[str(self.number)]["port"]):
+        if self.port != int(instances[self.number]["port"]):
             self.data = self.FileSingleton.get_data()
-            self.data[str(self.number)]["instance"] = instances[str(self.number)]["instance"]
-            self.data[str(self.number)]["name"] = instances[str(self.number)]["name"]
-            self.data[str(self.number)]["port"] = int(instances[str(self.number)]["port"])
-            self.port = int(instances[str(self.number)]["port"])
+            self.data[self.number]["instance"] = instances[self.number]["instance"]
+            self.data[self.number]["name"] = instances[self.number]["name"]
+            self.data[self.number]["port"] = int(instances[self.number]["port"])
+            self.port = int(instances[self.number]["port"])
             self.FileSingleton.write_data(self.data)
+
+    def wait_boot_complete(self, timeout=100, timedelta=1):
+        raise NotImplementedError("Method 'wait_boot_complete' is not implemented in the base class.")
+        """
+        :param timeout: second
+        :param timedelta: second
+        """
+        cmd = "getprop sys.boot_completed"
+
+        end_time = time() + timeout
+
+        while True:
+            try:
+                result = self.shell(cmd)
+            except RuntimeError as e:
+                self.print(str(e))
+                sleep(0.5)
+                continue
+            except DeviceNotFoundException as e:
+                self.print(str(e))
+                sleep(0.5)
+                continue
+
+            if result.strip() == "1":
+                return True
+
+            if time() > end_time:
+                raise TimeoutError()
+            elif timedelta > 0:
+                sleep(timedelta)
 
     def connect_to_device(self, host="127.0.0.1"):
         path = self.FileSingleton.get_path()
         self.update_port()
 
-        adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-        cmd = f"{adb_path} connect {host}:{self.port}"
-        subprocess.Popen(cmd)
+        if host == "127.0.0.1":
+            adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
+            cmd = f"{adb_path} connect {host}:{self.port}"
+        else:
+            adb_path = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
+            cmd = f"{adb_path} connect {host}-{self.port}"
+
+        subprocess.run(cmd)
 
     def get_client_devices(self):
         return self.client.devices()
 
     def get_device(self, host="127.0.0.1", fail=0):
-        try:
-            self.port = str(self.data[str(self.number)]["port"])
-            device = self.client.device(f"{host}:{self.port}")
-            if device is None:
-                self.print(f"INFO : Device is None, trying to reconnect..")
-                self.connect_to_device()
-                sleep(2)
-
-                if device is None and fail > 45:
-                    return
-                if device is None:
-                    return self.get_device()
-
-            return device
-        except Exception as e:
-            traceback.print_exc()
-            self.print("EXCEPTION : Error in connect to device")
-
-            self.update_port()
-            path = self.FileSingleton.get_path()
-            cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
-            subprocess.Popen(cmd)
-
-            self.print(f"Adb restarting..")
-            sleep(20)
-            self.print(f"Connecting to the device..")
-
-            self.connect_to_device()
-
-            sleep(5)
-            return self.get_device()
+        raise NotImplementedError("Method 'get_device' is not implemented in the base class.")
 
     def print(self, text: str):
         data = self.FileSingleton.get_data()
-        print(f"[ {date.today()} {current_time()} ] [ {data[str(self.number)]['name']} ] {text}")
+        print(f"[ {date.today()} {current_time()} ] [ {data[self.number]['name']} ] {text}")
         self.FileSingleton.write(self.name, text)
 
     def get_curr_device_screen_img_byte_array(self):
@@ -124,34 +144,20 @@ class Adb:
     def get_curr_device_screen_img(self, deadstop=0):
         try:
             device = self.get_device()
-            if device is None:
-                print("get_curr_device_screen_img device is null")
-                self.connect_to_device()
             output = io.BytesIO(device.screencap())
-            # output.seek(0)
-            image = Image.open(output)
-            # self.print("INFO : Image opened")
-            return image
+            return Image.open(output)
         except Exception as e:
-            self.print(f"EXCEPTION : get_screen_device")
+            self.print(f"EXCEPTION : get_curr_device_screen_img")
             if deadstop == 30:
                 raise e
             sleep(1)
-            self.connect_to_device()
             return self.get_curr_device_screen_img(deadstop + 1)
 
     def get_cv2_img(self):
-        try:
-            screen = self.get_curr_device_screen_img()
-            screen = array(screen)
-            screen = cvtColor(screen, COLOR_BGR2RGB)
-            return screen
-        except:
-            sleep(1)
-            screen = self.get_curr_device_screen_img()
-            screen = array(screen)
-            screen = cvtColor(screen, COLOR_BGR2RGB)
-            return screen
+        screen = self.get_curr_device_screen_img()
+        screen = array(screen)
+        screen = cvtColor(screen, COLOR_BGR2RGB)
+        return screen
 
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
@@ -184,8 +190,8 @@ class Adb:
                     source = source[720 // 2 - 50 :, :]
                 if target in ["minus_button", "plus_button"]:
                     source = source[720 // 2 :, :]
-                if target == 'search_button':
-                    source = source[720//2:,:1280//4]
+                if target == "search_button":
+                    source = source[720 // 2 :, : 1280 // 4]
 
             img_to_find = self.images.get_file_name(target)
             # bot.adb.get_cv2_img()
@@ -198,7 +204,7 @@ class Adb:
                     return max_loc[0], max_loc[1] + 720 // 2 - 50
                 if target in ["minus_button", "plus_button"]:
                     return max_loc[0], max_loc[1] + 720 // 2
-                if target == 'search_button':
+                if target == "search_button":
                     return max_loc[0], max_loc[1] + 720 // 2
                 return max_loc[0], max_loc[1]
             else:
