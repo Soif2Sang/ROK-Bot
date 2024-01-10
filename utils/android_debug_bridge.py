@@ -86,9 +86,9 @@ class Adb:
     def restart_adb_server(self):
         with Adb.adb_restart_lock:
             self.stop_server()
-            time.sleep(5)
+            sleep(5)
             self.start_server()
-            time.sleep(5)
+            sleep(5)
             self.connect_to_device()
 
     def wait_boot_complete(self, timeout=100, timedelta=1):
