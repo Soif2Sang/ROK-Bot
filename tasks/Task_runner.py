@@ -1,5 +1,6 @@
 import multiprocessing
 import subprocess
+import threading
 import traceback
 from datetime import timedelta
 from random import randint, shuffle, uniform
@@ -289,7 +290,7 @@ class TaskRunner(Task):
 
     @get_name
     def switch_character(self, co_first=None, nb_chars=0, fail=0) -> tuple[float, float] or bool:
-        self.print("Switching Character")
+        self.print("Switching to the next character", color=ft.colors.PURPLE)
         self.set_status(f"Switching Character")
         self.close_windows()
         self.check_captcha()
@@ -313,7 +314,7 @@ class TaskRunner(Task):
             stop += 1
 
             if stop == 10:
-                self.print("It seems the game is unable to load the characters menu..")
+                self.print("It seems the game is unable to load the characters menu..", ft.colors.RED_300)
                 self.run_game()
                 return self.switch_character(co_first, nb_chars, fail)
 
@@ -331,7 +332,7 @@ class TaskRunner(Task):
             self.check_captcha()
             self.check_captcha_slider()
 
-            self.print("Looking for current character")
+            self.print("Looking for the current character")
 
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
@@ -344,13 +345,13 @@ class TaskRunner(Task):
                 self.close_windows()
                 self.close_upgrade_popup()
                 self.check_captcha()
-                self.print("Cannot locate the current user, trying to restart the task")
+                self.print("Cannot locate the current user, trying to restart the task", ft.colors.RED_300)
                 return self.switch_character(co_first, nb_chars, fail + 1)
 
             if fail > 2:
-                self.print("Error in character switch. Bot is now stopped")
+                self.print("Cannot switch to the next character. Bot is now stopped", ft.colors.RED)
                 self.set_status("Error.")
-                self.send_discord_message("Error in character switch, human interaction required.")
+                self.send_discord_message("Cannot switch to the next character, your action is required.")
                 while True:
                     self.script_pause()
                     sleep(0.1)
@@ -378,7 +379,9 @@ class TaskRunner(Task):
                 "Unable to find more characters, the current character is maybe the last favorite or there's simply no favorite characters",
                 "yellow",
             )
-            self.send_discord_message("Unable to find more characters, the current character is maybe the last favorite or there's simply no favorite characters")
+            self.send_discord_message(
+                "Unable to find more characters, the current character is maybe the last favorite or there's simply no favorite characters"
+            )
             self.close_windows()
             return False
         else:
@@ -438,7 +441,7 @@ class TaskRunner(Task):
 
     @get_name
     def change_character_param(self, co_first, nb_chars=0, fail=0):
-        self.print("Switching Character")
+        self.print("Switching to the next character", color=ft.colors.PURPLE)
         self.set_status(f"Switching Character")
         self.close_windows()
         self.enter_profile()
@@ -454,7 +457,7 @@ class TaskRunner(Task):
             stop += 1
 
             if stop == 10:
-                self.print("It seems the game is unable to load the characters menu..")
+                self.print("It seems the game is unable to load the characters menu..", ft.colors.RED_300)
                 return self.change_character_param(self, co_first, nb_chars, fail)
 
         self.better_sleep((1.925, 2.795))
@@ -464,7 +467,7 @@ class TaskRunner(Task):
             self.check_captcha()
             self.check_captcha_slider()
 
-            self.print("Looking for current character")
+            self.print("Looking for the current character")
 
             y, x = uniform(290, 480), uniform(460, 560)
             x2, y2 = x + uniform(-30, 30), y + uniform(-100, -50)
@@ -477,13 +480,13 @@ class TaskRunner(Task):
                 self.close_windows()
                 self.close_upgrade_popup()
                 self.check_captcha()
-                print("Cannot locate the current user, trying to restart the task")
+                self.print("Cannot locate the current user, trying to restart the task", ft.colors.RED_300)
                 return self.change_character_param(co_first, nb_chars, fail + 1)
 
             if fail > 2:
-                self.print("Error in character switch. Bot is now stopped")
+                self.print("Cannot switch to the next character. Bot is now stopped", ft.colors.RED)
                 self.set_status("Error.")
-                self.send_discord_message("Error in character switch, human interaction required.")
+                self.send_discord_message("Cannot switch to the next character, your action is required.")
                 while True:
                     self.script_pause()
                     sleep(0.1)
@@ -524,26 +527,34 @@ class TaskRunner(Task):
             return False
 
     @get_name
-    def start_emulator(self, emulator: str):
+    def start_emulator(self, emulator: str, deadstop=0):
+        if deadstop == 3:
+            self.print("Cannot start the emulator", ft.colors.RED)
+            self.send_discord_message("Cannot start the emulator", image=False)
+            while True:
+                self.better_sleep((1, 1))
+
         path = self.FileSingleton.get_path()
         data = self.FileSingleton.get_data()
         emulator_choice = EmulatorSingleton().getEmulator()
-        print(emulator)
+
         if emulator_choice == "ld":
             cmd = f'{path["LD-Console"]} launch --index {self.data.get(emulator).get("instance")}'
         else:
             cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
 
-        self.print(f"Executing cmd")
-
-        subprocess.Popen(cmd)
-
-        if win32gui.FindWindow(None, self.name) is None:
-            self.print(f"Executing cmd")
+        if not win32gui.FindWindow(None, self.name):
             subprocess.Popen(cmd)
-            print(f"Bot will wait 2 min from now.")
-
-            self.better_sleep((120, 120))
+            print(f"Bot will wait until the device is properly booted.")
+            self.set_status("Booting")
+            try:
+                self.adb.wait_boot_complete(timeout=120, timedelta=3)
+                print("Boot completed")
+            except TimeoutError:
+                print("Timed out waiting for boot")
+                self.kill_instance()
+                sleep(1)
+                return self.start_emulator(emulator, deadstop+1)
 
         if emulator_choice == "ld":
             instances = get_dic_instances_ld()
@@ -582,12 +593,13 @@ class TaskRunner(Task):
             ):
                 self.print(
                     "No active profiles found! Navigate to the profile settings and enable at least one option.",
-                    "red",
+                    ft.colors.RED,
                 )
                 self.generate_toast(
                     "Warning ",
                     "No active profiles found! Navigate to the profile settings and enable at least one option.",
                     ft.icons.INFO,
+                    ft.colors.YELLOW_800,
                 )
 
             for profile in self.data[self.sel]["schedules"]:
@@ -618,7 +630,7 @@ class TaskRunner(Task):
                     self.print(f"Profile n°{profile} enabled ! ", "blue")
 
                     if self.get_config().get("switch_character"):
-                        self.print(f"Character n°1", "blue")
+                        self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
                     # First character
                     self.execute_tasks(self.get_available_task(profile), profile)
 
@@ -630,7 +642,7 @@ class TaskRunner(Task):
                         boolean = True
                         nb_characters = 2
                         while co_first and boolean:
-                            self.print(f"Character n°{nb_characters}", "blue")
+                            self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
                             nb_characters += 1
                             self.execute_tasks(self.get_available_task(profile), profile)
                             self.better_sleep((1.2, 4))
@@ -670,87 +682,109 @@ class TaskRunner(Task):
         return
 
     @get_name
-    def run3(self):
+    def run_groups(self):
+        pass
+        #     thread.start()
+        #
+        # for thread in threads:
+        #     thread.join()
+
+    @get_name
+    def run3(self, tiles=None):
+        if tiles is None:
+            tiles = self.tile.get_enabled_sel_object()
+
+        if not tiles:
+            self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
+            return
+
         emulator = EmulatorSingleton().getEmulator()
 
-        self.set_sel(self.tile.get_enabled_sel()[0])
-        # self.adb.connect_to_device()
+        self.set_sel(tiles[0].number)
+        print(self.sel)
         self.data = self.update_data()
-        i = 0
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
-        for i in range(loop_task):
-            loop_time = time()
+        loop_time = time()
 
-            first = self.tile.get_enabled_sel()[0]
-            print(self.tile.get_enabled_sel())
-            for emulator in self.tile.get_enabled_sel():
-                self.set_sel(emulator)
-                self.start_emulator(emulator)
+        for i in range(loop_task):
+            first = tiles[0].number
+            nb_tile = 0
+            for enabled_tile in tiles:
+                enabled_tile.set_text(f"In queue ({nb_tile})")
+                nb_tile += 1
+
+            for enabled_tile in tiles:
+                starting_time = time()
+
+                self.tile = enabled_tile
+                self.set_sel(self.tile.number)
+
+                if self.data[self.sel]["schedules"]["1"]["enable_timing"]:
+                    can_go = False
+                    for t in self.data[self.sel]["schedules"]["1"]["timing"]:
+                        if is_in_frametime(t[0], t[1]):
+                            self.print(f"Profile 1 able to run")
+                            can_go = True
+                            break
+                    if not can_go:
+                        print(f"The current time does not match the rules you set")
+                        continue
+
+                if emulator == "bluestacks":
+                    self.adb = AdbBluestacks(self.tile.number)
+                else:
+                    self.adb = AdbLd(self.tile.number)
+
+                self.start_emulator(self.tile.number)
+                self.tile.runner = self
+                self.set_status("Starting..")
                 self.print("Changing adb..")
                 self.print(f"{self.adb.number = } {self.adb.port =}")
 
-                if emulator == "bluestacks":
-                    self.adb = AdbBluestacks(emulator)
-                else:
-                    self.adb = AdbLd(emulator)
+
 
                 self.adb.__repr__()
                 self.print("Connecting to the emulator..")
                 self.adb.connect_to_device()
 
-                self.run_game()
-                self.check_log_back()
-                self.check_reconnect()
-                self.leave_kd_buff()
-                self.check_mge()
-                self.check_captcha()
                 # First character
                 self.current_profile = "1"
                 self.print("Reminder : only the first profile is available")
+                if self.get_config().get("switch_character"):
+                    self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
+                # First character
                 self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
-                self.better_sleep((2.2, 4))
-                # self.go_city()
-                # city_upgrade = UpgradeCity(self)
-                # city_upgrade.setup_view()
-                #
-                # for i in range(2):
-                #     sleep(5)
-                #     city_upgrade.run()
 
-                if self.data.get(self.sel).get("schedules").get(self.current_profile).get("switch_character", False):
+                if self.get_config().get("switch_character", False):
+                    self.check_captcha()
                     co_first = self.switch_character()
-                    boolean = True
                     self.wait_until_connected()
-
-                    self.run_game()
                     # Characters remaining
+                    boolean = True
                     nb_characters = 2
                     while co_first and boolean:
-                        self.print(f"---- Character n°{nb_characters} ----".center(60))
-                        self.run_game()
-                        self.check_log_back()
-                        self.check_reconnect()
-                        self.leave_kd_buff()
-                        self.check_mge()
-                        self.check_captcha()
-
+                        self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
+                        nb_characters += 1
                         self.execute_tasks(
                             self.get_available_task(self.current_profile),
                             self.current_profile,
                         )
                         self.better_sleep((2.2, 4))
 
-                        nb_characters += 1
-                        boolean = self.switch_character(co_first, nb_characters)
+                        self.check_captcha()
+                        boolean = self.switch_character(co_first, nb_characters, 0)
                         self.wait_until_connected()
 
+                self.set_status("")
                 self.leave_game()
-                self.pid = get_window_pid(self.adb.name)
-                cmd = f"taskkill /PID {self.pid} /F"
-                print(f"[ {current_time()} ] [ {self.name} ] Executing {cmd}")
-                subprocess.Popen(cmd)
+                self.kill_instance()
                 self.print("Shutdown the emulator, waiting for 15seconds")
-                sleep(15)
+                self.set_timer(15)
+
+                self.print(
+                    f"The bot took {timedelta(seconds=int(time() - starting_time))} to complete all the tasks on this emulator.",
+                    "green",
+                )
 
             if self.data.get(first).get("loop_task"):
                 # ttw1, ttw2 = self.data.get(first).get("time_to_wait_loop1", 60), self.data.get(first).get(
@@ -763,14 +797,27 @@ class TaskRunner(Task):
                     ttw1, ttw2 = ttw2, ttw1
                 time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
                 # self.print("")
+                self.tile = tiles[0]
+
                 self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
+                nb_tile = 0
+                for enabled_tile in tiles:
+                    enabled_tile.set_text(f"In queue ({nb_tile})")
+                    nb_tile += 1
+
                 self.set_timer(time_before_redo_tasks)
                 # if self.data.get(first).get("leave_game_loop", False):
                 #     if time_before_redo_tasks < 600:
                 #         self.leave_game(force=True)
                 #     else:
                 #         self.leave_game(force=False)
+
+    def kill_instance(self):
+        self.pid = get_window_pid(self.adb.name)
+        cmd = f"taskkill /PID {self.pid} /F"
+        print(f"[ {current_time()} ] [ {self.name} ] Executing {cmd}")
+        subprocess.Popen(cmd)
 
     @get_name
     def run_update(self):

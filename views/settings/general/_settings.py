@@ -9,9 +9,10 @@ from views.settings.page_settings import PageSettings
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
-class GeneralSettings(PageSettings):
+class AllSettings(PageSettings):
     def __init__(self, page, instance_index):
         super().__init__(page, instance_index, 1)
+        self.content.height = None
 
     def clean(self):
         self.content.controls = []
@@ -26,12 +27,40 @@ class GeneralSettings(PageSettings):
             self.content.controls.append(control)
 
     def init(self):
+        if self.initial_page.UPGRADE:
+            self.add(
+                ft.Container(
+                    content=ft.Text(
+                        spans=[
+                            ft.TextSpan(
+                                text=translate("Emulator groups"),
+                                style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
+                            ),
+                        ]
+                    ),
+                    bgcolor=ft.colors.SURFACE_VARIANT,
+                    padding=ft.padding.all(10),
+                    margin=ft.margin.only(top=5, bottom=3),
+                ),
+                ft.OutlinedButton(
+                    text="Manage groups",
+                    icon=ft.icons.SETTINGS,
+                    on_click=lambda _: self.initial_page.go("/group-choice"),
+                    style=ButtonStyle(
+                        shape={
+                            ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
+                        }
+                    ),
+                ),
+                ft.Divider(),
+            )
+
         self.add(
             ft.Container(
                 content=ft.Text(
                     spans=[
                         ft.TextSpan(
-                            translate("Shared Profile Preferences"),
+                            text=translate("Captcha Solving"),
                             style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
                         ),
                     ]
@@ -39,16 +68,13 @@ class GeneralSettings(PageSettings):
                 bgcolor=ft.colors.SURFACE_VARIANT,
                 padding=ft.padding.all(10),
                 margin=ft.margin.only(top=5, bottom=3),
-            )
-        )
-        self.create_advanced_switch("loop_task", "Do tasks again", PageRedo)
-        self.create_advanced_switch("scheduler", "run Multiple Profile", PageProfiles)
-        self.add(
+            ),
             ft.TextField(
                 label=translate("Custom API key:"),
-                value=self.data[str(self.instance_index)]["API_KEY"],
+                value=self.data.get("API_KEY"),
                 on_change=lambda e: self.submit(e, "API_KEY", str),
             ),
+            ft.Divider(),
             ft.Container(
                 content=ft.Text(
                     spans=[
@@ -87,7 +113,7 @@ class GeneralSettings(PageSettings):
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()
         if keyword == "API_KEY":
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
+            self.data[keyword] = method(e.control.value)
         if keyword == "user_id":
             self.data["discord"]["user_id"] = method(e.control.value)
 

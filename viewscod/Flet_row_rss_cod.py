@@ -27,9 +27,7 @@ class FletRowRss(ft.Row):
                     ft.dropdown.Option("mana"),
                     ft.dropdown.Option("nothing"),
                 ],
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][f"{key}"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}"],
                 on_change=lambda e: self.submit(e, f"{key}", str),
             ),
             ft.Dropdown(
@@ -44,9 +42,7 @@ class FletRowRss(ft.Row):
                     ft.dropdown.Option("5"),
                     ft.dropdown.Option("6"),
                 ],
-                value=self.data[str(self.instance_index)]["schedules"][
-                    str(self.profile_index)
-                ][f"{key}_level"],
+                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
                 on_change=lambda e: self.submit(e, f"{key}_level", int),
             ),
         ]
@@ -59,11 +55,9 @@ class FletRowRss(ft.Row):
             self.FileSingleton.write_data(self.data)
             return
         if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = method(e.control.value)
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
         else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                keyword
-            ] = float(e.control.value.replace("x", "").replace("level ", ""))
+            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
+                e.control.value.replace("x", "").replace("level ", "")
+            )
         self.FileSingleton.write_data(self.data)

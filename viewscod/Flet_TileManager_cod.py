@@ -108,10 +108,9 @@ class TileManager(ft.ListView):
 
         liste_info = []
         for element in data_instance:
-            if (
-                (("bst.instance.Nougat64" in element) and ("adb_port" in element))
-                and "status" in element
-            ) or (("bst.instance.Nougat64" in element) and ("display_name" in element)):
+            if ((("bst.instance.Nougat64" in element) and ("adb_port" in element)) and "status" in element) or (
+                ("bst.instance.Nougat64" in element) and ("display_name" in element)
+            ):
                 liste_info.append(element)
         tab_instance = []
         for i in range(0, len(liste_info), 2):
@@ -239,9 +238,7 @@ class TileManager(ft.ListView):
                 for key in default_profile:
                     for i in range(1, 4):
                         if key not in data[str(instance)]["schedules"][str(i)]:
-                            data[str(instance)]["schedules"][str(i)][
-                                key
-                            ] = default_profile[key]
+                            data[str(instance)]["schedules"][str(i)][key] = default_profile[key]
 
             data[str(instance)]["instance"] = instances[str(instance)]["instance"]
             data[str(instance)]["name"] = instances[str(instance)]["name"]

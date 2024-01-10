@@ -120,7 +120,8 @@ class TileHandler(ft.ListView):
     def unselect_all(self):
         for tile in self.controls[1:]:
             if isinstance(tile, Tile):
-                tile.button_select.selected = False
+                # tile.button_select.selected = False
+                tile.bgcolor = ft.colors.SURFACE
         self.initial_page.update()
 
     def set_status(self, number: str, phrase: str):

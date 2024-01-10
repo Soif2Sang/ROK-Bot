@@ -21,7 +21,7 @@ class DailyVip(Task):
         notification_pixel = img.getpixel((186, 50))
         if notification_pixel[0] == 0 and notification_pixel[1] == 0 and notification_pixel[2] > 220:
             self.click(uniform(105, 170), uniform(56, 69))
-            self.better_sleep((1.25, 2))
+            self.better_sleep((2, 2.7))
             cv_image = self.adb.get_cv2_img()
             img = Image.fromarray(cv_image)
             notification_pixel = img.getpixel((1041, 155))

@@ -29,12 +29,8 @@ class Tile(ft.Row):
             selected_icon=ft.icons.REMOVE_RED_EYE_OUTLINED,
             on_click=lambda _: self.select(),
         )
-        self.button_start = ft.IconButton(
-            icon=ft.icons.NOT_STARTED_OUTLINED, on_click=lambda _: self.start()
-        )
-        self.button_stop = ft.IconButton(
-            icon=ft.icons.STOP_OUTLINED, disabled=True, on_click=lambda _: self.stop()
-        )
+        self.button_start = ft.IconButton(icon=ft.icons.NOT_STARTED_OUTLINED, on_click=lambda _: self.start())
+        self.button_stop = ft.IconButton(icon=ft.icons.STOP_OUTLINED, disabled=True, on_click=lambda _: self.stop())
         self.text_name = ft.Text(value=data[str(number)]["name"], width=70)
         self.text_status = ft.Text(value="")
 
@@ -94,12 +90,8 @@ class Tile(ft.Row):
             # is_alive.deamon = True
             # is_alive.start()
         else:
-            self.add_text(
-                "Task is froze for an unknown reason, you may want to restart the bot.."
-            )
-            print(
-                "Task is froze for an unknown reason, you may want to restart the bot.."
-            )
+            self.add_text("Task is froze for an unknown reason, you may want to restart the bot..")
+            print("Task is froze for an unknown reason, you may want to restart the bot..")
 
     def stop(self):
         self.started = False

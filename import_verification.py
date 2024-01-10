@@ -40,16 +40,12 @@ def collect_py_files(root_dir, dic=None):
 
                 for _ in range(2):
                     if directories_and_subdirectories.startswith("."):
-                        directories_and_subdirectories = directories_and_subdirectories[
-                            1:
-                        ]
+                        directories_and_subdirectories = directories_and_subdirectories[1:]
 
                 if not directories_and_subdirectories:
                     dic[module_name] = module_name
                 else:
-                    dic[module_name] = (
-                        directories_and_subdirectories + "." + module_name
-                    )
+                    dic[module_name] = directories_and_subdirectories + "." + module_name
 
         for subdir in subdirs:
             subdir_path = os.path.join(root, subdir)
@@ -81,20 +77,14 @@ def check_imports(root_dir, module_name, import_format):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 imported_module = alias.name
-                if (
-                    imported_module in import_format
-                    and not import_format[imported_module] in source_code
-                ):
+                if imported_module in import_format and not import_format[imported_module] in source_code:
                     print(
                         f"{COLOR_YELLOW}Warning: {module_name}.py imports {imported_module}, but it should import {import_format[imported_module]}"
                     )
                     is_valid = False
         if isinstance(node, ast.ImportFrom):
             imported_module = node.module
-            if (
-                imported_module in import_format
-                and not import_format[imported_module] in source_code
-            ):
+            if imported_module in import_format and not import_format[imported_module] in source_code:
                 print(
                     f"{COLOR_YELLOW}Warning: {module_name}.py imports {imported_module}, but it should import {import_format[imported_module]}"
                 )

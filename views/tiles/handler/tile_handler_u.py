@@ -90,11 +90,19 @@ class NavigationBar(ft.Row):
 
         if not BREZILIAN:
             self.controls.append(
-                ft.OutlinedButton(
-                    text="Renew",
-                    icon=ft.icons.SHOPPING_CART_OUTLINED,
-                    on_click=lambda e: self.initial_page.show_bottom_sheet(bottom),
-                    style=button_style,
+                ft.Row(
+                    controls=[
+                        ft.IconButton(
+                            icon=ft.icons.SETTINGS,
+                            on_click=lambda _: self.initial_page.go("/settings"),
+                        ),
+                        ft.OutlinedButton(
+                            text="Renew",
+                            icon=ft.icons.SHOPPING_CART_OUTLINED,
+                            on_click=lambda e: self.initial_page.show_bottom_sheet(bottom),
+                            style=button_style,
+                        ),
+                    ]
                 )
             )
 
@@ -107,7 +115,7 @@ class TileManagerUpgrade(ft.ListView):
         self.expand = 0
         self.spacing = 5
         self.FileSingleton = FileSingleton()
-        self.tiles: dict[str, Tile] = {}
+        self.tiles: dict[str, TileUpgrade] = {}
         self.navigation_bar: NavigationBar = NavigationBar(self.initial_page, self)
         self.controls.append(self.navigation_bar)
         self.start_bar = StartBar(self.initial_page, self)
@@ -126,8 +134,8 @@ class TileManagerUpgrade(ft.ListView):
 
     def unselect_all(self):
         for tile in self.controls[1:]:
-            if isinstance(tile, Tile):
-                tile.button_select.selected = False
+            if isinstance(tile, TileUpgrade):
+                tile.bgcolor = ft.colors.SURFACE
         self.initial_page.update()
 
     def set_status(self, number: str, phrase: str):
@@ -142,7 +150,7 @@ class TileManagerUpgrade(ft.ListView):
             instances = get_dic_instances()
         else:
             instances = get_dic_instances_ld()
-        print(instances)
+
         default_dic = {
             "instance": "",
             "name": "",
@@ -275,6 +283,8 @@ class TileManagerUpgrade(ft.ListView):
             "academic_research": False,
             "academy_position": [],
             "buy_merchant_skip": False,
+            "expedition_shop_ethel": False,
+            "expedition_shop_items": False,
         }
 
         for i in range(1, 4):
@@ -309,7 +319,7 @@ class TileManagerUpgrade(ft.ListView):
             for instance in instances:
                 if str(instance[0]) in self.tiles:
                     self.controls.append(self.tiles[str(instance[0])])
-                    self.tiles[str(instance[0])].main_task.adb.update_port()
+                    # self.tiles[str(instance[0])].main_task.adb.update_port()
                     self.tiles[str(instance[0])].runner.adb.update_port()
                 else:
                     self.add_tile(str(instance[0]))
@@ -351,18 +361,19 @@ class TileManagerUpgrade(ft.ListView):
                 tiles.append(tile.number)
         return tiles
 
-    def add_text(self, phrase, color):
-        self.initial_page.logger.add_text(phrase, color)
-
-    def add_divider(self):
-        self.initial_page.logger.add_divider()
+    def get_enabled_sel_object(self):
+        tiles = []
+        for tile in self.controls[1:]:
+            if tile.selected:
+                tiles.append(tile)
+        return tiles
 
 
 class StartBar(ft.Row):
     def __init__(self, page, tile_manager: TileManagerUpgrade, **kwargs):
         super().__init__(**kwargs)
         self.text_status = ft.Text()
-        self.number = 0
+        self.number = "0"
         self.FileSingleton = FileSingleton()
         data = self.FileSingleton.get_data()
         self.initial_page = page
@@ -372,7 +383,7 @@ class StartBar(ft.Row):
 
         self.main_task = Task(self)
         self.runner = TaskRunner(self.main_task, self)
-        self.tasks_process = threading.Thread(target=self.runner.run3)
+        self.tasks_process = threading.Thread(target=self.runner.run_groups)
 
         self.tile_manager = tile_manager
 
@@ -384,14 +395,52 @@ class StartBar(ft.Row):
     def get_enabled_sel(self):
         return self.tile_manager.get_enabled_sel()
 
+    def get_enabled_sel_object(self):
+        return self.tile_manager.get_enabled_sel_object()
+
     def start_tasks(self):
-        if not self.tasks_process.is_alive():
-            self.tasks_process = threading.Thread(target=self.runner.run3)
-            self.tasks_process.start()
-        else:
-            self.add_text("Task is frozen, you may need to restart the bot.")
-            self.initial_page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
-            print("Task is frozen, you may need to restart the bot.")
+        # if not self.tasks_process.is_alive():
+        #     self.tasks_process = threading.Thread(target=self.runner.run_groups)
+        #     for tile in self.tile_manager.controls[1:]:
+        #         tile.tasks_process = self.tasks_process
+        #         tile.tasks_process = self.tasks_process
+        #
+        #     self.tasks_process.start()
+        # else:
+        #     self.add_text("Task is frozen, you may need to restart the bot.")
+        #     self.initial_page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
+        #     print("Task is frozen, you may need to restart the bot.")
+
+        tiles = self.get_enabled_sel_object()
+        if not tiles:
+            self.page.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
+            return
+
+        self.data = self.FileSingleton.get_data()
+        groups = {}
+
+        for tile in tiles:
+            for instance in self.data:
+                if isinstance(self.data[instance], dict):
+                    if self.data[instance].get("group", None) is not None:
+                        if self.data[instance]["instance"] == str(tile.number):
+                            if self.data[instance]["group"] not in groups:
+                                groups[self.data[instance]["group"]] = []
+                            groups[self.data[instance]["group"]].append(tile)
+
+        threads = []
+
+        for group, tiles in groups.items():
+            main_task = Task(self)
+            runner = TaskRunner(main_task, self)
+
+            thread = threading.Thread(target=runner.run3, args=(tiles,))
+            threads.append(thread)
+            thread.start()
+
+        return threads
+        # for thread in threads:
+        #     thread.join()
 
     def start(self, e):
         self.button_start.icon = ft.icons.PAUSE
@@ -400,18 +449,29 @@ class StartBar(ft.Row):
         self.paused = False
         self.stopped = False
 
-        self.start_tasks()
+        for tile in self.tile_manager.controls[1:]:
+            tile.paused = False
+            tile.stopped = False
+
+        threads = self.start_tasks()
         self.button_start.on_click = self.pause
-        self.tasks_process.join()
+        for thread in threads:
+            thread.join()
         self.button_start.on_click = self.start
-        self.paused = False
-        self.stopped = False
+
+        for tile in self.tile_manager.controls[1:]:
+            tile.paused = False
+            tile.stopped = False
+
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.set_text("")
 
     def resume(self, e):
         self.paused = False
+
+        for tile in self.tile_manager.controls[1:]:
+            tile.paused = False
 
         self.button_start.icon = ft.icons.PAUSE
         self.initial_page.update()
@@ -420,6 +480,9 @@ class StartBar(ft.Row):
     def pause(self, e):
         self.paused = True
 
+        for tile in self.tile_manager.controls[1:]:
+            tile.paused = True
+
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_start.on_click = self.resume
         self.initial_page.update()
@@ -427,6 +490,10 @@ class StartBar(ft.Row):
     def stop(self, e):
         self.paused = False
         self.stopped = True
+
+        for tile in self.tile_manager.controls[1:]:
+            tile.paused = False
+            tile.stopped = True
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True

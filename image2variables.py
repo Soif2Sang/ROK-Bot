@@ -44,11 +44,7 @@ with open(file, "w") as f:
     for file in glob.glob(dir_path, recursive=True):
         # f.write(file.split("\\")[1])
         a = "\\"
-        f.write(
-            f'       self.{file.split(a)[1].split(".")[0]}'
-            "= imread(f'{dir}/"
-            f"{file.split(a)[1].split('.')[0]}.png')\n"
-        )
+        f.write(f'       self.{file.split(a)[1].split(".")[0]}' "= imread(f'{dir}/" f"{file.split(a)[1].split('.')[0]}.png')\n")
     f.write("\n")
     f.write("    def get_file_name(self,file_name):\n")
 

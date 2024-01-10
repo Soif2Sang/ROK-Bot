@@ -10,50 +10,33 @@ from utils.functions import getchecksum
 
 SELLER_KEY = "f6386c16787e0eb51b24d168205267e6"
 
-keyauthapp = selfApi(
-    name=global_name,
-    ownerid="7oofxdj8uH",
-    secret=global_secret,
-    version="2.0",
-    hash_to_check=getchecksum()
-)
+keyauthapp = selfApi(name=global_name, ownerid="7oofxdj8uH", secret=global_secret, version="2.0", hash_to_check=getchecksum())
 
 
-# SELLER_KEY = "85f1f39bf61d1a04394b216f3efe4215"
-#
-# keyauthapp = selfApi(
-#     name=brezilian_name,
-#     ownerid="7oofxdj8uH",
-#     secret=brezilian_secret,
-#     version="2.0",
-#     hash_to_check=getchecksum()
-# )
+SELLER_KEY = "85f1f39bf61d1a04394b216f3efe4215"
+
+keyauthapp = selfApi(name=brezilian_name, ownerid="7oofxdj8uH", secret=brezilian_secret, version="2.0", hash_to_check=getchecksum())
+
 
 class CreateUser(ft.Column):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.username = ft.TextField(label="username")
-        self.password = ft.TextField(
-            label="password (only if need to create the account)"
-        )
+        self.password = ft.TextField(label="password (only if need to create the account)")
         self.days = ft.Dropdown(
             options=[
                 ft.dropdown.Option(text="2 Days", key=2),
                 ft.dropdown.Option(text="30 Days", key=30),
             ],
-            autofocus=True
+            autofocus=True,
         )
 
         self.button = ft.FilledButton(text="Create/Extend User", on_click=self.generate)
 
-        self.reset_button = ft.FilledButton(
-            text="Reset hwid", on_click=self.delete_hwid
-        )
+        self.reset_button = ft.FilledButton(text="Reset hwid", on_click=self.delete_hwid)
 
-        self.controls.extend(
-            [self.username, self.password, self.days, self.button, self.reset_button]
-        )
+        self.controls.extend([self.username, self.password, self.days, self.button, self.reset_button])
 
     def submit(self, e):
         return
@@ -66,11 +49,7 @@ class CreateUser(ft.Column):
         else:
             if not self.password.value:
                 return
-            print(
-                self.create_user(
-                    self.username.value, self.password.value, self.days.value
-                )
-            )
+            print(self.create_user(self.username.value, self.password.value, self.days.value))
 
     def verify(self, username):
         url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=verifyuser&user={username}"
@@ -133,7 +112,9 @@ class CreateUser(ft.Column):
             self.page.update()
 
     def extend_user(self, username, duration):
-        url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=extend&user={username}&sub=default&expiry={duration}&activeOnly=0"
+        url = (
+            f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=extend&user={username}&sub=default&expiry={duration}&activeOnly=0"
+        )
 
         headers = {"accept": "application/json"}
 
@@ -167,26 +148,19 @@ class ModifyVersion(ft.Column):
         except:
             version_json = {"version": "0", "force": True, "download_link": ""}
 
-        self.txt_version = ft.TextField(value=version_json["version"], text_align=ft.TextAlign.RIGHT, width=100,
-                                        label="Version")
-        self.chk_force = ft.Checkbox(value=version_json['force'], label="Force update")
-        self.txt_download_link = ft.TextField(value=version_json['download_link'], text_align=ft.TextAlign.LEFT,
-                                              width=350)
+        self.txt_version = ft.TextField(value=version_json["version"], text_align=ft.TextAlign.RIGHT, width=100, label="Version")
+        self.chk_force = ft.Checkbox(value=version_json["force"], label="Force update")
+        self.txt_download_link = ft.TextField(value=version_json["download_link"], text_align=ft.TextAlign.LEFT, width=350)
 
         self.submit = ft.FilledButton("Submit", on_click=self.submit_click)
 
-        self.controls = [
-            self.txt_version,
-            self.chk_force,
-            self.txt_download_link,
-            self.submit
-        ]
+        self.controls = [self.txt_version, self.chk_force, self.txt_download_link, self.submit]
 
     def submit_click(self, e):
         version_data = {
             "version": self.txt_version.value.strip(),
             "force": self.chk_force.value,
-            "download_link": self.txt_download_link.value.strip()
+            "download_link": self.txt_download_link.value.strip(),
         }
 
         url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=editvar&varid=version&data={json.dumps(version_data)}"
@@ -222,13 +196,12 @@ class ModifyMessage(ft.Column):
         except:
             message_json = {"message": "", "start": 1, "end": 1}
         print(message_json)
-        self.txt_message = ft.TextField(value=message_json["message"], text_align=ft.TextAlign.LEFT, width=600,
-                                        label="Message")
+        self.txt_message = ft.TextField(value=message_json["message"], text_align=ft.TextAlign.LEFT, width=600, label="Message")
 
-        self.date_start = ft.DatePicker(value=datetime.fromtimestamp(message_json['start']), help_text=f"Start Date",
-                                        on_change=self.submit_start)
-        self.date_end = ft.DatePicker(value=datetime.fromtimestamp(message_json['end']), help_text=f"End Date",
-                                      on_change=self.submit_end)
+        self.date_start = ft.DatePicker(
+            value=datetime.fromtimestamp(message_json["start"]), help_text=f"Start Date", on_change=self.submit_start
+        )
+        self.date_end = ft.DatePicker(value=datetime.fromtimestamp(message_json["end"]), help_text=f"End Date", on_change=self.submit_end)
 
         self.submit = ft.FilledButton("Submit", on_click=self.submit_click)
 
@@ -246,7 +219,7 @@ class ModifyMessage(ft.Column):
                 icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda _: self.date_end.pick_date(),
             ),
-            self.submit
+            self.submit,
         ]
 
     def submit_start(self, e):
@@ -263,7 +236,7 @@ class ModifyMessage(ft.Column):
         message_data = {
             "message": self.txt_message.value.strip(),
             "start": datetime.timestamp(self.date_start.value),
-            "end": datetime.timestamp(self.date_end.value)
+            "end": datetime.timestamp(self.date_end.value),
         }
 
         url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=editvar&varid=message&data={json.dumps(message_data)}"
@@ -290,17 +263,15 @@ class ModifyMessage(ft.Column):
 
         return response.json()
 
+
 class SendPersonalMessage(ft.Column):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.txt_message = ft.TextField(text_align=ft.TextAlign.LEFT, width=600,
-                                        label="Message")
+        self.txt_message = ft.TextField(text_align=ft.TextAlign.LEFT, width=600, label="Message")
 
-        self.date_start = ft.DatePicker(help_text=f"Start Date",
-                                        on_change=self.submit_start)
-        self.date_end = ft.DatePicker(help_text=f"End Date",
-                                      on_change=self.submit_end)
+        self.date_start = ft.DatePicker(help_text=f"Start Date", on_change=self.submit_start)
+        self.date_end = ft.DatePicker(help_text=f"End Date", on_change=self.submit_end)
 
         self.submit = ft.FilledButton("Submit", on_click=self.submit_click)
 
@@ -308,7 +279,7 @@ class SendPersonalMessage(ft.Column):
 
         self.username_choice = ft.Dropdown()
         for username in usernames:
-            self.username_choice.options.append(ft.dropdown.Option(username['username']))
+            self.username_choice.options.append(ft.dropdown.Option(username["username"]))
 
         self.controls = [
             self.txt_message,
@@ -325,7 +296,7 @@ class SendPersonalMessage(ft.Column):
                 icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda _: self.date_end.pick_date(),
             ),
-            self.submit
+            self.submit,
         ]
 
     def submit_start(self, e):
@@ -341,7 +312,7 @@ class SendPersonalMessage(ft.Column):
             "message": self.txt_message.value.strip(),
             "start": datetime.timestamp(self.date_start.value),
             "end": datetime.timestamp(self.date_end.value),
-            "read": False
+            "read": False,
         }
 
         url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=setvar&user={self.username_choice.value}&var=message&data={json.dumps(message_data)}"
@@ -373,11 +344,13 @@ class SendPersonalMessage(ft.Column):
 
         response = requests.get(url, headers=headers)
 
-        return response.json()['usernames']
+        return response.json()["usernames"]
+
+
 def main(page: ft.Page):
     keyauthapp.login("maxence", "fe")
-    version = keyauthapp.var('version')
-    message = keyauthapp.var('message')
+    version = keyauthapp.var("version")
+    message = keyauthapp.var("message")
     page.window_height = 500
     page.window_width = 500
     page.user = CreateUser(col=4)
@@ -394,24 +367,16 @@ def main(page: ft.Page):
     #     expand=True,
     # ))
 
-    page.add(ft.Tabs(
-        tabs=[
-            ft.Tab(
-            text="Create User",
-            content=page.user
+    page.add(
+        ft.Tabs(
+            tabs=[
+                ft.Tab(text="Create User", content=page.user),
+                ft.Tab(text="Update Version", content=ModifyVersion(version)),
+                ft.Tab(text="Announcement", content=ModifyMessage(message)),
+                ft.Tab(text="PM", content=SendPersonalMessage()),
+            ],
+            height=400,
         ),
-            ft.Tab(
-                text="Update Version", content=ModifyVersion(version)
-            ),
-            ft.Tab(
-                text="Announcement", content=ModifyMessage(message)
-            ),
-            ft.Tab(
-                text="PM", content=SendPersonalMessage()
-            )
-        ],
-        height=400
-    ),
     )
     page.add(page.progressbar)
     page.add(page.randomtext)

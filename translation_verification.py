@@ -9,8 +9,8 @@ def check_translations_in_files(directory, translations):
 
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file.endswith('.py'):
-                with open(os.path.join(root, file), 'r') as f:
+            if file.endswith(".py"):
+                with open(os.path.join(root, file), "r") as f:
                     try:
                         content = f.read()
                     except:
@@ -23,4 +23,4 @@ def check_translations_in_files(directory, translations):
 
 
 # Call the function with the 'views' directory and your translations dictionary
-check_translations_in_files('views', translations)
+check_translations_in_files("views", translations)

@@ -71,11 +71,23 @@ class TroopTraining(Task):
                     self.click(position[0] + uniform(-8, 8), position[1] + uniform(-8, 8))
                     self.better_sleep((1.2, 2))
 
-                if (co := self.find_img(target=f"{name}_badge", confidence=0.75)) is None:
+                image = self.adb.get_cv2_img()
+
+                if co := self.find_img(target="close_window", source=image[: 720 // 2, 1280 // 2 :]):
+                    self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
+                    self.better_sleep((1.3, 2.8))
+
+                    for i in range(2):
+                        self.click(position[0] + uniform(-8, 8), position[1] + uniform(-8, 8))
+                        self.better_sleep((1.2, 2))
+
+                    image = self.adb.get_cv2_img()
+
+                if (co := self.find_img(target=f"{name}_badge", confidence=0.75, source=image)) is None:
                     self.print(f"Unable to locate {name}")
                     continue
 
-                if self.find_img(target=f"building_speedups", confidence=0.8) is not None:
+                if self.find_img(target=f"building_speedups", confidence=0.8, source=image) is not None:
                     self.print(f"Already training {name}")
                     continue
 
@@ -88,7 +100,7 @@ class TroopTraining(Task):
                         self.click(x + uniform(-15, 15), y + uniform(-15, 15))
                         self.better_sleep((0.7, 1.0))
 
-                        if not self.find_img('upgrade_go'):
+                        if not self.find_img("upgrade_go"):
                             break
                 else:
                     co = pos[self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_tier"]]

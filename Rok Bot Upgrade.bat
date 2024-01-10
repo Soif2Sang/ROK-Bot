@@ -16,7 +16,7 @@ if %verification_status% neq 0 (
 )
 
 REM Define the nuitka command
-set nuitka_command=py -3.11 -m nuitka --clang --mingw64 --onefile --follow-imports --windows-icon-from-ico=.\Item_Gem.ico --remove-output --output-filename=Bot --windows-company-name=Unknown --windows-product-version=1.0 --onefile-tempdir-spec=C:\Users\Default\AppData\Local\Temp\bot_unknown .\app.py
+set nuitka_command=py -3.11 -m nuitka --clang --mingw64 --onefile --follow-imports --windows-icon-from-ico=.\Item_Gem.ico --remove-output --output-filename=Bot --windows-company-name=Unknown --windows-product-version=1.0 --onefile-tempdir-spec=C:\Users\Default\AppData\Local\Temp\bot_unknown .\app_upgrade.py
 
 REM Execute the nuitka command
 %nuitka_command%

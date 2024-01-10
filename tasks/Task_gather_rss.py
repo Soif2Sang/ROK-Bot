@@ -40,19 +40,23 @@ class GatherRss(Task):
     @get_name
     def click_search_by_node_type(self, place: str) -> None:
         self.print(f"Looking for : {self.data[str(self.sel)]['schedules'][self.current_profile].get(place)} {place}")
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "food":
+
+        type = self.data[str(self.sel)]["schedules"][self.current_profile].get(place)
+        if type == 'random':
+            type = choice(["food", "wood", "stone", "gold"])
+        if type == "food":
             x = uniform(400, 472)
             y = uniform(463, 512)
             self.click(x, y)
-        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "wood":
+        elif type == "wood":
             x = uniform(598, 670)
             y = uniform(463, 512)
             self.click(x, y)
-        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "stone":
+        elif type == "stone":
             x = uniform(786, 870)
             y = uniform(463, 512)
             self.click(x, y)
-        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "gold":
+        elif type == "gold":
             x = uniform(977, 1050)
             y = uniform(463, 512)
             self.click(x, y)
@@ -163,7 +167,6 @@ class GatherRss(Task):
         self.better_sleep((1.0, 1.395))
         co = self.find_img(target="resource_gather_button", confidence=0.7)
         if co is not None:
-            print("ici")
             x, y = co[0], co[1]
             self.click(x + uniform(0, 150), y + uniform(0, 30))
             self.better_sleep((1.325, 2.795))

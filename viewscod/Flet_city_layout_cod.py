@@ -39,9 +39,7 @@ def main(page: ft.Page):
     def pop_banner(text):
         page.banner = ft.Banner(
             bgcolor=ft.colors.AMBER_100,
-            leading=ft.Icon(
-                ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40
-            ),
+            leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
             content=ft.Text(value=text),
             actions=[
                 ft.TextButton("Ok", on_click=close_banner),
@@ -104,14 +102,10 @@ def main(page: ft.Page):
                 text="Set Archer camp",
                 on_click=lambda _: setCurrentBuild("archery_camp"),
             ),
-            ft.ElevatedButton(
-                text="Set Siege camp", on_click=lambda _: setCurrentBuild("siege_camp")
-            )
+            ft.ElevatedButton(text="Set Siege camp", on_click=lambda _: setCurrentBuild("siege_camp"))
             # ,ft.ElevatedButton(text="Set Hospital", on_click=lambda _: setCurrentBuild("hospital"))
             ,
-            ft.ElevatedButton(
-                text="Set Scout camp", on_click=lambda _: setCurrentBuild("scout_camp")
-            ),
+            ft.ElevatedButton(text="Set Scout camp", on_click=lambda _: setCurrentBuild("scout_camp")),
             ft.ElevatedButton(
                 text="Set Academy",
                 on_click=lambda _: setCurrentBuild("research_center"),
@@ -195,12 +189,8 @@ def main2(sel, profile):
                 text="Set Archer camp",
                 on_click=lambda _: setCurrentBuild("archery_camp"),
             ),
-            ft.ElevatedButton(
-                text="Set Siege camp", on_click=lambda _: setCurrentBuild("siege_camp")
-            ),
-            ft.ElevatedButton(
-                text="Set Scout camp", on_click=lambda _: setCurrentBuild("scout_camp")
-            ),
+            ft.ElevatedButton(text="Set Siege camp", on_click=lambda _: setCurrentBuild("siege_camp")),
+            ft.ElevatedButton(text="Set Scout camp", on_click=lambda _: setCurrentBuild("scout_camp")),
             ft.ElevatedButton(
                 text="Set Academy",
                 on_click=lambda _: setCurrentBuild("research_center"),
@@ -245,11 +235,7 @@ class CityPlacement(ft.Container):
             content=ft.Container(width=1280 / 2, height=720 / 2),
         )
         self.clickable_city = ft.Column()
-        self.clickable_city.controls = [
-            ft.Stack(
-                [self.main_container, self.gesture], width=1280 / 2, height=720 / 2
-            )
-        ]
+        self.clickable_city.controls = [ft.Stack([self.main_container, self.gesture], width=1280 / 2, height=720 / 2)]
         self.buttons = ft.Column()
         self.content = ft.Row(controls=[self.clickable_city, self.buttons])
 
@@ -291,9 +277,7 @@ class CityPlacement(ft.Container):
         ]:
             if self.data[str(self.instance)]["schedules"][str(self.profile)][co]:
                 if "✓" not in self.buttons.controls[self.button[co]].text:
-                    self.buttons.controls[self.button[co]].text = (
-                        self.buttons.controls[self.button[co]].text + " ✓"
-                    )
+                    self.buttons.controls[self.button[co]].text = self.buttons.controls[self.button[co]].text + " ✓"
 
     def updateButtons(self):
         for co in [
@@ -306,9 +290,7 @@ class CityPlacement(ft.Container):
         ]:
             if self.data[str(self.instance)]["schedules"][str(self.profile)][co]:
                 if "✓" not in self.buttons.controls[self.button[co]].text:
-                    self.buttons.controls[self.button[co]].text = (
-                        self.buttons.controls[self.button[co]].text + " ✓"
-                    )
+                    self.buttons.controls[self.button[co]].text = self.buttons.controls[self.button[co]].text + " ✓"
         self.page.update()
 
     def setCurrentBuild(self, param: str):
@@ -321,9 +303,7 @@ class CityPlacement(ft.Container):
     def on_tap_update(self, e: ft.ControlEvent):
         print(e.local_x * 2, e.local_y * 2)
         try:
-            self.data[str(self.instance)]["schedules"][str(self.profile)][
-                self.current_build
-            ] = (int(e.local_x * 2), int(e.local_y * 2))
+            self.data[str(self.instance)]["schedules"][str(self.profile)][self.current_build] = (int(e.local_x * 2), int(e.local_y * 2))
             self.updateButtons()
         except Exception as e:
             traceback.print_exc()

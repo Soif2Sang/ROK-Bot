@@ -178,21 +178,24 @@ class GatherRssZoom(GatherRss):
     def run(self, node_place=None):
         if node_place == "Done":
             return self.click(700, 400)
+
         self.node_place = node_place
         self.run_game()
+
         if (
             EmulatorSingleton().getEmulator() == "bluestacks"
             and not self.random_macro()
         ):
             return
-        self.check_captcha()
-        screen = self.check_reconnect()
-        screen = self.leave_kd_buff(screen)
-        self.check_log_back(screen)
+
 
         if node_place is None:
             self.leave_city()
         else:
+            self.check_captcha()
+            screen = self.check_reconnect()
+            screen = self.leave_kd_buff(screen)
+            self.check_log_back(screen)
             self.go_back_to_city()
 
         # self.better_sleep((1.5, 2))

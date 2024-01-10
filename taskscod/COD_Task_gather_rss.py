@@ -104,31 +104,14 @@ class GatherRss(Task):
         wood_icon = ((598, 670), (632, 663))
         stone_icon = ((823, 870), (632, 663))
         mana_icon = ((1020, 1060), (632, 663))
-        if (
-            self.data[str(self.sel)]["schedules"][self.current_profile].get(place)
-            == "gold"
-        ):
-            x, y = uniform(gold_icon[0][0], gold_icon[0][1]), uniform(
-                gold_icon[1][0], gold_icon[1][1]
-            )
-        elif (
-            self.data[str(self.sel)]["schedules"][self.current_profile].get(place)
-            == "wood"
-        ):
-            x, y = uniform(wood_icon[0][0], wood_icon[0][1]), uniform(
-                wood_icon[1][0], wood_icon[1][1]
-            )
-        elif (
-            self.data[str(self.sel)]["schedules"][self.current_profile].get(place)
-            == "stone"
-        ):
-            x, y = uniform(stone_icon[0][0], stone_icon[0][1]), uniform(
-                stone_icon[1][0], stone_icon[1][1]
-            )
+        if self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "gold":
+            x, y = uniform(gold_icon[0][0], gold_icon[0][1]), uniform(gold_icon[1][0], gold_icon[1][1])
+        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "wood":
+            x, y = uniform(wood_icon[0][0], wood_icon[0][1]), uniform(wood_icon[1][0], wood_icon[1][1])
+        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "stone":
+            x, y = uniform(stone_icon[0][0], stone_icon[0][1]), uniform(stone_icon[1][0], stone_icon[1][1])
         else:  # Gold
-            x, y = uniform(mana_icon[0][0], mana_icon[0][1]), uniform(
-                mana_icon[1][0], mana_icon[1][1]
-            )
+            x, y = uniform(mana_icon[0][0], mana_icon[0][1]), uniform(mana_icon[1][0], mana_icon[1][1])
         # print(f'[ {current_time()} ] [ {self.name} ] chance rss type call')
         return x, y
 
@@ -186,9 +169,7 @@ class GatherRss(Task):
 
     @get_name
     def click_search_adapted_node(self, place: str) -> None:
-        self.print(
-            f"Looking for : {self.data[str(self.sel)]['schedules'][self.current_profile].get(place)} {place}"
-        )
+        self.print(f"Looking for : {self.data[str(self.sel)]['schedules'][self.current_profile].get(place)} {place}")
         co = self.find_img("cod_search_button")
         self.click(co[0], co[1])
 
@@ -217,37 +198,13 @@ class GatherRss(Task):
                         and (img.getpixel((i, y))[1] < 5)
                         and (img.getpixel((i, y))[2] > 175)
                         and (img.getpixel((i, y))[2] < 196)
-                        and (
-                            (img.getpixel((i, y))[0] != 2)
-                            and (img.getpixel((i, y))[1] != 4)
-                            and (img.getpixel((i, y))[2] != 183)
-                        )
+                        and ((img.getpixel((i, y))[0] != 2) and (img.getpixel((i, y))[1] != 4) and (img.getpixel((i, y))[2] != 183))
                     )
-                    or (
-                        (img.getpixel((i, y))[0] == 233)
-                        and (img.getpixel((i, y))[1] == 233)
-                        and (img.getpixel((i, y))[2] == 233)
-                    )
-                    or (
-                        (img.getpixel((i, y))[0] == 247)
-                        and (img.getpixel((i, y))[1] == 156)
-                        and (img.getpixel((i, y))[2] == 47)
-                    )
-                    or (
-                        (img.getpixel((i, y))[0] == 207)
-                        and (img.getpixel((i, y))[1] == 131)
-                        and (img.getpixel((i, y))[2] == 40)
-                    )
-                    or (
-                        (img.getpixel((i, y))[0] == 248)
-                        and (img.getpixel((i, y))[1] == 157)
-                        and (img.getpixel((i, y))[2] == 48)
-                    )
-                    or (
-                        (img.getpixel((i, y))[0] == 239)
-                        and (img.getpixel((i, y))[1] == 205)
-                        and (img.getpixel((i, y))[2] == 165)
-                    )
+                    or ((img.getpixel((i, y))[0] == 233) and (img.getpixel((i, y))[1] == 233) and (img.getpixel((i, y))[2] == 233))
+                    or ((img.getpixel((i, y))[0] == 247) and (img.getpixel((i, y))[1] == 156) and (img.getpixel((i, y))[2] == 47))
+                    or ((img.getpixel((i, y))[0] == 207) and (img.getpixel((i, y))[1] == 131) and (img.getpixel((i, y))[2] == 40))
+                    or ((img.getpixel((i, y))[0] == 248) and (img.getpixel((i, y))[1] == 157) and (img.getpixel((i, y))[2] == 48))
+                    or ((img.getpixel((i, y))[0] == 239) and (img.getpixel((i, y))[1] == 205) and (img.getpixel((i, y))[2] == 165))
                     or (
                         (img.getpixel((i, y))[2] < 179)
                         and (img.getpixel((i, y))[2] > 175)
@@ -292,18 +249,13 @@ class GatherRss(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while (
-            self.find_img(target=f"{color}_icon", confidence=0.95) is None
-            and self.find_img(target="troops_march_button") is not None
-        ):
+        while self.find_img(target=f"{color}_icon", confidence=0.95) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_text("Error in line-up selection")
-                self.send_discord_message(
-                    "Error in line-up selection, human interaction required."
-                )
+                self.send_discord_message("Error in line-up selection, human interaction required.")
                 while True:
                     self.script_pause()
                     sleep(1)
@@ -452,10 +404,7 @@ class GatherRss(Task):
             self.click(uniform(600, 700), (uniform(250, 400)))
             self.better_sleep((2, 4))
             return
-        if (
-            self.data[str(self.sel)]["schedules"][self.current_profile][node_type]
-            == "nothing"
-        ):
+        if self.data[str(self.sel)]["schedules"][self.current_profile][node_type] == "nothing":
             return
         self.leave_city_simple()
         # self.better_sleep((2, 4))
@@ -469,26 +418,13 @@ class GatherRss(Task):
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            if (
-                self.data.get(self.sel)
-                .get("schedules")
-                .get(self.current_profile)
-                .get(f"{node_type}_level")
-                - level_decrease
-                <= 0
-            ):
+            if self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_type}_level") - level_decrease <= 0:
                 node_type = self.next_resource_type(node_type)
-                self.print(
-                    f"Cannot decrease the current level.. Too low ! next type : {node_type}"
-                )
+                self.print(f"Cannot decrease the current level.. Too low ! next type : {node_type}")
                 return self.run(node_type, 0)
 
             self.set_search_level(
-                self.data.get(self.sel)
-                .get("schedules")
-                .get(self.current_profile)
-                .get(f"{node_type}_level")
-                - level_decrease
+                self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_type}_level") - level_decrease
             )
             self.better_sleep((0.925, 2.795))
             self.click_search_adapted_node(node_type)
@@ -502,9 +438,7 @@ class GatherRss(Task):
             if self.node_found() is False:
                 self.check_reconnect()
                 self.check_log_back()
-                self.click(
-                    (1280 // 2) + uniform(-20, 20), (720 // 3) + uniform(-20, 20)
-                )
+                self.click((1280 // 2) + uniform(-20, 20), (720 // 3) + uniform(-20, 20))
                 self.better_sleep((1.325, 3.795))
                 if level_decrease >= 1:
                     self.print("No node matched the requirements, changing node type..")

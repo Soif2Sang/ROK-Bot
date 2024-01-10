@@ -19,9 +19,7 @@ class CreateUser(ft.Column):
         super().__init__(*args, **kwargs)
 
         self.username = ft.TextField(label="username")
-        self.password = ft.TextField(
-            label="password (only if need to create the account)"
-        )
+        self.password = ft.TextField(label="password (only if need to create the account)")
         self.days = ft.Dropdown(
             options=[
                 ft.dropdown.Option(text="2 Days", key=2),
@@ -31,13 +29,9 @@ class CreateUser(ft.Column):
 
         self.button = ft.FilledButton(text="Create/Extend User", on_click=self.generate)
 
-        self.reset_button = ft.FilledButton(
-            text="Reset hwid", on_click=self.delete_hwid
-        )
+        self.reset_button = ft.FilledButton(text="Reset hwid", on_click=self.delete_hwid)
 
-        self.controls.extend(
-            [self.username, self.password, self.days, self.button, self.reset_button]
-        )
+        self.controls.extend([self.username, self.password, self.days, self.button, self.reset_button])
 
     def submit(self, e):
         return
@@ -50,11 +44,7 @@ class CreateUser(ft.Column):
         else:
             if not self.password.value:
                 return
-            print(
-                self.create_user(
-                    self.username.value, self.password.value, self.days.value
-                )
-            )
+            print(self.create_user(self.username.value, self.password.value, self.days.value))
 
     def verify(self, username):
         url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=verifyuser&user={username}"
@@ -117,7 +107,9 @@ class CreateUser(ft.Column):
             self.page.update()
 
     def extend_user(self, username, duration):
-        url = f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=extend&user={username}&sub=default&expiry={duration}&activeOnly=0"
+        url = (
+            f"https://keyauth.win/api/seller/?sellerkey={SELLER_KEY}&type=extend&user={username}&sub=default&expiry={duration}&activeOnly=0"
+        )
 
         headers = {"accept": "application/json"}
 

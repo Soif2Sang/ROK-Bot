@@ -53,9 +53,7 @@ class InterfaceSettings(ft.Tab):
             self.FileSingleton.write_data(data)
             if keyword == "auto_scroll":
                 for frame in self.page.frames:
-                    self.page.frames[frame].logger.auto_scroll = data["interface"][
-                        keyword
-                    ]
+                    self.page.frames[frame].logger.auto_scroll = data["interface"][keyword]
                 self.update()
         else:
             data = self.FileSingleton.get_data()
@@ -79,15 +77,9 @@ class Frame(ft.Tabs):
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
         self.tabs.append(ft.Tab(content=self.logger, text="Logs"))
         self.tabs.append(InterfaceSettings(page))
-        self.settings.tabs.append(
-            ft.Tab(content=SettingContainer(page, int(number), 1), text="Profile 1")
-        )
-        self.settings.tabs.append(
-            ft.Tab(content=SettingContainer(page, int(number), 2), text="Profile 2")
-        )
-        self.settings.tabs.append(
-            ft.Tab(content=SettingContainer(page, int(number), 3), text="Profile 3")
-        )
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, int(number), 1), text="Profile 1"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, int(number), 2), text="Profile 2"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, int(number), 3), text="Profile 3"))
         self.FileSingleton = FileSingleton()
         data = self.FileSingleton.get_data()
         for profile in data[str(number)]["schedules"]:
@@ -112,15 +104,9 @@ class FrameUpgrade(ft.Tabs):
         self.tabs.append(ft.Tab(content=self.settings, text="Settings"))
         self.tabs.append(ft.Tab(content=self.logger, text="Logs"))
         self.tabs.append(InterfaceSettings(page))
-        self.settings.tabs.append(
-            ft.Tab(content=SettingContainer(page, int(number), 1), text="Profile 1")
-        )
-        self.settings.tabs.append(
-            ft.Tab(content=SettingContainer(page, int(number), 2), text="Profile 2")
-        )
-        self.settings.tabs.append(
-            ft.Tab(content=SettingContainer(page, int(number), 3), text="Profile 3")
-        )
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, int(number), 1), text="Profile 1"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, int(number), 2), text="Profile 2"))
+        self.settings.tabs.append(ft.Tab(content=SettingContainer(page, int(number), 3), text="Profile 3"))
         self.FileSingleton = FileSingleton()
         data = self.FileSingleton.get_data()
         for profile in data[str(number)]["schedules"]:
