@@ -63,7 +63,7 @@ class AdbLd(Adb):
     #                 return self.get_device()
 
     #         return device
-        
+
     #     except Exception as e:
     #         traceback.print_exc()
     #         self.print("EXCEPTION : Error in connect to device")
@@ -79,23 +79,25 @@ class AdbLd(Adb):
 
     #         sleep(5)
     #         return self.get_device()
-            
 
-    def get_device(self, host="127.0.0.1", max_attempts=10, timeout=2):
+    def get_device(self, host="emulator", max_attempts=10, timeout=2):
         self.port = str(self.data[str(self.number)]["port"])
-        
+
         for attempt in range(max_attempts):
-            device = self.client.device(f"{host}:{self.port}")
+            device = self.client.device(f"{host}-{self.port}")
 
             if device is not None:
                 return device
 
             self.print(f"Device Not Found")
-            time.sleep(timeout)
+            sleep(timeout)
             self.update_port()
 
-        raise DeviceNotFoundException(f"{host}:{self.port}")
+            path = self.FileSingleton.get_path()
+            cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
+            subprocess.run(cmd)
 
+        raise DeviceNotFoundException(f"{host}-{self.port}")
 
     def stop_server(self):
         path = self.FileSingleton.get_path()
