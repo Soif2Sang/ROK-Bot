@@ -32,11 +32,11 @@ class AdbLd(Adb):
             try:
                 result = self.shell(cmd)
             except RuntimeError as e:
-                self.print(str(e))
+                self.print("RuntimeError", str(e))
                 sleep(3)
                 continue
             except DeviceNotFoundException as e:
-                self.print(str(e))
+                self.print("DeviceNotFoundException", str(e))
                 sleep(3)
                 continue
 
@@ -90,12 +90,13 @@ class AdbLd(Adb):
                 return device
 
             self.print(f"Device Not Found")
-            sleep(timeout)
             self.update_port()
 
             path = self.FileSingleton.get_path()
             cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
             subprocess.run(cmd)
+            sleep(timeout)
+
 
         raise DeviceNotFoundException(f"{host}-{self.port}")
 
