@@ -23,11 +23,11 @@ class ApiSingleton:
         with self.FileLock:
             self.apikey = key
 
-
 class EmulatorSingleton:
     __instance = None
     FileLock = Lock()
     emulator = ""
+    limit = 0
 
     def __new__(cls):
         if cls.__instance is None:
@@ -41,6 +41,14 @@ class EmulatorSingleton:
     def setEmulator(self, mode: Literal["ld", "bluestacks"]):
         with self.FileLock:
             self.emulator = mode
+
+    def getEmulatorLimit(self) -> int:
+        with self.FileLock:
+            return self.limit
+
+    def setEmulatorLimit(self, limit: int):
+        with self.FileLock:
+            self.limit = limit
 
 
 class CaptchaSingleton:
@@ -106,6 +114,7 @@ class LinkSingleton:
 class FileSingleton:
     __instance = None
     FileLock = Lock()
+    data = None
 
     def __new__(cls):
         if cls.__instance is None:
@@ -125,6 +134,12 @@ class FileSingleton:
         self.FileLock.release()
         return data
 
+    def getCachedData(self):
+        if self.data is None:
+            print("data is none")
+            self.data = self.get_data()
+        return self.data
+
     def get_path(self):
         self.FileLock.acquire()
         with open(f"./path.json", encoding="utf-8") as config_file:
@@ -136,6 +151,7 @@ class FileSingleton:
         self.FileLock.acquire()
         with open(f"./user_settings.json", "w", encoding="utf-8") as config_file:
             config_file.write(json.dumps(data, indent=2))
+        self.data = data
         self.FileLock.release()
 
     def get_default_config(self):

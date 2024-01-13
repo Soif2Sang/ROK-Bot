@@ -30,7 +30,7 @@ from utils.functions import (
     string_to_co,
     string_to_co_slide,
 )
-from utils.singletons import ApiSingleton, EmulatorSingleton
+from utils.singletons import EmulatorSingleton, LinkSingleton, ApiSingleton
 from utils.twocaptcha import TimeoutException, TwoCaptcha
 from utils.twocaptcha.api import ApiException, NetworkException
 
@@ -41,7 +41,7 @@ pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 class Task:
     def __init__(self, tile):
         self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
+        self.data = self.FileSingleton.getCachedData()
         self.current_profile: str = "1"
         self.tile = tile
         self.sel: str = tile.number
@@ -60,11 +60,12 @@ class Task:
         self.data = MainTask.data
         self.current_profile = MainTask.current_profile
         self.tile = MainTask.tile
+        self.sel = MainTask.sel
         self.adb = MainTask.adb
         self.language = MainTask.language
         self.name = MainTask.name
-        self.sel = MainTask.sel
         self.DEV = MainTask.DEV
+        self.FileSingleton = MainTask.FileSingleton
 
     def debug(self, arg):
         timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
@@ -610,7 +611,7 @@ class Task:
                 while True:
                     self.set_status("ERROR CANNOT START GAME")
                     self.script_pause()
-                    self.better_sleep((1,1))
+                    self.better_sleep((1, 1))
 
     # @get_name
     def better_sleep(self, limits: tuple[float, float]):
@@ -679,8 +680,8 @@ class Task:
         if file is None:
             file = f"captcha{self.sel}.jpg"
 
-        if self.data[self.sel]["API_KEY"]:
-            api_key = self.data[self.sel]["API_KEY"]
+        if self.data["API_KEY"]:
+            api_key = self.data["API_KEY"]
         else:
             api_key = ApiSingleton().getApiKey()
 
@@ -1002,11 +1003,11 @@ class Task:
             if DefaultApiKey:
                 api_key = ApiSingleton().getApiKey()
             else:
-                api_key = self.data[self.sel]["API_KEY"]
+                api_key = self.data["API_KEY"]
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
-            if self.data[self.sel]["API_KEY"] != "":
-                api_key = self.data[self.sel]["API_KEY"]
+            if self.data["API_KEY"] != "":
+                api_key = self.data["API_KEY"]
             self.print("Trying to resolve the captcha")
 
             captcha = self.save_captcha()
@@ -1148,7 +1149,7 @@ class Task:
             self.find_img(
                 target="checkpoint_star",
                 source=self.adb.get_cv2_img()[:60, 380:600],
-                confidence=0.95,
+                confidence=0.97,
             )
             is None
         )

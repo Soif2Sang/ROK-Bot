@@ -16,26 +16,19 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.fileSingleton = FileSingleton()
         self.index = index
         self.initial_page = page
-        self.config = self.fileSingleton.get_data()[self.index]
+        self.config = self.fileSingleton.getCachedData()[self.index]
         self.icon = ft.icons.FILE_UPLOAD_OUTLINED
         self.init()
 
     def init(self):
         self.items.append(ft.PopupMenuItem(text="Export Config"))
         self.items.append(ft.PopupMenuItem())
-        emulator = EmulatorSingleton().getEmulator()
 
-        if emulator == "bluestacks":
-            vms = get_all_vms_running()
-        else:
-            vms = get_all_vms_running_ld()
+        vms = self.initial_page.tile_manager.fetched_instances
 
         for vm in vms:
-            if str(vm[0]) != self.index:
-                self.items.append(ft.PopupMenuItem(text=vm[1], on_click=self.override_settings, data=vm[0]))
-
-    def update_config(self):
-        self.config = self.fileSingleton.get_data()[self.index]
+            if str(vm) != self.index:
+                self.items.append(ft.PopupMenuItem(text=vms[vm]['name'], on_click=self.override_settings, data=vm))
 
     def refresh(self):
         self.items = []
@@ -43,8 +36,8 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.initial_page.update()
 
     def override_settings(self, e):
-        self.update_config()
-        data = self.fileSingleton.get_data()
+        data = self.fileSingleton.getCachedData()
+        self.config = copy.deepcopy(data[self.index])
 
         instance = data[str(e.control.data)]["instance"]
         name = data[str(e.control.data)]["name"]
@@ -71,7 +64,7 @@ class Tile(ft.Container):
     def __init__(self, page, number, **kwargs):
         super().__init__(**kwargs)
         self.FileSingleton = FileSingleton()
-        data = self.FileSingleton.get_data()
+        data = self.FileSingleton.getCachedData()
         self.number = number
         self.initial_page = page
         self.tasks_process = None

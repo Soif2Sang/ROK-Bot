@@ -151,12 +151,13 @@ class TileManagerUpgrade(ft.ListView):
         else:
             instances = get_dic_instances_ld()
 
+        self.fetched_instances = instances
+
         default_dic = {
             "instance": "",
             "name": "",
             "host": "127.0.0.1",
             "port": 0,
-            "API_KEY": "",
             "loop_task": False,
             "time_to_wait_loop1": 60,
             "time_to_wait_loop2": 110,
@@ -323,9 +324,6 @@ class TileManagerUpgrade(ft.ListView):
                     self.tiles[str(instance[0])].runner.adb.update_port()
                 else:
                     self.add_tile(str(instance[0]))
-                    # self.controls.append(ft.Divider(height=1, color="grey", opacity=0.5))
-                self.tiles[str(instance[0])].config_overrider.items = []
-                self.tiles[str(instance[0])].config_overrider.refresh()
         else:
             if emulator == "bluestacks":
                 text_explanation = "No emulator found, have you started one?\nIf so, check the correct bluestacks version (Nougat64)"
@@ -348,8 +346,10 @@ class TileManagerUpgrade(ft.ListView):
                     margin=ft.margin.only(top=40),
                 )
             )
-
-        # self.initial_page.update()
+        if instances:
+            for instance in instances:
+                self.tiles[str(instance[0])].config_overrider.items = []
+                self.tiles[str(instance[0])].config_overrider.refresh()
         self.initial_page.update()
 
         # self.padding = ft.padding.only(top=15, left=0, bottom=0)
@@ -368,6 +368,17 @@ class TileManagerUpgrade(ft.ListView):
                 tiles.append(tile)
         return tiles
 
+    def disable_all_unselected_tiles(self):
+        for tile in self.controls[1:]:
+            if not tile.selected:
+                tile.enable_switch.disabled = True
+        self.initial_page.update()
+
+    def enable_all_unselected_tiles(self):
+        for tile in self.controls[1:]:
+            if not tile.selected:
+                tile.enable_switch.disabled = False
+        self.initial_page.update()
 
 class StartBar(ft.Row):
     def __init__(self, page, tile_manager: TileManagerUpgrade, **kwargs):
@@ -435,8 +446,7 @@ class StartBar(ft.Row):
             runner = TaskRunner(main_task, self)
 
             thread = threading.Thread(target=runner.run3, args=(tiles,))
-            threads.append(thread)
-            thread.start()
+            threads.append((thread, tiles))
 
         return threads
         # for thread in threads:
@@ -453,19 +463,40 @@ class StartBar(ft.Row):
             tile.paused = False
             tile.stopped = False
 
-        threads = self.start_tasks()
+        worker_threads = self.start_tasks()
+
         self.button_start.on_click = self.pause
+
+        threads = []
+        for thread, tiles in worker_threads:
+            t = threading.Thread(target=self.run_with_callback, args=(thread, tiles))
+            t.start()
+            threads.append(t)
+
         for thread in threads:
             thread.join()
+
         self.button_start.on_click = self.start
 
         for tile in self.tile_manager.controls[1:]:
             tile.paused = False
             tile.stopped = False
-
+            tile.set_text("")
+            
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.set_text("")
+
+
+
+    def run_with_callback(self, task, tiles):
+        task.start()
+        task.join()
+
+        for tile in tiles:
+            tile.paused = False
+            tile.stopped = False
+
 
     def resume(self, e):
         self.paused = False

@@ -2,6 +2,7 @@ from time import sleep
 
 import flet as ft
 
+from utils.singletons import EmulatorSingleton
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from views.tiles.handler.config_handler import FrameUpgrade, Frame
@@ -11,13 +12,12 @@ from utils.functions import FileSingleton
 
 
 class TileUpgrade(ft.Container):
-    def __init__(self, page, number, **kwargs):
+    def __init__(self, page, number:str, **kwargs):
         super().__init__(**kwargs)
         self.FileSingleton = FileSingleton()
-        data = self.FileSingleton.get_data()
+        data = self.FileSingleton.getCachedData()
         self.number = number
         self.initial_page = page
-        self.page = page
         self.tasks_process = None
         self.paused = False
         self.stopped = False
@@ -67,10 +67,16 @@ class TileUpgrade(ft.Container):
         self.enable_switch = not self.enable_switch
         self.selected = not self.selected
         self.initial_page.update()
-        print("here")
 
     def change(self):
         self.selected = not self.selected
+
+        limit = EmulatorSingleton().getEmulatorLimit()
+
+        if len(self.initial_page.tile_manager.get_enabled_sel_object()) >= limit:
+            self.initial_page.tile_manager.disable_all_unselected_tiles()
+        else:
+            self.initial_page.tile_manager.enable_all_unselected_tiles()
 
     def hover(self, e):
         e.control.bgcolor = (
