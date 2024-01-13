@@ -3,7 +3,7 @@ import sys
 import threading
 from datetime import datetime
 from time import sleep
-
+import json
 import flet as ft
 
 from utils.auth import selfApi, update_user_info
@@ -122,7 +122,11 @@ class LoginUI(ft.Column):
                 self.initial_page.update()
                 self.initial_page.go("/emulator-choice")
 
-                ApiSingleton().setApiKey(self.initial_page.keyauthapp.var("2captcha"))
+                keys = json.load(self.initial_page.keyauthapp.var("keys"))
+                
+                ApiSingleton().setApiKey(keys["2captcha"])
+                ApiSingleton().setSupabasePublicKey(keys["supabase_public_key"])
+                ApiSingleton().setSupabaseUrl(keys["supabase_url"])
 
                 self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
                 # self.initial_page.subscription_checker.start()
