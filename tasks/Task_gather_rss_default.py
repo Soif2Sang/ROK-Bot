@@ -68,6 +68,15 @@ class GatherRssDefault(GatherRss):
         # self.print("Unable to gather this node")
         return False
 
+    @get_name
+    def set_search_level(self, level: int = 10) -> None:
+        try:
+            super().set_search_level(level)
+        except TypeError:
+            self.close_windows()
+            self.leave_city_simple()
+            return super().set_search_level(level)
+
     @get_class
     def run(self, node_place="First", node_type=None, resolved=False, level_decrease=0):
         self.run_game()

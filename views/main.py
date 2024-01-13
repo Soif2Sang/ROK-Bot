@@ -29,14 +29,13 @@ def Main(page: ft.Page, days=950):
 
     if page.UPGRADE:
         page.tile_manager = TileManagerUpgrade(page)
-        page.logger = LoggerUpgrade(page)
     else:
         page.tile_manager = TileHandler(page)
+
     page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
 
     if page.UPGRADE:
         page.body.controls.append(page.tile_manager.start_bar)
-        page.body.controls.append(page.logger)
 
     page.go("/")
     page.tile_manager.refresh()

@@ -60,6 +60,10 @@ except Exception as e:
 
 fileSingleton = FileSingleton()
 
+data = fileSingleton.getCachedData()
+if "API_KEY" not in data:
+    data["API_KEY"] = ""
+    fileSingleton.write_data(data)
 
 def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -132,11 +136,7 @@ def main(page: ft.Page):
             clear=True,
             view=viewProfileSettings,
         ),
-        path(
-            url='/group-choice',
-            clear=True,
-            view=group_choice
-        )
+        path(url="/configure-workers", clear=True, view=group_choice),
     ]
 
     page.routing = Routing(
@@ -144,6 +144,7 @@ def main(page: ft.Page):
         app_routes=page.app_routes,
     )
 
+    print(id(SharedData), "app.py")
     page.go("/login")
     page.update()
 
@@ -301,7 +302,7 @@ def group_choice(page: ft.Page, params, basket):
                 controls=[
                     ft.IconButton(
                         icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: page.go('/'),
+                        on_click=lambda _: page.go("/"),
                     ),
                     ft.Text(value="Back", size=20),
                 ],
@@ -314,7 +315,7 @@ def group_choice(page: ft.Page, params, basket):
     for instance in instances:
         controls.append(EmulatorGroup(instance, instances))
 
-    return ft.View(route="/group-choice", controls=controls)
+    return ft.View(route="/configure-workers", controls=controls)
 
 
 if __name__ == "__main__":

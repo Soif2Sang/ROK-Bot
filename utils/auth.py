@@ -16,7 +16,7 @@ from Crypto.Util.Padding import pad, unpad
 
 from utils.constants import BREZILIAN
 from utils.functions import FileSingleton
-from utils.singletons import ApiSingleton, LinkSingleton
+from utils.singletons import ApiSingleton, LinkSingleton, EmulatorSingleton
 
 fileSingleton = FileSingleton()
 
@@ -159,6 +159,13 @@ class selfApi:
 
         if json["success"]:
             self.__load_user_data(json["info"])
+            subs = self.user_data.subscriptions  # Get all Subscription names, expiry, and timeleft
+            for i in range(len(subs)):
+                tier = int(subs[i]["level"])
+
+                if EmulatorSingleton().getEmulatorLimit() < tier:
+                    EmulatorSingleton().setEmulatorLimit(tier)
+
             return True
         else:
             if self.page is not None:

@@ -18,7 +18,7 @@ class EmulatorGroup(ft.Row):
         options = []
 
         for instance in instances:
-            options.append(ft.dropdown.Option(text=f"Group n°{instance[0]}", key=instance[0]))
+            options.append(ft.dropdown.Option(text=f"Worker n°{instance[0]}", key=instance[0]))
 
         self.controls.append(ft.Dropdown(options=options, on_change=self.on_change, value=data[self.instance]["group"]))
 

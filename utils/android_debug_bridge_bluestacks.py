@@ -48,55 +48,54 @@ class AdbBluestacks(Adb):
         end_time = time() + timeout
 
         while True:
+            if time() > end_time:
+                raise TimeoutError()
+
             try:
                 result = self.shell(cmd)
             except RuntimeError as e:
-                self.print(str(e))
-                sleep(0.5)
+                self.print("RuntimeError", str(e))
+                sleep(3)
                 continue
             except DeviceNotFoundException as e:
-                self.print(str(e))
-                sleep(0.5)
+                self.print("DeviceNotFoundException", str(e))
+                sleep(3)
                 continue
 
             if result.strip() == "1":
                 return True
 
-            if time() > end_time:
-                raise TimeoutError()
             elif timedelta > 0:
                 sleep(timedelta)
 
-    def get_device(self, host="127.0.0.1", fail=0):
+    def get_device(self, host="127.0.0.1", max_attempts=10, timeout=2):
         self.port = str(self.data[str(self.number)]["port"])
 
-        device = self.client.device(f"{host}:{self.port}")
+        for attempt in range(max_attempts):
+            device = self.client.device(f"{host}-{self.port}")
 
-        if device is None and fail == 0:
-            self.start_server()
+            if device is not None:
+                return device
 
+            self.print(f"Device Not Found")
+            self.update_port()
             self.connect_to_device()
+            path = self.FileSingleton.get_path()
+            cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
+            subprocess.run(cmd)
+            sleep(timeout)
 
-            return self.get_device(fail=1)
-        elif device is None and fail == 1:
-            raise DeviceNotFoundException(f"{host}:{self.port}")
-        return device
+        raise DeviceNotFoundException(f"{host}:{self.port}")
+
+    def stop_server(self):
+        path = self.FileSingleton.get_path()
+        cmd = f"{path['HD-Player'].replace('Player', 'Adb')} kill-server"
+        subprocess.run(cmd)
 
     def start_server(self):
         path = self.FileSingleton.get_path()
         cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
         subprocess.run(cmd)
-
-    def find_img_cv(self, img_to_find, confidence=0.9):
-        pil_image = self.get_curr_device_screen_img()
-        cv_image = array(pil_image)
-        cv_image = cvtColor(cv_image, COLOR_BGR2RGB)
-        result = matchTemplate(cv_image, img_to_find, TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = minMaxLoc(result)
-        if max_val > confidence:
-            return max_loc[0], max_loc[1]
-        else:
-            return
 
     def is_game_alive(self):
         # string = "dumpsys activity activities | grep mFocusedActivity"
