@@ -1003,11 +1003,11 @@ class Task:
             if DefaultApiKey:
                 api_key = ApiSingleton().getApiKey()
             else:
-                api_key = self.data[self.sel]["API_KEY"]
+                api_key = self.data["API_KEY"]
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
-            if self.data[self.sel]["API_KEY"] != "":
-                api_key = self.data[self.sel]["API_KEY"]
+            if self.data["API_KEY"] != "":
+                api_key = self.data["API_KEY"]
             self.print("Trying to resolve the captcha")
 
             captcha = self.save_captcha()
