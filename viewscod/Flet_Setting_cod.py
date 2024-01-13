@@ -90,7 +90,7 @@ class SettingContainer(ft.Container):
         self.content.controls.append(
             ft.TextField(
                 label="Custom API key:",
-                value=self.data[str(self.instance_index)]["API_KEY"],
+                value=self.data["API_KEY"],
                 on_change=lambda e: self.submit(e, "API_KEY", str),
             )
         )
