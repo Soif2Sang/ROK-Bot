@@ -34,11 +34,11 @@ class ApiSingleton:
 
     def setSupabaseUrl(self, supabase_url: str):
         with self.FileLock:
-            self.SupabaseUrl = supabase_url
+            self.supabase_url = supabase_url
 
     def getSupabasePublicKey(self) -> str:
         with self.FileLock:
-            return self.apikey
+            return self.supabase_public_key
 
     def setSupabasePublicKey(self, supabase_public_key: str):
         with self.FileLock:
@@ -50,7 +50,7 @@ class ApiSingleton:
 
     def setTier(self, tier: int):
         with self.FileLock:
-            self.apikey = tier
+            self.tier = tier
 
 
 class EmulatorSingleton:

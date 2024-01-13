@@ -118,9 +118,7 @@ class GatherRssDefault(GatherRss):
             self.check_log_back()
             self.click_loop()
 
-            print(f"Looking for : {node_type}")
             x, y = self.select_resource_type(node_type)
-            print(x,y)
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
