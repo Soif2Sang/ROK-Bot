@@ -129,7 +129,7 @@ class LoginUI(ft.Column):
                 ApiSingleton().setSupabaseUrl(keys["supabase_url"])
 
                 self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
-                # self.initial_page.subscription_checker.start()
+                self.initial_page.subscription_checker.start()
             else:
                 sleep(5)
                 self.initial_page.splash = None
