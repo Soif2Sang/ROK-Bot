@@ -122,8 +122,8 @@ class LoginUI(ft.Column):
                 self.initial_page.update()
                 self.initial_page.go("/emulator-choice")
 
-                keys = json.load(self.initial_page.keyauthapp.var("keys"))
-                
+                keys = json.loads(self.initial_page.keyauthapp.var("keys"))
+
                 ApiSingleton().setApiKey(keys["2captcha"])
                 ApiSingleton().setSupabasePublicKey(keys["supabase_public_key"])
                 ApiSingleton().setSupabaseUrl(keys["supabase_url"])
