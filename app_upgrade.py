@@ -9,29 +9,25 @@ from time import sleep
 import flet as ft
 from flet_route import Routing, path
 
-import views.tiles.tile
-from views.settings.general._settings import AllSettings
-from utils.Components.card import GenerateCard
-from utils.flet_translations import translate
-from views.group_choice import EmulatorGroup
-from utils.auth import selfApi
-from utils.Components.AnimatedCard import AnimatedCard
-from utils.Components.filescan import generate_filescan
-from utils.Components.maintenance import generate_maintenance
-from utils.constants import BREZILIAN, toasts_history
-from utils.functions import FileSingleton, getchecksum, get_dic_instances, get_dic_instances_ld
-from views.login.login import LoginUI
-
-from utils.flet_toast.core import Position
-from utils.flet_toast.toasts_flexible import ToastsFlexible
-from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
-from views.city_layout import viewCityLayout
-from views.config_path import find_file_in_all_drives
-from views.main import Main
-from views.profile_settings import viewProfileSettings
-
 try:
-    1
+    from utils.Components.AnimatedCard import AnimatedCard
+    from utils.Components.card import GenerateCard
+    from utils.Components.filescan import generate_filescan
+    from utils.Components.maintenance import generate_maintenance
+    from utils.auth import selfApi
+    from utils.constants import BREZILIAN, toasts_history
+    from utils.flet_toast.core import Position
+    from utils.flet_toast.toasts_flexible import ToastsFlexible
+    from utils.flet_translations import translate
+    from utils.functions import FileSingleton, getchecksum, get_dic_instances, get_dic_instances_ld
+    from utils.singletons import EmulatorSingleton, LinkSingleton
+    from views.city_layout import viewCityLayout
+    from views.config_path import find_file_in_all_drives
+    from views.group_choice import EmulatorGroup
+    from views.login.login import LoginUI
+    from views.main import Main
+    from views.profile_settings import viewProfileSettings
+    from views.settings.general._settings import AllSettings
 except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -60,7 +56,10 @@ except Exception as e:
     exit()
 
 fileSingleton = FileSingleton()
-
+data = fileSingleton.getCachedData()
+if "API_KEY" not in data:
+    data["API_KEY"] = ""
+    fileSingleton.write_data(data)
 
 def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -136,8 +135,8 @@ def main(page: ft.Page):
             clear=True,
             view=viewProfileSettings,
         ),
-        path(url="/group-choice", clear=True, view=group_choice),
-        path(url="/settings", clear=True, view=settings)
+        path(url="/configure-workers", clear=True, view=group_choice),
+        path(url="/settings", clear=True, view=settings),
     ]
 
     page.routing = Routing(
@@ -286,19 +285,24 @@ def login(page: ft.Page, params, basket):
         padding=0,
     )
 
+
 def settings(page: ft.Page, params, basket):
-    controls = [ft.Row(
+    controls = [
+        ft.Row(
             controls=[
                 ft.IconButton(
                     icon=ft.icons.ARROW_BACK,
                     on_click=lambda _: page.go("/"),
                 ),
                 ft.Text(value="Back", size=20),
-            ])
-
-    , ft.Divider(height=1), AllSettings(page, '0')]
+            ]
+        ),
+        ft.Divider(height=1),
+        AllSettings(page, "0"),
+    ]
 
     return ft.View(route="/settings", controls=controls)
+
 
 def group_choice(page: ft.Page, params, basket):
     emulator = EmulatorSingleton().getEmulator()
@@ -330,7 +334,7 @@ def group_choice(page: ft.Page, params, basket):
     inside.append(
         GenerateCard(
             subtitle=translate(
-                    "You can assign each emulator to a specific group. When the bot is initiated, all groups will simultaneously start their initial emulator, perform actions, close it, and then proceed to the next emulator in sequence. This ensures that emulators are opened only when actively performing tasks"
+                "The emulator requires a 'Worker' to execute tasks. Once you start the bot, all workers will start their first assigned emulator, perform actions, close it, and then proceed to the next emulator in sequence. Decreasing the number of workers will result in fewer simultaneous windows, while increasing it will lead to a higher number of concurrent windows."
             )
         )
     )
@@ -339,7 +343,7 @@ def group_choice(page: ft.Page, params, basket):
 
     controls.append(ft.ListView(controls=inside, expand=1))
 
-    return ft.View(route="/group-choice", controls=controls)
+    return ft.View(route="/configure-workers", controls=controls)
 
 
 if __name__ == "__main__":

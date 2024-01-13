@@ -114,7 +114,7 @@ class RssTransfer(Task):
 
     @get_class
     def run(self, type=None, quantity=None):
-        if self.data[self.sel]["API_KEY"] == "":
+        if self.data["API_KEY"] == "":
             self.generate_toast(
                 "Warning",
                 "This feature require a custom ApiKey.",
