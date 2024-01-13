@@ -44,7 +44,7 @@ from tasks.Task_runner import TaskRunner
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.singletons import FileSingleton
+from utils.singletons import FileSingleton, SharedData
 
 # from utils.android_debug_bridge import *
 DEBUG = True
@@ -207,8 +207,30 @@ if __name__ == "__main__":
     from ppadb.client import Client as PPADBClient
 
     fS = FileSingleton()
-    data = fS.get_path()
+    fS.getCachedData()
 
+    print(id(fS), "ici")
+    SharedData.dictionary = fS.get_data()
+
+
+    print(id(SharedData.dictionary))
+    bot = get_bot("2")
+
+    # print(id(bot.task.fileSingleton))
+    #
+    exit()
+    # bot.expedition.run()
+    # bot.vip.run()
+
+    for i in range(15):
+        print(bot.task.in_city())
+    # self.find_img(
+    #     target="checkpoint_star",
+    #     source=self.adb.get_cv2_img()[:60, 380:600],
+    #     confidence=0.97,
+    # )
+    print(bot.task.find_img(target="hammer"))
+    exit()
     # adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
     # cmd = f"{adb_path} connect 127.0.0.1-5564"
     # subprocess.Popen(cmd)
@@ -227,7 +249,7 @@ if __name__ == "__main__":
         print(result.stdout)
         return result.stdout.strip() == "1"
 
-    AdbLd('1', 'emulator', 5556).wait_boot_complete()
+    AdbLd("1", "emulator", 5556).wait_boot_complete()
 
     while True:
         print(check_emulator_status("emulator-5556"))

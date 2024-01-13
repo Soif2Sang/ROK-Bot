@@ -33,7 +33,7 @@ class AllSettings(PageSettings):
                     content=ft.Text(
                         spans=[
                             ft.TextSpan(
-                                text=translate("Emulator groups"),
+                                text=translate("Emulator Workers"),
                                 style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
                             ),
                         ]
@@ -43,9 +43,9 @@ class AllSettings(PageSettings):
                     margin=ft.margin.only(top=5, bottom=3),
                 ),
                 ft.OutlinedButton(
-                    text="Manage groups",
+                    text="Configure Workers",
                     icon=ft.icons.SETTINGS,
-                    on_click=lambda _: self.initial_page.go("/group-choice"),
+                    on_click=lambda _: self.initial_page.go("/configure-workers"),
                     style=ButtonStyle(
                         shape={
                             ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),

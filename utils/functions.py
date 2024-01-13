@@ -270,7 +270,7 @@ def get_dic_instances_ld():
     if emulators[-1] == "":
         emulators.pop()
 
-    if emulators[-1][0] == ",":
+    if emulators and emulators[-1][0] == ",":
         emulators.pop()
 
     final = []

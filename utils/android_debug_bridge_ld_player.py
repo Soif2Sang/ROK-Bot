@@ -29,6 +29,8 @@ class AdbLd(Adb):
         end_time = time() + timeout
 
         while True:
+            if time() > end_time:
+                raise TimeoutError()
             try:
                 result = self.shell(cmd)
             except RuntimeError as e:
@@ -43,8 +45,6 @@ class AdbLd(Adb):
             if result.strip() == "1":
                 return True
 
-            if time() > end_time:
-                raise TimeoutError()
             elif timedelta > 0:
                 sleep(timedelta)
 

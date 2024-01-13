@@ -46,13 +46,13 @@ class Adb:
 
     def __init__(self, number: str, host="127.0.0.1", port=5037):
         self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
+        self.images = ImageSingleton()
         self.client = PPADBClient(host, port)
         self.host = host
         self.port = port
         self.number = number
+        self.data = self.FileSingleton.getCachedData()
         self.name = self.data[self.number]["name"]
-        self.images = ImageSingleton()
         self.is_ld = False
 
     def __str__(self):
@@ -79,7 +79,7 @@ class Adb:
 
     def start_server(self):
         raise NotImplementedError("Method 'start_server' is not implemented in the base class.")
-    
+
     def get_device(self, host="127.0.0.1", fail=0):
         raise NotImplementedError("Method 'get_device' is not implemented in the base class.")
 
@@ -93,33 +93,6 @@ class Adb:
 
     def wait_boot_complete(self, timeout=100, timedelta=1):
         raise NotImplementedError("Method 'wait_boot_complete' is not implemented in the base class.")
-        """
-        :param timeout: second
-        :param timedelta: second
-        """
-        cmd = "getprop sys.boot_completed"
-
-        end_time = time() + timeout
-
-        while True:
-            try:
-                result = self.shell(cmd)
-            except RuntimeError as e:
-                self.print(str(e))
-                sleep(0.5)
-                continue
-            except DeviceNotFoundException as e:
-                self.print(str(e))
-                sleep(0.5)
-                continue
-
-            if result.strip() == "1":
-                return True
-
-            if time() > end_time:
-                raise TimeoutError()
-            elif timedelta > 0:
-                sleep(timedelta)
 
     def connect_to_device(self, host="127.0.0.1"):
         path = self.FileSingleton.get_path()
@@ -137,10 +110,10 @@ class Adb:
     def get_client_devices(self):
         return self.client.devices()
 
-    def print(self, text: str):
+    def print(self, *args: str):
         data = self.FileSingleton.get_data()
-        print(f"[ {date.today()} {current_time()} ] [ {data[self.number]['name']} ] {text}")
-        self.FileSingleton.write(self.name, text)
+        print(f"[ {date.today()} {current_time()} ] [ {data[self.number]['name']} ] {' '.join(map(str, args))}")
+        self.FileSingleton.write(self.name, ' '.join(map(str, args)))
 
     def get_curr_device_screen_img_byte_array(self):
         try:
@@ -309,20 +282,16 @@ class Adb:
         self.shell(string)
         return
 
-
     def shell(self, string, max_attempts=5, timeout=2):
         for attempt in range(max_attempts):
             try:
                 device = self.get_device()
                 return device.shell(string)
-            except RuntimeError or DeviceNotFoundException:
-                self.print("Cannot use shell")
+            except (RuntimeError, DeviceNotFoundException, Exception) as e:
+                self.print(f"Cannot use shell: {e}")
                 self.restart_adb_server()
 
         raise DeviceNotFoundException("Unable to execute shell command after multiple attempts")
-
-            
-        
 
     # def shell(self, command, fail = 0, timeout=120):
     #     end_time = time() + timeout
