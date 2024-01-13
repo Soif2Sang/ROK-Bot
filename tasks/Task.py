@@ -634,9 +634,18 @@ class Task:
         username = self.data['user']['username']
         nb_captcha = increment_captcha_requests(username)
 
-        emulator_limit = EmulatorSingleton().getEmulatorLimit()
+        subscription_tier = ApiSingleton().getTier() # subscription tier
 
-        if emulator_limit == 9:
+        if subscription_tier == 12:
+            if nb_captcha == 220:
+                self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
+            if nb_captcha >= 230:
+                self.send_discord_message("Captcha limit exceeded. You may want to upgrade your tier.", False)
+                self.print("You have exceeded the captcha limit. Please try again later.", ft.colors.RED)
+                self.set_status("Captcha Limit Exceeded")
+                while True:
+                    self.better_sleep((60 * 5, 60 * 5))
+        elif subscription_tier == 9:
             if nb_captcha == 160:
                 self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
             if nb_captcha >= 170:
@@ -645,7 +654,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif emulator_limit == 6:
+        elif subscription_tier == 6:
             if nb_captcha == 120:
                 self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
             if nb_captcha >= 130:
@@ -655,15 +664,14 @@ class Task:
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
         else:  # default case
-            if nb_captcha == 75:
+            if nb_captcha == 60:
                 self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
-            if nb_captcha >= 85:
+            if nb_captcha >= 70:
                 self.send_discord_message("Captcha limit exceeded. You may want to upgrade your tier.", False)
                 self.print("You have exceeded the captcha limit. Please try again later.", ft.colors.RED)
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        
         return True
 
 
@@ -675,7 +683,8 @@ class Task:
                     "Captcha detected !",
                 )
 
-            self.is_captcha_requests_limit_reached()
+            if not self.data["API_KEY"]:
+                self.is_captcha_requests_limit_reached()
             captcha = self.save_captcha_slider()
 
             self.solve_slider(captcha)
@@ -1023,7 +1032,8 @@ class Task:
         previous_text = self.get_text()
 
         while self.find_img(target="close_refresh_ok", confidence=0.75) is not None:
-            self.is_captcha_requests_limit_reached()
+            if not self.data["API_KEY"]:
+                self.is_captcha_requests_limit_reached()
 
             self.solve_captcha(i, DefaultApiKey)
             i += 1
