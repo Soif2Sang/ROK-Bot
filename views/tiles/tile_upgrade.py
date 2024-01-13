@@ -90,7 +90,7 @@ class TileUpgrade(ft.Container):
         self.initial_page.tile_manager.unselect_all()
         self.button_select.selected = True
 
-        if len(self.initial_page.body.controls) > 2:
+        if len(self.initial_page.body.controls) > 3:
             self.initial_page.body.controls.pop()
 
         if self.number not in self.initial_page.frames:

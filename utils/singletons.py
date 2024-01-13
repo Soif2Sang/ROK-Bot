@@ -1,7 +1,9 @@
 import json
+import subprocess
 from collections import defaultdict
 from datetime import date, datetime
 from threading import Lock
+from time import sleep
 from typing import Literal
 
 
@@ -23,11 +25,13 @@ class ApiSingleton:
         with self.FileLock:
             self.apikey = key
 
+
 class EmulatorSingleton:
     __instance = None
     FileLock = Lock()
     emulator = ""
     limit = 0
+
 
     def __new__(cls):
         if cls.__instance is None:
@@ -49,6 +53,21 @@ class EmulatorSingleton:
     def setEmulatorLimit(self, limit: int):
         with self.FileLock:
             self.limit = limit
+
+    def startEmulator(self, emulator: str):
+        path = FileSingleton().get_path()
+        data = FileSingleton().get_data()
+        emulator_choice = EmulatorSingleton().getEmulator()
+
+        with self.FileLock:
+            if emulator_choice == "ld":
+                cmd = f'{path["LD-Console"]} launch --index {data.get(emulator).get("instance")}'
+            else:
+                cmd = f'{path["HD-Player"]} --instance {data.get(emulator).get("instance")}'
+
+            subprocess.Popen(cmd)
+
+            sleep(4)
 
 
 class CaptchaSingleton:

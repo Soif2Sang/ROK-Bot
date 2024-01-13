@@ -538,15 +538,10 @@ class TaskRunner(Task):
         data = self.FileSingleton.get_data()
         emulator_choice = EmulatorSingleton().getEmulator()
 
-        if emulator_choice == "ld":
-            cmd = f'{path["LD-Console"]} launch --index {self.data.get(emulator).get("instance")}'
-        else:
-            cmd = f'{path["HD-Player"]} --instance {self.data.get(emulator).get("instance")}'
-
         if not win32gui.FindWindow(None, self.name):
-            subprocess.Popen(cmd)
             print(f"Bot will wait until the device is properly booted.")
             self.set_status("Booting")
+            EmulatorSingleton().startEmulator(emulator)
             try:
                 self.adb.wait_boot_complete(timeout=120, timedelta=3)
                 print("Boot completed")
@@ -554,7 +549,7 @@ class TaskRunner(Task):
                 print("Timed out waiting for boot")
                 self.kill_instance()
                 sleep(1)
-                return self.start_emulator(emulator, deadstop+1)
+                return self.start_emulator(emulator, deadstop + 1)
 
         if emulator_choice == "ld":
             instances = get_dic_instances_ld()
@@ -740,8 +735,6 @@ class TaskRunner(Task):
                 self.set_status("Starting..")
                 self.print("Changing adb..")
                 self.print(f"{self.adb.number = } {self.adb.port =}")
-
-
 
                 self.adb.__repr__()
                 self.print("Connecting to the emulator..")
