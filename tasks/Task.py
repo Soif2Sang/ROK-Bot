@@ -636,7 +636,7 @@ class Task:
 
         subscription_tier = ApiSingleton().getTier() # subscription tier
 
-        if subscription_tier == 12:
+        if subscription_tier == 4:
             if nb_captcha == 220:
                 self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
             if nb_captcha >= 230:
@@ -645,7 +645,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif subscription_tier == 9:
+        elif subscription_tier == 3:
             if nb_captcha == 160:
                 self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
             if nb_captcha >= 170:
@@ -654,7 +654,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif subscription_tier == 6:
+        elif subscription_tier == 2:
             if nb_captcha == 120:
                 self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
             if nb_captcha >= 130:
