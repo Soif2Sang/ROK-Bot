@@ -163,8 +163,8 @@ class selfApi:
             for i in range(len(subs)):
                 tier = int(subs[i]["level"])
 
-                if EmulatorSingleton().getEmulatorLimit() < tier:
-                    EmulatorSingleton().setEmulatorLimit(tier)
+                if ApiSingleton().getTier() < tier:
+                    ApiSingleton().setTier(tier)
 
             return True
         else:
