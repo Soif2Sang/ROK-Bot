@@ -3,6 +3,8 @@ import re
 import shutil
 import subprocess
 import sys
+import requests
+
 from datetime import datetime
 from functools import wraps
 from os.path import exists
@@ -14,7 +16,7 @@ import win32process
 from decohints import decohints
 
 from utils.constants import DEBUG
-from utils.singletons import FileSingleton
+from utils.singletons import ApiSingleton, FileSingleton
 
 dir = "./"
 
@@ -319,4 +321,21 @@ def get_all_vms_running_ld():
     return get_current_instances_ld(get_dic_instances_ld())
 
 
-# print(get_all_vms_running_ld())
+def increment_captcha_requests(username: str) -> int:
+    url = ApiSingleton().getSupabaseUrl()
+
+    headers = {
+        'Content-Type': 'application/json',
+        'apikey': ApiSingleton().getSupabasePublicKey(),
+        'Authorization': f'Bearer {ApiSingleton().getSupabasePublicKey()}'
+    }
+
+    data = {
+        'username_param': username
+    }
+
+    response = requests.post(url, json=data, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()
+    raise Exception("Failed to increment captcha requests for user")
