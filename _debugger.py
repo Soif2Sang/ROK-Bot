@@ -229,7 +229,7 @@ if __name__ == "__main__":
     bot = get_bot("2")
     bot.task.solve_captcha()
     exit()
-    bot.task.is_captcha_requests_limit_reached("maxou")
+    bot.task.handle_captcha_limit("maxou")
     # print(id(bot.task.fileSingleton))
     #
     exit()
