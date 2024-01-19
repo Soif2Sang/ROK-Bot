@@ -11,9 +11,7 @@ class ApiSingleton:
     __instance = None
     FileLock = Lock()
     apikey = ""
-    supabase_url = ""
-    supabase_public_key = ""
-    tier = 1
+    tier = ""
 
     def __new__(cls):
         if cls.__instance is None:
@@ -28,29 +26,14 @@ class ApiSingleton:
         with self.FileLock:
             self.apikey = key
 
-    def getSupabaseUrl(self) -> str:
-        with self.FileLock:
-            return self.supabase_url
 
-    def setSupabaseUrl(self, supabase_url: str):
-        with self.FileLock:
-            self.SupabaseUrl = supabase_url
-
-    def getSupabasePublicKey(self) -> str:
-        with self.FileLock:
-            return self.apikey
-
-    def setSupabasePublicKey(self, supabase_public_key: str):
-        with self.FileLock:
-            self.supabase_public_key = supabase_public_key
-
-    def getTier(self) -> int:
+    def getTier(self) -> str:
         with self.FileLock:
             return self.tier
 
-    def setTier(self, tier: int):
+    def setTier(self, tier: str):
         with self.FileLock:
-            self.apikey = tier
+            self.tier = tier
 
 
 class EmulatorSingleton:
