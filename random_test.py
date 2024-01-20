@@ -1,31 +1,33 @@
-import win32con
-import win32gui
-import win32ui
+import os
+from supabase import create_client, Client
 
-def background_screenshot(hwnd, width, height):
-    wDC = win32gui.GetWindowDC(hwnd)
-    dcObj=win32ui.CreateDCFromHandle(wDC)
-    cDC=dcObj.CreateCompatibleDC()
-    dataBitMap = win32ui.CreateBitmap()
-    dataBitMap.CreateCompatibleBitmap(dcObj, width, height)
-    cDC.SelectObject(dataBitMap)
-    cDC.BitBlt((0,0),(width, height) , dcObj, (0,0), win32con.SRCCOPY)
-    dataBitMap.SaveBitmapFile(cDC, 'screenshot.bmp')
-    dcObj.DeleteDC()
-    cDC.DeleteDC()
-    win32gui.ReleaseDC(hwnd, wDC)
-    win32gui.DeleteObject(dataBitMap.GetHandle())
+from supabase_auth import SupabaseClient
+from views.login.login2 import LoginScreen
+import flet as ft
 
+url: str = "https://rytpbbadrdnfozckfjde.supabase.co"
+key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dHBiYmFkcmRuZm96Y2tmamRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDUxNDU2ODAsImV4cCI6MjAyMDcyMTY4MH0.K3da9dT4qw9e3osKrQakBEPVjeLWMDo0dEdytVLLqfY"
+# supabase: Client = create_client(url, key)
 
-windowname = 'Rise of Kingdoms'
-hwnd = win32gui.FindWindow(None, windowname)
+# print(supabase.auth.sign_in_with_password({'email': "maxou@gmail.com", "password": "maxou@gmail.com"}))
 
-# Get window bounds
-left, top, right, bot = win32gui.GetWindowRect(hwnd)
-w = right - left
-h = bot - top
+# print(supabase.table("keys").select("*").eq('name', '2captcha').execute())
 
+# print(supabase.table("subscriptions").select("*").execute())
 
-background_screenshot(hwnd, w, h)
+# from utils.supabase_auth import SupabaseClient
+# from ttest import test
+#
+# s = SupabaseClient()
+# s.login("maxou@gmail.com", "maxou@gmail.com")
+#
+# print(s.getApiKey('2captcha'))
+
+# s.client.auth.sign_out()
 
 
+s = SupabaseClient()
+s.login("maxou@gmail.com", "maxou@gmail.com")
+messages = s.getMessages()
+for message in messages:
+    print(message)

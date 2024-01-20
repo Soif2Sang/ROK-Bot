@@ -78,6 +78,10 @@ class SupabaseClient():
         data, count = self.client.rpc('increase_captcha_request', {}).execute()
         return int(data[1])
 
+    def readMessage(self, id):
+        self.client.table("messages").update({'read': True}).eq('id', id).execute()
+
+
 class TestSupabaseClient(unittest.TestCase):
 
     supabase_client = None
@@ -122,6 +126,18 @@ class TestSupabaseClient(unittest.TestCase):
             self.fail()
         except:
             self.assertTrue(True)
+
+    def test_can_accept_message(self):
+        self.supabase_client.client.table("messages").update({'read': True}).eq('id',2).execute()
+
+        # self.supabase_client.readMessage(2)
+        # self.supabase_client.client.table("messages").update({'read': False}).eq('id', 2).execute()
+
+    def cannot_read_apikey(self):
+        self.supabase_client.client.auth.sign_out()
+        data,  count = self.supabase_client.client.table("keys").select('*').execute()
+        self.assertEqual(len(data), 1)
+
     def tearDown(self):
         self.supabase_client: SupabaseClient
         self.supabase_client.client.auth.sign_out()
