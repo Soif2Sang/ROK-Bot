@@ -3,7 +3,7 @@ import os
 import subprocess
 import platform
 
-import win32security
+#import win32security
 from supabase import Client, create_client
 from utils.constants import url, key, VERSION
 import unittest
