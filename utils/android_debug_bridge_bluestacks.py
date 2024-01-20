@@ -50,11 +50,11 @@ class AdbBluestacks(Adb):
         while True:
             if time() > end_time:
                 raise TimeoutError()
-
             try:
                 result = self.shell(cmd)
             except RuntimeError as e:
                 self.print("RuntimeError", str(e))
+                accurate_sleep(3)
                 continue
             except DeviceNotFoundException as e:
                 self.print("DeviceNotFoundException", str(e))

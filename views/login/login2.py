@@ -49,6 +49,8 @@ def update_user_info(password, username):
     data["user"] = {"username": username, "password": password}
     FileSingleton().write_data(data)
 
+textField = {"content_padding" : ft.padding.all(10), "color":ft.colors.SURFACE_VARIANT, "label_style":ft.TextStyle(color=ft.colors.SURFACE_VARIANT)}
+
 class NoSubscriptionFound(Exception):
     pass
 
@@ -65,9 +67,9 @@ class LoginScreen(ft.ResponsiveRow):
             bgcolor=ft.colors.BLACK
         )
 
-        self.textfield_username = ft.TextField(label="Username", content_padding=ft.padding.all(10),
+        self.textfield_username = ft.TextField(label="Username", **textField,
                              value=self.data.get("user", {}).get("username", ""))
-        self.textfield_password = ft.TextField(label="Password", content_padding=ft.padding.all(10),
+        self.textfield_password = ft.TextField(label="Password",  **textField,
                              value=self.data.get("user", {}).get("password", ""))
         self.button_login = ft.OutlinedButton(text="Submit", style=button_style, col=12, on_click=self.login)
 
