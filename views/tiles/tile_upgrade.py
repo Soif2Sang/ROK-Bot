@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from time import sleep
 
 import flet as ft
@@ -70,13 +72,13 @@ class TileUpgrade(ft.Container):
 
     def change(self):
         self.selected = not self.selected
-
-        limit = EmulatorSingleton().getEmulatorLimit()
-
-        if len(self.initial_page.tile_manager.get_enabled_sel_object()) >= limit:
-            self.initial_page.tile_manager.disable_all_unselected_tiles()
-        else:
-            self.initial_page.tile_manager.enable_all_unselected_tiles()
+        #
+        # limit = EmulatorSingleton().getEmulatorLimit()
+        #
+        # if len(self.initial_page.tile_manager.get_enabled_sel_object()) >= limit:
+        #     self.initial_page.tile_manager.disable_all_unselected_tiles()
+        # else:
+        #     self.initial_page.tile_manager.enable_all_unselected_tiles()
 
     def hover(self, e):
         e.control.bgcolor = (

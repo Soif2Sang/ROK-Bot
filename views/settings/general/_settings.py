@@ -73,6 +73,7 @@ class AllSettings(PageSettings):
                 label=translate("Custom API key:"),
                 value=self.data.get("API_KEY"),
                 on_change=lambda e: self.submit(e, "API_KEY", str),
+                content_padding=ft.padding.all(10),
             ),
             ft.Divider(),
             ft.Container(
@@ -107,6 +108,7 @@ class AllSettings(PageSettings):
                 label=translate("Your discord ID"),
                 value=self.data["discord"]["user_id"],
                 on_change=lambda e: self.submit(e, "user_id", int),
+                content_padding=ft.padding.all(10),
             ),
         )
 

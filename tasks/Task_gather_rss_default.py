@@ -83,12 +83,11 @@ class GatherRssDefault(GatherRss):
         if not resolved:
             resolved = self.check_captcha()
 
-        if node_place == "First":
-            screen = self.check_reconnect(self.adb.get_cv2_img())
-            screen = self.check_download_page(screen)
-            self.check_log_back(screen)
+        screen = self.check_reconnect(self.adb.get_cv2_img())
+        screen = self.check_download_page(screen)
+        self.check_log_back(screen)
 
-        elif node_place == "Done":
+        if node_place == "Done":
             self.click(uniform(600, 700), (uniform(250, 400)))
             self.better_sleep((2, 4))
             return
@@ -118,9 +117,7 @@ class GatherRssDefault(GatherRss):
             self.check_log_back()
             self.click_loop()
 
-            print(f"Looking for : {node_type}")
             x, y = self.select_resource_type(node_type)
-            print(x,y)
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 

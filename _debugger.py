@@ -15,6 +15,9 @@ from MTM import matchTemplates
 
 from Task_claim_campaign import ClaimCampaign
 from android_debug_bridge_bluestacks import AdbBluestacks
+from auth import selfApi
+from constants import BREZILIAN
+from functions import getchecksum, increment_captcha_requests
 from twocaptcha import TwoCaptcha
 
 import taskscod.COD_Task_daily_vip
@@ -44,7 +47,7 @@ from tasks.Task_runner import TaskRunner
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.singletons import FileSingleton, SharedData
+from utils.singletons import FileSingleton, ApiSingleton
 
 # from utils.android_debug_bridge import *
 DEBUG = True
@@ -205,17 +208,30 @@ if __name__ == "__main__":
 
     # print(TwoCaptcha("9c5059a65dd40980bd2fc113f616060e").balance())
     from ppadb.client import Client as PPADBClient
+    bot = get_bot("3")
+    print(bot.task.check_chest())
+    exit()
+    keyauthapp = selfApi(
+        name="Rokbd" if not BREZILIAN else "RokbdBR",
+        ownerid="7oofxdj8uH",
+        secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
+        if not BREZILIAN
+        else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
+        version="2.0",
+        hash_to_check=getchecksum(),
+    )
 
-    fS = FileSingleton()
-    fS.getCachedData()
+    keyauthapp.login("maxence", "fe")
+    keys = json.loads(keyauthapp.var("keys"))
+    print(keys)
+    ApiSingleton().setApiKey(keys["2captcha"])
+    ApiSingleton().setSupabasePublicKey(keys["supabase_public_key"])
+    ApiSingleton().setSupabaseUrl(keys["supabase_url"])
 
-    print(id(fS), "ici")
-    SharedData.dictionary = fS.get_data()
-
-
-    print(id(SharedData.dictionary))
     bot = get_bot("2")
-
+    bot.task.solve_captcha()
+    exit()
+    bot.task.handle_captcha_limit("maxou")
     # print(id(bot.task.fileSingleton))
     #
     exit()

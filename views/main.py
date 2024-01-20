@@ -5,7 +5,7 @@ import traceback
 
 import flet as ft
 
-from views.tiles.handler.logging_handler import Logger, LoggerUpgrade
+from tiles.handler.tile_handler_worker import TileHandlerWorker
 from views.tiles.handler.tile_handler_u import TileManagerUpgrade
 from utils.constants import VERSION, toasts_history
 from utils.flet_toast.core import Position
@@ -23,19 +23,19 @@ def Main(page: ft.Page, days=950):
     page.horizontal_alignment = None
     page.frames = {}
     page.window_resizable = True
-    page.window_width = 450
-    page.window_height = 700
+    page.window_width = 500
+    page.window_height = 800
     page.theme = theme
 
     if page.UPGRADE:
-        page.tile_manager = TileManagerUpgrade(page)
+        page.tile_manager = TileHandlerWorker(page)
     else:
         page.tile_manager = TileHandler(page)
 
     page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
 
-    if page.UPGRADE:
-        page.body.controls.append(page.tile_manager.start_bar)
+    # if page.UPGRADE:
+    #     page.body.controls.append(page.tile_manager.start_bar)
 
     page.go("/")
     page.tile_manager.refresh()

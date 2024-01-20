@@ -1,3 +1,4 @@
+from __future__ import annotations
 import asyncio
 import json
 import os
@@ -17,6 +18,12 @@ import win32gui
 from numpy import array, ndarray
 from PIL import Image, ImageFile
 from pytesseract import pytesseract
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tiles.tile import Tile
+    from tiles.tile_upgrade import TileUpgrade
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
@@ -40,7 +47,7 @@ pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 
 class Task:
-    def __init__(self, tile):
+    def __init__(self, tile: Tile | TileUpgrade):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.getCachedData()
         self.current_profile: str = "1"
@@ -630,50 +637,72 @@ class Task:
             sleep(interval_duration)
             self.script_pause()
 
-    def is_captcha_requests_limit_reached(self):
-        username = self.data['user']['username']
-        nb_captcha = increment_captcha_requests(username)
+    def handle_captcha_limit(self):
+        nb_captcha = increment_captcha_requests(self.data["user"]["username"])
 
-        subscription_tier = ApiSingleton().getTier() # subscription tier
+        subscription_tier = ApiSingleton().getTier()
+
+        if self.data["API_KEY"]:
+            return
 
         if subscription_tier == 4:
-            if nb_captcha == 220:
-                self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
-            if nb_captcha >= 230:
+            if nb_captcha == 200 * 30:
+                self.generate_toast(
+                    "Captcha limit.",
+                    "Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.",
+                    ft.icons.WARNING_OUTLINED,
+                    ft.colors.AMBER,
+                )
+            if nb_captcha >= 230 * 30:
                 self.send_discord_message("Captcha limit exceeded. You may want to upgrade your tier.", False)
                 self.print("You have exceeded the captcha limit. Please try again later.", ft.colors.RED)
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
         elif subscription_tier == 3:
-            if nb_captcha == 160:
-                self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
-            if nb_captcha >= 170:
+            if nb_captcha == 140 * 30:
+                self.generate_toast(
+                    "Captcha limit.",
+                    "Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.",
+                    ft.icons.WARNING_OUTLINED,
+                    ft.colors.AMBER,
+                )
+            if nb_captcha >= 170 * 30:
                 self.send_discord_message("Captcha limit exceeded. You may want to upgrade your tier.", False)
                 self.print("You have exceeded the captcha limit. Please try again later.", ft.colors.RED)
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
         elif subscription_tier == 2:
-            if nb_captcha == 120:
-                self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
-            if nb_captcha >= 130:
+            if nb_captcha == 100 * 30:
+                self.generate_toast(
+                    "Captcha limit.",
+                    "Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.",
+                    ft.icons.WARNING_OUTLINED,
+                    ft.colors.AMBER,
+                )
+            if nb_captcha >= 130 * 30:
                 self.send_discord_message("Captcha limit exceeded. You may want to upgrade your tier.", False)
                 self.print("You have exceeded the captcha limit. Please try again later.", ft.colors.RED)
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
         else:  # default case
-            if nb_captcha == 60:
-                self.generate_toast("Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid being rate limited or Upgrade plan to increase limit.")
-            if nb_captcha >= 70:
+            if nb_captcha == 50 * 30:
+                self.generate_toast(
+                    "Captcha limit.",
+                    "Your captcha requests are nearing the limit. Please try to minimize captcha solves to avoid "
+                    "being rate limited or Upgrade plan to increase limit.",
+                    ft.icons.WARNING_OUTLINED,
+                    ft.colors.AMBER,
+                )
+            if nb_captcha >= 70 * 30:
                 self.send_discord_message("Captcha limit exceeded. You may want to upgrade your tier.", False)
                 self.print("You have exceeded the captcha limit. Please try again later.", ft.colors.RED)
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
         return True
-
 
     @get_name
     def check_captcha_slider(self, deadstop=0):
@@ -683,8 +712,7 @@ class Task:
                     "Captcha detected !",
                 )
 
-            if not self.data["API_KEY"]:
-                self.is_captcha_requests_limit_reached()
+            self.handle_captcha_limit()
             captcha = self.save_captcha_slider()
 
             self.solve_slider(captcha)
@@ -812,7 +840,7 @@ class Task:
                 ) * 60 + randint(0, 59)
                 self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
                 self.better_sleep((value, value))
-                self.click(co[0] + uniform(0, 50), co[1] + uniform(-10, 20))
+                self.click( 1280 // 3 + co[0] + uniform(0, 50),720 // 2 + co[1] + uniform(-10, 20))
                 self.print("Reconnection..")
                 self.better_sleep((5, 10))
                 self.run_game()
@@ -863,7 +891,7 @@ class Task:
             if self.data.get(self.sel).get("schedules").get(self.current_profile).get("auto_reconnect", False):
                 print(f"[ {current_time()} ] [ {self.name} ] You just got disconnected")
                 print(co)
-                co = self.find_img(source=cv_image[:, 1280 // 4 : 1280 - 1280 // 1], target="reconnect", confidence=0.85)
+                co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
 
                 a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                 print(a)
@@ -979,7 +1007,7 @@ class Task:
         for _ in range(2):
             self.script_pause()
             cv_image = self.adb.get_cv2_img()
-            cropped_image = cv_image[30:170, 0:1225]
+            cropped_image = cv_image[20:200, 400:]
             chest = None
             for i in range(1, 4):
                 self.script_pause()
@@ -988,12 +1016,12 @@ class Task:
                     source=cropped_image,
                     confidence=0.6,
                 )
-                if chest is None:
+                if chest is not None:
                     break
             if chest is not None:
                 if self.data[self.sel]["schedules"][self.current_profile]["auto_captcha"]:
                     # print(co)
-                    self.click(chest[0] + uniform(0, 30), chest[1] + uniform(35, 50))
+                    self.click(400 + chest[0] + uniform(0, 10),20 + chest[1] + uniform(0, 10))
                     self.better_sleep((3, 4))
                     return True
                 else:
@@ -1033,7 +1061,7 @@ class Task:
 
         while self.find_img(target="close_refresh_ok", confidence=0.75) is not None:
             if not self.data["API_KEY"]:
-                self.is_captcha_requests_limit_reached()
+                self.handle_captcha_limit()
 
             self.solve_captcha(i, DefaultApiKey)
             i += 1
