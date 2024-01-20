@@ -8,7 +8,7 @@ import requests
 from datetime import datetime
 from functools import wraps
 from os.path import exists
-from time import perf_counter
+from time import perf_counter, sleep
 
 import pyautogui
 import win32gui
@@ -321,21 +321,30 @@ def get_all_vms_running_ld():
     return get_current_instances_ld(get_dic_instances_ld())
 
 
-def increment_captcha_requests(username: str) -> int:
+def accurate_sleep(sec):
+    interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
+    num_intervals = int(sec / interval_duration)
+
+    for _ in range(num_intervals):
+        sleep(interval_duration)
+
+
+def increment_captcha_requests(username: str, tries=0) -> int:
     url = ApiSingleton().getSupabaseUrl()
 
     headers = {
-        'Content-Type': 'application/json',
-        'apikey': ApiSingleton().getSupabasePublicKey(),
-        'Authorization': f'Bearer {ApiSingleton().getSupabasePublicKey()}'
+        "Content-Type": "application/json",
+        "apikey": ApiSingleton().getSupabasePublicKey(),
+        "Authorization": f"Bearer {ApiSingleton().getSupabasePublicKey()}",
     }
 
-    data = {
-        'username_param': username
-    }
+    data = {"username_param": username}
 
     response = requests.post(url, json=data, headers=headers)
 
     if response.status_code == 200:
         return response.json()
+    elif 3 > tries:
+        sleep(2)
+        return increment_captcha_requests(username, tries + 1)
     raise Exception("Failed to increment captcha requests for user")

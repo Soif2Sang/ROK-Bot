@@ -4,6 +4,7 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from utils.Components.PaymentMethods import payment_methods
 from utils.constants import BREZILIAN
 from utils.flet_translations import translate
 from utils.functions import (
@@ -37,27 +38,27 @@ class NavigationBar(ft.Row):
 
         self.controls.append(self.button_refresh)
 
-        bottom = ft.BottomSheet(
-            content=ft.Row(
-                controls=[
-                    ft.TextButton(
-                        icon=ft.icons.LINK_OUTLINED,
-                        text="Pay with Stripe",
-                        on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
-                    ),
-                    ft.TextButton(
-                        icon=ft.icons.LINK_OUTLINED,
-                        text="Pay with Crypto",
-                        on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            ),
-            open=True,
-            dismissible=True,
-            enable_drag=True,
-            on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
-        )
+        # bottom = ft.BottomSheet(
+        #     content=ft.Row(
+        #         controls=[
+        #             ft.TextButton(
+        #                 icon=ft.icons.LINK_OUTLINED,
+        #                 text="Pay with Stripe",
+        #                 on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
+        #             ),
+        #             ft.TextButton(
+        #                 icon=ft.icons.LINK_OUTLINED,
+        #                 text="Pay with Crypto",
+        #                 on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
+        #             ),
+        #         ],
+        #         alignment=ft.MainAxisAlignment.CENTER,
+        #     ),
+        #     open=True,
+        #     dismissible=True,
+        #     enable_drag=True,
+        #     on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
+        # )
 
         pattern = r"(\d+) Days left"
         match = re.search(pattern, page.title)

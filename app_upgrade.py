@@ -9,13 +9,15 @@ from time import sleep
 import flet as ft
 from flet_route import Routing, path
 
+
 try:
+    from utils.auth import selfApi
+    from utils.constants import BREZILIAN, toasts_history
+    from utils.Components.PaymentMethods import payment_methods
     from utils.Components.AnimatedCard import AnimatedCard
     from utils.Components.card import GenerateCard
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
-    from utils.auth import selfApi
-    from utils.constants import BREZILIAN, toasts_history
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastsFlexible
     from utils.flet_translations import translate
@@ -59,6 +61,10 @@ fileSingleton = FileSingleton()
 data = fileSingleton.getCachedData()
 if "API_KEY" not in data:
     data["API_KEY"] = ""
+    fileSingleton.write_data(data)
+
+if "workers" not in data:
+    data['workers'] = {'ld': {}, 'bluestacks' : {}}
     fileSingleton.write_data(data)
 
 def main(page: ft.Page):
@@ -147,12 +153,11 @@ def main(page: ft.Page):
     page.go("/login")
     page.update()
 
-    if not BREZILIAN:
-        LinkSingleton().setStripeLink(page.keyauthapp.var("stripe"))
-        LinkSingleton().setSellixLink(page.keyauthapp.var("sellix"))
-
 
 def index(page: ft.Page, params, basket):
+    page.window_width = 450
+    page.window_height = 750
+
     return ft.View(route="/", controls=page.body.controls)
 
 
@@ -266,7 +271,7 @@ def login(page: ft.Page, params, basket):
                         blur=100,
                         width=400,
                         height=250,
-                        right=1920 / 4 - 400 / 2,
+                        right=1920 / 4 - 400 / 2 - 10,
                         top=1080 / 4 - 250 / 2 - 15,
                         content=ft.Container(
                             content=page.loginUI,

@@ -2,7 +2,7 @@ import subprocess
 from time import sleep, time
 
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
-from utils.functions import get_dic_instances_ld
+from utils.functions import get_dic_instances_ld, accurate_sleep
 
 bridge = None
 
@@ -35,18 +35,18 @@ class AdbLd(Adb):
                 result = self.shell(cmd)
             except RuntimeError as e:
                 self.print("RuntimeError", str(e))
-                sleep(3)
+                accurate_sleep(3)
                 continue
             except DeviceNotFoundException as e:
                 self.print("DeviceNotFoundException", str(e))
-                sleep(3)
+                accurate_sleep(3)
                 continue
 
             if result.strip() == "1":
                 return True
 
             elif timedelta > 0:
-                sleep(timedelta)
+                accurate_sleep(timedelta)
 
     # def get_device(self, host="127.0.0.1", fail=0):
     #     try:
@@ -95,8 +95,7 @@ class AdbLd(Adb):
             path = self.FileSingleton.get_path()
             cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
             subprocess.run(cmd)
-            sleep(timeout)
-
+            accurate_sleep(timeout)
 
         raise DeviceNotFoundException(f"{host}-{self.port}")
 
