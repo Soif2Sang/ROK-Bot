@@ -132,7 +132,7 @@ class LoginScreen(ft.ResponsiveRow):
 
             if (not subscriptions):
                 raise NoSubscriptionFound()
-
+            print(subscriptions)
             for subscription in subscriptions:
                 ApiSingleton().setTier(tier=subscription['tier'])
                 target_date = datetime.fromisoformat(subscription['end_at']).astimezone()

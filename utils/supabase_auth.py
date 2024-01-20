@@ -50,18 +50,22 @@ class SupabaseClient():
     def login(self, email, password):
         self.client.auth.sign_in_with_password({'email': email, "password": password})
 
-    def getSubscriptions(self):
+    def refresh_session(self):
+        print("refreshing session")
         self.client.auth.refresh_session()
+
+    def getSubscriptions(self):
+        self.refresh_session()
         data, count = self.client.table("subscriptions").select("*").lte('start_at', datetime.datetime.now()).gte('end_at', datetime.datetime.now()).eq("paused", False).order('tier').execute()
         return data[1]
 
     def getMessages(self):
-        self.client.auth.refresh_session()
+        self.refresh_session()
         data, count = self.client.table("messages").select("*").lte('start_at', datetime.datetime.now()).gte('end_at', datetime.datetime.now()).execute()
         return data[1]
 
     def getApiKey(self, name):
-        self.client.auth.refresh_session()
+        self.refresh_session()
         data, count = self.client.table("keys").select("*").eq('name', name).single().execute()
         return data[1]
 
@@ -70,7 +74,7 @@ class SupabaseClient():
         return data[1]
 
     def increamentCaptchaCount(self):
-        self.client.auth.refresh_session()
+        self.refresh_session()
         data, count = self.client.rpc('increase_captcha_request', {}).execute()
         return int(data[1])
 
