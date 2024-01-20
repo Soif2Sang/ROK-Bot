@@ -43,6 +43,7 @@ class UnknownDeviceException(Exception):
 
 class Adb:
     adb_restart_lock = threading.Lock()
+    last_restart_time = 0
 
     def __init__(self, number: str, host="127.0.0.1", port=5037):
         self.FileSingleton = FileSingleton()
@@ -85,11 +86,15 @@ class Adb:
 
     def restart_adb_server(self):
         with Adb.adb_restart_lock:
+            if self.last_restart_time + 20 > time():
+                return
             self.stop_server()
             sleep(5)
             self.start_server()
             sleep(5)
             self.connect_to_device()
+
+            self.last_restart_time = time()
 
     def wait_boot_complete(self, timeout=100, timedelta=1):
         raise NotImplementedError("Method 'wait_boot_complete' is not implemented in the base class.")

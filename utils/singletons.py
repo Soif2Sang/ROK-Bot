@@ -39,6 +39,7 @@ class ApiSingleton:
 class EmulatorSingleton:
     __instance = None
     FileLock = Lock()
+    EmulatorLock = Lock()
     emulator = ""
     limit = 0
 
@@ -69,7 +70,7 @@ class EmulatorSingleton:
         data = FileSingleton().get_data()
         emulator_choice = EmulatorSingleton().getEmulator()
 
-        with self.FileLock:
+        with self.EmulatorLock:
             if emulator_choice == "ld":
                 cmd = f'{path["LD-Console"]} launch --index {data.get(emulator).get("instance")}'
             else:

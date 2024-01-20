@@ -21,6 +21,8 @@ from pytesseract import pytesseract
 
 from typing import TYPE_CHECKING
 
+from supabase_auth import SupabaseClient
+
 if TYPE_CHECKING:
     from tiles.tile import Tile
     from tiles.tile_upgrade import TileUpgrade
@@ -638,14 +640,15 @@ class Task:
             self.script_pause()
 
     def handle_captcha_limit(self):
-        nb_captcha = increment_captcha_requests(self.data["user"]["username"])
+        s = SupabaseClient()
+        nb_captcha = s.increamentCaptchaCount()
 
         subscription_tier = ApiSingleton().getTier()
 
         if self.data["API_KEY"]:
             return
 
-        if subscription_tier == 4:
+        if subscription_tier == 'tier4':
             if nb_captcha == 200 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -659,7 +662,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif subscription_tier == 3:
+        elif subscription_tier == 'tier3':
             if nb_captcha == 140 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -673,7 +676,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif subscription_tier == 2:
+        elif subscription_tier == 'tier2':
             if nb_captcha == 100 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -687,7 +690,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        else:  # default case
+        elif subscription_tier == 'tier1':
             if nb_captcha == 50 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -702,6 +705,8 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
+        else:
+            return False
         return True
 
     @get_name
@@ -1514,7 +1519,7 @@ class Task:
             source = self.adb.get_cv2_img()[230:480, 441:814]
         img = Image.fromarray(source)
 
-        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255), (4, 144, 199), (5, 201, 2), (2, 143, 197), (4, 145, 193), (3, 145, 193)]
+        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255), (4, 144, 199), (5, 201, 2), (2, 143, 197), (4, 145, 193), (3, 145, 193), (4, 145, 194)]
         occupied_colors = [
             (2, 4, 183),
             (233, 233, 233),
