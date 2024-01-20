@@ -5,19 +5,6 @@ from utils.singletons import FileSingleton, EmulatorSingleton
 fs = FileSingleton()
 data = fs.getCachedData()
 
-class SlaveSelector(ft.Dropdown):
-    def __init__(self, name, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.value = name
-        data = fs.getCachedData()
-        options = []
-
-        for key, data in data.values():
-            if isinstance(data, dict) and ("instance" in data):
-                options.append(ft.dropdown.Option(text=data['name'], key=data['instance']))
-
-        self.options = options
-
 class SlaveDraggable(ft.Draggable):
     def __init__(self, instance, *args, **kwargs):
         super().__init__( *args, **kwargs)
@@ -32,11 +19,10 @@ class SlaveDraggable(ft.Draggable):
             border_radius=5
         )
 
-
 class Worker(ft.Container):
     def __init__(self, instance, manager, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.bgcolor = ft.colors.GREY_300
+        self.bgcolor = ft.colors.OUTLINE_VARIANT
         self.height = 300
         self.width = 150
         self.padding = ft.padding.all(5)
@@ -138,7 +124,7 @@ class Worker(ft.Container):
                 content=ft.Container(
                     width=50,
                     height=50,
-                    bgcolor=ft.colors.BLUE_GREY_100,
+                    bgcolor=ft.colors.BACKGROUND,
                     border_radius=5,
                     margin=ft.margin.symmetric(horizontal=10),
                     content=ft.Icon(name=ft.icons.ADD),
@@ -223,7 +209,6 @@ class Worker(ft.Container):
         data = fs.getCachedData()
         data['workers'][EmulatorSingleton().getEmulator()][self.instance][param][index] = int(e.control.value)
         fs.write_data(data)
-
 
 class WorkerSlaveManagement(ft.ListView):
     def __init__(self,page, *args, **kwargs):
