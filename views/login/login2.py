@@ -208,7 +208,7 @@ class LoginScreen(ft.ResponsiveRow):
 
             self.initial_page.title = f"RokNet - {days} Days left"
             self.initial_page.update()
-            sleep(6)
+            sleep(6 * 3600)
             return self.verify_subscription(username, password)
         except Exception as e:
             print(e)

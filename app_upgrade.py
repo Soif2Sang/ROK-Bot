@@ -295,6 +295,9 @@ def settings(page: ft.Page, params, basket):
 
 
 def configure_workers(page: ft.Page, params, basket):
+    page.window_width = 1920 / 2
+    page.window_height = 1080 / 2
+
     controls = [
         ft.Container(
             content=ft.Row(
