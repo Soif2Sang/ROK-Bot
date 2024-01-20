@@ -20,7 +20,7 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import FileSingleton, current_time, get_dic_instances
+from utils.functions import FileSingleton, current_time, get_dic_instances, accurate_sleep
 from utils.resources import ImageSingleton
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
 
@@ -55,18 +55,17 @@ class AdbBluestacks(Adb):
                 result = self.shell(cmd)
             except RuntimeError as e:
                 self.print("RuntimeError", str(e))
-                sleep(3)
                 continue
             except DeviceNotFoundException as e:
                 self.print("DeviceNotFoundException", str(e))
-                sleep(3)
+                accurate_sleep(3)
                 continue
 
             if result.strip() == "1":
                 return True
 
             elif timedelta > 0:
-                sleep(timedelta)
+                accurate_sleep(timedelta)
 
     def get_device(self, host="127.0.0.1", max_attempts=10, timeout=2):
         self.port = str(self.data[str(self.number)]["port"])
@@ -83,7 +82,7 @@ class AdbBluestacks(Adb):
             path = self.FileSingleton.get_path()
             cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
             subprocess.run(cmd)
-            sleep(timeout)
+            accurate_sleep(timeout)
 
         raise DeviceNotFoundException(f"{host}:{self.port}")
 

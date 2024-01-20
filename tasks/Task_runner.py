@@ -268,10 +268,6 @@ class TaskRunner(Task):
         if profile.get("upgrade_city", False):
             lib_tasks.append(UpgradeCity(self))
 
-        if ("TroopTraining" in tasks_names) and self.tile.initial_page.UPGRADE:
-            lib_tasks.pop(tasks_names.index("TroopTraining"))
-            lib_tasks.append(TroopTraining(self))
-
         if profile.get("claim_mails", False):
             lib_tasks.append(ClaimMail(self))
         return lib_tasks
@@ -563,8 +559,8 @@ class TaskRunner(Task):
 
         self.data = data
         self.FileSingleton.write_data(data)
-        self.tile.main_task.adb.connect_to_device()
-        self.tile.runner.adb.connect_to_device()
+        self.worker.main_task.adb.connect_to_device()
+        self.worker.runner.adb.connect_to_device()
 
     @get_name
     def run(self):
@@ -696,12 +692,12 @@ class TaskRunner(Task):
         emulator = EmulatorSingleton().getEmulator()
 
         self.set_sel(tiles[0].number)
-        print(self.sel)
         self.data = self.update_data()
         loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
         loop_time = time()
 
         for i in range(loop_task):
+            loop_time = time()
             first = tiles[0].number
             nb_tile = 0
             for enabled_tile in tiles:
@@ -805,6 +801,117 @@ class TaskRunner(Task):
                 #         self.leave_game(force=True)
                 #     else:
                 #         self.leave_game(force=False)
+
+    def set_status(self, text):
+        super().set_status(text)
+        if self.worker:
+            self.worker.set_text(text)
+
+    @get_name
+    def run4(self, tiles=None):
+        if not tiles:
+            self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
+            return
+
+        self.worker = self.tile
+        self.data = self.update_data()
+
+        emulator = EmulatorSingleton().getEmulator()
+
+        loop_task = 1 if not self.data["workers"][emulator][self.worker.number]["loop_task"] else 9999999
+
+        for i in range(loop_task):
+            cycle_started_at = time()
+            nb_tile = 0
+            for enabled_tile in tiles:
+                enabled_tile.set_text(f"In queue ({nb_tile})")
+                nb_tile += 1
+
+            for enabled_tile in tiles:
+                emulator_started_at = time()
+
+                self.tile = enabled_tile
+                self.set_sel(self.tile.number)
+
+                if self.data[self.sel]["schedules"]["1"]["enable_timing"]:
+                    can_go = False
+                    for t in self.data[self.sel]["schedules"]["1"]["timing"]:
+                        if is_in_frametime(t[0], t[1]):
+                            self.print(f"Profile 1 able to run")
+                            can_go = True
+                            break
+                    if not can_go:
+                        print(f"The current time does not match the rules you set")
+                        continue
+
+                if emulator == "bluestacks":
+                    self.adb = AdbBluestacks(self.tile.number)
+                else:
+                    self.adb = AdbLd(self.tile.number)
+
+                self.start_emulator(self.tile.number)
+                self.tile.runner = self
+                self.set_status("Starting..")
+
+                self.adb.__repr__()
+                self.print("Connecting to the emulator..")
+                self.adb.connect_to_device()
+
+                # First character
+                self.current_profile = "1"
+                self.print("Reminder : only the first profile of each emulator is available")
+                if self.get_config().get("switch_character"):
+                    self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
+                # First character
+                self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
+
+                if self.get_config().get("switch_character", False):
+                    self.check_captcha()
+                    co_first = self.switch_character()
+                    self.wait_until_connected()
+                    # Characters remaining
+                    boolean = True
+                    nb_characters = 2
+                    while co_first and boolean:
+                        self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
+                        nb_characters += 1
+                        self.execute_tasks(
+                            self.get_available_task(self.current_profile),
+                            self.current_profile,
+                        )
+                        self.better_sleep((2.2, 4))
+
+                        self.check_captcha()
+                        boolean = self.switch_character(co_first, nb_characters, 0)
+                        self.wait_until_connected()
+
+                self.set_status("")
+                self.leave_game()
+                self.kill_instance()
+
+                self.print(
+                    f"The bot took {timedelta(seconds=int(time() - emulator_started_at))} to complete all the tasks on this emulator.",
+                    "green",
+                )
+
+                self.print("Shutdown the emulator, waiting for 5 seconds")
+                self.better_sleep((5, 5))
+
+            if self.data["workers"][emulator][self.worker.number]["loop_task"]:
+                waiting_cooldown = self.data["workers"][emulator][self.worker.number]["waiting_cooldown"]
+                waiting_cooldown.sort()
+                t1, t2 = waiting_cooldown
+                time_before_redo_tasks = int(randint(t1, t2) * 60) + randint(0, 60)
+                # self.print("")
+
+                # self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
+
+                for i, enabled_tile in enumerate(tiles):
+                    enabled_tile.add_text(f"Run nb°{i} took {(time() - cycle_started_at) / 60:0.1f} minutes to complete.")
+                    enabled_tile.set_text(f"In queue ({i})")
+
+                self.tile = self.worker
+                self.set_timer(time_before_redo_tasks)
 
     def kill_instance(self):
         self.pid = get_window_pid(self.adb.name)

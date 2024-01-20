@@ -144,13 +144,8 @@ def main(page: ft.Page):
         app_routes=page.app_routes,
     )
 
-    print(id(SharedData), "app.py")
     page.go("/login")
     page.update()
-
-    if not BREZILIAN:
-        LinkSingleton().setStripeLink(page.keyauthapp.var("stripe"))
-        LinkSingleton().setSellixLink(page.keyauthapp.var("sellix"))
 
 
 def index(page: ft.Page, params: Params, basket: Basket):

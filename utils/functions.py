@@ -321,6 +321,14 @@ def get_all_vms_running_ld():
     return get_current_instances_ld(get_dic_instances_ld())
 
 
+def accurate_sleep(sec):
+    interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
+    num_intervals = int(sec / interval_duration)
+
+    for _ in range(num_intervals):
+        sleep(interval_duration)
+
+
 def increment_captcha_requests(username: str, tries=0) -> int:
     url = ApiSingleton().getSupabaseUrl()
 

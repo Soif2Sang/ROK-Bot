@@ -6,6 +6,7 @@ from time import sleep
 import json
 import flet as ft
 
+from utils.Components.PaymentMethods import payment_methods
 from utils.auth import selfApi, update_user_info
 from utils.constants import BREZILIAN, global_name, brezilian_name, ownerid, global_secret, brezilian_secret
 from utils.flet_translations import translate
@@ -62,21 +63,7 @@ class LoginUI(ft.Column):
     def show_payment_banner(self, e):
         self.initial_page.show_bottom_sheet(
             ft.BottomSheet(
-                content=ft.Row(
-                    controls=[
-                        ft.TextButton(
-                            icon=ft.icons.LINK_OUTLINED,
-                            text="Pay with Stripe",
-                            on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
-                        ),
-                        ft.TextButton(
-                            icon=ft.icons.LINK_OUTLINED,
-                            text="Pay with Crypto",
-                            on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                ),
+                content=ft.Container(width=300,height=300, content=payment_methods(), alignment=ft.alignment.center, padding=ft.padding.all(30)),
                 open=True,
                 dismissible=True,
                 enable_drag=True,

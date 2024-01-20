@@ -134,6 +134,7 @@ class LinkSingleton:
     FileLock = Lock()
     sellix = ""
     stripe = ""
+    allLinks = None
 
     def __new__(cls):
         if cls.__instance is None:
@@ -156,6 +157,13 @@ class LinkSingleton:
         with self.FileLock:
             self.sellix = link
 
+    def setAllLinks(self, allLinks):
+        with self.Filelock:
+            self.allLinks = allLinks
+
+    def getAllLinks(self):
+        with self.FileLock:
+            return self.allLinks
 
 class FileSingleton:
     __instance = None

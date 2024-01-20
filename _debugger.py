@@ -208,7 +208,9 @@ if __name__ == "__main__":
 
     # print(TwoCaptcha("9c5059a65dd40980bd2fc113f616060e").balance())
     from ppadb.client import Client as PPADBClient
-
+    bot = get_bot("3")
+    print(bot.task.check_chest())
+    exit()
     keyauthapp = selfApi(
         name="Rokbd" if not BREZILIAN else "RokbdBR",
         ownerid="7oofxdj8uH",
