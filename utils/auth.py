@@ -10,6 +10,8 @@ from uuid import uuid4  # gen random guid
 import flet as ft
 import requests
 import win32security
+
+from utils.Components.PaymentMethods import payment_methods
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
@@ -170,32 +172,23 @@ class selfApi:
         else:
             if self.page is not None:
                 if not BREZILIAN:
-                    content = ft.Column(
-                        controls=[
-                            ft.TextButton(
-                                icon=ft.icons.LINK_OUTLINED,
-                                text="Pay with Stripe",
-                                on_click=lambda _: self.page.launch_url(LinkSingleton().getStripeLink()),
-                            ),
-                            ft.TextButton(
-                                icon=ft.icons.LINK_OUTLINED,
-                                text="Pay with Crypto",
-                                on_click=lambda _: self.page.launch_url(LinkSingleton().getSellixLink()),
-                            ),
-                        ]
-                    )
+                    dial = ft.AlertDialog(title=ft.Text("Subscribe"), content=payment_methods())
+
+                    self.page.dialog = dial
+                    dial.open = True
+                    self.page.update()
                 else:
                     content = ft.Column([ft.Text("Invalid credentials")])
 
-                self.page.show_banner(
-                    ft.Banner(
-                        content=content,
-                        actions=[
-                            ft.TextButton("Close", on_click=lambda e: page.close_banner()),
-                        ],
-                        content_padding=ft.padding.all(5),
+                    self.page.show_banner(
+                        ft.Banner(
+                            content=content,
+                            actions=[
+                                ft.TextButton("Close", on_click=lambda e: page.close_banner()),
+                            ],
+                            content_padding=ft.padding.all(5),
+                        )
                     )
-                )
             return False
 
     def license(self, key, hwid=None):

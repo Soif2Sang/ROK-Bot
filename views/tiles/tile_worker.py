@@ -1,0 +1,178 @@
+import threading
+from time import sleep
+
+import flet as ft
+
+from tiles.tile_slave import TileSlave
+from utils.singletons import EmulatorSingleton
+from tasks.Task import Task
+from tasks.Task_runner import TaskRunner
+from views.tiles.handler.config_handler import FrameUpgrade, Frame
+from views.tiles.tile import ConfigOverrider
+
+from utils.functions import FileSingleton
+
+
+class TileWorker(ft.ExpansionTile):
+    def __init__(self, page: ft.Page, number:str, **kwargs):
+        super().__init__(**kwargs)
+        self.FileSingleton = FileSingleton()
+        self.number = number
+        self.initial_page = page
+
+        self.paused = False
+        self.stopped = False
+
+        self.main_task = Task(self)
+        self.runner = TaskRunner(self.main_task, self)
+        self.tasks_process = threading.Thread(target=self.runner.run4)
+
+        self.button_select = ft.IconButton(
+            icon=ft.icons.SETTINGS,
+            selected_icon=ft.icons.SETTINGS,
+            on_click=self.select,
+        )
+
+        self.button_start = ft.IconButton(icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start)
+        self.button_stop = ft.IconButton(icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop)
+
+        self.text_name = ft.Text(value=f"Worker n°{self.number}", width=100, size=16)
+        self.text_status = ft.Text(value="")
+        self.tile_padding = ft.padding.all(0)
+        self.title = ft.Row(
+            [
+                ft.Row(
+                    controls=[
+                        # self.button_select,
+                        self.button_start,
+                        self.button_stop,
+                        self.text_name,
+                        self.text_status,
+                    ],
+                    spacing=0
+                ),
+            ],
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        )
+
+        self.refresh_tile()
+
+    def start(self, e):
+        self.button_start.icon = ft.icons.PAUSE
+        self.button_stop.disabled = False
+
+        for slaves_tiles in self.controls:
+            slaves_tiles.paused = False
+            slaves_tiles.stopped = False
+
+        self.paused = False
+        self.stopped = False
+
+        self.start_tasks()
+        self.button_start.on_click = self.pause
+        self.tasks_process.join()
+
+        self.button_start.on_click = self.start
+
+        for slaves_tiles in self.controls:
+            slaves_tiles.paused = False
+            slaves_tiles.stopped = False
+        self.paused = False
+        self.stopped = False
+
+        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
+        self.button_stop.disabled = True
+
+        self.set_text("")
+        for tiles in self.controls:
+            tiles.set_text("")
+
+    def resume(self, e):
+        for slaves_tiles in self.controls:
+            slaves_tiles.paused = False
+        self.paused = False
+
+        self.button_start.icon = ft.icons.PAUSE
+        self.initial_page.update()
+        self.button_start.on_click = self.pause
+
+    def pause(self, e):
+        for slaves_tiles in self.controls:
+            slaves_tiles.paused = True
+        self.paused = True
+
+        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
+        self.button_start.on_click = self.resume
+        self.initial_page.update()
+
+    def stop(self, e):
+        for slaves_tiles in self.controls:
+            slaves_tiles.paused = False
+            slaves_tiles.stopped = True
+        self.paused = False
+        self.stopped = True
+        
+        self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
+        self.button_stop.disabled = True
+        self.initial_page.update()
+
+    def start_tasks(self):
+        if not self.tasks_process.is_alive():
+            self.tasks_process = threading.Thread(target=self.runner.run4, args=(self.controls,))
+            self.tasks_process.start()
+        else:
+            self.add_text("Task is frozen, you may need to restart the bot.")
+            self.initial_page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
+            print("Task is frozen, you may need to restart the bot.")
+
+    def select(self, e):
+        self.initial_page.tile_manager.unselect_all()
+        self.button_select.selected = True
+
+        if len(self.initial_page.body.controls) > 2:
+            self.initial_page.body.controls.pop()
+
+        if self.number not in self.initial_page.frames:
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+
+        self.initial_page.body.controls.append(self.initial_page.frames[self.number])
+        self.bgcolor = ft.colors.SURFACE_VARIANT
+        self.initial_page.update()
+
+    def set_text(self, phrase: str):
+        self.text_status.value = phrase
+        self.initial_page.update()
+
+    def get_text(self):
+        return self.text_status.value
+
+    def add_text(self, phrase: str, color=None):
+        if self.number not in self.initial_page.frames:
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+
+        self.initial_page.frames[self.number].add_text(phrase, color)
+
+    def add_divider(self):
+        if self.number not in self.initial_page.frames:
+            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+
+        self.initial_page.frames[self.number].add_divider()
+    
+    def add_tile(self, number):
+
+
+        self.controls.append(
+            TileSlave(self.initial_page, number)
+        )
+
+    def refresh_tile(self):
+        data = self.FileSingleton.getCachedData()
+        emulator = EmulatorSingleton().getEmulator()
+
+        for instance in data['workers'][emulator][self.number]['instances']:
+            self.controls.append(TileSlave(self.initial_page, instance['instance']))
+
+        self.initial_page.update()
+
+
