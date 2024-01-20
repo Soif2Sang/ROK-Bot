@@ -1,5 +1,5 @@
 DEBUG = False
-BREZILIAN = True
+BREZILIAN = False
 VERSION = "2.3.3"
 toasts_history = {}
 
