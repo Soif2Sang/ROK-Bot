@@ -10,6 +10,7 @@ import flet as ft
 import win32gui
 from PIL import Image
 
+from supabase_auth import SupabaseClient
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
@@ -804,7 +805,7 @@ class TaskRunner(Task):
 
     def set_status(self, text):
         super().set_status(text)
-        if self.worker:
+        if hasattr(self, 'worker'):
             self.worker.set_text(text)
 
     @get_name
