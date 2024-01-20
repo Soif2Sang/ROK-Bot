@@ -27,7 +27,7 @@ try:
     from utils.singletons import EmulatorSingleton, LinkSingleton
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
-    from views.group_choice import EmulatorGroup
+    from views.worker_slave_management import WorkerSlaveManagement
     from views.login.login import LoginUI
     from views.main import Main
     from views.profile_settings import viewProfileSettings
@@ -103,7 +103,7 @@ def main(page: ft.Page):
             clear=True,
             view=viewProfileSettings,
         ),
-        path(url="/configure-workers", clear=True, view=group_choice),
+        path(url="/configure-workers", clear=True, view=configure_workers),
         path(url="/settings", clear=True, view=settings),
     ]
 
@@ -294,16 +294,7 @@ def settings(page: ft.Page, params, basket):
     return ft.View(route="/settings", controls=controls)
 
 
-def group_choice(page: ft.Page, params, basket):
-    emulator = EmulatorSingleton().getEmulator()
-
-    if emulator == "bluestacks":
-        instances = get_dic_instances()
-    else:
-        instances = get_dic_instances_ld()
-
-    instances = [(instance, instance) for instance in instances]
-
+def configure_workers(page: ft.Page, params, basket):
     controls = [
         ft.Container(
             content=ft.Row(
@@ -328,8 +319,8 @@ def group_choice(page: ft.Page, params, basket):
             )
         )
     )
-    for instance in instances:
-        inside.append(EmulatorGroup(instance, instances))
+    
+    inside.append(WorkerSlaveManagement(page))
 
     controls.append(ft.ListView(controls=inside, expand=1))
 
