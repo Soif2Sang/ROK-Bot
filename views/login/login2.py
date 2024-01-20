@@ -94,12 +94,26 @@ class LoginScreen(ft.ResponsiveRow):
         for tier in links['sellix']:
             sellix_col.controls.append(ClickableLink(tiers[tier], links['sellix'][tier], sellix_icon))
 
-        tier_col = ft.Column(
-            controls=[ft.Text("Available Tiers", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
-                      ft.ResponsiveRow(controls=[stripe_col, sellix_col])],
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER
-        )
 
+        if not BREZILIAN:
+            tier_col = ft.Column(
+                controls=[ft.Text("Available Tiers", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                          ft.ResponsiveRow(controls=[stripe_col, sellix_col])],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            )
+        else:
+            tier_col = ft.Column(
+                controls=[
+                    ft.Text("Available Tiers", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                    ClickableLink("Tier 1", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    ClickableLink("Tier 2", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    ClickableLink("Tier 3", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    ClickableLink("Tier 4", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png")
+
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+
+            )
         self.controls = [
             ft.Container(bgcolor=ft.colors.GREY_100, col=6, height=1080 / 2, width=1920 / 4,
                          content=ft.Container(content=auth_col, height=250, width=1920 / 7),
