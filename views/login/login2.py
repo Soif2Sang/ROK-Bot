@@ -142,11 +142,13 @@ class LoginScreen(ft.ResponsiveRow):
         try:
             client = SupabaseClient()
             client.login(username, password)
+            print("avant")
             subscriptions = client.getSubscriptions()
+            print("apres")
 
             if (not subscriptions):
                 raise NoSubscriptionFound()
-            print(subscriptions)
+            print(subscriptions, "subscriptions")
             for subscription in subscriptions:
                 ApiSingleton().setTier(tier=subscription['tier'])
                 target_date = datetime.fromisoformat(subscription['end_at']).astimezone()
@@ -206,7 +208,7 @@ class LoginScreen(ft.ResponsiveRow):
 
             self.initial_page.title = f"RokNet - {days} Days left"
             self.initial_page.update()
-            sleep(6 * 3600)
+            sleep(6)
             return self.verify_subscription(username, password)
         except Exception as e:
             print(e)
