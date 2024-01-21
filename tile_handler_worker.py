@@ -4,18 +4,15 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from tiles.tile_worker import TileWorker
-from utils.Components.PaymentMethods import payment_methods
-from utils.constants import BREZILIAN
+from tile_worker import TileWorker
 from utils.flet_translations import translate
 from utils.functions import (
-    get_all_vms_running,
-    get_all_vms_running_ld,
     get_dic_instances,
     get_dic_instances_ld,
 )
-from utils.singletons import EmulatorSingleton, FileSingleton, LinkSingleton
-from views.tiles.tile import Tile
+from utils.singletons import EmulatorSingleton, FileSingleton
+from utils.constants import BREZILIAN
+from views.login.login2 import links, tiers, sellix_icon, stripe_icon, ClickableLink
 
 
 class NavigationBar(ft.Row):
@@ -25,8 +22,7 @@ class NavigationBar(ft.Row):
         self.tileManager = tile_manager
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-        self.button_refresh = ft.OutlinedButton(
-            text=translate("Refresh"),
+        self.button_refresh = ft.IconButton(
             icon=ft.icons.REFRESH_ROUNDED,
             on_click=lambda _: self.tileManager.refresh(),
             style=ButtonStyle(
@@ -37,29 +33,25 @@ class NavigationBar(ft.Row):
             ),
         )
 
-        self.controls.append(self.button_refresh)
+        stripe_col = ft.Column(col=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+        sellix_col = ft.Column(col=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
-        # bottom = ft.BottomSheet(
-        #     content=ft.Row(
-        #         controls=[
-        #             ft.TextButton(
-        #                 icon=ft.icons.LINK_OUTLINED,
-        #                 text="Pay with Stripe",
-        #                 on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
-        #             ),
-        #             ft.TextButton(
-        #                 icon=ft.icons.LINK_OUTLINED,
-        #                 text="Pay with Crypto",
-        #                 on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
-        #             ),
-        #         ],
-        #         alignment=ft.MainAxisAlignment.CENTER,
-        #     ),
-        #     open=True,
-        #     dismissible=True,
-        #     enable_drag=True,
-        #     on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
-        # )
+        for tier in links["stripe"]:
+            stripe_col.controls.append(ClickableLink(tiers[tier], links["stripe"][tier], stripe_icon))
+        for tier in links["sellix"]:
+            sellix_col.controls.append(ClickableLink(tiers[tier], links["sellix"][tier], sellix_icon))
+
+        diag = ft.AlertDialog(
+            content=ft.Column(
+                controls=[
+                    ft.Text("Available Tiers", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                    ft.ResponsiveRow(controls=[stripe_col, sellix_col]),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                height=270,
+                width=370,
+            ),
+        )
 
         pattern = r"(\d+) Days left"
         match = re.search(pattern, page.title)
@@ -86,16 +78,23 @@ class NavigationBar(ft.Row):
                 color="black",
             )
 
-        # if not BREZILIAN:
-        #     self.controls.append(
-        #         ft.OutlinedButton(
-        #             text="Renew",
-        #             icon=ft.icons.SHOPPING_CART_OUTLINED,
-        #             on_click=lambda e: self.initial_page.show_bottom_sheet(bottom),
-        #             style=button_style,
-        #         )
-        #     )
+        refresh_pay = ft.Row(controls=[self.button_refresh])
 
+        def open_dlg(e):
+            page.dialog = diag
+            diag.open = True
+            page.update()
+
+        if not BREZILIAN:
+            refresh_pay.controls.append(
+                ft.OutlinedButton(
+                    text="Renew",
+                    icon=ft.icons.SHOPPING_CART_OUTLINED,
+                    on_click=open_dlg,
+                    style=button_style,
+                )
+            )
+        self.controls.append(refresh_pay)
         self.controls.append(
             ft.IconButton(
                 icon=ft.icons.MENU,
@@ -161,6 +160,7 @@ class TileHandlerWorker(ft.ListView):
             "leave_game_loop": True,
             "scheduler": False,
             "schedules": {},
+            "emulator": emulator,
         }
         default_profile = {
             "timing": [],

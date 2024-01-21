@@ -41,7 +41,6 @@ class GeneralSettings(PageSettings):
                 margin=ft.margin.only(top=5, bottom=3),
             )
         )
-        self.create_advanced_switch("loop_task", "Do tasks again", PageRedo)
         self.create_advanced_switch("scheduler", "run Multiple Profile", PageProfiles)
 
         # self.add(

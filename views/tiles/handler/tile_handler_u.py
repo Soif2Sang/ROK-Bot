@@ -12,13 +12,10 @@ from views.tiles.tile_upgrade import TileUpgrade
 from utils.constants import BREZILIAN
 from utils.flet_translations import translate
 from utils.functions import (
-    get_all_vms_running,
-    get_all_vms_running_ld,
     get_dic_instances,
     get_dic_instances_ld,
 )
-from utils.singletons import EmulatorSingleton, FileSingleton, LinkSingleton
-from views.tiles.tile import Tile
+from utils.singletons import EmulatorSingleton, FileSingleton
 
 
 class NavigationBar(ft.Row):

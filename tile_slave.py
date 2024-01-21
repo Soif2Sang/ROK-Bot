@@ -1,14 +1,59 @@
 import copy
-import threading
 
 import flet as ft
 
-from tasks.Task import Task
-from tasks.Task_runner import TaskRunner
-from views.tiles.tile import ConfigOverrider
-from utils.functions import FileSingleton, get_all_vms_running, get_all_vms_running_ld
-from utils.singletons import EmulatorSingleton
 from views.tiles.handler.config_handler import Frame
+from utils.functions import FileSingleton
+# from views.tiles.handler.config_handler import Frame
+
+class ConfigOverrider(ft.PopupMenuButton):
+    def __init__(self, page, index, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fileSingleton = FileSingleton()
+        self.index = index
+        self.initial_page = page
+        self.config = self.fileSingleton.getCachedData()[self.index]
+        self.icon = ft.icons.FILE_UPLOAD_OUTLINED
+        self.init()
+
+    def init(self):
+        self.items.append(ft.PopupMenuItem(text="Export Config"))
+        self.items.append(ft.PopupMenuItem())
+
+        vms = self.initial_page.tile_manager.fetched_instances
+
+        for vm in vms:
+            if str(vm) != self.index:
+                self.items.append(ft.PopupMenuItem(text=vms[vm]['name'], on_click=self.override_settings, data=vm))
+
+    def refresh(self):
+        self.items = []
+        self.init()
+        self.initial_page.update()
+
+    def override_settings(self, e):
+        data = self.fileSingleton.getCachedData()
+        self.config = copy.deepcopy(data[self.index])
+
+        instance = data[str(e.control.data)]["instance"]
+        name = data[str(e.control.data)]["name"]
+        host = data[str(e.control.data)]["host"]
+        port = data[str(e.control.data)]["port"]
+
+        data[str(e.control.data)] = copy.deepcopy(self.config)
+
+        data[str(e.control.data)]["instance"] = instance
+        data[str(e.control.data)]["name"] = name
+        data[str(e.control.data)]["host"] = host
+        data[str(e.control.data)]["port"] = port
+
+        self.fileSingleton.write_data(data)
+
+        if str(e.control.data) in self.initial_page.frames:
+            for tab in self.initial_page.frames[str(e.control.data)].settings.tabs:
+                tab.content.content.controls = []
+                tab.content.init()
+        self.initial_page.update()
 
 class TileSlave(ft.Container):
     def __init__(self, page, number, **kwargs):

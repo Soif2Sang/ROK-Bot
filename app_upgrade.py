@@ -1,16 +1,20 @@
 # coding=UTF-8
+import logging
+logging.disable(logging.ERROR)
+
 import json
 import os
 import subprocess
 import sys
 import traceback
-from time import sleep, time
+from time import sleep
 
 import flet as ft
 from flet_route import Routing, path
 
 
 try:
+    from views.settings.general._settings import AllSettings
     from utils.supabase_auth import SupabaseClient
     from views.login.login2 import LoginScreen
     from utils.auth import selfApi
@@ -27,11 +31,10 @@ try:
     from utils.singletons import EmulatorSingleton, LinkSingleton
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
-    from views.worker_slave_management import WorkerSlaveManagement
+    from worker_slave_management import WorkerSlaveManagement
     from views.login.login import LoginUI
     from views.main import Main
     from views.profile_settings import viewProfileSettings
-    from views.settings.general._settings import AllSettings
 except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -296,7 +299,11 @@ def settings(page: ft.Page, params, basket):
 
 def configure_workers(page: ft.Page, params, basket):
     page.window_width = 1920 / 2
-    page.window_height = 1080 / 2
+    page.window_height = 720
+
+    def go_back_and_refresh(e):
+        page.go('/')
+        page.tile_manager.refresh()
 
     controls = [
         ft.Container(
@@ -304,7 +311,7 @@ def configure_workers(page: ft.Page, params, basket):
                 controls=[
                     ft.IconButton(
                         icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: page.go("/"),
+                        on_click=go_back_and_refresh,
                     ),
                     ft.Text(value="Back", size=20),
                 ],
@@ -318,11 +325,11 @@ def configure_workers(page: ft.Page, params, basket):
     inside.append(
         GenerateCard(
             subtitle=translate(
-                "The emulator requires a 'Worker' to execute tasks. Once you start the bot, all workers will start their first assigned emulator, perform actions, close it, and then proceed to the next emulator in sequence. Decreasing the number of workers will result in fewer simultaneous windows, while increasing it will lead to a higher number of concurrent windows."
+                "The emulator requires a 'Worker' to execute tasks. Once you start a worker, worker will start the first assigned emulator, perform actions, close it, and then proceed to the next emulator in sequence. Decreasing the number of workers will result in fewer simultaneous windows, while increasing it will lead to a higher number of concurrent windows."
             )
         )
     )
-    
+    inside.append(ft.Divider())
     inside.append(WorkerSlaveManagement(page))
 
     controls.append(ft.ListView(controls=inside, expand=1))

@@ -10,7 +10,6 @@ import flet as ft
 import win32gui
 from PIL import Image
 
-from supabase_auth import SupabaseClient
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
@@ -177,6 +176,8 @@ class TaskRunner(Task):
                 if func.task_name() in ["GatherRss", "GatherGem"]:
                     self.check_captcha()
                 func.run()
+                if func.task_name() in ["GatherRss", "GatherGem"]:
+                    self.check_captcha()
             except Exception as e:
                 traceback.print_exc()
                 self.send_discord_message(f"Something wrong happened when running {func.task_name()}")
@@ -542,11 +543,12 @@ class TaskRunner(Task):
             try:
                 self.adb.wait_boot_complete(timeout=120, timedelta=3)
                 print("Boot completed")
-            except TimeoutError:
+            except (TimeoutError, Exception):
                 print("Timed out waiting for boot")
                 self.kill_instance()
                 sleep(1)
                 return self.start_emulator(emulator, deadstop + 1)
+
 
         if emulator_choice == "ld":
             instances = get_dic_instances_ld()
