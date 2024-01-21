@@ -21,10 +21,10 @@ from pytesseract import pytesseract
 
 from typing import TYPE_CHECKING
 
-from supabase_auth import SupabaseClient
+from utils.supabase_auth import SupabaseClient
 
 if TYPE_CHECKING:
-    from tiles.tile import Tile
+    from tile import Tile
     from tiles.tile_upgrade import TileUpgrade
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
@@ -36,11 +36,10 @@ from utils.functions import (
     colorize_output,
     current_time,
     get_name,
-    increment_captcha_requests,
     string_to_co,
     string_to_co_slide,
 )
-from utils.singletons import EmulatorSingleton, LinkSingleton, ApiSingleton
+from utils.singletons import EmulatorSingleton, ApiSingleton
 from utils.twocaptcha import TimeoutException, TwoCaptcha
 from utils.twocaptcha.api import ApiException, NetworkException
 

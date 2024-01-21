@@ -1,17 +1,12 @@
-import json
-import sys
-import time
-import traceback
-
 import flet as ft
 
-from supabase_auth import SupabaseClient
-from tiles.handler.tile_handler_worker import TileHandlerWorker
-from views.tiles.handler.tile_handler_u import TileManagerUpgrade
-from utils.constants import VERSION, toasts_history
+from tile_handler_worker import TileHandlerWorker
+# from views.tiles.handler.tile_handler_worker import TileHandlerWorker
+from utils.supabase_auth import SupabaseClient
+from utils.constants import toasts_history
 from utils.flet_toast.core import Position
 from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
-from views.tiles.handler.tile_handler import TileHandler
+from views.tile_handler import TileHandler
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 

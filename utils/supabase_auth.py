@@ -3,10 +3,13 @@ import os
 import subprocess
 import platform
 
-#import win32security
+import win32security
 from supabase import Client, create_client
 from utils.constants import url, key, VERSION
 import unittest
+
+class HwidAlreadyLinked(Exception):
+    pass
 
 class others:
     @staticmethod
@@ -15,40 +18,52 @@ class others:
             with open("/etc/machine-id") as f:
                 hwid = f.read()
                 return hwid
-        elif platform.system() == 'Windows':
+        elif platform.system() == "Windows":
             winuser = os.getlogin()
-            sid = win32security.LookupAccountName(None, winuser)[0]  # You can also use WMIC (better than SID, some users had problems with WMIC)
+            sid = win32security.LookupAccountName(None, winuser)[
+                0
+            ]  # You can also use WMIC (better than SID, some users had problems with WMIC)
             hwid = win32security.ConvertSidToStringSid(sid)
             return hwid
-            '''
-            cmd = subprocess.Popen(
-                "wmic useraccount where name='%username%' get sid",
-                stdout=subprocess.PIPE,
-                shell=True,
-            )
-
-            (suppost_sid, error) = cmd.communicate()
-
-            suppost_sid = suppost_sid.split(b"\n")[1].strip()
-
-            return suppost_sid.decode()
-
-            ^^ HOW TO DO IT USING WMIC
-            '''
-        elif platform.system() == 'Darwin':
+        elif platform.system() == "Darwin":
             output = subprocess.Popen("ioreg -l | grep IOPlatformSerialNumber", stdout=subprocess.PIPE, shell=True).communicate()[0]
-            serial = output.decode().split('=', 1)[1].replace(' ', '')
+            serial = output.decode().split("=", 1)[1].replace(" ", "")
             hwid = serial[1:-2]
             return hwid
 
-class SupabaseClient():
-    client: Client or None = None
-    def __init__(self):
-        if not self.client:
-            self.client = create_client(url, key)
+
+class SupabaseClient:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(SupabaseClient, cls).__new__(cls)
+            cls._instance.client = create_client(url, key)
+        return cls._instance
 
     def login(self, email, password):
-        self.client.auth.sign_in_with_password({'email': email, "password": password})
+        self.client.auth.sign_in_with_password({"email": email, "password": password})
+
+    def check_hwid(self):
+        hwid = others.get_hwid()
+
+        data, count = (
+            self.client.table("hwid")
+            .select("*")
+            .execute()
+        )
+
+        s = self.client.auth.get_session()
+
+        if len(data[1]) == 0:
+            self.client.table("hwid").insert({"hwid": hwid, "user_id": s.user.id}).execute()
+            return True
+
+        row = data[1][0]
+
+        if hwid not in row['hwid']:
+            raise HwidAlreadyLinked()
+        return True
 
     def refresh_session(self):
         print("refreshing session")
@@ -56,34 +71,48 @@ class SupabaseClient():
 
     def getSubscriptions(self):
         self.refresh_session()
-        data, count = self.client.table("subscriptions").select("*").lte('start_at', datetime.datetime.now()).gte('end_at', datetime.datetime.now()).eq("paused", False).order('tier').execute()
+        data, count = (
+            self.client.table("subscriptions")
+            .select("*")
+            .lte("start_at", datetime.datetime.now())
+            .gte("end_at", datetime.datetime.now())
+            .eq("paused", False)
+            .order("tier")
+            .execute()
+        )
         return data[1]
 
     def getMessages(self):
         self.refresh_session()
-        data, count = self.client.table("messages").select("*").lte('start_at', datetime.datetime.now()).gte('end_at', datetime.datetime.now()).execute()
+        data, count = (
+            self.client.table("messages")
+            .select("*")
+            .lte("start_at", datetime.datetime.now())
+            .gte("end_at", datetime.datetime.now())
+            .eq("read", False)
+            .execute()
+        )
         return data[1]
 
     def getApiKey(self, name):
         self.refresh_session()
-        data, count = self.client.table("keys").select("*").eq('name', name).single().execute()
+        data, count = self.client.table("keys").select("*").eq("name", name).single().execute()
         return data[1]
 
     def getUpdates(self):
-        data, count = self.client.table("updates").select("*").gte('version', VERSION).order('version', desc=True).execute()
+        data, count = self.client.table("updates").select("*").gte("version", VERSION).order("version", desc=True).execute()
         return data[1]
 
     def increamentCaptchaCount(self):
         self.refresh_session()
-        data, count = self.client.rpc('increase_captcha_request', {}).execute()
+        data, count = self.client.rpc("increase_captcha_request", {}).execute()
         return int(data[1])
 
     def readMessage(self, id):
-        self.client.table("messages").update({'read': True}).eq('id', id).execute()
+        self.client.table("messages").update({"read": True}).eq("id", id).execute()
 
 
 class TestSupabaseClient(unittest.TestCase):
-
     supabase_client = None
 
     def setUp(self):
@@ -109,7 +138,7 @@ class TestSupabaseClient(unittest.TestCase):
         key_name = "2captcha"
         data = self.supabase_client.getApiKey(key_name)
         self.assertIsInstance(data, dict)
-        self.assertTrue(data['name'], key_name)
+        self.assertTrue(data["name"], key_name)
 
     def test_get_updates(self):
         data = self.supabase_client.getUpdates()
@@ -122,25 +151,26 @@ class TestSupabaseClient(unittest.TestCase):
 
     def test_cannot_increment_captcha(self):
         try:
-            self.supabase_client.client.table("captcha_request_count").update({'captcha_requests_count': 0}).eq('id', 1).execute()
+            self.supabase_client.client.table("captcha_request_count").update({"captcha_requests_count": 0}).eq("id", 1).execute()
             self.fail()
         except:
             self.assertTrue(True)
 
     def test_can_accept_message(self):
-        self.supabase_client.client.table("messages").update({'read': True}).eq('id',2).execute()
+        self.supabase_client.client.table("messages").update({"read": True}).eq("id", 2).execute()
 
         # self.supabase_client.readMessage(2)
         # self.supabase_client.client.table("messages").update({'read': False}).eq('id', 2).execute()
 
     def cannot_read_apikey(self):
         self.supabase_client.client.auth.sign_out()
-        data,  count = self.supabase_client.client.table("keys").select('*').execute()
+        data, count = self.supabase_client.client.table("keys").select("*").execute()
         self.assertEqual(len(data), 1)
 
     def tearDown(self):
         self.supabase_client: SupabaseClient
         self.supabase_client.client.auth.sign_out()
 
-if __name__ == '__main__':
-    unittest.main()
+
+# if __name__ == "__main__":
+#     unittest.main()

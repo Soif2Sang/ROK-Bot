@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from time import sleep
-
 import flet as ft
 
-from utils.singletons import EmulatorSingleton
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from views.tiles.handler.config_handler import FrameUpgrade, Frame
-from views.tiles.tile import ConfigOverrider
+from views.tiles.handler.config_handler import Frame
+from tile import ConfigOverrider
 
 from utils.functions import FileSingleton
 

@@ -3,7 +3,6 @@ import flet as ft
 from utils.singletons import FileSingleton, EmulatorSingleton
 
 fs = FileSingleton()
-data = fs.getCachedData()
 
 class SlaveDraggable(ft.Draggable):
     def __init__(self, instance, *args, **kwargs):
@@ -16,7 +15,9 @@ class SlaveDraggable(ft.Draggable):
             data=self.data,
             bgcolor=ft.colors.OUTLINE_VARIANT,
             alignment=ft.alignment.center,
-            border_radius=5
+            border_radius=5,
+            border=ft.border.all(2, ft.colors.ON_SURFACE_VARIANT),
+            padding=ft.padding.all(3)
         )
 
 class Worker(ft.Container):
@@ -34,6 +35,8 @@ class Worker(ft.Container):
         self.slaves = ft.ListView(expand=1, height=250)
         self.content = ft.Column([ft.Row(controls=[self.name, self.option], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER), self.slaves])
         self.instance = instance
+
+        data = fs.getCachedData()
 
         for instance in data['workers'][EmulatorSingleton().getEmulator()][instance]["instances"]:
             i = instance['instance']
@@ -57,6 +60,7 @@ class Worker(ft.Container):
         self.add_dragtarget()
 
     def open_settings(self, e):
+        data = fs.getCachedData()
         self.dlg_modal = ft.AlertDialog(
             content=ft.ListView(width=400, height=200, controls=[
                 ft.Switch(
@@ -98,7 +102,6 @@ class Worker(ft.Container):
                 ft.TextButton("Close", on_click=self.close_dlg),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
-            on_dismiss=lambda e: print("Modal dialog dismissed!"),
         )
 
         self.open_dlg(e)
@@ -219,10 +222,10 @@ class WorkerSlaveManagement(ft.ListView):
         self.slaves = ft.Row(wrap=True)
         self.workers = ft.Row(wrap=True)
 
-        data = FileSingleton().getCachedData()
+        data = FileSingleton().get_data()
 
         for key, value in data.items():
-            if isinstance(value, dict) and ("instance" in value):
+            if isinstance(value, dict) and ("instance" in value) and value.get("emulator") == EmulatorSingleton().getEmulator():
                 self.slaves.controls.append(SlaveDraggable(value['name'], data=value['instance']))
 
         for worker in data["workers"][EmulatorSingleton().getEmulator()]:

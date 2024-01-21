@@ -1,6 +1,6 @@
 DEBUG = False
 BREZILIAN = False
-VERSION = "2.3.3"
+VERSION = "3.0.0"
 toasts_history = {}
 
 ownerid = "7oofxdj8uH"
