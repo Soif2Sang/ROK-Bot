@@ -1,8 +1,6 @@
-import re
-import traceback
 from datetime import datetime
-from random import choice, randint, random, uniform
-from time import sleep, time
+from random import randint, uniform
+from time import time
 
 import cv2
 

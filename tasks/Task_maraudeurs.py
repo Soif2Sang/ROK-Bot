@@ -1,5 +1,4 @@
 import math
-import re
 from datetime import datetime
 from random import choice, randint, random, uniform
 from time import sleep, time
@@ -588,7 +587,7 @@ class Marauders(Task):
         width = radius
         height = radius
         starting_time = time()
-        time_restart = time()
+        time()
         # print(self.data[str(self.sel)]['schedules'][self.current_profile].get('gather_gem_duration1'))
         if self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration1") > self.data[str(self.sel)]["schedules"][
             self.current_profile

@@ -67,7 +67,7 @@ class DailyChest(Task):
                         self.click(confirm[0] + uniform(20, 100), confirm[1] + uniform(10, 40))
                         self.better_sleep((1.7, 3))
                         i += 1
-                        if i%5 == 0:
+                        if i % 5 == 0:
                             self.check_reconnect()
                 self.better_sleep((1.7, 3))
 
