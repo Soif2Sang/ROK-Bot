@@ -1,28 +1,22 @@
 import io
 import shutil
 import subprocess
+import threading
 import traceback
 from datetime import date
 from os.path import exists
 from time import sleep, time
 
 import pytesseract as tess
-from cv2 import (
-    COLOR_BGR2HSV,
-    COLOR_BGR2RGB,
-    TM_CCOEFF_NORMED,
-    cvtColor,
-    inRange,
-    matchTemplate,
-    minMaxLoc,
-)
+from cv2 import (COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor,
+                 inRange, matchTemplate, minMaxLoc)
 from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import FileSingleton, current_time, get_dic_instances
+from utils.functions import (FileSingleton, current_time, get_dic_instances,
+                             get_name)
 from utils.resources import ImageSingleton
-import threading
 
 bridge = None
 
@@ -41,11 +35,28 @@ class UnknownDeviceException(Exception):
         super().__init__(message)
 
 
+class TimeSingleton:
+    __instance = None
+    FileLock = threading.Lock()
+    restarted_time = 0
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def getRestartedTime(self) -> float:
+        return self.restarted_time
+
+    def setRestartedTime(self):
+        self.restarted_time = time()
+
+
 class Adb:
     adb_restart_lock = threading.Lock()
     last_restart_time = 0
 
-    def __init__(self, number: str, host="127.0.0.1", port=5037):
+    def __init__(self, number: str, host="127.0.0.1", port=5037, tile=None):
         self.FileSingleton = FileSingleton()
         self.images = ImageSingleton()
         self.client = PPADBClient(host, port)
@@ -55,10 +66,16 @@ class Adb:
         self.data = self.FileSingleton.getCachedData()
         self.name = self.data[self.number]["name"]
         self.is_ld = False
+        self.tile = tile
 
     def __str__(self):
         print(f"JsonNumber:{self.number} port:{self.port}")
         return f"JsonNumber:{self.number} port:{self.port}"
+
+    def script_pause(self):
+        if not self.tile:
+            return
+        return self.tile.script_pause()
 
     def update_port(self, instances=None):
         if instances is None:
@@ -84,9 +101,10 @@ class Adb:
     def get_device(self, host="127.0.0.1", fail=0):
         raise NotImplementedError("Method 'get_device' is not implemented in the base class.")
 
+    @get_name
     def restart_adb_server(self):
-        with Adb.adb_restart_lock:
-            if self.last_restart_time + 20 > time():
+        with TimeSingleton.FileLock:
+            if TimeSingleton().getRestartedTime() + 20 > time():
                 return
             self.stop_server()
             sleep(5)
@@ -94,11 +112,12 @@ class Adb:
             sleep(5)
             self.connect_to_device()
 
-            self.last_restart_time = time()
+            TimeSingleton().setRestartedTime()
 
     def wait_boot_complete(self, timeout=100, timedelta=1):
         raise NotImplementedError("Method 'wait_boot_complete' is not implemented in the base class.")
 
+    @get_name
     def connect_to_device(self, host="127.0.0.1"):
         path = self.FileSingleton.get_path()
         self.update_port()
@@ -112,14 +131,17 @@ class Adb:
 
         subprocess.Popen(cmd)
 
+    @get_name
     def get_client_devices(self):
         return self.client.devices()
 
+    @get_name
     def print(self, *args: str):
-        data = self.FileSingleton.get_data()
+        data = self.FileSingleton.getCachedData()
         print(f"[ {date.today()} {current_time()} ] [ {data[self.number]['name']} ] {' '.join(map(str, args))}")
-        self.FileSingleton.write(self.name, ' '.join(map(str, args)))
+        self.FileSingleton.write(self.name, " ".join(map(str, args)))
 
+    @get_name
     def get_curr_device_screen_img_byte_array(self):
         try:
             return self.get_device().screencap()
@@ -128,6 +150,7 @@ class Adb:
             sleep(1)
             return self.get_device().screencap()
 
+    @get_name
     def get_curr_device_screen_img_bytesIO(self):
         try:
             return io.BytesIO(self.get_device().screencap())
@@ -136,6 +159,7 @@ class Adb:
             sleep(1)
             return io.BytesIO(self.get_device().screencap())
 
+    @get_name
     def get_curr_device_screen_img(self, deadstop=0):
         try:
             device = self.get_device()
@@ -148,17 +172,20 @@ class Adb:
             sleep(1)
             return self.get_curr_device_screen_img(deadstop + 1)
 
+    @get_name
     def get_cv2_img(self):
         screen = self.get_curr_device_screen_img()
         screen = array(screen)
         screen = cvtColor(screen, COLOR_BGR2RGB)
         return screen
 
+    @get_name
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
         image.save(f".//{file_name}.png")
         return True
 
+    @get_name
     def find_img_cv(self, img_to_find, confidence=0.9):
         pil_image = self.get_curr_device_screen_img()
         cv_image = array(pil_image)
@@ -170,6 +197,7 @@ class Adb:
         else:
             return
 
+    @get_name
     def find_img(self, target: str, source: ndarray = None, confidence=0.9):
         try:
             if source is None:
@@ -210,6 +238,7 @@ class Adb:
             traceback.print_exc()
             self.print(exception_error)
 
+    @get_name
     def find_img_src_conf(self, src, target, confidence):
         img_to_find = self.images.get_file_name(target)
         result = matchTemplate(src, img_to_find, TM_CCOEFF_NORMED)
@@ -219,6 +248,7 @@ class Adb:
         else:
             return
 
+    @get_name
     def find_multiple_img(self, target, source=None, confidence=0.9):
         if source is None:
             pil_image = self.get_curr_device_screen_img()
@@ -275,6 +305,7 @@ class Adb:
             localisations.remove(element)
         return localisations
 
+    @get_name
     def is_game_alive(self):
         # string = "dumpsys activity activities | grep mFocusedActivity"
         a = self.get_device().get_top_activity()
@@ -287,6 +318,7 @@ class Adb:
         self.shell(string)
         return
 
+    @get_name
     def shell(self, string, max_attempts=5, timeout=2):
         for attempt in range(max_attempts):
             try:
