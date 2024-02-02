@@ -1,15 +1,15 @@
 import subprocess
-from time import sleep, time
+from time import time
 
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
-from utils.functions import get_dic_instances_ld, accurate_sleep
+from utils.functions import accurate_sleep, get_dic_instances_ld, get_name
 
 bridge = None
 
 
 class AdbLd(Adb):
-    def __init__(self, number: str, host="127.0.0.1", port=5037):
-        super().__init__(number, host, port)
+    def __init__(self, number: str, host="127.0.0.1", port=5037, tile=None):
+        super().__init__(number, host, port, tile)
         self.is_ld = True
 
     def update_port(self, instances=None):
@@ -19,6 +19,7 @@ class AdbLd(Adb):
     def connect_to_device(self, host="emulator"):
         super().connect_to_device(host)
 
+    @get_name
     def wait_boot_complete(self, timeout=100, timedelta=1):
         """
         :param timeout: second
@@ -79,7 +80,7 @@ class AdbLd(Adb):
 
     #         sleep(5)
     #         return self.get_device()
-
+    @get_name
     def get_device(self, host="emulator", max_attempts=10, timeout=2):
         self.port = str(self.data[str(self.number)]["port"])
 
@@ -99,11 +100,13 @@ class AdbLd(Adb):
 
         raise DeviceNotFoundException(f"{host}-{self.port}")
 
+    @get_name
     def stop_server(self):
         path = self.FileSingleton.get_path()
         cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} kill-server"
         subprocess.run(cmd)
 
+    @get_name
     def start_server(self):
         path = self.FileSingleton.get_path()
         cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
