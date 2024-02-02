@@ -21,7 +21,7 @@ class ClearFog(Task):
         self.go_city()
         if starting_time is None:
             starting_time = time()
-        time_restart = time()
+        time()
         if self.data[str(self.sel)]["schedules"][self.current_profile].get("scout_duration1", 60) > self.data[str(self.sel)]["schedules"][
             self.current_profile
         ].get("scout_duration2", 90):

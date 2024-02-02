@@ -1,6 +1,4 @@
-import traceback
 from random import choice, uniform
-from time import sleep
 
 from PIL import Image
 

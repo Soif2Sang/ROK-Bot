@@ -1,5 +1,4 @@
 import random
-from random import uniform
 
 import numpy as np
 from PIL import Image

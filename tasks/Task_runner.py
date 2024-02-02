@@ -1,6 +1,4 @@
-import multiprocessing
 import subprocess
-import threading
 import traceback
 from datetime import timedelta
 from random import randint, shuffle, uniform
@@ -38,14 +36,9 @@ from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import (
-    current_time,
-    get_dic_instances,
-    get_name,
-    get_window_pid,
-    get_dic_instances_ld,
-)
-from utils.singletons import ApiSingleton, LinkSingleton, EmulatorSingleton
+from utils.functions import (current_time, get_dic_instances,
+                             get_dic_instances_ld, get_name, get_window_pid)
+from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
 from views.frametime import is_in_frametime, random_time_in_frametime
 
 
@@ -448,6 +441,8 @@ class TaskRunner(Task):
         self.better_sleep((1.925, 2.795))
         first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326))
         self.enter_characters()
+        self.better_sleep((0.925, 1.795))
+
         stop = 0
 
         while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color:
@@ -532,7 +527,7 @@ class TaskRunner(Task):
             while True:
                 self.better_sleep((1, 1))
 
-        path = self.FileSingleton.get_path()
+        self.FileSingleton.get_path()
         data = self.FileSingleton.get_data()
         emulator_choice = EmulatorSingleton().getEmulator()
 
@@ -543,12 +538,12 @@ class TaskRunner(Task):
             try:
                 self.adb.wait_boot_complete(timeout=120, timedelta=3)
                 print("Boot completed")
-            except (TimeoutError, Exception):
+            except (TimeoutError, Exception) as e:
                 print("Timed out waiting for boot")
+                print(e)
                 self.kill_instance()
                 sleep(1)
                 return self.start_emulator(emulator, deadstop + 1)
-
 
         if emulator_choice == "ld":
             instances = get_dic_instances_ld()
@@ -562,8 +557,8 @@ class TaskRunner(Task):
 
         self.data = data
         self.FileSingleton.write_data(data)
-        self.worker.main_task.adb.connect_to_device()
-        self.worker.runner.adb.connect_to_device()
+        # self.worker.main_task.adb.connect_to_device()
+        # self.worker.runner.adb.connect_to_device()
 
     @get_name
     def run(self):
@@ -807,7 +802,7 @@ class TaskRunner(Task):
 
     def set_status(self, text):
         super().set_status(text)
-        if hasattr(self, 'worker'):
+        if hasattr(self, "worker"):
             self.worker.set_text(text)
 
     @get_name
@@ -816,11 +811,8 @@ class TaskRunner(Task):
             self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
             return
 
-        self.worker = self.tile
-        self.data = self.update_data()
-
         emulator = EmulatorSingleton().getEmulator()
-
+        self.data = self.update_data()
         loop_task = 1 if not self.data["workers"][emulator][self.worker.number]["loop_task"] else 9999999
 
         for i in range(loop_task):
@@ -848,9 +840,9 @@ class TaskRunner(Task):
                         continue
 
                 if emulator == "bluestacks":
-                    self.adb = AdbBluestacks(self.tile.number)
+                    self.adb = AdbBluestacks(self.tile.number, tile=self)
                 else:
-                    self.adb = AdbLd(self.tile.number)
+                    self.adb = AdbLd(self.tile.number, tile=self)
 
                 self.start_emulator(self.tile.number)
                 self.tile.runner = self

@@ -252,7 +252,8 @@ class HuntBarbarians(Task):
         preset_selected = list(self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"].values()).count(True)
         if preset_selected == 0:
             return self.print("No presets selected, canceling the function", "red")
-
+        if not self.enough_action_points():
+            return self.print("It looks like you are low in AP, cancelling the function", "red")
         wanted_level = int(self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_level"])
         hunter_selection = False
         self.leave_city()
@@ -260,8 +261,6 @@ class HuntBarbarians(Task):
         nb_hunter = self.deploy_hunter()
         if nb_hunter == 0:
             return self.print("No PeaceKeeper sent, cancelling the function", "red")
-        if not self.enough_action_points():
-            return self.print("It looks like you are low in AP, cancelling the function", "red")
         while not self.check_ap_box():
             self.run_game()
             self.better_sleep((1.5, 3))

@@ -129,7 +129,6 @@ class RssTransfer(Task):
         print(f"{transportation_capacity = }")
         to_send = []
         for type in ["food", "wood", "stone", "gold"]:
-            rss_sent = 0
             transfert_wanted = self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"transfer_{type}"] * 1_000_000
             loop = int(transfert_wanted / transportation_capacity)
             if transportation_capacity * loop < transfert_wanted:

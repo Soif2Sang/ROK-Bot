@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import asyncio
 import json
 import os
@@ -19,27 +20,14 @@ from numpy import array, ndarray
 from PIL import Image, ImageFile
 from pytesseract import pytesseract
 
-from typing import TYPE_CHECKING
-
-from utils.supabase_auth import SupabaseClient
-
-if TYPE_CHECKING:
-    from tile import Tile
-    from tiles.tile_upgrade import TileUpgrade
-
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.discord_utils import send_discord_message
-from utils.functions import (
-    FileSingleton,
-    colorize_name,
-    colorize_output,
-    current_time,
-    get_name,
-    string_to_co,
-    string_to_co_slide,
-)
-from utils.singletons import EmulatorSingleton, ApiSingleton
+from utils.functions import (FileSingleton, colorize_name, colorize_output,
+                             current_time, get_name, string_to_co,
+                             string_to_co_slide)
+from utils.singletons import ApiSingleton, EmulatorSingleton
+from utils.supabase_auth import SupabaseClient
 from utils.twocaptcha import TimeoutException, TwoCaptcha
 from utils.twocaptcha.api import ApiException, NetworkException
 
@@ -48,7 +36,7 @@ pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 
 class Task:
-    def __init__(self, tile: Tile | TileUpgrade):
+    def __init__(self, tile):
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.getCachedData()
         self.current_profile: str = "1"
@@ -56,13 +44,19 @@ class Task:
         self.sel: str = tile.number
         emulator = EmulatorSingleton().getEmulator()
 
-        if emulator == "bluestacks":
-            self.adb = AdbBluestacks(self.sel)
+        if self.tile.__class__.__name__ != "TileWorker":
+            if emulator == "bluestacks":
+                self.adb = AdbBluestacks(self.sel, tile=self)
+            else:
+                self.adb = AdbLd(self.sel, tile=self)
+
+            self.name: str = self.adb.name
+
         else:
-            self.adb = AdbLd(self.sel)
+            self.adb = None
+            self.name = ""
 
         self.language: str | None = None
-        self.name: str = self.adb.name
         self.DEV = False
 
     def herite(self, MainTask):
@@ -252,7 +246,7 @@ class Task:
                         if macro["KeyOut"] == "F6":
                             # print("True")
                             x1 = randint(40, 50)
-                            x2 = randint(40, 50)
+                            randint(40, 50)
                             y = randint(25, 30)
                             macro["X1"] = x1
                             macro["X2"] = x1
@@ -395,7 +389,7 @@ class Task:
         """
 
         x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
-        x2 = x1 - uniform(710, 710)
+        x1 - uniform(710, 710)
 
         self.swipe(980, 360, 300, 360)
 
@@ -404,7 +398,7 @@ class Task:
         Send adb signal to swipe to the left
         """
         x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
-        x2 = x1 - uniform(710, 710)
+        x1 - uniform(710, 710)
         self.swipe(300, 360, 980, 360)
 
     def swipe_up(self) -> None:
@@ -412,8 +406,8 @@ class Task:
         Send adb signal to swipe upward
         """
         x1, y1 = uniform(600, 680), uniform(540, 560)
-        x2 = x1 + uniform(0, 30)
-        y2 = y1 - uniform(390, 397)
+        x1 + uniform(0, 30)
+        y1 - uniform(390, 397)
         self.swipe(640, 150, 640, 570)
 
     def swipe_down(self) -> None:
@@ -421,8 +415,8 @@ class Task:
         Send adb signal to swipe downward
         """
         x1, y1 = uniform(600, 680), uniform(540, 560)
-        x2 = x1 + uniform(0, 30)
-        y2 = y1 - uniform(390, 397)
+        x1 + uniform(0, 30)
+        y1 - uniform(390, 397)
         self.swipe(640, 570, 640, 150)
 
     def swipe_right_low(self) -> None:
@@ -474,7 +468,7 @@ class Task:
         self.swipe(x1, y1, x2, y2)
 
     @get_name
-    def leave_city(self) -> bool:
+    def leave_city(self, tries=0) -> bool:
         """
         -Enter and leave city if not in city
         -Leave city if in city
@@ -485,9 +479,11 @@ class Task:
         else:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((2.5, 3.5))
-            self.click(uniform(24, 91), uniform(625, 680))
-            self.better_sleep((2.5, 3.5))
-
+            if tries == 0:
+                return self.leave_city()
+            else:
+                self.click(uniform(24, 91), uniform(625, 680))
+                self.better_sleep((2.5, 3.5))
         return True
 
     # @get_name
@@ -616,7 +612,7 @@ class Task:
                             return
                 self.print("ERROR CANNOT START THE GAME.", ft.colors.RED)
                 self.send_discord_message("ERROR CANNOT START THE GAME.")
-                self.tile.initial_page.keyauthapp.log(string)
+                print(string)
                 while True:
                     self.set_status("ERROR CANNOT START GAME")
                     self.script_pause()
@@ -647,7 +643,7 @@ class Task:
         if self.data["API_KEY"]:
             return
 
-        if subscription_tier == 'tier4':
+        if subscription_tier == "tier4":
             if nb_captcha == 200 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -661,7 +657,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif subscription_tier == 'tier3':
+        elif subscription_tier == "tier3":
             if nb_captcha == 140 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -675,7 +671,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif subscription_tier == 'tier2':
+        elif subscription_tier == "tier2":
             if nb_captcha == 100 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -689,7 +685,7 @@ class Task:
                 self.set_status("Captcha Limit Exceeded")
                 while True:
                     self.better_sleep((60 * 5, 60 * 5))
-        elif subscription_tier == 'tier1':
+        elif subscription_tier == "tier1":
             if nb_captcha == 50 * 30:
                 self.generate_toast(
                     "Captcha limit.",
@@ -844,7 +840,7 @@ class Task:
                 ) * 60 + randint(0, 59)
                 self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
                 self.better_sleep((value, value))
-                self.click( 1280 // 3 + co[0] + uniform(0, 50),720 // 2 + co[1] + uniform(-10, 20))
+                self.click(1280 // 3 + co[0] + uniform(0, 50), 720 // 2 + co[1] + uniform(-10, 20))
                 self.print("Reconnection..")
                 self.better_sleep((5, 10))
                 self.run_game()
@@ -895,6 +891,8 @@ class Task:
             if self.data.get(self.sel).get("schedules").get(self.current_profile).get("auto_reconnect", False):
                 print(f"[ {current_time()} ] [ {self.name} ] You just got disconnected")
                 print(co)
+
+                self.print("You just got disconnected", ft.colors.AMBER)
                 co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
 
                 a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
@@ -1025,7 +1023,7 @@ class Task:
             if chest is not None:
                 if self.data[self.sel]["schedules"][self.current_profile]["auto_captcha"]:
                     # print(co)
-                    self.click(400 + chest[0] + uniform(0, 10),20 + chest[1] + uniform(0, 10))
+                    self.click(400 + chest[0] + uniform(0, 10), 20 + chest[1] + uniform(0, 10))
                     self.better_sleep((3, 4))
                     return True
                 else:
@@ -1043,7 +1041,9 @@ class Task:
         """
         Check and resolve verification
         """
-        # self.print(f"Scanning the screen for verification..")
+        if not self.data[self.sel]["schedules"][self.current_profile]["auto_captcha"]:
+            return True
+
         if chest:
             self.check_chest()
             self.better_sleep((1, 1.1))
@@ -1518,7 +1518,17 @@ class Task:
             source = self.adb.get_cv2_img()[230:480, 441:814]
         img = Image.fromarray(source)
 
-        whitelist = [(0, 148, 192), (1, 149, 193), (49, 161, 255), (4, 144, 199), (5, 201, 2), (2, 143, 197), (4, 145, 193), (3, 145, 193), (4, 145, 194)]
+        whitelist = [
+            (0, 148, 192),
+            (1, 149, 193),
+            (49, 161, 255),
+            (4, 144, 199),
+            (5, 201, 2),
+            (2, 143, 197),
+            (4, 145, 193),
+            (3, 145, 193),
+            (4, 145, 194),
+        ]
         occupied_colors = [
             (2, 4, 183),
             (233, 233, 233),
@@ -1594,14 +1604,13 @@ class Task:
 
         print(pixel_color)
 
-        condition1 = (10 < pixel_color[0] < 20) and (225 < pixel_color[1] < 240) and (120 < pixel_color[2] < 135)
-        condition2 = (10 < pixel_color[2] < 20) and (225 < pixel_color[1] < 240) and (120 < pixel_color[0] < 135)
-        condition3 = pixel_color == (0, 255, 142)
+        condition1 = (pixel_color[0] < 10) and (225 < pixel_color[1] < 255) and (120 < pixel_color[2] < 143)
+        condition2 = pixel_color == (0, 255, 142)
 
-        if condition1 or condition2 or condition3:
+        if condition1 or condition2:
             return True
         else:
             return False
 
     def run(self):
-        pass
+        raise NotImplemented("Run not implemented")

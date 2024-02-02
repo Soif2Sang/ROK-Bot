@@ -1,8 +1,10 @@
 import re
 import traceback
+# from utils.easyOcr import Reader
+from collections.abc import Callable
 from datetime import datetime
-from random import choice, randint, random, uniform
-from time import sleep, time
+from random import randint, random, uniform
+from time import sleep
 
 import cv2
 from PIL import Image
@@ -11,8 +13,6 @@ from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
 from utils.functions import get_class, get_name
 
-# from utils.easyOcr import Reader
-from collections.abc import Callable
 
 class GatherGem(Task):
     def __init__(self, MainTask: Task):
@@ -57,7 +57,7 @@ class GatherGem(Task):
         """
         i = 0
         self.print("Clicking on the node..")
-        while (co:=self.find_img(target="resource_gather_button", confidence=0.70)) is None:
+        while (co := self.find_img(target="resource_gather_button", confidence=0.70)) is None:
             x, y = uniform(610, 650), uniform(340, 388)
             self.click(x, y)
             self.better_sleep((0.725, 0.995))
@@ -676,7 +676,7 @@ class GatherGem(Task):
             if self.check_if_interrupt(screen):
                 return self.run(self.end_time)
 
-            if self.find_img(source=screen[:720//2,:], target="verification_button", confidence=0.6):
+            if self.find_img(source=screen[: 720 // 2, :], target="verification_button", confidence=0.6):
                 self.check_captcha()
                 screen = self.adb.get_cv2_img()
 
@@ -704,4 +704,3 @@ class GatherGem(Task):
     @get_class
     def run(self, end_time=None):
         print("Pass")
-        pass
