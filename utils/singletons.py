@@ -26,7 +26,6 @@ class ApiSingleton:
         with self.FileLock:
             self.apikey = key
 
-
     def getTier(self) -> str:
         with self.FileLock:
             return self.tier
@@ -42,7 +41,6 @@ class EmulatorSingleton:
     EmulatorLock = Lock()
     emulator = ""
     limit = 0
-
 
     def __new__(cls):
         if cls.__instance is None:
@@ -148,6 +146,7 @@ class LinkSingleton:
     def getAllLinks(self):
         with self.FileLock:
             return self.allLinks
+
 
 class FileSingleton:
     __instance = None

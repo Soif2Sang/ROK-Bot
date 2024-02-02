@@ -33,7 +33,6 @@
 
 """Self-test suite for Crypto.Hash._Poly1305"""
 
-import json
 import unittest
 from binascii import unhexlify, hexlify
 
@@ -465,7 +464,7 @@ class Poly1305Test_ChaCha20(unittest.TestCase):
     key = b'\x11' * 32
 
     def test_new_positive(self):
-        data = b'r' * 100
+        b'r' * 100
 
         h1 = Poly1305.new(key=self.key, cipher=ChaCha20)
         self.assertEqual(h1.digest_size, 16)

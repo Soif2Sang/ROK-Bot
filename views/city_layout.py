@@ -6,8 +6,8 @@ import flet_route
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.singletons import EmulatorSingleton
 from utils.functions import FileSingleton
+from utils.singletons import EmulatorSingleton
 
 
 class cityLayoutParam(flet_route.Params):
@@ -168,17 +168,17 @@ class CityPlacement(ft.Container):
     def remove_self(self, e):
         self.main_container.controls.remove(e.control)
         print(e.control)
-        print(e.control.key)
+        print(e.control.SUPABASE_KEY)
         try:
             self.data = self.FileSingleton.get_data()
-            print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.key])
+            print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.SUPABASE_KEY])
 
-            self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.key] = []
+            self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.SUPABASE_KEY] = []
 
         except Exception:
             traceback.print_exc()
             return
-        print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.key])
+        print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.SUPABASE_KEY])
 
         self.FileSingleton.write_data(self.data)
         self.page.update()

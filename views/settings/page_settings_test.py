@@ -153,7 +153,7 @@ class SettingContainer(ft.Container):
                             text=translate("Settings"),
                             # icon_color=self.color_choice,
                             icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(self)
+                            on_click=lambda _: function(self),
                             # , style=ButtonStyle(shape={
                             #     ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                             # })

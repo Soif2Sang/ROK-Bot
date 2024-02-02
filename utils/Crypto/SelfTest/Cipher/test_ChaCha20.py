@@ -28,8 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-import os
-import re
 import unittest
 from binascii import hexlify, unhexlify
 

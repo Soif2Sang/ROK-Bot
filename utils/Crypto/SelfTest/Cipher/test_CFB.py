@@ -119,7 +119,7 @@ class NistCfbVectors(unittest.TestCase):
                 continue
 
             self.description = tv.desc
-            cipher = AES.new(tv.key, AES.MODE_CFB, tv.iv,
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_CFB, tv.iv,
                              segment_size=segment_size)
             if direction == "[ENCRYPT]":
                 self.assertEqual(cipher.encrypt(tv.plaintext), tv.ciphertext)
@@ -149,7 +149,7 @@ class NistCfbVectors(unittest.TestCase):
                 continue
 
             self.description = tv.desc
-            cipher = AES.new(tv.key, AES.MODE_CFB, tv.iv,
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_CFB, tv.iv,
                              segment_size=segment_size)
 
             def get_input(input_text, output_seq, j):

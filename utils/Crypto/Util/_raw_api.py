@@ -162,8 +162,7 @@ try:
 except ImportError:
 
     import ctypes
-    from ctypes import (CDLL, c_void_p, byref, c_ulong, c_ulonglong, c_size_t,
-                        create_string_buffer, c_ubyte, c_uint)
+    from ctypes import (CDLL, c_void_p, byref, c_ulong, c_ubyte)
     from ctypes.util import find_library
     from ctypes import Array as _Array
 

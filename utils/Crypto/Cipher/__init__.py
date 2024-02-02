@@ -22,7 +22,6 @@
 #
 # where mode_state is a a pointer to base_cipher_state plus mode-specific data.
 
-import os
 
 from Crypto.Cipher._mode_ecb import _create_ecb_cipher
 from Crypto.Cipher._mode_cbc import _create_cbc_cipher

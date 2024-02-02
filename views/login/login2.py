@@ -1,29 +1,30 @@
 import os
+import os
 import sys
 import threading
 from datetime import datetime, timezone
 from time import sleep
-import json
+
 import flet as ft
 import gotrue
 
-from utils.constants import BREZILIAN, global_name, brezilian_name, ownerid, global_secret, brezilian_secret, url, key
-from utils.flet_translations import translate
-from utils.singletons import ApiSingleton, LinkSingleton, FileSingleton
-from utils.supabase_auth import SupabaseClient, HwidAlreadyLinked
+from utils.constants import (VERSION_TYPE)
+from utils.singletons import ApiSingleton, FileSingleton
+from utils.supabase_auth import (HwidAlreadyLinked, NoSubscriptionFound,
+                                 SupabaseClient)
 
 links = {
     "stripe": {
         "default": "https://buy.stripe.com/dR66oX4ov0qldkQaEF",
-        "tier2": "https://buy.stripe.com/eVa6oXcV1dd7a8E4gi",
-        "tier3": "https://buy.stripe.com/dR614Dg7d6OJ3Kg5kn",
-        "tier4": "https://buy.stripe.com/dR6fZxf39gpjfsY9AE",
+        # "tier2": "https://buy.stripe.com/eVa6oXcV1dd7a8E4gi",
+        # "tier3": "https://buy.stripe.com/dR614Dg7d6OJ3Kg5kn",
+        # "tier4": "https://buy.stripe.com/dR6fZxf39gpjfsY9AE",
     },
     "sellix": {
         "default": "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099",
-        "tier2": "https://awesomeseller.mysellix.io/pay/53e135-2364923c3c-4f3601",
-        "tier3": "https://awesomeseller.mysellix.io/pay/824e23-05d0f69c1d-b899c3",
-        "tier4": "https://awesomeseller.mysellix.io/pay/e90d40-1cb16b1010-e7922b",
+        # "tier2": "https://awesomeseller.mysellix.io/pay/53e135-2364923c3c-4f3601",
+        # "tier3": "https://awesomeseller.mysellix.io/pay/824e23-05d0f69c1d-b899c3",
+        # "tier4": "https://awesomeseller.mysellix.io/pay/e90d40-1cb16b1010-e7922b",
     },
 }
 
@@ -51,10 +52,6 @@ textField = {
     "color": ft.colors.SURFACE_VARIANT,
     "label_style": ft.TextStyle(color=ft.colors.SURFACE_VARIANT),
 }
-
-
-class NoSubscriptionFound(Exception):
-    pass
 
 
 class LoginScreen(ft.ResponsiveRow):
@@ -85,14 +82,14 @@ class LoginScreen(ft.ResponsiveRow):
         sellix_col = ft.Column(col=6)
 
         for tier in links["stripe"]:
-            stripe_col.controls.append(ClickableLink(tiers[tier], links["stripe"][tier], stripe_icon))
+            stripe_col.controls.append(ClickableLink("Stipe Paywall", links["stripe"][tier], stripe_icon))
         for tier in links["sellix"]:
-            sellix_col.controls.append(ClickableLink(tiers[tier], links["sellix"][tier], sellix_icon))
+            sellix_col.controls.append(ClickableLink("Crypto Paywall", links["sellix"][tier], sellix_icon))
 
-        if not BREZILIAN:
+        if VERSION_TYPE == "global":
             tier_col = ft.Column(
                 controls=[
-                    ft.Text("Available Tiers", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                    ft.Text("Where to subscribe", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
                     ft.ResponsiveRow(controls=[stripe_col, sellix_col]),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -100,11 +97,11 @@ class LoginScreen(ft.ResponsiveRow):
         else:
             tier_col = ft.Column(
                 controls=[
-                    ft.Text("Available Tiers", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
-                    ClickableLink("Tier 1", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
-                    ClickableLink("Tier 2", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
-                    ClickableLink("Tier 3", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
-                    ClickableLink("Tier 4", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    ft.Text("Where to subscribe", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                    ClickableLink("30 Days", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    # ClickableLink("Tier 2", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    # ClickableLink("Tier 3", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    # ClickableLink("Tier 4", "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             )
@@ -122,7 +119,7 @@ class LoginScreen(ft.ResponsiveRow):
                 col=6,
                 height=1080 / 2,
                 width=1920 / 4,
-                content=ft.Container(content=tier_col, height=350, width=1920 / 6),
+                content=ft.Container(content=tier_col, height=180, width=1920 / 6, alignment=ft.alignment.center),
                 alignment=ft.alignment.center,
             ),
         ]

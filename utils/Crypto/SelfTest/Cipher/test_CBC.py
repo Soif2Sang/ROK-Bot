@@ -331,7 +331,7 @@ class NistBlockChainingVectors(unittest.TestCase):
 
             self.description = tv.desc
 
-            cipher = AES.new(tv.key, self.aes_mode, tv.iv)
+            cipher = AES.new(tv.SUPABASE_KEY, self.aes_mode, tv.iv)
             if direction == "[ENCRYPT]":
                 self.assertEqual(cipher.encrypt(tv.plaintext), tv.ciphertext)
             elif direction == "[DECRYPT]":
@@ -358,7 +358,7 @@ class NistBlockChainingVectors(unittest.TestCase):
                 continue
 
             self.description = tv.desc
-            cipher = AES.new(tv.key, self.aes_mode, tv.iv)
+            cipher = AES.new(tv.SUPABASE_KEY, self.aes_mode, tv.iv)
 
             if direction == '[ENCRYPT]':
                 cts = [ tv.iv ]

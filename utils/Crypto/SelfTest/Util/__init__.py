@@ -26,7 +26,6 @@
 
 __revision__ = "$Id$"
 
-import os
 
 def get_tests(config={}):
     tests = []

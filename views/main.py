@@ -1,12 +1,12 @@
 import flet as ft
 
-from tile_handler_worker import TileHandlerWorker
-# from views.tiles.handler.tile_handler_worker import TileHandlerWorker
-from utils.supabase_auth import SupabaseClient
-from utils.constants import toasts_history
+from utils.constants import TOAST_HISTORY
 from utils.flet_toast.core import Position
 from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
-from views.tile_handler import TileHandler
+# from views.tiles.handler.tile_handler_worker import TileHandlerWorker
+from utils.supabase_auth import SupabaseClient
+from views.tiles.handler.tile_handler import TileHandler
+from views.tiles.handler.tile_handler_worker import TileHandlerWorker
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
@@ -23,10 +23,10 @@ def Main(page: ft.Page, days=950):
     page.window_height = 800
     page.theme = theme
 
-    if page.UPGRADE:
-        page.tile_manager = TileHandlerWorker(page)
-    else:
-        page.tile_manager = TileHandler(page)
+    # if page.UPGRADE:
+    page.tile_manager = TileHandlerWorker(page)
+    # else:
+    #     page.tile_manager = TileHandler(page)
 
     page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
 
@@ -35,7 +35,6 @@ def Main(page: ft.Page, days=950):
 
     page.go("/")
     page.tile_manager.refresh()
-
 
     supabaseClient = SupabaseClient()
 
@@ -50,7 +49,7 @@ def Main(page: ft.Page, days=950):
                 desc=message["message"],
                 auto_close=None,
                 trigger=None,
-                set_history=toasts_history,
+                set_history=TOAST_HISTORY,
                 position=Position.TOP_RIGHT,
             )
         else:
@@ -62,14 +61,10 @@ def Main(page: ft.Page, days=950):
                 desc=message["message"],
                 auto_close=None,
                 trigger=None,
-                set_history=toasts_history,
+                set_history=TOAST_HISTORY,
                 position=Position.TOP_RIGHT,
                 actions=[
-                    ToastAction(
-                        text="I have read",
-                        action_style="texted",
-                        on_click=lambda e: supabaseClient.readMessage(message['id'])
-                    )
+                    ToastAction(text="I have read", action_style="texted", on_click=lambda e: supabaseClient.readMessage(message["id"]))
                 ],
             )
 
