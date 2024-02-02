@@ -428,8 +428,8 @@ Lr7UkvEtFrRhDDKMtuIIq19FrL4pUIMymPMSLBn3hJLe30Dw48GQM4UCAwEAAQ==
 
     def test_import_key_ba_mv(self):
         """Verify that import_key can be used on bytearrays and memoryviews"""
-        key = RSA.import_key(bytearray(self.rsaPublicKeyDER))
-        key = RSA.import_key(memoryview(self.rsaPublicKeyDER))
+        RSA.import_key(bytearray(self.rsaPublicKeyDER))
+        RSA.import_key(memoryview(self.rsaPublicKeyDER))
 
     def test_exportKey(self):
         key = RSA.construct([self.n, self.e, self.d, self.p, self.q, self.pInv])

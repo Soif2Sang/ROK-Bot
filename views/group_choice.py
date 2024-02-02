@@ -1,7 +1,7 @@
 import flet as ft
 
-from utils.functions import get_dic_instances_ld, get_dic_instances
-from utils.singletons import FileSingleton, EmulatorSingleton
+from utils.functions import get_dic_instances, get_dic_instances_ld
+from utils.singletons import EmulatorSingleton, FileSingleton
 
 
 class EmulatorGroup(ft.Row):

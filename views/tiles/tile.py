@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-import copy
 import threading
 
 import flet as ft
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from utils.functions import FileSingleton, get_all_vms_running, get_all_vms_running_ld
+from utils.functions import (FileSingleton, get_all_vms_running,
+                             get_all_vms_running_ld)
 from utils.singletons import EmulatorSingleton
 from views.tiles.handler.config_handler import Frame
+
 
 class Tile(ft.Container):
     def __init__(self, page, number, **kwargs):

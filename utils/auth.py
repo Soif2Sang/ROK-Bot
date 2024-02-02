@@ -10,15 +10,14 @@ from uuid import uuid4  # gen random guid
 import flet as ft
 import requests
 import win32security
-
-from utils.Components.PaymentMethods import payment_methods
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
 
-from utils.constants import BREZILIAN
+from utils.Components.PaymentMethods import payment_methods
+from utils.constants import VERSION_TYPE
 from utils.functions import FileSingleton
-from utils.singletons import ApiSingleton, LinkSingleton, EmulatorSingleton
+from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
 
 fileSingleton = FileSingleton()
 
@@ -144,7 +143,7 @@ class selfApi:
             self.setvar("HWID2", hwid)
             wid2 = hwid
 
-        if BREZILIAN:
+        if VERSION_TYPE == "brazilian":
             if wid1 != hwid:
                 if self.page is not None:
                     self.log(f"user :{user} tried connecting on {public_ip}")
@@ -171,7 +170,7 @@ class selfApi:
             return True
         else:
             if self.page is not None:
-                if not BREZILIAN:
+                if VERSION_TYPE == "global":
                     dial = ft.AlertDialog(title=ft.Text("Subscribe"), content=payment_methods())
 
                     self.page.dialog = dial

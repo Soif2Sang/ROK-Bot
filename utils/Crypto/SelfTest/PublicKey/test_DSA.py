@@ -24,7 +24,6 @@
 
 """Self-test suite for Crypto.PublicKey.DSA"""
 
-import os
 from Crypto.Util.py3compat import *
 
 import unittest

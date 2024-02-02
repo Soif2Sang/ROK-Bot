@@ -1,4 +1,4 @@
-from utils.constants import BREZILIAN
+from utils.constants import VERSION_TYPE
 
 translations = {
     "RokNet 30 Days left": "ROKBot Brasil 30 Dias Restante",
@@ -172,6 +172,6 @@ translations = {
 
 
 def translate(message):
-    if BREZILIAN:
+    if VERSION_TYPE == "brazilian":
         return translations.get(message, message)
     return message

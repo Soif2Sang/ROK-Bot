@@ -1,7 +1,6 @@
-# coding=UTF-8
 import logging
-logging.disable(logging.ERROR)
 
+logging.basicConfig(level=logging.ERROR)
 import json
 import os
 import subprocess
@@ -12,29 +11,27 @@ from time import sleep
 import flet as ft
 from flet_route import Routing, path
 
-
 try:
-    from views.settings.general._settings import AllSettings
-    from utils.supabase_auth import SupabaseClient
-    from views.login.login2 import LoginScreen
-    from utils.auth import selfApi
-    from utils.constants import BREZILIAN, toasts_history
-    from utils.Components.PaymentMethods import payment_methods
     from utils.Components.AnimatedCard import AnimatedCard
     from utils.Components.card import GenerateCard
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
+    from utils.Components.PaymentMethods import payment_methods
+    from utils.constants import TOAST_HISTORY, VERSION_NUMBER, VERSION_TYPE
     from utils.flet_toast.core import Position
-    from utils.flet_toast.toasts_flexible import ToastsFlexible, ToastAction
+    from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
-    from utils.functions import FileSingleton, getchecksum, get_dic_instances, get_dic_instances_ld
+    from utils.functions import (FileSingleton, get_dic_instances,
+                                 get_dic_instances_ld, getchecksum)
     from utils.singletons import EmulatorSingleton, LinkSingleton
+    from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
-    from worker_slave_management import WorkerSlaveManagement
-    from views.login.login import LoginUI
+    from views.login.login2 import LoginScreen
     from views.main import Main
     from views.profile_settings import viewProfileSettings
+    from views.settings.general._settings import AllSettings
+    from views.worker_slave_management import WorkerSlaveManagement
 except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -52,12 +49,21 @@ except Exception as e:
 
 fileSingleton = FileSingleton()
 data = fileSingleton.getCachedData()
+
 if "API_KEY" not in data:
     data["API_KEY"] = ""
     fileSingleton.write_data(data)
 
 if "workers" not in data:
     data["workers"] = {"ld": {}, "bluestacks": {}}
+    fileSingleton.write_data(data)
+
+if "interface" not in data:
+    data["interface"] = {"auto_scroll": True, "auto_refresh": True, "limit_logs": True}
+    fileSingleton.write_data(data)
+
+if "discord" not in data:
+    data["discord"] = {"user_id": 0, "enabled": False}
     fileSingleton.write_data(data)
 
 
@@ -82,7 +88,7 @@ def main(page: ft.Page):
             auto_close=None,
             trigger=None,
             width=360,
-            set_history=toasts_history,
+            set_history=TOAST_HISTORY,
             position=Position.TOP_RIGHT,
             bgcolor_title=bgcolor_title,
         )
@@ -117,13 +123,15 @@ def main(page: ft.Page):
 
     supabaseClient = SupabaseClient()
     updates = supabaseClient.getUpdates()
-
     force = False
+
     for update in updates:
         if update["force"]:
             force = True
 
     for update in updates:
+        if update["version"] == VERSION_NUMBER:
+            continue
         if force:
             page.launch_url(update["download_link"])
             sleep(1)
@@ -137,7 +145,7 @@ def main(page: ft.Page):
             no_live_time=True,
             set_history_title="Update available",
             set_history_desc=None,
-            set_history=toasts_history,
+            set_history=TOAST_HISTORY,
             desc=ft.Row(
                 expand=True,
                 alignment=ft.MainAxisAlignment.START,
@@ -302,7 +310,7 @@ def configure_workers(page: ft.Page, params, basket):
     page.window_height = 720
 
     def go_back_and_refresh(e):
-        page.go('/')
+        page.go("/")
         page.tile_manager.refresh()
 
     controls = [

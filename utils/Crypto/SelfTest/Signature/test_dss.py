@@ -1218,9 +1218,9 @@ class TestVectorsDSAWycheproof(unittest.TestCase):
         self._id = "Wycheproof DSA Test #" + str(tv.id)
 
         hashed_msg = tv.hash_module.new(tv.msg)
-        signer = DSS.new(tv.key, 'fips-186-3', encoding='der')
+        signer = DSS.new(tv.SUPABASE_KEY, 'fips-186-3', encoding='der')
         try:
-            signature = signer.verify(hashed_msg, tv.sig)
+            signer.verify(hashed_msg, tv.sig)
         except ValueError as e:
             if tv.warning:
                 return
@@ -1321,13 +1321,13 @@ class TestVectorsECDSAWycheproof(unittest.TestCase):
         self._id = "Wycheproof ECDSA Test #%d (%s, %s)" % (tv.id, tv.comment, tv.filename)
 
         # Skip tests with unsupported curves
-        if tv.key is None:
+        if tv.SUPABASE_KEY is None:
             return
 
         hashed_msg = tv.hash_module.new(tv.msg)
-        signer = DSS.new(tv.key, 'fips-186-3', encoding=tv.encoding)
+        signer = DSS.new(tv.SUPABASE_KEY, 'fips-186-3', encoding=tv.encoding)
         try:
-            signature = signer.verify(hashed_msg, tv.sig)
+            signer.verify(hashed_msg, tv.sig)
         except ValueError as e:
             if tv.warning:
                 return

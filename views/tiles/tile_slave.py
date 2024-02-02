@@ -2,9 +2,11 @@ import copy
 
 import flet as ft
 
-from views.tiles.handler.config_handler import Frame
 from utils.functions import FileSingleton
+from views.tiles.handler.config_handler import Frame
+
 # from views.tiles.handler.config_handler import Frame
+
 
 class ConfigOverrider(ft.PopupMenuButton):
     def __init__(self, page, index, *args, **kwargs):
@@ -24,7 +26,7 @@ class ConfigOverrider(ft.PopupMenuButton):
 
         for vm in vms:
             if str(vm) != self.index:
-                self.items.append(ft.PopupMenuItem(text=vms[vm]['name'], on_click=self.override_settings, data=vm))
+                self.items.append(ft.PopupMenuItem(text=vms[vm]["name"], on_click=self.override_settings, data=vm))
 
     def refresh(self):
         self.items = []
@@ -54,6 +56,7 @@ class ConfigOverrider(ft.PopupMenuButton):
                 tab.content.content.controls = []
                 tab.content.init()
         self.initial_page.update()
+
 
 class TileSlave(ft.Container):
     def __init__(self, page, number, **kwargs):

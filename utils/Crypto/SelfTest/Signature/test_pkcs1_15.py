@@ -28,7 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-import json
 import unittest
 from binascii import unhexlify
 
@@ -310,9 +309,9 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof RSA PKCS$#1 Test #" + str(tv.id)
 
         hashed_msg = tv.hash_module.new(tv.msg)
-        signer = pkcs1_15.new(tv.key)
+        signer = pkcs1_15.new(tv.SUPABASE_KEY)
         try:
-            signature = signer.verify(hashed_msg, tv.sig)
+            signer.verify(hashed_msg, tv.sig)
         except ValueError as e:
             if tv.warning:
                 return

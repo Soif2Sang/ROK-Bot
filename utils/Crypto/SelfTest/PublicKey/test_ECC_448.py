@@ -289,7 +289,6 @@ class TestEccModule_Ed448(unittest.TestCase):
         seed = unhexlify("4adf5d37ac6785e83e99a924f92676d366a78690af59c92b6bdf14f9cdbcf26fdad478109607583d633b60078d61d51d81b7509c5433b0d4c9")
         Px = 0x72a01eea003a35f9ac44231dc4aae2a382f351d80bf32508175b0855edcf389aa2bbf308dd961ce361a6e7c2091bc78957f6ebcf3002a617
         Py = 0x9e0d08d84586e9aeefecacb41d049b831f1a3ee0c3eada63e34557b30702b50ab59fb372feff7c30b8cbb7dd51afbe88444ec56238722ec1
-        d = 0xb07cf179604f83433186e5178760c759c15125ee54ff6f8dcde46e872b709ac82ed0bd0a4e036d774034dcb18a9fb11894657a1485895f80
         point = EccPoint(Px, Py, curve="Ed448")
 
         # Private key only

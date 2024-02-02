@@ -4,15 +4,13 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from tile_worker import TileWorker
+from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
-from utils.functions import (
-    get_dic_instances,
-    get_dic_instances_ld,
-)
+from utils.functions import get_dic_instances, get_dic_instances_ld
 from utils.singletons import EmulatorSingleton, FileSingleton
-from utils.constants import BREZILIAN
-from views.login.login2 import links, tiers, sellix_icon, stripe_icon, ClickableLink
+from views.login.login2 import (ClickableLink, links, sellix_icon, stripe_icon,
+                                tiers)
+from views.tiles.tile_worker import TileWorker
 
 
 class NavigationBar(ft.Row):
@@ -29,7 +27,7 @@ class NavigationBar(ft.Row):
                 shape={
                     ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                 },
-                bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100,
+                bgcolor=ft.colors.SURFACE_VARIANT,
             ),
         )
 
@@ -37,18 +35,18 @@ class NavigationBar(ft.Row):
         sellix_col = ft.Column(col=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
         for tier in links["stripe"]:
-            stripe_col.controls.append(ClickableLink(tiers[tier], links["stripe"][tier], stripe_icon))
+            stripe_col.controls.append(ClickableLink("Stipe Paywall", links["stripe"][tier], stripe_icon))
         for tier in links["sellix"]:
-            sellix_col.controls.append(ClickableLink(tiers[tier], links["sellix"][tier], sellix_icon))
+            sellix_col.controls.append(ClickableLink("Crypto Paywall", links["sellix"][tier], sellix_icon))
 
         diag = ft.AlertDialog(
             content=ft.Column(
                 controls=[
-                    ft.Text("Available Tiers", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                    ft.Text("Where to subscribe", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
                     ft.ResponsiveRow(controls=[stripe_col, sellix_col]),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                height=270,
+                height=100,
                 width=370,
             ),
         )
@@ -85,7 +83,7 @@ class NavigationBar(ft.Row):
             diag.open = True
             page.update()
 
-        if not BREZILIAN:
+        if VERSION_TYPE == "global":
             refresh_pay.controls.append(
                 ft.OutlinedButton(
                     text="Renew",
@@ -116,7 +114,11 @@ class TileHandlerWorker(ft.ListView):
         self.controls.append(self.navigation_bar)
 
     def add_tile(self, number: str):
-        self.tiles[number] = TileWorker(self.initial_page, number)
+        if number not in self.tiles:
+            self.tiles[number] = TileWorker(self.initial_page, number)
+        else:
+            self.tiles[number].refresh_tile()
+
         self.controls.append(self.tiles[number])
         self.initial_page.update()
 
@@ -137,7 +139,7 @@ class TileHandlerWorker(ft.ListView):
         self.tiles[number].set_text(phrase)
 
     def refresh(self):
-        data = self.FileSingleton.getCachedData()
+        data = self.FileSingleton.get_data()
 
         emulator = EmulatorSingleton().getEmulator()
 

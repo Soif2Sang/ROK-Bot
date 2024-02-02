@@ -255,7 +255,7 @@ class Strxor_cTests(unittest.TestCase):
         """Verify result cannot be stored in read-only memory"""
         
         term1 = memoryview(unhexlify(b"ff339a83e5cd4cdf5649"))
-        term2 = unhexlify(b"383d4ba020573314395b")
+        unhexlify(b"383d4ba020573314395b")
         
         self.assertRaises(TypeError, strxor_c, term1, 65, output=term1)
 

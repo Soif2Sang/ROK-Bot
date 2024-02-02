@@ -4,16 +4,12 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from utils.constants import BREZILIAN
+from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
-from utils.functions import (
-    get_all_vms_running,
-    get_all_vms_running_ld,
-    get_dic_instances,
-    get_dic_instances_ld,
-)
+from utils.functions import (get_all_vms_running, get_all_vms_running_ld,
+                             get_dic_instances, get_dic_instances_ld)
 from utils.singletons import EmulatorSingleton, FileSingleton
-from tile import Tile
+from views.tiles.tile import Tile
 
 
 class NavigationBar(ft.Row):
@@ -31,7 +27,7 @@ class NavigationBar(ft.Row):
                 shape={
                     ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                 },
-                bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100,
+                bgcolor=None,
             ),
         )
 
@@ -84,7 +80,7 @@ class NavigationBar(ft.Row):
                 color="black",
             )
 
-        if not BREZILIAN:
+        if VERSION_TYPE == "global":
             self.controls.append(
                 ft.OutlinedButton(
                     text="Renew",

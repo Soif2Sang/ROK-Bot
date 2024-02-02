@@ -1,14 +1,17 @@
+import json
 import os
 import sys
 import threading
 from datetime import datetime
 from time import sleep
-import json
+
 import flet as ft
 
-from utils.Components.PaymentMethods import payment_methods
 from utils.auth import selfApi, update_user_info
-from utils.constants import BREZILIAN, global_name, brezilian_name, ownerid, global_secret, brezilian_secret
+from utils.Components.PaymentMethods import payment_methods
+from utils.constants import (VERSION_TYPE, VERSION_TYPE_name,
+                             VERSION_TYPE_secret, global_name, global_secret,
+                             ownerid)
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, getchecksum
 from utils.singletons import ApiSingleton, LinkSingleton
@@ -63,7 +66,9 @@ class LoginUI(ft.Column):
     def show_payment_banner(self, e):
         self.initial_page.show_bottom_sheet(
             ft.BottomSheet(
-                content=ft.Container(width=300,height=300, content=payment_methods(), alignment=ft.alignment.center, padding=ft.padding.all(30)),
+                content=ft.Container(
+                    width=300, height=300, content=payment_methods(), alignment=ft.alignment.center, padding=ft.padding.all(30)
+                ),
                 open=True,
                 dismissible=True,
                 enable_drag=True,
@@ -138,9 +143,9 @@ class LoginUI(ft.Column):
     def verify_subscription(self, username, password):
         try:
             self.initial_page.keyauthapp = selfApi(
-                name=global_name if not BREZILIAN else brezilian_name,
+                name=global_name if VERSION_TYPE == "global" else VERSION_TYPE_name,
                 ownerid=ownerid,
-                secret=global_secret if not BREZILIAN else brezilian_secret,
+                secret=global_secret if VERSION_TYPE == "global" else VERSION_TYPE_secret,
                 version="2.0",
                 hash_to_check=getchecksum(),
             )
@@ -216,7 +221,7 @@ class LoginUI(ft.Column):
             ],
         )
 
-        if not BREZILIAN:
+        if VERSION_TYPE == "global":
             r.controls.append(ft.Column(controls=[self.subscribe_button], col=6))
 
         return self.controls.extend(

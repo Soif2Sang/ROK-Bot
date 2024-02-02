@@ -22,13 +22,13 @@ class Logger(ft.ListView):
     def add_text(self, texte: str, color=None):
         text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)
 
-        if self.limit_logs and len(self.controls) > 210:
+        if self.limit_logs and len(self.controls) > 180:
             self.controls.pop(0)
         self.controls.append(text)
         self.initial_page.update()
 
     def add_divider(self):
-        if self.limit_logs and len(self.controls) > 210:
+        if self.limit_logs and len(self.controls) > 180:
             self.controls.pop(0)
         self.controls.append(ft.Divider())
         self.initial_page.update()

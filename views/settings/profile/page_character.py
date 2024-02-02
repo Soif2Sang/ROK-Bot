@@ -16,9 +16,11 @@ class PageCharacter(BasePage):
             ),
             ft.Switch(
                 label=translate("Restart the game after switching\nto a new character (prevent freeze)"),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
-                else False,
+                value=(
+                    True
+                    if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
+                    else False
+                ),
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character"),
             ),
             # ft.Divider(),
