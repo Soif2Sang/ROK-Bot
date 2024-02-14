@@ -2,6 +2,7 @@ import threading
 
 import flet as ft
 
+from utils.flet_translations import translate
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from utils.functions import FileSingleton
@@ -34,7 +35,7 @@ class TileWorker(ft.ExpansionTile):
         self.button_start = ft.IconButton(icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start)
         self.button_stop = ft.IconButton(icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop)
 
-        self.text_name = ft.Text(value=f"Worker n°{self.number}", width=100, size=16)
+        self.text_name = ft.Text(value=translate(f"Worker") + f" n°{self.number}", width=120, size=16)
         self.text_status = ft.Text(value="")
         self.tile_padding = ft.padding.all(0)
         self.title = ft.Row(

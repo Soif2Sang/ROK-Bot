@@ -46,9 +46,9 @@ class Task:
 
         if self.tile.__class__.__name__ != "TileWorker":
             if emulator == "bluestacks":
-                self.adb = AdbBluestacks(self.sel, tile=self)
+                self.adb = AdbBluestacks(self.sel, task_reference=self)
             else:
-                self.adb = AdbLd(self.sel, tile=self)
+                self.adb = AdbLd(self.sel, task_reference=self)
 
             self.name: str = self.adb.name
 
@@ -480,7 +480,7 @@ class Task:
             self.click(uniform(24, 91), uniform(625, 680))
             self.better_sleep((2.5, 3.5))
             if tries == 0:
-                return self.leave_city()
+                return self.leave_city(1)
             else:
                 self.click(uniform(24, 91), uniform(625, 680))
                 self.better_sleep((2.5, 3.5))
@@ -590,29 +590,29 @@ class Task:
                     return self.run_game(count=1)
 
                 languages = ["eng", "vn", "kr"]
+                package_name = {"eng": "com.lilithgame.roc.gp", "vn": "com.rok.gp.vn", "kr": "com.lilithgame.rok.gpkr"}
+
                 for language in languages:
-                    if self.language is None or self.language == language:
-                        package_name = {"eng": "com.lilithgame.roc.gp", "vn": "com.rok.gp.vn", "kr": "com.lilithgame.rok.gpkr"}[language]
+                    string = self.adb.shell(f"am start -n {package_name[language]}/com.harry.engine.MainActivity")
 
-                        string = self.adb.shell(f"am start -n {package_name}/com.harry.engine.MainActivity")
-                        self.FileSingleton.write(
-                            self.name,
-                            f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
-                        )
+                    self.FileSingleton.write(
+                        self.name,
+                        f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
+                    )
 
-                        if "Error" in str(string):
-                            break
-                        if "Activity not started" not in str(string):
-                            self.print("Starting the game!", ft.colors.GREEN_200)
-                            self.better_sleep((5, 5))
-                            self.wait_until_connected()
-                            self.language = language
-                            return self.run_game(count=2)
-                        else:
-                            return
+                    if "does not exist" in str(string):
+                        continue
+                    if "Activity not started" not in str(string):
+                        self.print("Starting the game!", ft.colors.GREEN_200)
+                        self.better_sleep((5, 5))
+                        self.wait_until_connected()
+                        self.language = language
+                        return self.run_game(count=2)
+                    else:
+                        return
                 self.print("ERROR CANNOT START THE GAME.", ft.colors.RED)
                 self.send_discord_message("ERROR CANNOT START THE GAME.")
-                print(string)
+                self.debug(self.adb.shell("pm list packages"))
                 while True:
                     self.set_status("ERROR CANNOT START GAME")
                     self.script_pause()
@@ -893,7 +893,7 @@ class Task:
                 print(co)
 
                 self.print("You just got disconnected", ft.colors.AMBER)
-                co = self.find_img(source=cv_image, target="reconnect", confidence=0.85)
+                co = self.find_img(target="reconnect", confidence=0.85)
 
                 a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                 print(a)
@@ -1604,7 +1604,7 @@ class Task:
 
         print(pixel_color)
 
-        condition1 = (pixel_color[0] < 10) and (225 < pixel_color[1] < 255) and (120 < pixel_color[2] < 143)
+        condition1 = (pixel_color[0] <= 10) and (225 <= pixel_color[1] <= 255) and (120 <= pixel_color[2] <= 143)
         condition2 = pixel_color == (0, 255, 142)
 
         if condition1 or condition2:

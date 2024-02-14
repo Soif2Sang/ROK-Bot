@@ -8,8 +8,8 @@ from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
 from utils.singletons import EmulatorSingleton, FileSingleton
-from views.login.login2 import (ClickableLink, links, sellix_icon, stripe_icon,
-                                tiers)
+from views.login.login import (ClickableLink, links, sellix_icon, stripe_icon,
+                               tiers)
 from views.tiles.tile_worker import TileWorker
 
 
@@ -291,36 +291,40 @@ class TileHandlerWorker(ft.ListView):
             default_dic["schedules"][i] = copy.deepcopy(default_profile)
         default_dic["schedules"][1]["enabled"] = True
 
+        default_worker_settings = {
+            "loop_task": True,
+            "waiting_cooldown": [60, 90],
+            "close_emulator": True
+        }
+
         for i, instance in enumerate(instances):
             if str(i) not in data["workers"][emulator]:
-                data["workers"][emulator][str(i)] = {
-                    "loop_task": True,
-                    "waiting_cooldown": [60, 90],
-                    "instances": [{"instance": instance}],
-                }
+                data["workers"][emulator][str(i)] = {**default_worker_settings, "instances": [{"instance": instance}]}
+            else:
+                data["workers"][emulator][str(i)] = {**default_worker_settings, **data["workers"][emulator][str(i)]}
 
-        for instance in instances:
-            if str(instance) not in data:
-                data[str(instance)] = copy.deepcopy(default_dic)
+            if instance not in data:
+                data[instance] = copy.deepcopy(default_dic)
             else:
                 for key in default_dic:
-                    if key not in data[str(instance)]:
-                        data[str(instance)][key] = copy.deepcopy(default_dic[key])
+                    if key not in data[instance]:
+                        data[instance][key] = copy.deepcopy(default_dic[key])
 
                 for key in default_profile:
                     for i in range(1, 4):
-                        if key not in data[str(instance)]["schedules"][str(i)]:
-                            data[str(instance)]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
+                        if key not in data[instance]["schedules"][str(i)]:
+                            data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
 
-            data[str(instance)]["instance"] = instances[str(instance)]["instance"]
-            data[str(instance)]["name"] = instances[str(instance)]["name"]
-            data[str(instance)]["port"] = int(instances[str(instance)]["port"])
+            data[instance].update({
+                "instance": instances[instance]["instance"],
+                "name": instances[instance]["name"],
+                "port": int(instances[instance]["port"])
+            })
 
         self.FileSingleton.write_data(data)
 
         for i in range(len(self.controls) - 1):
             self.controls.pop()
-        # print(instances)
 
         if instances:
             for worker in data["workers"][emulator]:

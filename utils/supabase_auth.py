@@ -73,8 +73,14 @@ class SupabaseClient:
 
     def getSubscriptions(self):
         self.refresh_session()
-        data, count = self.client.table("subscriptions").select("*").eq("paused", False).order("tier").execute()
-        return data[1]
+        data, count = self.client.table("subscriptions").select("*").eq("paused", False).order("start_at").execute()
+
+        filtered = []
+        for row in data[1]:
+            if row['user_id'] == self.client.auth.get_session().user.id:
+                filtered.append(row)
+
+        return filtered
 
     def getMessages(self):
         self.refresh_session()

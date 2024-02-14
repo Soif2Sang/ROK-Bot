@@ -17,8 +17,8 @@ bridge = None
 
 
 class AdbBluestacks(Adb):
-    def __init__(self, number: str, host="127.0.0.1", port=5037, tile=None):
-        super().__init__(number, host, port, tile)
+    def __init__(self, instance: str, host="127.0.0.1", port=5037, task_reference=None):
+        super().__init__(instance, host, port, task_reference)
 
     def update_port(self, instances=None):
         instances = get_dic_instances()
@@ -59,7 +59,7 @@ class AdbBluestacks(Adb):
 
     @get_name
     def get_device(self, host="127.0.0.1", max_attempts=10, timeout=2):
-        self.port = str(self.data[str(self.number)]["port"])
+        self.port = str(self.data[str(self.instance)]["port"])
 
         for attempt in range(max_attempts):
             device = self.client.device(f"{host}:{self.port}")

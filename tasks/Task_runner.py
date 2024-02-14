@@ -8,6 +8,7 @@ import flet as ft
 import win32gui
 from PIL import Image
 
+from utils.android_debug_bridge import DeviceNotFoundException
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
@@ -38,7 +39,7 @@ from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.functions import (current_time, get_dic_instances,
                              get_dic_instances_ld, get_name, get_window_pid)
-from utils.singletons import ApiSingleton, EmulatorSingleton, LinkSingleton
+from utils.singletons import EmulatorSingleton
 from views.frametime import is_in_frametime, random_time_in_frametime
 
 
@@ -377,7 +378,7 @@ class TaskRunner(Task):
             return False
         else:
             self.print("No more characters, going back to the first character")
-            x, y = uniform(400, 800), uniform(200, 250)
+            x, y = uniform(400, 800), uniform(250, 260)
             if nb_chars // 6 == 0:
                 rounds = 1
             else:
@@ -385,7 +386,7 @@ class TaskRunner(Task):
             if rounds == 0:
                 rounds = +1
             for _ in range(rounds):
-                x2, y2 = x + uniform(-20, 20), uniform(580, 645)
+                x2, y2 = x + uniform(-20,20), uniform(580, 645)
                 self.swipe(x, y, x2, y2)
                 self.better_sleep((3.5, 4.7))
             self.click(co_first[0] + uniform(30, 300), co_first[1] + uniform(-30, 0))
@@ -536,11 +537,17 @@ class TaskRunner(Task):
             self.set_status("Booting")
             EmulatorSingleton().startEmulator(emulator)
             try:
-                self.adb.wait_boot_complete(timeout=120, timedelta=3)
-                print("Boot completed")
-            except (TimeoutError, Exception) as e:
-                print("Timed out waiting for boot")
-                print(e)
+                self.adb.wait_boot_complete(timeout=120, timedelta=10)
+
+                sleep(10)
+
+                self.adb.shell("echo boot completed")
+                self.debug("Boot completed")
+            except (TimeoutError, DeviceNotFoundException, Exception) as e:
+                self.debug("Timed out waiting for boot")
+                self.debug(e)
+                self.adb.print("Timed out waiting for boot")
+                self.adb.print(str(e))
                 self.kill_instance()
                 sleep(1)
                 return self.start_emulator(emulator, deadstop + 1)
@@ -828,69 +835,73 @@ class TaskRunner(Task):
                 self.tile = enabled_tile
                 self.set_sel(self.tile.number)
 
-                if self.data[self.sel]["schedules"]["1"]["enable_timing"]:
+                for profile in self.data[self.sel]["schedules"]:
                     can_go = False
-                    for t in self.data[self.sel]["schedules"]["1"]["timing"]:
-                        if is_in_frametime(t[0], t[1]):
-                            self.print(f"Profile 1 able to run")
-                            can_go = True
-                            break
-                    if not can_go:
-                        print(f"The current time does not match the rules you set")
+
+                    if not self.data[self.sel]["schedules"][profile]["enabled"]:
                         continue
+                    else:
+                        if self.data[self.sel]["schedules"][profile]["enable_timing"]:
+                            for t in self.data[self.sel]["schedules"][profile]["timing"]:
+                                if is_in_frametime(t[0], t[1]):
+                                    self.print(f"Profile 1 able to run")
+                                    can_go = True
+                                    break
+                            if not can_go:
+                                print(f"The current time does not match the rules you set")
+                                continue
 
-                if emulator == "bluestacks":
-                    self.adb = AdbBluestacks(self.tile.number, tile=self)
-                else:
-                    self.adb = AdbLd(self.tile.number, tile=self)
+                    if emulator == "bluestacks":
+                        self.adb = AdbBluestacks(self.tile.number, task_reference=self)
+                    else:
+                        self.adb = AdbLd(self.tile.number, task_reference=self)
 
-                self.start_emulator(self.tile.number)
-                self.tile.runner = self
-                self.set_status("Starting..")
+                    self.start_emulator(self.tile.number)
+                    self.tile.runner = self
+                    self.set_status("Starting..")
+                    
+                    # First character
+                    self.current_profile = profile
 
-                self.adb.__repr__()
-                self.print("Connecting to the emulator..")
-                self.adb.connect_to_device()
+                    if self.get_config().get("switch_character"):
+                        self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
+                    # First character
+                    self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
 
-                # First character
-                self.current_profile = "1"
-                self.print("Reminder : only the first profile of each emulator is available")
-                if self.get_config().get("switch_character"):
-                    self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
-                # First character
-                self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
-
-                if self.get_config().get("switch_character", False):
-                    self.check_captcha()
-                    co_first = self.switch_character()
-                    self.wait_until_connected()
-                    # Characters remaining
-                    boolean = True
-                    nb_characters = 2
-                    while co_first and boolean:
-                        self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
-                        nb_characters += 1
-                        self.execute_tasks(
-                            self.get_available_task(self.current_profile),
-                            self.current_profile,
-                        )
-                        self.better_sleep((2.2, 4))
-
+                    if self.get_config().get("switch_character", False):
                         self.check_captcha()
-                        boolean = self.switch_character(co_first, nb_characters, 0)
+                        co_first = self.switch_character()
                         self.wait_until_connected()
+                        # Characters remaining
+                        boolean = True
+                        nb_characters = 2
+                        while co_first and boolean:
+                            self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
+                            nb_characters += 1
+                            self.execute_tasks(
+                                self.get_available_task(self.current_profile),
+                                self.current_profile,
+                            )
+                            self.better_sleep((2.2, 4))
+
+                            self.check_captcha()
+                            boolean = self.switch_character(co_first, nb_characters, 0)
+                            self.wait_until_connected()
 
                 self.set_status("")
                 self.leave_game()
-                self.kill_instance()
+
+                if self.data["workers"][emulator][self.worker.number]["close_emulator"]:
+                    self.kill_instance()
+                    self.print("Shutdown the emulator, waiting for 5 seconds")
+                    self.better_sleep((5, 5))
 
                 self.print(
                     f"The bot took {timedelta(seconds=int(time() - emulator_started_at))} to complete all the tasks on this emulator.",
                     "green",
                 )
 
-                self.print("Shutdown the emulator, waiting for 5 seconds")
-                self.better_sleep((5, 5))
+
 
             if self.data["workers"][emulator][self.worker.number]["loop_task"]:
                 waiting_cooldown = self.data["workers"][emulator][self.worker.number]["waiting_cooldown"]

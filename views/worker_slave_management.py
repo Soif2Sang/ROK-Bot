@@ -1,5 +1,6 @@
 import flet as ft
 
+from utils.flet_translations import translate
 from utils.singletons import EmulatorSingleton, FileSingleton
 
 fs = FileSingleton()
@@ -32,7 +33,7 @@ class Worker(ft.Container):
         self.initial_page = manager.initial_page
         self.manager = manager
         self.border_radius = 3
-        self.name = ft.Text(value=f"Worker {instance}")
+        self.name = ft.Text(value=translate(f"Worker") +f" {instance}")
         self.option = ft.IconButton(icon=ft.icons.SETTINGS_SHARP, on_click=self.open_settings)
         self.slaves = ft.ListView(expand=1, height=250)
         self.content = ft.Column(
@@ -78,13 +79,13 @@ class Worker(ft.Container):
                 height=200,
                 controls=[
                     ft.Switch(
-                        label="Re-do all the tasks until stopped",
+                        label=translate("Re-do all the tasks until stopped"),
                         value=data["workers"][EmulatorSingleton().getEmulator()][self.instance]["loop_task"],
                         on_change=lambda e: self.reverse_keyword(e, "loop_task"),
                     ),
                     ft.Container(
                         ft.Text(
-                            "Minutes to wait until the bot do the task :",
+                            translate("Minutes to wait until the bot do the task :"),
                         ),
                         margin=ft.margin.only(left=5),
                     ),
@@ -110,6 +111,11 @@ class Worker(ft.Container):
                             ],
                         ),
                         margin=ft.margin.only(left=50, top=5),
+                    ),
+                    ft.Switch(
+                        label=translate("Close the Emulator once all the task are completed."),
+                        value=data["workers"][EmulatorSingleton().getEmulator()][self.instance]["close_emulator"],
+                        on_change=lambda e: self.reverse_keyword(e, "close_emulator"),
                     ),
                 ],
             ),
@@ -232,7 +238,7 @@ class WorkerSlaveManagement(ft.ListView):
         self.slaves = ft.Row(wrap=True)
         self.workers = ft.Row(wrap=True)
 
-        data = FileSingleton().get_data()
+        data = FileSingleton().getCachedData()
 
         for key, value in data.items():
             if isinstance(value, dict) and ("instance" in value) and value.get("emulator") == EmulatorSingleton().getEmulator():

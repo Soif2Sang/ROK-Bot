@@ -8,8 +8,8 @@ bridge = None
 
 
 class AdbLd(Adb):
-    def __init__(self, number: str, host="127.0.0.1", port=5037, tile=None):
-        super().__init__(number, host, port, tile)
+    def __init__(self, instance: str, host="127.0.0.1", port=5037, task_reference=None):
+        super().__init__(instance, host, port, task_reference)
         self.is_ld = True
 
     def update_port(self, instances=None):
@@ -82,7 +82,7 @@ class AdbLd(Adb):
     #         return self.get_device()
     @get_name
     def get_device(self, host="emulator", max_attempts=10, timeout=2):
-        self.port = str(self.data[str(self.number)]["port"])
+        self.port = str(self.data[str(self.instance)]["port"])
 
         for attempt in range(max_attempts):
             device = self.client.device(f"{host}-{self.port}")

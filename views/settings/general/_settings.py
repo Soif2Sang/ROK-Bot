@@ -46,7 +46,7 @@ class AllSettings(PageSettings):
                     margin=ft.margin.only(top=5, bottom=3),
                 ),
                 ft.OutlinedButton(
-                    text="Configure Workers",
+                    text=translate("Configure Workers"),
                     icon=ft.icons.SETTINGS,
                     on_click=lambda _: self.initial_page.go("/configure-workers"),
                     style=ButtonStyle(

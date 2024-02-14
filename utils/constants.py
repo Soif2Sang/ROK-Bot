@@ -5,6 +5,10 @@ VERSION_TYPE: Literal["global", "brazilian"] = "global"
 VERSION_NUMBER = "3.1.0"
 TOAST_HISTORY = {}
 
+names = {"global": "RokNet", "brazilian": "ROKBOT"}
+
+BOT_NAME: Literal["RokNet", "ROKBOT"] = names[VERSION_TYPE]
+
 ownerid = "7oofxdj8uH"
 
 global_name = "Rokbd"
