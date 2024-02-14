@@ -348,7 +348,7 @@ class TileManagerUpgrade(ft.ListView):
         tiles = []
         for tile in self.controls[1:]:
             if tile.selected:
-                tiles.append(tile.number)
+                tiles.append(tile.instance)
         return tiles
 
     def get_enabled_sel_object(self):
@@ -425,7 +425,7 @@ class StartBar(ft.Row):
             for instance in self.data:
                 if isinstance(self.data[instance], dict):
                     if self.data[instance].get("group", None) is not None:
-                        if self.data[instance]["instance"] == str(tile.number):
+                        if self.data[instance]["instance"] == str(tile.instance):
                             if self.data[instance]["group"] not in groups:
                                 groups[self.data[instance]["group"]] = []
                             groups[self.data[instance]["group"]].append(tile)

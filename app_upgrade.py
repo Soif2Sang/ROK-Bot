@@ -17,17 +17,17 @@ try:
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
     from utils.Components.PaymentMethods import payment_methods
-    from utils.constants import TOAST_HISTORY, VERSION_NUMBER, VERSION_TYPE
+    from utils.constants import TOAST_HISTORY, VERSION_NUMBER, VERSION_TYPE, BOT_NAME
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
     from utils.functions import (FileSingleton, get_dic_instances,
                                  get_dic_instances_ld, getchecksum)
-    from utils.singletons import EmulatorSingleton, LinkSingleton
+    from utils.singletons import EmulatorSingleton
     from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
-    from views.login.login2 import LoginScreen
+    from views.login.login import LoginScreen
     from views.main import Main
     from views.profile_settings import viewProfileSettings
     from views.settings.general._settings import AllSettings
@@ -184,6 +184,7 @@ def main(page: ft.Page):
                 )
             ],
         )
+        break
     page.go("/login")
     page.update()
 
@@ -282,7 +283,7 @@ def login(page: ft.Page, params, basket):
     page.window_width = 1920 / 2
     page.window_height = 1080 / 2
     page.window_resizable = False
-    page.title = "RokNet"
+    page.title = BOT_NAME
 
     return ft.View(route="/login", controls=[LoginScreen(page)], padding=0)
 

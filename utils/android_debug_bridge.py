@@ -56,40 +56,45 @@ class Adb:
     adb_restart_lock = threading.Lock()
     last_restart_time = 0
 
-    def __init__(self, number: str, host="127.0.0.1", port=5037, tile=None):
+    def __init__(self, instance: str, host="127.0.0.1", port=5037, task_reference=None):
         self.FileSingleton = FileSingleton()
         self.images = ImageSingleton()
         self.client = PPADBClient(host, port)
-        self.host = host
-        self.port = port
-        self.number = number
-        self.data = self.FileSingleton.getCachedData()
-        self.name = self.data[self.number]["name"]
+        self.host: str = host
+        self.port: int = port
+        self.instance: str = instance
+        self.data: dict[str, dict] = self.FileSingleton.getCachedData()
+        self.name: str = self.data[self.instance]["name"]
         self.is_ld = False
-        self.tile = tile
+        self.task_reference = task_reference
 
     def __str__(self):
-        print(f"JsonNumber:{self.number} port:{self.port}")
-        return f"JsonNumber:{self.number} port:{self.port}"
+        print(f"JsonNumber:{self.instance} port:{self.port}")
+        return f"JsonNumber:{self.instance} port:{self.port}"
 
     def script_pause(self):
-        if not self.tile:
+        if not self.task_reference:
             return
-        return self.tile.script_pause()
+        return self.task_reference.script_pause()
 
     def update_port(self, instances=None):
         if instances is None:
-            instances = []
+            instances = {}
 
-        if self.number not in instances:
+        if self.instance not in instances:
             raise UnknownDeviceException(f"{self.host}/{self.port}")
 
-        if self.port != int(instances[self.number]["port"]):
+        if self.port != int(instances[self.instance]["port"]):
             self.data = self.FileSingleton.get_data()
-            self.data[self.number]["instance"] = instances[self.number]["instance"]
-            self.data[self.number]["name"] = instances[self.number]["name"]
-            self.data[self.number]["port"] = int(instances[self.number]["port"])
-            self.port = int(instances[self.number]["port"])
+
+            self.data[self.instance].update({
+                "instance": instances[self.instance]["instance"],
+                "name": instances[self.instance]["name"],
+                "port": int(instances[self.instance]["port"])
+            })
+
+            self.port = self.data[self.instance]["port"]
+
             self.FileSingleton.write_data(self.data)
 
     def stop_server(self):
@@ -138,7 +143,7 @@ class Adb:
     @get_name
     def print(self, *args: str):
         data = self.FileSingleton.getCachedData()
-        print(f"[ {date.today()} {current_time()} ] [ {data[self.number]['name']} ] {' '.join(map(str, args))}")
+        print(f"[ {date.today()} {current_time()} ] [ {data[self.instance]['name']} ] {' '.join(map(str, args))}")
         self.FileSingleton.write(self.name, " ".join(map(str, args)))
 
     @get_name
@@ -210,11 +215,11 @@ class Adb:
                 if target == "gem_search_button":
                     source = source[470:600, 0:150]
                 if target == "button_level":
-                    source = source[720 // 2 - 50 :, :]
+                    source = source[720 // 2 - 50:, :]
                 if target in ["minus_button", "plus_button"]:
-                    source = source[720 // 2 :, :]
+                    source = source[720 // 2:, :]
                 if target == "search_button":
-                    source = source[720 // 2 :, : 1280 // 4]
+                    source = source[720 // 2:, : 1280 // 4]
 
             img_to_find = self.images.get_file_name(target)
             # bot.adb.get_cv2_img()
@@ -290,13 +295,13 @@ class Adb:
         element_to_delete = []
         for i in range(len(localisations) - 1):
             if (
-                (localisations[i][0] + 1 == localisations[i + 1][0])
-                or (localisations[i][0] - 1 == localisations[i + 1][0])
-                or (localisations[i][0] == localisations[i + 1][0])
+                    (localisations[i][0] + 1 == localisations[i + 1][0])
+                    or (localisations[i][0] - 1 == localisations[i + 1][0])
+                    or (localisations[i][0] == localisations[i + 1][0])
             ) and (
-                (localisations[i][1] + 1 == localisations[i + 1][1])
-                or (localisations[i][1] - 1 == localisations[i + 1][1])
-                or (localisations[i][1] == localisations[i + 1][1])
+                    (localisations[i][1] + 1 == localisations[i + 1][1])
+                    or (localisations[i][1] - 1 == localisations[i + 1][1])
+                    or (localisations[i][1] == localisations[i + 1][1])
             ):
                 element_to_delete.append(localisations[i])
 
@@ -394,12 +399,13 @@ class Adb:
             with open(rf"{string}", "r") as file:
                 data_instance = file.read().split("\n")
         except:
-            print("The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
+            print(
+                "The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
 
         liste_info = []
         for element in data_instance:
             if ((("bst.instance.Nougat64" in element) and ("adb_port" in element)) and "status" not in element) or (
-                ("bst.instance.Nougat64" in element) and ("display_name" in element)
+                    ("bst.instance.Nougat64" in element) and ("display_name" in element)
             ):
                 liste_info.append(element)
 
@@ -450,7 +456,8 @@ class Adb:
 def img_to_string(pil_image):
     # pil_image.save(resource_path("test.png"))
     tess.pytesseract.tesseract_cmd = "tesseract\\tesseract.exe"
-    result = tess.image_to_string(pil_image, lang="eng", config="--psm 6").replace("\t", "").replace("\n", "").replace("\f", "")
+    result = tess.image_to_string(pil_image, lang="eng", config="--psm 6").replace("\t", "").replace("\n", "").replace(
+        "\f", "")
     return result
 
 

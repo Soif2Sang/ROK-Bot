@@ -1,7 +1,7 @@
 from utils.constants import VERSION_TYPE
 
 translations = {
-    "RokNet 30 Days left": "ROKBot Brasil 30 Dias Restante",
+    f"ROKBOT 30 Days left": "ROKBOT Brasil 30 Dias Restante",
     "Username": "Nome de usuário",
     "Password": "Senha",
     "Login": "Entrar",
@@ -168,6 +168,16 @@ translations = {
     "Minutes to wait until the bot do the task :": "Minutos a esperar até o bot realizar a tarefa :",
     "Skip second and fourth line": "Pular segunda e quarta linha",
     "Available troop scan\nfrequency (seconds)": "Frequência de varredura\nde tropa disponível (segundos)",
+    "Submit" : "Enviar",
+    "Where to subscribe" : "Onde assinar",
+    "Our Website" : "Nosso site",
+    "Subscribe": "Se inscrever",
+    "The emulator requires a 'Worker' to execute tasks. Once you start a worker, worker will start the first assigned emulator, perform actions, close it, and then proceed to the next emulator in sequence. Decreasing the number of workers will result in fewer simultaneous windows, while increasing it will lead to a higher number of concurrent windows." : "O emulador requer um 'Trabalhador' para executar tarefas. Depois de iniciar um trabalhador, o trabalhador iniciará o primeiro emulador atribuído, executará ações, fechará-o e prosseguirá para o próximo emulador na sequência. Diminuir o número de trabalhadores resultará em menos janelas simultâneas, enquanto aumentá-lo levará a um maior número de janelas simultâneas.",
+    "Configure Workers" : "Configurar trabalhadores",
+    "Emulator Workers" : "Trabalhadores do emulador",
+    "Worker" : "trabalhador",
+    "Re-do all the tasks until stopped": "Refaça todas as tarefas até parar",
+    "Close the Emulator once all the task are completed.": "Feche o emulador assim que todas as tarefas forem concluídas."
 }
 
 
