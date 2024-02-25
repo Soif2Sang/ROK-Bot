@@ -125,7 +125,7 @@ class TaskRunner(Task):
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
 
         current_task = 1
-
+        self.debug(self.adb.resource_amount_image_to_string())
         self.check_captcha()
 
         for func in lib_tasks:
@@ -834,7 +834,7 @@ class TaskRunner(Task):
 
                 self.tile = enabled_tile
                 self.set_sel(self.tile.number)
-
+                can_go = True
                 for profile in self.data[self.sel]["schedules"]:
                     can_go = False
 
@@ -889,7 +889,9 @@ class TaskRunner(Task):
                             self.wait_until_connected()
 
                 self.set_status("")
-                self.leave_game()
+
+                if not can_go:
+                    self.leave_game()
 
                 if self.data["workers"][emulator][self.worker.number]["close_emulator"]:
                     self.kill_instance()
