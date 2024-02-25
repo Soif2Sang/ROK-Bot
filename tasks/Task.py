@@ -115,7 +115,7 @@ class Task:
             self.set_status(f"{hours:02d}:{mins:02d}:{secs:02d}")
             seconds -= 1
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
-            self.better_sleep((1, 1))
+            self.better_sleep((1, 1), reduce_speed=False)
         self.set_status("")
 
     def update_data(self):
@@ -619,12 +619,14 @@ class Task:
                     self.better_sleep((1, 1))
 
     # @get_name
-    def better_sleep(self, limits: tuple[float, float]):
+    def better_sleep(self, limits: tuple[float, float], reduce_speed = True):
         a = limits[0]
         b = limits[1]
-        if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
-            a *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
-            b *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
+
+        if reduce_speed:
+            if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
+                a *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
+                b *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
 
         sleep_duration = uniform(a, b)
         interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
@@ -894,7 +896,7 @@ class Task:
 
                 self.print("You just got disconnected", ft.colors.AMBER)
                 co = self.find_img(target="reconnect", confidence=0.85)
-
+    
                 a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                 print(a)
                 self.click(a[0], a[1])
