@@ -33,7 +33,6 @@
 
 """Self-test suite for Crypto.Hash.CMAC"""
 
-import json
 import unittest
 from binascii import unhexlify
 
@@ -387,9 +386,9 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof MAC creation Test #" + str(tv.id)
 
         try:
-            tag = CMAC.new(tv.key, tv.msg, ciphermod=AES, mac_len=tv.tag_size).digest()
+            tag = CMAC.new(tv.SUPABASE_KEY, tv.msg, ciphermod=AES, mac_len=tv.tag_size).digest()
         except ValueError as e:
-            if len(tv.key) not in (16, 24, 32) and "key length" in str(e):
+            if len(tv.SUPABASE_KEY) not in (16, 24, 32) and "key length" in str(e):
                 return
             raise e
         if tv.valid:
@@ -400,9 +399,9 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof MAC verification Test #" + str(tv.id)
 
         try:
-            mac = CMAC.new(tv.key, tv.msg, ciphermod=AES, mac_len=tv.tag_size)
+            mac = CMAC.new(tv.SUPABASE_KEY, tv.msg, ciphermod=AES, mac_len=tv.tag_size)
         except ValueError as e:
-            if len(tv.key) not in (16, 24, 32) and "key length" in str(e):
+            if len(tv.SUPABASE_KEY) not in (16, 24, 32) and "key length" in str(e):
                 return
             raise e
         try:
@@ -422,7 +421,6 @@ class TestVectorsWycheproof(unittest.TestCase):
 
 def get_tests(config={}):
     global test_data
-    import types
     from .common import make_mac_tests
 
     wycheproof_warnings = config.get('wycheproof_warnings')

@@ -1,10 +1,10 @@
-import sys
 import re
+import sys
 
 # Get the input argument
 brazilian_input = sys.argv[1] if len(sys.argv) > 1 else None
 
-# Set the BREZILIAN value based on the input
+# Set the VERSION_TYPE value based on the input
 brazilian_value = "True" if brazilian_input == "true" else "False"
 
 # Open the file in read mode and read the lines
@@ -17,8 +17,8 @@ with open("utils/constants.py", "w") as file:
         # Replace DEBUG = True with DEBUG = False
         if "DEBUG = True" in line:
             line = line.replace("DEBUG = True", "DEBUG = False")
-        # Replace the BREZILIAN value
-        if "BREZILIAN" in line:
-            line = re.sub(r"BREZILIAN = .*", f"BREZILIAN = {brazilian_value}", line)
+        # Replace the VERSION_TYPE value
+        if "VERSION_TYPE" in line:
+            line = re.sub(r"VERSION_TYPE = .*", f"VERSION_TYPE = {brazilian_value}", line)
         # Write the line back to the file
         file.write(line)

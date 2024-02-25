@@ -1,33 +1,11 @@
 import flet as ft
 
+from utils.supabase_auth import SupabaseClient
+from views.login.login2 import LoginScreen
+from utils.constants import BREZILIAN, global_name, brezilian_name, ownerid, global_secret, brezilian_secret
+import json
 
-def main(page: ft.Page):
-    page.spacing = 0
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.padding = ft.padding.only(top=0)
+s = SupabaseClient()
+s.login("maxou@gmail.com", "maxou@gmail.com")
 
-    def handle_expansion_tile_change(e):
-        page.show_snack_bar(
-            ft.SnackBar(ft.Text(f"ExpansionTile was {'expanded' if e.data=='true' else 'collapsed'}"), duration=1000)
-        )
-        if e.control.trailing:
-            e.control.trailing.name = (
-                ft.icons.ARROW_DROP_DOWN
-                if e.control.trailing.name == ft.icons.ARROW_DROP_DOWN_CIRCLE
-                else ft.icons.ARROW_DROP_DOWN_CIRCLE
-            )
-            page.update()
-
-    page.add(
-        ft.ExpansionTile(
-            title=ft.Row([ft.Checkbox(),ft.IconButton(icon=ft.icons.SETTINGS),ft.Text("Worker 1")]),
-            affinity=ft.TileAffinity.PLATFORM,
-            maintain_state=True,
-            collapsed_text_color=ft.colors.RED,
-            text_color=ft.colors.RED,
-            controls=[ft.ListTile(title=ft.Text("This is sub-tile number 1"))],
-        ),
-    )
-
-
-ft.app(target=main)
+print(s.check_hwid())

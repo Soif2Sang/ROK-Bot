@@ -28,7 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-import json
 import unittest
 from binascii import unhexlify
 
@@ -465,7 +464,7 @@ class TestVectorsWycheproof(unittest.TestCase):
     def test_encrypt(self, tv):
         self._id = "Wycheproof Encrypt AES-SIV Test #" + str(tv.id)
 
-        cipher = AES.new(tv.key, AES.MODE_SIV)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_SIV)
         cipher.update(tv.aad)
         ct, tag = cipher.encrypt_and_digest(tv.msg)
         if tv.valid:
@@ -474,7 +473,7 @@ class TestVectorsWycheproof(unittest.TestCase):
     def test_decrypt(self, tv):
         self._id = "Wycheproof Decrypt AES_SIV Test #" + str(tv.id)
 
-        cipher = AES.new(tv.key, AES.MODE_SIV)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_SIV)
         cipher.update(tv.aad)
         try:
             pt = cipher.decrypt_and_verify(tv.ct[16:], tv.ct[:16])
@@ -508,7 +507,7 @@ class TestVectorsWycheproof2(unittest.TestCase):
     def test_encrypt(self, tv):
         self._id = "Wycheproof Encrypt AEAD-AES-SIV Test #" + str(tv.id)
 
-        cipher = AES.new(tv.key, AES.MODE_SIV, nonce=tv.iv)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_SIV, nonce=tv.iv)
         cipher.update(tv.aad)
         ct, tag = cipher.encrypt_and_digest(tv.msg)
         if tv.valid:
@@ -518,7 +517,7 @@ class TestVectorsWycheproof2(unittest.TestCase):
     def test_decrypt(self, tv):
         self._id = "Wycheproof Decrypt AEAD-AES-SIV Test #" + str(tv.id)
 
-        cipher = AES.new(tv.key, AES.MODE_SIV, nonce=tv.iv)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_SIV, nonce=tv.iv)
         cipher.update(tv.aad)
         try:
             pt = cipher.decrypt_and_verify(tv.ct, tv.tag)
@@ -536,7 +535,7 @@ class TestVectorsWycheproof2(unittest.TestCase):
 
 
 def get_tests(config={}):
-    wycheproof_warnings = config.get('wycheproof_warnings')
+    config.get('wycheproof_warnings')
 
     tests = []
     tests += list_test_cases(SivTests)

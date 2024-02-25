@@ -1,4 +1,6 @@
-# coding=UTF-8
+import logging
+
+logging.basicConfig(level=logging.ERROR)
 import json
 import os
 import subprocess
@@ -9,27 +11,27 @@ from time import sleep
 import flet as ft
 from flet_route import Routing, path
 
-
 try:
-    from utils.auth import selfApi
-    from utils.constants import BREZILIAN, toasts_history
-    from utils.Components.PaymentMethods import payment_methods
     from utils.Components.AnimatedCard import AnimatedCard
     from utils.Components.card import GenerateCard
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
+    from utils.Components.PaymentMethods import payment_methods
+    from utils.constants import TOAST_HISTORY, VERSION_NUMBER, VERSION_TYPE, BOT_NAME
     from utils.flet_toast.core import Position
-    from utils.flet_toast.toasts_flexible import ToastsFlexible
+    from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
-    from utils.functions import FileSingleton, getchecksum, get_dic_instances, get_dic_instances_ld
-    from utils.singletons import EmulatorSingleton, LinkSingleton
+    from utils.functions import (FileSingleton, get_dic_instances,
+                                 get_dic_instances_ld, getchecksum)
+    from utils.singletons import EmulatorSingleton
+    from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
-    from views.group_choice import EmulatorGroup
-    from views.login.login import LoginUI
+    from views.login.login import LoginScreen
     from views.main import Main
     from views.profile_settings import viewProfileSettings
     from views.settings.general._settings import AllSettings
+    from views.worker_slave_management import WorkerSlaveManagement
 except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -38,34 +40,32 @@ except Exception as e:
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
-        page.add(ft.Text("An error occurred, a log message have been sent to the developer"))
+        page.add(ft.Text("An error occurred, send this message to the developer"))
         page.add(ft.Text(value=traceback_str, color="red"))
         page.update()
-
-    keyauthapp = selfApi(
-        name="Rokbd" if not BREZILIAN else "RokbdBR",
-        ownerid="7oofxdj8uH",
-        secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
-        if not BREZILIAN
-        else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
-        version="2.0",
-        hash_to_check=getchecksum(),
-    )
-
-    keyauthapp.log(traceback_str)
 
     ft.app(target=handleError)
     exit()
 
 fileSingleton = FileSingleton()
 data = fileSingleton.getCachedData()
+
 if "API_KEY" not in data:
     data["API_KEY"] = ""
     fileSingleton.write_data(data)
 
 if "workers" not in data:
-    data['workers'] = {'ld': {}, 'bluestacks' : {}}
+    data["workers"] = {"ld": {}, "bluestacks": {}}
     fileSingleton.write_data(data)
+
+if "interface" not in data:
+    data["interface"] = {"auto_scroll": True, "auto_refresh": True, "limit_logs": True}
+    fileSingleton.write_data(data)
+
+if "discord" not in data:
+    data["discord"] = {"user_id": 0, "enabled": False}
+    fileSingleton.write_data(data)
+
 
 def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -74,39 +74,10 @@ def main(page: ft.Page):
     page.window_height = 400
     page.FileSingleton = FileSingleton()
 
-    ready = False
-
-    for i in range(3):
-        ready = False
-        try:
-            page.keyauthapp = selfApi(
-                name="Rokbd" if not BREZILIAN else "RokbdBR",
-                ownerid="7oofxdj8uH",
-                secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
-                if not BREZILIAN
-                else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
-                version="2.0",
-                hash_to_check=getchecksum(),
-            )
-            ready = True
-        except Exception as e:
-            print(e)
-            page.keyauthapp = None
-            sleep(5)
-        if ready:
-            break
-
-    if not ready:
-        page.vertical_alignment = ft.MainAxisAlignment.CENTER
-        page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-        page.add(generate_maintenance())
-
-        while 1:
-            sleep(1)
-
-    page.loginUI = LoginUI(page)
+    page.loginUI = LoginScreen(page)
     page.UPGRADE = True
     page.body = ft.Column()
+    page.padding = ft.padding.all(0)
 
     def generate_toast(title, description, icon=ft.icons.INFO, bgcolor_title="AMBER"):
         ToastsFlexible(
@@ -117,7 +88,7 @@ def main(page: ft.Page):
             auto_close=None,
             trigger=None,
             width=360,
-            set_history=toasts_history,
+            set_history=TOAST_HISTORY,
             position=Position.TOP_RIGHT,
             bgcolor_title=bgcolor_title,
         )
@@ -141,7 +112,7 @@ def main(page: ft.Page):
             clear=True,
             view=viewProfileSettings,
         ),
-        path(url="/configure-workers", clear=True, view=group_choice),
+        path(url="/configure-workers", clear=True, view=configure_workers),
         path(url="/settings", clear=True, view=settings),
     ]
 
@@ -150,6 +121,70 @@ def main(page: ft.Page):
         app_routes=page.app_routes,
     )
 
+    supabaseClient = SupabaseClient()
+    updates = supabaseClient.getUpdates()
+    force = False
+
+    for update in updates:
+        if update["force"]:
+            force = True
+
+    for update in updates:
+        if update["version"] == VERSION_NUMBER:
+            continue
+        if force:
+            page.launch_url(update["download_link"])
+            sleep(1)
+            page.window_destroy()
+            sys.exit(0)
+
+        ToastsFlexible(
+            page=page,
+            width=280,
+            position=Position.BOTTOM_LEFT,
+            no_live_time=True,
+            set_history_title="Update available",
+            set_history_desc=None,
+            set_history=TOAST_HISTORY,
+            desc=ft.Row(
+                expand=True,
+                alignment=ft.MainAxisAlignment.START,
+                vertical_alignment=ft.CrossAxisAlignment.START,
+                spacing=12,
+                controls=[
+                    ft.Icon(ft.icons.UPDATE, size=24),
+                    ft.Column(
+                        alignment=ft.MainAxisAlignment.START,
+                        horizontal_alignment=ft.CrossAxisAlignment.START,
+                        spacing=0,
+                        controls=[
+                            ft.Text(
+                                "Update available",
+                                style=ft.TextThemeStyle.BODY_MEDIUM,
+                                weight=ft.FontWeight.BOLD,
+                            ),
+                            ft.Text(
+                                f"A new software version is available for download (v{update['version']}).",
+                                style=ft.TextThemeStyle.LABEL_MEDIUM,
+                                width=210,
+                                opacity=0.8,
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+            actions_alignment=ft.MainAxisAlignment.START,
+            actions=[
+                ToastAction(
+                    text="Update",
+                    width=100,
+                    action_style="filled",
+                    disabled=False,
+                    on_click=lambda e: page.launch_url(update["download_link"]),
+                )
+            ],
+        )
+        break
     page.go("/login")
     page.update()
 
@@ -227,12 +262,6 @@ def emulator_choice(page: ft.Page, params, basket):
         controls=[
             ft.Stack(
                 controls=[
-                    ft.Container(
-                        image_src=f"rok_wallpaper.webp",
-                        width=1920 / 2,
-                        height=1080 / 2,
-                        image_fit=ft.ImageFit.COVER,
-                    ),
                     ft.Row(
                         controls=[
                             AnimatedCard("bluestacks_logo.png", go_main),
@@ -254,41 +283,9 @@ def login(page: ft.Page, params, basket):
     page.window_width = 1920 / 2
     page.window_height = 1080 / 2
     page.window_resizable = False
-    page.title = "RokNet"
+    page.title = BOT_NAME
 
-    return ft.View(
-        route="/login",
-        controls=[
-            ft.Stack(
-                controls=[
-                    ft.Container(
-                        image_src=f"./rok_wallpaper.webp",
-                        width=1920 / 2,
-                        height=1080 / 2,
-                        image_fit=ft.ImageFit.COVER,
-                    ),
-                    ft.Container(
-                        blur=100,
-                        width=400,
-                        height=250,
-                        right=1920 / 4 - 400 / 2 - 10,
-                        top=1080 / 4 - 250 / 2 - 15,
-                        content=ft.Container(
-                            content=page.loginUI,
-                            height=160,
-                            width=300,
-                        ),
-                        alignment=ft.Alignment(0, 0),
-                        border_radius=5,
-                        border=ft.border.all(3, ft.colors.GREY_900),
-                    ),
-                ]
-            )
-        ],
-        vertical_alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        padding=0,
-    )
+    return ft.View(route="/login", controls=[LoginScreen(page)], padding=0)
 
 
 def settings(page: ft.Page, params, basket):
@@ -309,15 +306,13 @@ def settings(page: ft.Page, params, basket):
     return ft.View(route="/settings", controls=controls)
 
 
-def group_choice(page: ft.Page, params, basket):
-    emulator = EmulatorSingleton().getEmulator()
+def configure_workers(page: ft.Page, params, basket):
+    page.window_width = 1920 / 2
+    page.window_height = 720
 
-    if emulator == "bluestacks":
-        instances = get_dic_instances()
-    else:
-        instances = get_dic_instances_ld()
-
-    instances = [(instance, instance) for instance in instances]
+    def go_back_and_refresh(e):
+        page.go("/")
+        page.tile_manager.refresh()
 
     controls = [
         ft.Container(
@@ -325,7 +320,7 @@ def group_choice(page: ft.Page, params, basket):
                 controls=[
                     ft.IconButton(
                         icon=ft.icons.ARROW_BACK,
-                        on_click=lambda _: page.go("/"),
+                        on_click=go_back_and_refresh,
                     ),
                     ft.Text(value="Back", size=20),
                 ],
@@ -339,12 +334,12 @@ def group_choice(page: ft.Page, params, basket):
     inside.append(
         GenerateCard(
             subtitle=translate(
-                "The emulator requires a 'Worker' to execute tasks. Once you start the bot, all workers will start their first assigned emulator, perform actions, close it, and then proceed to the next emulator in sequence. Decreasing the number of workers will result in fewer simultaneous windows, while increasing it will lead to a higher number of concurrent windows."
+                "The emulator requires a 'Worker' to execute tasks. Once you start a worker, worker will start the first assigned emulator, perform actions, close it, and then proceed to the next emulator in sequence. Decreasing the number of workers will result in fewer simultaneous windows, while increasing it will lead to a higher number of concurrent windows."
             )
         )
     )
-    for instance in instances:
-        inside.append(EmulatorGroup(instance, instances))
+    inside.append(ft.Divider())
+    inside.append(WorkerSlaveManagement(page))
 
     controls.append(ft.ListView(controls=inside, expand=1))
 

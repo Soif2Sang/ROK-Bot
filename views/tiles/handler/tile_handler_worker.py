@@ -4,18 +4,13 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from tiles.tile_worker import TileWorker
-from utils.Components.PaymentMethods import payment_methods
-from utils.constants import BREZILIAN
+from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
-from utils.functions import (
-    get_all_vms_running,
-    get_all_vms_running_ld,
-    get_dic_instances,
-    get_dic_instances_ld,
-)
-from utils.singletons import EmulatorSingleton, FileSingleton, LinkSingleton
-from views.tiles.tile import Tile
+from utils.functions import get_dic_instances, get_dic_instances_ld
+from utils.singletons import EmulatorSingleton, FileSingleton
+from views.login.login import (ClickableLink, links, sellix_icon, stripe_icon,
+                               tiers)
+from views.tiles.tile_worker import TileWorker
 
 
 class NavigationBar(ft.Row):
@@ -25,41 +20,36 @@ class NavigationBar(ft.Row):
         self.tileManager = tile_manager
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
-        self.button_refresh = ft.OutlinedButton(
-            text=translate("Refresh"),
+        self.button_refresh = ft.IconButton(
             icon=ft.icons.REFRESH_ROUNDED,
             on_click=lambda _: self.tileManager.refresh(),
             style=ButtonStyle(
                 shape={
                     ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                 },
-                bgcolor=None if not self.tileManager.initial_page.UPGRADE else ft.colors.AMBER_100,
+                bgcolor=ft.colors.SURFACE_VARIANT,
             ),
         )
 
-        self.controls.append(self.button_refresh)
+        stripe_col = ft.Column(col=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+        sellix_col = ft.Column(col=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
 
-        # bottom = ft.BottomSheet(
-        #     content=ft.Row(
-        #         controls=[
-        #             ft.TextButton(
-        #                 icon=ft.icons.LINK_OUTLINED,
-        #                 text="Pay with Stripe",
-        #                 on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getStripeLink()),
-        #             ),
-        #             ft.TextButton(
-        #                 icon=ft.icons.LINK_OUTLINED,
-        #                 text="Pay with Crypto",
-        #                 on_click=lambda _: self.initial_page.launch_url(LinkSingleton().getSellixLink()),
-        #             ),
-        #         ],
-        #         alignment=ft.MainAxisAlignment.CENTER,
-        #     ),
-        #     open=True,
-        #     dismissible=True,
-        #     enable_drag=True,
-        #     on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
-        # )
+        for tier in links["stripe"]:
+            stripe_col.controls.append(ClickableLink("Stipe Paywall", links["stripe"][tier], stripe_icon))
+        for tier in links["sellix"]:
+            sellix_col.controls.append(ClickableLink("Crypto Paywall", links["sellix"][tier], sellix_icon))
+
+        diag = ft.AlertDialog(
+            content=ft.Column(
+                controls=[
+                    ft.Text("Where to subscribe", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                    ft.ResponsiveRow(controls=[stripe_col, sellix_col]),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                height=100,
+                width=370,
+            ),
+        )
 
         pattern = r"(\d+) Days left"
         match = re.search(pattern, page.title)
@@ -86,16 +76,23 @@ class NavigationBar(ft.Row):
                 color="black",
             )
 
-        # if not BREZILIAN:
-        #     self.controls.append(
-        #         ft.OutlinedButton(
-        #             text="Renew",
-        #             icon=ft.icons.SHOPPING_CART_OUTLINED,
-        #             on_click=lambda e: self.initial_page.show_bottom_sheet(bottom),
-        #             style=button_style,
-        #         )
-        #     )
+        refresh_pay = ft.Row(controls=[self.button_refresh])
 
+        def open_dlg(e):
+            page.dialog = diag
+            diag.open = True
+            page.update()
+
+        if VERSION_TYPE == "global":
+            refresh_pay.controls.append(
+                ft.OutlinedButton(
+                    text="Renew",
+                    icon=ft.icons.SHOPPING_CART_OUTLINED,
+                    on_click=open_dlg,
+                    style=button_style,
+                )
+            )
+        self.controls.append(refresh_pay)
         self.controls.append(
             ft.IconButton(
                 icon=ft.icons.MENU,
@@ -117,7 +114,11 @@ class TileHandlerWorker(ft.ListView):
         self.controls.append(self.navigation_bar)
 
     def add_tile(self, number: str):
-        self.tiles[number] = TileWorker(self.initial_page, number)
+        if number not in self.tiles:
+            self.tiles[number] = TileWorker(self.initial_page, number)
+        else:
+            self.tiles[number].refresh_tile()
+
         self.controls.append(self.tiles[number])
         self.initial_page.update()
 
@@ -138,7 +139,7 @@ class TileHandlerWorker(ft.ListView):
         self.tiles[number].set_text(phrase)
 
     def refresh(self):
-        data = self.FileSingleton.getCachedData()
+        data = self.FileSingleton.get_data()
 
         emulator = EmulatorSingleton().getEmulator()
 
@@ -161,6 +162,7 @@ class TileHandlerWorker(ft.ListView):
             "leave_game_loop": True,
             "scheduler": False,
             "schedules": {},
+            "emulator": emulator,
         }
         default_profile = {
             "timing": [],
@@ -289,36 +291,40 @@ class TileHandlerWorker(ft.ListView):
             default_dic["schedules"][i] = copy.deepcopy(default_profile)
         default_dic["schedules"][1]["enabled"] = True
 
+        default_worker_settings = {
+            "loop_task": True,
+            "waiting_cooldown": [60, 90],
+            "close_emulator": True
+        }
+
         for i, instance in enumerate(instances):
             if str(i) not in data["workers"][emulator]:
-                data["workers"][emulator][str(i)] = {
-                    "loop_task": True,
-                    "waiting_cooldown": [60, 90],
-                    "instances": [{"instance": instance}],
-                }
+                data["workers"][emulator][str(i)] = {**default_worker_settings, "instances": [{"instance": instance}]}
+            else:
+                data["workers"][emulator][str(i)] = {**default_worker_settings, **data["workers"][emulator][str(i)]}
 
-        for instance in instances:
-            if str(instance) not in data:
-                data[str(instance)] = copy.deepcopy(default_dic)
+            if instance not in data:
+                data[instance] = copy.deepcopy(default_dic)
             else:
                 for key in default_dic:
-                    if key not in data[str(instance)]:
-                        data[str(instance)][key] = copy.deepcopy(default_dic[key])
+                    if key not in data[instance]:
+                        data[instance][key] = copy.deepcopy(default_dic[key])
 
                 for key in default_profile:
                     for i in range(1, 4):
-                        if key not in data[str(instance)]["schedules"][str(i)]:
-                            data[str(instance)]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
+                        if key not in data[instance]["schedules"][str(i)]:
+                            data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
 
-            data[str(instance)]["instance"] = instances[str(instance)]["instance"]
-            data[str(instance)]["name"] = instances[str(instance)]["name"]
-            data[str(instance)]["port"] = int(instances[str(instance)]["port"])
+            data[instance].update({
+                "instance": instances[instance]["instance"],
+                "name": instances[instance]["name"],
+                "port": int(instances[instance]["port"])
+            })
 
         self.FileSingleton.write_data(data)
 
         for i in range(len(self.controls) - 1):
             self.controls.pop()
-        # print(instances)
 
         if instances:
             for worker in data["workers"][emulator]:

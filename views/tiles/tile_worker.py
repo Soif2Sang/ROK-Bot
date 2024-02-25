@@ -1,20 +1,18 @@
 import threading
-from time import sleep
 
 import flet as ft
 
-from tiles.tile_slave import TileSlave
-from utils.singletons import EmulatorSingleton
+from utils.flet_translations import translate
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from views.tiles.handler.config_handler import FrameUpgrade, Frame
-from views.tiles.tile import ConfigOverrider
-
 from utils.functions import FileSingleton
+from utils.singletons import EmulatorSingleton
+from views.tiles.handler.config_handler import Frame
+from views.tiles.tile_slave import TileSlave
 
 
 class TileWorker(ft.ExpansionTile):
-    def __init__(self, page: ft.Page, number:str, **kwargs):
+    def __init__(self, page: ft.Page, number: str, **kwargs):
         super().__init__(**kwargs)
         self.FileSingleton = FileSingleton()
         self.number = number
@@ -25,6 +23,7 @@ class TileWorker(ft.ExpansionTile):
 
         self.main_task = Task(self)
         self.runner = TaskRunner(self.main_task, self)
+        self.runner.worker = self
         self.tasks_process = threading.Thread(target=self.runner.run4)
 
         self.button_select = ft.IconButton(
@@ -36,7 +35,7 @@ class TileWorker(ft.ExpansionTile):
         self.button_start = ft.IconButton(icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start)
         self.button_stop = ft.IconButton(icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop)
 
-        self.text_name = ft.Text(value=f"Worker n°{self.number}", width=100, size=16)
+        self.text_name = ft.Text(value=translate(f"Worker") + f" n°{self.number}", width=120, size=16)
         self.text_status = ft.Text(value="")
         self.tile_padding = ft.padding.all(0)
         self.title = ft.Row(
@@ -49,13 +48,14 @@ class TileWorker(ft.ExpansionTile):
                         self.text_name,
                         self.text_status,
                     ],
-                    spacing=0
+                    spacing=0,
                 ),
             ],
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
 
+        self.slaves = {}
         self.refresh_tile()
 
     def start(self, e):
@@ -112,7 +112,7 @@ class TileWorker(ft.ExpansionTile):
             slaves_tiles.stopped = True
         self.paused = False
         self.stopped = True
-        
+
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
         self.initial_page.update()
@@ -124,7 +124,6 @@ class TileWorker(ft.ExpansionTile):
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
             self.initial_page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
-            print("Task is frozen, you may need to restart the bot.")
 
     def select(self, e):
         self.initial_page.tile_manager.unselect_all()
@@ -158,21 +157,18 @@ class TileWorker(ft.ExpansionTile):
             self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_divider()
-    
+
     def add_tile(self, number):
-
-
-        self.controls.append(
-            TileSlave(self.initial_page, number)
-        )
+        self.controls.append(TileSlave(self.initial_page, number))
 
     def refresh_tile(self):
+        self.controls = []
         data = self.FileSingleton.getCachedData()
         emulator = EmulatorSingleton().getEmulator()
 
-        for instance in data['workers'][emulator][self.number]['instances']:
-            self.controls.append(TileSlave(self.initial_page, instance['instance']))
+        for instance in data["workers"][emulator][self.number]["instances"]:
+            if instance["instance"] not in self.slaves:
+                self.slaves[instance["instance"]] = TileSlave(self.initial_page, instance["instance"])
+            self.controls.append(self.slaves[instance["instance"]])
 
         self.initial_page.update()
-
-

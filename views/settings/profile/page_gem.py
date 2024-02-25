@@ -161,25 +161,27 @@ class PageGem(BasePage):
             ),
             ft.Switch(
                 label=translate("Spiral path method (only around your city)"),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_spiral_method"]
-                else False,
+                value=(
+                    True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_spiral_method"] else False
+                ),
                 on_change=lambda _: self.reverse_keyword("gather_gem_spiral_method"),
             ),
             self.area_location,
             ft.Switch(
                 label=translate("Detect free marches without clicking on the node"),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_swipe_check"]
-                else False,
+                value=(
+                    True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_swipe_check"] else False
+                ),
                 on_change=lambda _: self.reverse_keyword("gather_gem_swipe_check"),
             ),
             self.troop_scan_row,
             ft.Switch(
                 label=translate("Set the maximum of nodes to gather"),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_enable_node_limit"]
-                else False,
+                value=(
+                    True
+                    if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_enable_node_limit"]
+                    else False
+                ),
                 on_change=lambda _: self.reverse_keyword("gather_gem_enable_node_limit"),
             ),
             self.number_of_nodes,
@@ -190,9 +192,11 @@ class PageGem(BasePage):
             ),
             ft.Switch(
                 label=translate("Compare march speed (Increase gem gathering\nbut increase number of actions"),
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_compare_march_duration"]
-                else False,
+                value=(
+                    True
+                    if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_compare_march_duration"]
+                    else False
+                ),
                 on_change=lambda _: self.reverse_keyword("gather_gem_compare_march_duration"),
             ),
             ft.Switch(

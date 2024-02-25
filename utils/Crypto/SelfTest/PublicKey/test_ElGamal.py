@@ -204,7 +204,7 @@ class ElGamalTest(unittest.TestCase):
 
     def _exercise_public_primitive(self, elgObj):
         plaintext = 92987276
-        ciphertext = elgObj._encrypt(plaintext, 123456789)
+        elgObj._encrypt(plaintext, 123456789)
 
 def get_tests(config={}):
     tests = []

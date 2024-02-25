@@ -5,20 +5,14 @@ import threading
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from utils.Components.PaymentMethods import payment_methods
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from views.tiles.tile_upgrade import TileUpgrade
-from utils.constants import BREZILIAN
+from utils.Components.PaymentMethods import payment_methods
+from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
-from utils.functions import (
-    get_all_vms_running,
-    get_all_vms_running_ld,
-    get_dic_instances,
-    get_dic_instances_ld,
-)
-from utils.singletons import EmulatorSingleton, FileSingleton, LinkSingleton
-from views.tiles.tile import Tile
+from utils.functions import get_dic_instances, get_dic_instances_ld
+from utils.singletons import EmulatorSingleton, FileSingleton
+from views.tiles.tile_upgrade import TileUpgrade
 
 
 class NavigationBar(ft.Row):
@@ -77,7 +71,7 @@ class NavigationBar(ft.Row):
                 color="black",
             )
 
-        if not BREZILIAN:
+        if VERSION_TYPE == "global":
             self.controls.append(
                 ft.Row(
                     controls=[
@@ -87,10 +81,10 @@ class NavigationBar(ft.Row):
                             on_click=lambda e: self.initial_page.show_bottom_sheet(bottom),
                             style=button_style,
                         ),
-                            ft.IconButton(
-                                icon=ft.icons.MENU,
-                                on_click=lambda _: self.initial_page.go("/settings"),
-                            ),
+                        ft.IconButton(
+                            icon=ft.icons.MENU,
+                            on_click=lambda _: self.initial_page.go("/settings"),
+                        ),
                     ]
                 )
             )
@@ -354,7 +348,7 @@ class TileManagerUpgrade(ft.ListView):
         tiles = []
         for tile in self.controls[1:]:
             if tile.selected:
-                tiles.append(tile.number)
+                tiles.append(tile.instance)
         return tiles
 
     def get_enabled_sel_object(self):
@@ -383,7 +377,7 @@ class StartBar(ft.Row):
         self.text_status = ft.Text()
         self.number = "0"
         self.FileSingleton = FileSingleton()
-        data = self.FileSingleton.get_data()
+        self.FileSingleton.get_data()
         self.initial_page = page
         self.tasks_process = None
         self.paused = False
@@ -431,7 +425,7 @@ class StartBar(ft.Row):
             for instance in self.data:
                 if isinstance(self.data[instance], dict):
                     if self.data[instance].get("group", None) is not None:
-                        if self.data[instance]["instance"] == str(tile.number):
+                        if self.data[instance]["instance"] == str(tile.instance):
                             if self.data[instance]["group"] not in groups:
                                 groups[self.data[instance]["group"]] = []
                             groups[self.data[instance]["group"]].append(tile)

@@ -427,7 +427,7 @@ def make_block_tests(module, module_name, test_data, additional_params=dict()):
         p2 = params.copy()
         p_key = _extract(p2, 'key')
         p_plaintext = _extract(p2, 'plaintext')
-        p_ciphertext = _extract(p2, 'ciphertext')
+        _extract(p2, 'ciphertext')
         p_mode = _extract(p2, 'mode')
         p_description = _extract(p2, 'description', None)
 
@@ -480,7 +480,7 @@ def make_stream_tests(module, module_name, test_data):
         p2 = params.copy()
         p_key = _extract(p2, 'key')
         p_plaintext = _extract(p2, 'plaintext')
-        p_ciphertext = _extract(p2, 'ciphertext')
+        _extract(p2, 'ciphertext')
         p_description = _extract(p2, 'description', None)
 
         if p_description is not None:

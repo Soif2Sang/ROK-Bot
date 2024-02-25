@@ -3,14 +3,13 @@ import re
 import shutil
 import subprocess
 import sys
-import requests
-
 from datetime import datetime
 from functools import wraps
 from os.path import exists
 from time import perf_counter, sleep
 
 import pyautogui
+import requests
 import win32gui
 import win32process
 from decohints import decohints

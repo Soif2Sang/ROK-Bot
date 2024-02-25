@@ -24,7 +24,6 @@
 
 """Self-tests for (some of) Crypto.Util.number"""
 
-import math
 import unittest
 
 from Crypto.Util.py3compat import *

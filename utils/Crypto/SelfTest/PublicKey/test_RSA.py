@@ -26,7 +26,6 @@
 
 __revision__ = "$Id$"
 
-import os
 import pickle
 from pickle import PicklingError
 from Crypto.Util.py3compat import *
@@ -289,7 +288,7 @@ class RSATest(unittest.TestCase):
         plaintext = a2b_hex(self.plaintext)
 
         # Test encryption (2 arguments)
-        new_ciphertext2 = rsaObj._encrypt(bytes_to_long(plaintext))
+        rsaObj._encrypt(bytes_to_long(plaintext))
 
     def _check_encryption(self, rsaObj):
         plaintext = a2b_hex(self.plaintext)

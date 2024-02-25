@@ -1,28 +1,22 @@
 import io
 import shutil
 import subprocess
+import threading
 import traceback
 from datetime import date
 from os.path import exists
 from time import sleep, time
 
 import pytesseract as tess
-from cv2 import (
-    COLOR_BGR2HSV,
-    COLOR_BGR2RGB,
-    TM_CCOEFF_NORMED,
-    cvtColor,
-    inRange,
-    matchTemplate,
-    minMaxLoc,
-)
+from cv2 import (COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor,
+                 inRange, matchTemplate, minMaxLoc)
 from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import FileSingleton, current_time, get_dic_instances
+from utils.functions import (FileSingleton, current_time, get_dic_instances,
+                             get_name)
 from utils.resources import ImageSingleton
-import threading
 
 bridge = None
 
@@ -41,37 +35,66 @@ class UnknownDeviceException(Exception):
         super().__init__(message)
 
 
+class TimeSingleton:
+    __instance = None
+    FileLock = threading.Lock()
+    restarted_time = 0
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def getRestartedTime(self) -> float:
+        return self.restarted_time
+
+    def setRestartedTime(self):
+        self.restarted_time = time()
+
+
 class Adb:
     adb_restart_lock = threading.Lock()
+    last_restart_time = 0
 
-    def __init__(self, number: str, host="127.0.0.1", port=5037):
+    def __init__(self, instance: str, host="127.0.0.1", port=5037, task_reference=None):
         self.FileSingleton = FileSingleton()
         self.images = ImageSingleton()
         self.client = PPADBClient(host, port)
-        self.host = host
-        self.port = port
-        self.number = number
-        self.data = self.FileSingleton.getCachedData()
-        self.name = self.data[self.number]["name"]
+        self.host: str = host
+        self.port: int = port
+        self.instance: str = instance
+        self.data: dict[str, dict] = self.FileSingleton.getCachedData()
+        self.name: str = self.data[self.instance]["name"]
         self.is_ld = False
+        self.task_reference = task_reference
 
     def __str__(self):
-        print(f"JsonNumber:{self.number} port:{self.port}")
-        return f"JsonNumber:{self.number} port:{self.port}"
+        print(f"JsonNumber:{self.instance} port:{self.port}")
+        return f"JsonNumber:{self.instance} port:{self.port}"
+
+    def script_pause(self):
+        if not self.task_reference:
+            return
+        return self.task_reference.script_pause()
 
     def update_port(self, instances=None):
         if instances is None:
-            instances = []
+            instances = {}
 
-        if self.number not in instances:
+        if self.instance not in instances:
             raise UnknownDeviceException(f"{self.host}/{self.port}")
 
-        if self.port != int(instances[self.number]["port"]):
+        if self.port != int(instances[self.instance]["port"]):
             self.data = self.FileSingleton.get_data()
-            self.data[self.number]["instance"] = instances[self.number]["instance"]
-            self.data[self.number]["name"] = instances[self.number]["name"]
-            self.data[self.number]["port"] = int(instances[self.number]["port"])
-            self.port = int(instances[self.number]["port"])
+
+            self.data[self.instance].update({
+                "instance": instances[self.instance]["instance"],
+                "name": instances[self.instance]["name"],
+                "port": int(instances[self.instance]["port"])
+            })
+
+            self.port = self.data[self.instance]["port"]
+
             self.FileSingleton.write_data(self.data)
 
     def stop_server(self):
@@ -83,17 +106,23 @@ class Adb:
     def get_device(self, host="127.0.0.1", fail=0):
         raise NotImplementedError("Method 'get_device' is not implemented in the base class.")
 
+    @get_name
     def restart_adb_server(self):
-        with Adb.adb_restart_lock:
+        with TimeSingleton.FileLock:
+            if TimeSingleton().getRestartedTime() + 20 > time():
+                return
             self.stop_server()
             sleep(5)
             self.start_server()
             sleep(5)
             self.connect_to_device()
 
+            TimeSingleton().setRestartedTime()
+
     def wait_boot_complete(self, timeout=100, timedelta=1):
         raise NotImplementedError("Method 'wait_boot_complete' is not implemented in the base class.")
 
+    @get_name
     def connect_to_device(self, host="127.0.0.1"):
         path = self.FileSingleton.get_path()
         self.update_port()
@@ -107,14 +136,17 @@ class Adb:
 
         subprocess.Popen(cmd)
 
+    @get_name
     def get_client_devices(self):
         return self.client.devices()
 
+    @get_name
     def print(self, *args: str):
-        data = self.FileSingleton.get_data()
-        print(f"[ {date.today()} {current_time()} ] [ {data[self.number]['name']} ] {' '.join(map(str, args))}")
-        self.FileSingleton.write(self.name, ' '.join(map(str, args)))
+        data = self.FileSingleton.getCachedData()
+        print(f"[ {date.today()} {current_time()} ] [ {data[self.instance]['name']} ] {' '.join(map(str, args))}")
+        self.FileSingleton.write(self.name, " ".join(map(str, args)))
 
+    @get_name
     def get_curr_device_screen_img_byte_array(self):
         try:
             return self.get_device().screencap()
@@ -123,6 +155,7 @@ class Adb:
             sleep(1)
             return self.get_device().screencap()
 
+    @get_name
     def get_curr_device_screen_img_bytesIO(self):
         try:
             return io.BytesIO(self.get_device().screencap())
@@ -131,6 +164,7 @@ class Adb:
             sleep(1)
             return io.BytesIO(self.get_device().screencap())
 
+    @get_name
     def get_curr_device_screen_img(self, deadstop=0):
         try:
             device = self.get_device()
@@ -143,17 +177,20 @@ class Adb:
             sleep(1)
             return self.get_curr_device_screen_img(deadstop + 1)
 
+    @get_name
     def get_cv2_img(self):
         screen = self.get_curr_device_screen_img()
         screen = array(screen)
         screen = cvtColor(screen, COLOR_BGR2RGB)
         return screen
 
+    @get_name
     def save_screen(self, file_name):
         image = Image.open(io.BytesIO(self.get_device().screencap()))
         image.save(f".//{file_name}.png")
         return True
 
+    @get_name
     def find_img_cv(self, img_to_find, confidence=0.9):
         pil_image = self.get_curr_device_screen_img()
         cv_image = array(pil_image)
@@ -165,6 +202,7 @@ class Adb:
         else:
             return
 
+    @get_name
     def find_img(self, target: str, source: ndarray = None, confidence=0.9):
         try:
             if source is None:
@@ -177,11 +215,11 @@ class Adb:
                 if target == "gem_search_button":
                     source = source[470:600, 0:150]
                 if target == "button_level":
-                    source = source[720 // 2 - 50 :, :]
+                    source = source[720 // 2 - 50:, :]
                 if target in ["minus_button", "plus_button"]:
-                    source = source[720 // 2 :, :]
+                    source = source[720 // 2:, :]
                 if target == "search_button":
-                    source = source[720 // 2 :, : 1280 // 4]
+                    source = source[720 // 2:, : 1280 // 4]
 
             img_to_find = self.images.get_file_name(target)
             # bot.adb.get_cv2_img()
@@ -205,6 +243,7 @@ class Adb:
             traceback.print_exc()
             self.print(exception_error)
 
+    @get_name
     def find_img_src_conf(self, src, target, confidence):
         img_to_find = self.images.get_file_name(target)
         result = matchTemplate(src, img_to_find, TM_CCOEFF_NORMED)
@@ -214,6 +253,7 @@ class Adb:
         else:
             return
 
+    @get_name
     def find_multiple_img(self, target, source=None, confidence=0.9):
         if source is None:
             pil_image = self.get_curr_device_screen_img()
@@ -255,13 +295,13 @@ class Adb:
         element_to_delete = []
         for i in range(len(localisations) - 1):
             if (
-                (localisations[i][0] + 1 == localisations[i + 1][0])
-                or (localisations[i][0] - 1 == localisations[i + 1][0])
-                or (localisations[i][0] == localisations[i + 1][0])
+                    (localisations[i][0] + 1 == localisations[i + 1][0])
+                    or (localisations[i][0] - 1 == localisations[i + 1][0])
+                    or (localisations[i][0] == localisations[i + 1][0])
             ) and (
-                (localisations[i][1] + 1 == localisations[i + 1][1])
-                or (localisations[i][1] - 1 == localisations[i + 1][1])
-                or (localisations[i][1] == localisations[i + 1][1])
+                    (localisations[i][1] + 1 == localisations[i + 1][1])
+                    or (localisations[i][1] - 1 == localisations[i + 1][1])
+                    or (localisations[i][1] == localisations[i + 1][1])
             ):
                 element_to_delete.append(localisations[i])
 
@@ -270,6 +310,7 @@ class Adb:
             localisations.remove(element)
         return localisations
 
+    @get_name
     def is_game_alive(self):
         # string = "dumpsys activity activities | grep mFocusedActivity"
         a = self.get_device().get_top_activity()
@@ -282,6 +323,7 @@ class Adb:
         self.shell(string)
         return
 
+    @get_name
     def shell(self, string, max_attempts=5, timeout=2):
         for attempt in range(max_attempts):
             try:
@@ -324,27 +366,26 @@ class Adb:
         return
 
     #
-    # def resource_amount_image_to_string(self):
-    #     result_list = []
-    #     boxes = [
-    #         (695, 10, 770, 34), (820, 10, 890, 34), (943, 10, 1015, 34), (1065, 10, 1140, 34)]
-    #     for box in boxes:
-    #         x0, y0, x1, y1 = box
-    #         imsch = imdecode(asarray(self.get_curr_device_screen_img_byte_array(), dtype=uint8),
-    #                          IMREAD_COLOR)
-    #         imsch = imsch[y0:y1, x0:x1]
-    #         resource_image = Image.fromarray(imsch)
-    #         try:
-    #             result_list.append(abs(int(img_to_string(resource_image)
-    #                                        .replace('.', '')
-    #                                        .replace('B', '00000000')
-    #                                        .replace('M', '00000')
-    #                                        .replace('K', '00')
-    #                                        ))
-    #                                )
-    #         except Exception as e:
-    #             result_list.append(-1)
-    #     return result_list
+    def resource_amount_image_to_string(self):
+        result_list = []
+        boxes = [
+            (695, 10, 770, 34), (820, 10, 890, 34), (943, 10, 1015, 34), (1065, 10, 1140, 34)]
+        for box in boxes:
+            x0, y0, x1, y1 = box
+            imsch = self.get_cv2_img()
+            imsch = imsch[y0:y1, x0:x1]
+            resource_image = Image.fromarray(imsch)
+            try:
+                result_list.append(abs(int(img_to_string(resource_image)
+                                           .replace('.', '')
+                                           .replace('B', '00000000')
+                                           .replace('M', '00000')
+                                           .replace('K', '00')
+                                           ))
+                                   )
+            except Exception as e:
+                result_list.append(-1)
+        return result_list
 
     def restart_emulator(self):
         try:
@@ -357,12 +398,13 @@ class Adb:
             with open(rf"{string}", "r") as file:
                 data_instance = file.read().split("\n")
         except:
-            print("The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
+            print(
+                "The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
 
         liste_info = []
         for element in data_instance:
             if ((("bst.instance.Nougat64" in element) and ("adb_port" in element)) and "status" not in element) or (
-                ("bst.instance.Nougat64" in element) and ("display_name" in element)
+                    ("bst.instance.Nougat64" in element) and ("display_name" in element)
             ):
                 liste_info.append(element)
 
@@ -413,7 +455,8 @@ class Adb:
 def img_to_string(pil_image):
     # pil_image.save(resource_path("test.png"))
     tess.pytesseract.tesseract_cmd = "tesseract\\tesseract.exe"
-    result = tess.image_to_string(pil_image, lang="eng", config="--psm 6").replace("\t", "").replace("\n", "").replace("\f", "")
+    result = tess.image_to_string(pil_image, lang="eng", config="--psm 6").replace("\t", "").replace("\n", "").replace(
+        "\f", "")
     return result
 
 
