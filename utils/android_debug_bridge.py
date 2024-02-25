@@ -366,27 +366,26 @@ class Adb:
         return
 
     #
-    # def resource_amount_image_to_string(self):
-    #     result_list = []
-    #     boxes = [
-    #         (695, 10, 770, 34), (820, 10, 890, 34), (943, 10, 1015, 34), (1065, 10, 1140, 34)]
-    #     for box in boxes:
-    #         x0, y0, x1, y1 = box
-    #         imsch = imdecode(asarray(self.get_curr_device_screen_img_byte_array(), dtype=uint8),
-    #                          IMREAD_COLOR)
-    #         imsch = imsch[y0:y1, x0:x1]
-    #         resource_image = Image.fromarray(imsch)
-    #         try:
-    #             result_list.append(abs(int(img_to_string(resource_image)
-    #                                        .replace('.', '')
-    #                                        .replace('B', '00000000')
-    #                                        .replace('M', '00000')
-    #                                        .replace('K', '00')
-    #                                        ))
-    #                                )
-    #         except Exception as e:
-    #             result_list.append(-1)
-    #     return result_list
+    def resource_amount_image_to_string(self):
+        result_list = []
+        boxes = [
+            (695, 10, 770, 34), (820, 10, 890, 34), (943, 10, 1015, 34), (1065, 10, 1140, 34)]
+        for box in boxes:
+            x0, y0, x1, y1 = box
+            imsch = self.get_cv2_img()
+            imsch = imsch[y0:y1, x0:x1]
+            resource_image = Image.fromarray(imsch)
+            try:
+                result_list.append(abs(int(img_to_string(resource_image)
+                                           .replace('.', '')
+                                           .replace('B', '00000000')
+                                           .replace('M', '00000')
+                                           .replace('K', '00')
+                                           ))
+                                   )
+            except Exception as e:
+                result_list.append(-1)
+        return result_list
 
     def restart_emulator(self):
         try:
