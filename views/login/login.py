@@ -1,228 +1,245 @@
 import os
+import os
 import sys
 import threading
-from datetime import datetime
+import traceback
+from datetime import datetime, timezone
 from time import sleep
-import json
+
 import flet as ft
+import gotrue
 
-from utils.Components.PaymentMethods import payment_methods
-from utils.auth import selfApi, update_user_info
-from utils.constants import BREZILIAN, global_name, brezilian_name, ownerid, global_secret, brezilian_secret
 from utils.flet_translations import translate
-from utils.functions import FileSingleton, getchecksum
-from utils.singletons import ApiSingleton, LinkSingleton
+from utils.constants import (VERSION_TYPE, BOT_NAME)
+from utils.singletons import ApiSingleton, FileSingleton
+from utils.supabase_auth import (HwidAlreadyLinked, NoSubscriptionFound,
+                                 SupabaseClient)
+
+links = {
+    "stripe": {
+        "default": "https://buy.stripe.com/dR66oX4ov0qldkQaEF",
+        # "tier2": "https://buy.stripe.com/eVa6oXcV1dd7a8E4gi",
+        # "tier3": "https://buy.stripe.com/dR614Dg7d6OJ3Kg5kn",
+        # "tier4": "https://buy.stripe.com/dR6fZxf39gpjfsY9AE",
+    },
+    "sellix": {
+        "default": "https://awesomeseller.mysellix.io/pay/7e1e3c-8597df2730-7d6099",
+        # "tier2": "https://awesomeseller.mysellix.io/pay/53e135-2364923c3c-4f3601",
+        # "tier3": "https://awesomeseller.mysellix.io/pay/824e23-05d0f69c1d-b899c3",
+        # "tier4": "https://awesomeseller.mysellix.io/pay/e90d40-1cb16b1010-e7922b",
+    },
+}
+
+tiers = {"default": "Tier 1", "tier2": "Tier 2", "tier3": "Tier 3", "tier4": "Tier 4"}
+
+sellix_icon = "https://play-lh.googleusercontent.com/k_QwUjQQ7ZLilxE4at86Pn6Bpmef-60p23x4FUve-SKtbDPGJcyYN791xPw2ml-xmc1E=s256-rw"
+stripe_icon = "https://play-lh.googleusercontent.com/2PS6w7uBztfuMys5fgodNkTwTOE6bLVB2cJYbu5GHlARAK36FzO5bUfMDP9cEJk__cE"
+
+def update_user_info(password, username):
+    data = FileSingleton().get_data()
+    data["user"] = {"username": username, "password": password}
+    FileSingleton().write_data(data)
 
 
-def is_str_valid(username, password):
-    for element in ["#", "$", "&", "|", "\0", "\n", "\r", "'", "'", '"', "\Z"]:
-        if element in username or element in password:
-            return False
-    return True
+textField = {
+    "content_padding": ft.padding.all(10),
+    "color": ft.colors.INVERSE_PRIMARY,
+    "label_style": ft.TextStyle(color=ft.colors.SURFACE_VARIANT),
+}
 
 
-class LoginUI(ft.Column):
+class LoginScreen(ft.ResponsiveRow):
     def __init__(self, page, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initial_page = page
-
         self.fileSingleton = FileSingleton()
         self.data = self.fileSingleton.get_data()
-        self.init()
 
-    # def show_payment_banner(self, e):
-    #     self.initial_page.show_banner(
-    #         ft.Banner(
-    #             content=ft.Column(
-    #                 controls=[
-    #                     ft.TextButton(
-    #                         icon=ft.icons.LINK_OUTLINED,
-    #                         text="Pay with Stripe",
-    #                         on_click=lambda _: self.initial_page.launch_url(
-    #                             LinkSingleton().getStripeLink()
-    #                         ),
-    #                     ),
-    #                     ft.TextButton(
-    #                         icon=ft.icons.LINK_OUTLINED,
-    #                         text="Pay with Crypto",
-    #                         on_click=lambda _: self.initial_page.launch_url(
-    #                             LinkSingleton().getSellixLink()
-    #                         ),
-    #                     ),
-    #                 ]
-    #             ),
-    #             actions=[
-    #                 ft.TextButton(
-    #                     "Close", on_click=lambda e: self.initial_page.close_banner()
-    #                 ),
-    #             ],
-    #             content_padding=ft.padding.all(5),
-    #         )
-    #     )
-
-    def show_payment_banner(self, e):
-        self.initial_page.show_bottom_sheet(
-            ft.BottomSheet(
-                content=ft.Container(width=300,height=300, content=payment_methods(), alignment=ft.alignment.center, padding=ft.padding.all(30)),
-                open=True,
-                dismissible=True,
-                enable_drag=True,
-                on_dismiss=lambda _: self.initial_page.close_bottom_sheet(),
-            )
+        button_style = ft.ButtonStyle(
+            shape={ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=5)}, color=ft.colors.WHITE, bgcolor=ft.colors.BLACK,
         )
 
-    def login(self, e):
-        username = self.textfield_username.value
-        password = self.textfield_password.value
+        self.textfield_username = ft.TextField(label=translate("Username"), **textField, value=self.data.get("user", {}).get("username", ""))
+        self.textfield_password = ft.TextField(label=translate("Password"), **textField, value=self.data.get("user", {}).get("password", ""))
+        self.button_login = ft.OutlinedButton(text=translate("Submit"), style=button_style, col=12, on_click=self.login)
 
-        try:
-            if username == "" or password == "":
-                return
-            if not is_str_valid(username, password):
-                self.initial_page.generate_toast("Invalid credentials", "Illegal characters..")
-                return
-
-            self.initial_page.splash = ft.ProgressBar()
-            self.button_login.disabled = True
-            self.button_login.style = ft.ButtonStyle(
-                color=ft.colors.GREY_300,
-                side={
-                    ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.GREY_300),
-                    ft.MaterialState.HOVERED: ft.BorderSide(1, ft.colors.GREY_300),
-                },
-                bgcolor=ft.colors.BLACK54,
-            )
-            self.initial_page.update()
-
-            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
-                update_user_info(password, username)
-
-                self.initial_page.splash = None
-                self.button_login.disabled = False
-
-                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
-
-                current_date = datetime.utcnow()
-                days = (target_date - current_date).days
-
-                self.initial_page.title = f"RokNet - {days} Days left"
-                self.initial_page.update()
-                self.initial_page.go("/emulator-choice")
-
-                keys = json.loads(self.initial_page.keyauthapp.var("keys"))
-
-                ApiSingleton().setApiKey(keys["2captcha"])
-                ApiSingleton().setSupabasePublicKey(keys["supabase_public_key"])
-                ApiSingleton().setSupabaseUrl(keys["supabase_url"])
-
-                self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
-                self.initial_page.subscription_checker.start()
-            else:
-                sleep(5)
-                self.initial_page.splash = None
-                self.button_login.disabled = False
-                self.button_login.style = ft.ButtonStyle(
-                    color=ft.colors.GREY_300,
-                    side={
-                        ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.GREY_300),
-                        ft.MaterialState.HOVERED: ft.BorderSide(1, ft.colors.GREY_300),
-                    },
-                )
-                self.initial_page.update()
-        except Exception as e:
-            print(e)
-            self.initial_page.window_close()
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            sys.exit()
-
-    def verify_subscription(self, username, password):
-        try:
-            self.initial_page.keyauthapp = selfApi(
-                name=global_name if not BREZILIAN else brezilian_name,
-                ownerid=ownerid,
-                secret=global_secret if not BREZILIAN else brezilian_secret,
-                version="2.0",
-                hash_to_check=getchecksum(),
-            )
-
-            if self.initial_page.keyauthapp.login(user=username, password=password, page=self.initial_page):
-                target_date = datetime.utcfromtimestamp(int(self.initial_page.keyauthapp.user_data.expires))
-
-                current_date = datetime.utcnow()
-                days_remaining = (target_date - current_date).days
-
-                self.initial_page.title = f"RokNet - {days_remaining} Days left"
-                self.initial_page.update()
-                sleep(6 * 3600)
-                return self.verify_subscription(username, password)
-            else:
-                for element in self.initial_page.tile_manager.tiles.values():
-                    element.paused = False
-                    element.stopped = True
-
-                self.initial_page.go("/login")
-        except Exception as e:
-            print(e)
-            self.initial_page.window_close()
-            os.system("taskkill /f /im flet.exe >nul 2>&1")
-            sys.exit()
-
-    def init(self):
-        self.textfield_username = ft.TextField(
-            label=translate("Username"),
-            width=300,
-            value=self.data.get("user", {}).get("username", ""),
-            color=ft.colors.GREY_300,
-            border_color=ft.colors.GREY_300,
-            cursor_color=ft.colors.GREY_300,
-            label_style=ft.TextStyle(color=ft.colors.GREY_300),
-        )
-        self.textfield_password = ft.TextField(
-            label=translate("Password"),
-            color=ft.colors.GREY_300,
-            border_color=ft.colors.GREY_300,
-            cursor_color=ft.colors.GREY_300,
-            label_style=ft.TextStyle(color=ft.colors.GREY_300),
-            width=300,
-            value=self.data.get("user", {}).get("password", ""),
-            keyboard_type=ft.KeyboardType.VISIBLE_PASSWORD,
-        )
-        self.button_login = ft.OutlinedButton(
-            text=translate("Login"),
-            on_click=self.login,
-            style=ft.ButtonStyle(
-                color=ft.colors.GREY_300,
-                side={
-                    ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.GREY_300),
-                    ft.MaterialState.HOVERED: ft.BorderSide(1, ft.colors.GREY_600),
-                },
-            ),
-        )
-        self.subscribe_button = ft.OutlinedButton(
-            text=translate("Subscribe"),
-            on_click=self.show_payment_banner,
-            style=ft.ButtonStyle(
-                color=ft.colors.GREY_300,
-                side={
-                    ft.MaterialState.DEFAULT: ft.BorderSide(1, ft.colors.GREY_300),
-                    ft.MaterialState.HOVERED: ft.BorderSide(1, ft.colors.GREY_600),
-                },
-            ),
-        )
-
-        r = ft.Row(
+        auth_col = ft.Column(
             controls=[
-                ft.Column(controls=[self.button_login], col=4),
+                ft.Text(translate("Login"), size=20, color=ft.colors.BLACK, weight=ft.FontWeight.W_600),
+                self.textfield_username,
+                self.textfield_password,
+                ft.ResponsiveRow(controls=[self.button_login]),
             ],
         )
 
-        if not BREZILIAN:
-            r.controls.append(ft.Column(controls=[self.subscribe_button], col=6))
+        stripe_col = ft.Column(col=6)
+        sellix_col = ft.Column(col=6)
 
-        return self.controls.extend(
-            [
-                ft.Row([self.textfield_username], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Row([self.textfield_password], alignment=ft.MainAxisAlignment.CENTER),
-                r,
-            ]
+        for tier in links["stripe"]:
+            stripe_col.controls.append(ClickableLink("Stipe Paywall", links["stripe"][tier], stripe_icon))
+        for tier in links["sellix"]:
+            sellix_col.controls.append(ClickableLink("Crypto Paywall", links["sellix"][tier], sellix_icon))
+
+        if VERSION_TYPE == "global":
+            tier_col = ft.Column(
+                controls=[
+                    ft.Text("Where to subscribe", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
+                    stripe_col,
+                    sellix_col
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            )
+        else:
+            tier_col = ft.Column(
+                controls=[
+                    ClickableLink(translate("Our Website"), "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
+                    ClickableLink("Discord", "https://discord.com/invite/bGqsXm3HTs", "https://assets.stickpng.com/images/62b2261f038aad4d3ed7ca48.png"),
+                    ClickableLink("Whatsapp", "https://api.whatsapp.com/send/?phone=5521989499644&text&type=phone_number&app_absent=0", "https://static.whatsapp.net/rsrc.php/v3/y7/r/DSxOAUB0raA.png"),
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            )
+        self.controls = [
+            ft.Container(
+                bgcolor=ft.colors.GREY_100,
+                col=6,
+                height=1080 / 2,
+                width=1920 / 4,
+                content=ft.Container(content=auth_col, height=250, width=1920 / 7),
+                alignment=ft.alignment.center,
+            ),
+            ft.Container(
+                bgcolor="white",
+                col=6,
+                height=1080 / 2,
+                width=1920 / 4,
+                content=ft.Container(content=tier_col, height=210, width=1920 / 6, alignment=ft.alignment.center),
+                alignment=ft.alignment.center,
+            ),
+        ]
+        self.spacing = 0
+
+    def login(self, e):
+        username = self.textfield_username.value.strip()
+        password = self.textfield_password.value.strip()
+
+        if username == "" or password == "":
+            return
+
+        self.initial_page.splash = ft.ProgressBar()
+        self.button_login.disabled = True
+        self.initial_page.update()
+
+        try:
+            client = SupabaseClient()
+            client.login(username, password)
+            client.check_hwid()
+
+            subscriptions = client.getSubscriptions()
+
+            if not subscriptions:
+                raise NoSubscriptionFound()
+
+            for subscription in subscriptions:
+                ApiSingleton().setTier(tier=subscription["tier"])
+                target_date = datetime.fromisoformat(subscription["end_at"]).astimezone()
+
+            update_user_info(password, username)
+            captcha_key = client.getApiKey("2captcha")
+
+            self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
+            self.initial_page.subscription_checker.start()
+
+            ApiSingleton().setApiKey(captcha_key["value"])
+
+            current_date = datetime.now(timezone.utc).astimezone()
+            days = (target_date - current_date).days
+
+            self.initial_page.title = f"{BOT_NAME} - {days} Days left"
+            self.initial_page.update()
+            self.initial_page.go("/emulator-choice")
+
+        except HwidAlreadyLinked:
+            if hasattr(self.initial_page, "generate_toast"):
+                self.initial_page.generate_toast(f"Cannot login to {BOT_NAME}.", "This account is already linked to another computer.")
+            sleep(5)
+        except gotrue.errors.AuthApiError as e:
+            sleep(5)
+        except NoSubscriptionFound:
+            if hasattr(self.initial_page, "generate_toast"):
+                self.initial_page.generate_toast("Subscription error", "You don't have a active subscription yet!")
+            sleep(5)
+        except Exception as e:
+            self.initial_page.window_close()
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
+            sys.exit()
+        finally:
+            self.initial_page.splash = None
+            self.button_login.disabled = False
+            self.initial_page.update()
+
+    def verify_subscription(self, username, password):
+        try:
+            client = SupabaseClient()
+            client.login(username, password)
+            client.check_hwid()
+
+            subscriptions = client.getSubscriptions()
+
+            if not subscriptions:
+                raise NoSubscriptionFound()
+
+            for subscription in subscriptions:
+                ApiSingleton().setTier(tier=subscription["tier"])
+                target_date = datetime.fromisoformat(subscription["end_at"]).astimezone()
+
+            current_date = datetime.now(timezone.utc).astimezone()
+            days = (target_date - current_date).days
+
+            self.initial_page.title = f"{BOT_NAME} - {days} Days left"
+            self.initial_page.update()
+            sleep(6 * 3600)
+            return self.verify_subscription(username, password)
+        except Exception as e:
+            self.initial_page.window_close()
+            os.system("taskkill /f /im flet.exe >nul 2>&1")
+            sys.exit()
+
+
+class ClickableLink(ft.Container):
+    def __init__(self, tier, link, image, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.height = 50
+        self.width = 160
+        self.bgcolor = ft.colors.SURFACE
+        self.border_radius = 3
+
+        self.content = ft.Row(
+            controls=[ft.Container(content=ft.Image(src=image, width=40, height=50), padding=ft.padding.all(3)), ft.Text(tier)],
+            spacing=5,
+            alignment=ft.alignment.center_left,
         )
+
+        self.bgcolor = ft.colors.SURFACE
+        self.border = ft.border.all(2, ft.colors.SURFACE_VARIANT)
+        self.on_hover = self.hover
+        self.link = link
+        self.on_click = self.click
+
+    def click(self, e):
+        self.page.launch_url(self.link)
+
+    def hover(self, e):
+        e.control.bgcolor = ft.colors.SURFACE_VARIANT if (e.data == "true") else ft.colors.SURFACE
+
+        e.control.border = ft.border.all(1, ft.colors.GREY_300) if (e.data == "true") else ft.border.all(2, ft.colors.SURFACE_VARIANT)
+
+        self.update()
+
+
+def main(page: ft.Page):
+    page.add(LoginScreen(page))
+
+
+if __name__ == "__main__":
+    ft.app(main)

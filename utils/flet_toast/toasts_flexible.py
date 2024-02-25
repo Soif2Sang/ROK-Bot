@@ -19,17 +19,12 @@ from flet_core import ContainerTapEvent, ControlEvent
 from flet_core.animation import Animation, AnimationCurve
 from flet_core.transform import Offset, Rotate, Scale
 from flet_core.types import MainAxisAlignment, MaterialState
-
 # LIB => squardot-utils-standard libraryies
 from utils_standard.modules.utils import GenerateID, time_sleep_accuracy
 
 # LIB => from libraryies
-from utils.flet_toast.core import (
-    OverlayPageManger,
-    Position,
-    SetPosition,
-    set_color_balance,
-)
+from utils.flet_toast.core import (OverlayPageManger, Position, SetPosition,
+                                   set_color_balance)
 
 
 ########################################################################################################################
@@ -759,12 +754,10 @@ class ToastsFlexible:
             self._set_history.update(
                 {
                     str(self.gen_id.generate_random_id()): {
-                        self._title
-                        if isinstance(self._title, str) and self._set_history_title is None
-                        else self._set_history_title: {
-                            "description": self._desc
-                            if isinstance(self._desc, str) and self._set_history_desc is None
-                            else self._set_history_desc,
+                        self._title if isinstance(self._title, str) and self._set_history_title is None else self._set_history_title: {
+                            "description": (
+                                self._desc if isinstance(self._desc, str) and self._set_history_desc is None else self._set_history_desc
+                            ),
                             "ago": {
                                 "Year": toast_time.year,
                                 "Month": toast_time.month,
@@ -993,19 +986,17 @@ class ToastsFlexible:
         self._color_progress = (
             set_color_balance(bgcolor=self._bgcolor_header)
             if (self._bgcolor_header and self._title)
-            else set_color_balance(bgcolor=self._bgcolor_content)
-            if (self._bgcolor_content and self._desc)
-            else ft.colors.INVERSE_PRIMARY
+            else set_color_balance(bgcolor=self._bgcolor_content) if (self._bgcolor_content and self._desc) else ft.colors.INVERSE_PRIMARY
         )
 
         self._bgcolor_progress = (
             ft.colors.SURFACE_VARIANT
             if (self._color_progress == ft.colors.INVERSE_PRIMARY)
-            else self._bgcolor_header
-            if (self._bgcolor_header and self._title)
-            else self._bgcolor_content
-            if (self._bgcolor_content and self._desc)
-            else ft.colors.SURFACE_VARIANT
+            else (
+                self._bgcolor_header
+                if (self._bgcolor_header and self._title)
+                else self._bgcolor_content if (self._bgcolor_content and self._desc) else ft.colors.SURFACE_VARIANT
+            )
         )  # DESC => Set default ft.colors.SURFACE_VARIANT
 
         # self._icon = self._icon if self._icon else None # DESC => Set default ft.icons.INFO.
@@ -1035,183 +1026,213 @@ class ToastsFlexible:
                 animate_opacity=self.animation,
                 controls=[
                     # DESC => Control of toast header.
-                    ft.Container(
-                        bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_header),
-                        padding=ft.padding.only(left=9, top=7, right=8, bottom=7),
-                        height=20 + 14 + 5,
-                        content=ft.Row(
-                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                            spacing=15,
-                            controls=[
-                                # DESC => Control of toast header left.
-                                ft.Row(
-                                    expand=True,
-                                    alignment=ft.MainAxisAlignment.START,
-                                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                                    spacing=8 if self._icon and self._title else 0,
-                                    controls=[
-                                        ft.Icon(
-                                            name=self._icon,
-                                            size=20,
-                                            color=set_color_balance(bgcolor=self._bgcolor_header),
-                                        )
-                                        if isinstance(self._icon, str)
-                                        else self._icon
-                                        if isinstance(self._icon, Control)
-                                        else ft.VerticalDivider(
-                                            width=0,
-                                            thickness=0,
-                                            color=ft.colors.TRANSPARENT,
+                    (
+                        ft.Container(
+                            bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_header),
+                            padding=ft.padding.only(left=9, top=7, right=8, bottom=7),
+                            height=20 + 14 + 5,
+                            content=ft.Row(
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                spacing=15,
+                                controls=[
+                                    # DESC => Control of toast header left.
+                                    ft.Row(
+                                        expand=True,
+                                        alignment=ft.MainAxisAlignment.START,
+                                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                        spacing=8 if self._icon and self._title else 0,
+                                        controls=[
+                                            (
+                                                ft.Icon(
+                                                    name=self._icon,
+                                                    size=20,
+                                                    color=set_color_balance(bgcolor=self._bgcolor_header),
+                                                )
+                                                if isinstance(self._icon, str)
+                                                else (
+                                                    self._icon
+                                                    if isinstance(self._icon, Control)
+                                                    else ft.VerticalDivider(
+                                                        width=0,
+                                                        thickness=0,
+                                                        color=ft.colors.TRANSPARENT,
+                                                    )
+                                                )
+                                            ),
+                                            (
+                                                ft.Text(
+                                                    expand=True,
+                                                    value=self._title,
+                                                    weight=ft.FontWeight.W_500,
+                                                    color=set_color_balance(bgcolor=self._bgcolor_header),
+                                                    style=ft.TextThemeStyle.BODY_MEDIUM,
+                                                    overflow=ft.TextOverflow.ELLIPSIS,
+                                                )
+                                                if isinstance(self._title, str)
+                                                else (
+                                                    self._title
+                                                    if isinstance(self._title, Control)
+                                                    else ft.VerticalDivider(
+                                                        width=0,
+                                                        thickness=0,
+                                                        color=ft.colors.TRANSPARENT,
+                                                    )
+                                                )
+                                            ),
+                                        ],
+                                    ),
+                                    # DESC => Control of toast header right.
+                                    ft.Row(
+                                        alignment=ft.MainAxisAlignment.END,
+                                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                        spacing=(
+                                            8
+                                            if (self._auto_close is None and self._actions and self._desc is None)
+                                            else (
+                                                5
+                                                if (self._actions and self._desc is None)
+                                                else 3 if (self._auto_close is None and self._actions is None and self._desc is None) else 3
+                                            )
                                         ),
-                                        ft.Text(
-                                            expand=True,
-                                            value=self._title,
-                                            weight=ft.FontWeight.W_500,
-                                            color=set_color_balance(bgcolor=self._bgcolor_header),
-                                            style=ft.TextThemeStyle.BODY_MEDIUM,
-                                            overflow=ft.TextOverflow.ELLIPSIS,
-                                        )
-                                        if isinstance(self._title, str)
-                                        else self._title
-                                        if isinstance(self._title, Control)
-                                        else ft.VerticalDivider(
-                                            width=0,
-                                            thickness=0,
-                                            color=ft.colors.TRANSPARENT,
-                                        ),
-                                    ],
-                                ),
-                                # DESC => Control of toast header right.
-                                ft.Row(
-                                    alignment=ft.MainAxisAlignment.END,
-                                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                                    spacing=8
-                                    if (self._auto_close is None and self._actions and self._desc is None)
-                                    else 5
-                                    if (self._actions and self._desc is None)
-                                    else 3
-                                    if (self._auto_close is None and self._actions is None and self._desc is None)
-                                    else 3,
-                                    controls=[
-                                        # DESC => Control of toast header show time.
-                                        ft.Text(
-                                            value=None,
-                                            weight=ft.FontWeight.W_400,
-                                            style=ft.TextThemeStyle.BODY_MEDIUM,
-                                            opacity=0.7,
-                                            color=set_color_balance(bgcolor=self._bgcolor_header),
-                                        )
-                                        if self._no_live_time is False
-                                        else ft.VerticalDivider(
-                                            width=1,
-                                            thickness=0,
-                                            color=ft.colors.TRANSPARENT,
-                                        ),
-                                        # DESC => Control of toast header actions.
+                                        controls=[
+                                            # DESC => Control of toast header show time.
+                                            (
+                                                ft.Text(
+                                                    value=None,
+                                                    weight=ft.FontWeight.W_400,
+                                                    style=ft.TextThemeStyle.BODY_MEDIUM,
+                                                    opacity=0.7,
+                                                    color=set_color_balance(bgcolor=self._bgcolor_header),
+                                                )
+                                                if self._no_live_time is False
+                                                else ft.VerticalDivider(
+                                                    width=1,
+                                                    thickness=0,
+                                                    color=ft.colors.TRANSPARENT,
+                                                )
+                                            ),
+                                            # DESC => Control of toast header actions.
+                                            (
+                                                ft.Row(
+                                                    alignment=ft.MainAxisAlignment.END,
+                                                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                                    spacing=5,
+                                                    controls=self._actions,
+                                                )
+                                                if self._actions and self._desc is None
+                                                else ft.VerticalDivider(
+                                                    width=0,
+                                                    thickness=0,
+                                                    color=ft.colors.TRANSPARENT,
+                                                )
+                                            ),
+                                            # DESC => Control of toast header button close.
+                                            (
+                                                ButtonIcon(
+                                                    icon=ft.icons.CLOSE_OUTLINED,
+                                                    size=20,
+                                                    no_hover=True,
+                                                    on_click=lambda e: self.on_close_toast_event(e),
+                                                    color=set_color_balance(bgcolor=self._bgcolor_header),
+                                                )
+                                                if self._auto_close is None
+                                                else ft.VerticalDivider(
+                                                    width=0,
+                                                    thickness=0,
+                                                    color=ft.colors.TRANSPARENT,
+                                                )
+                                            ),
+                                        ],
+                                    ),
+                                ],
+                            ),
+                        )
+                        if self._title
+                        else ft.Divider(height=0, color=ft.colors.TRANSPARENT)
+                    ),
+                    # DESC => Control of toast content.
+                    (
+                        ft.Container(
+                            width=self._width,
+                            bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_content),
+                            padding=ft.padding.only(left=9, top=10, right=8, bottom=10),
+                            content=ft.Column(
+                                spacing=10 if self._actions else 0,
+                                controls=[
+                                    # DESC => Control of toast content messages.
+                                    ft.Row(
+                                        width=self._width,
+                                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                        vertical_alignment=ft.CrossAxisAlignment.START,
+                                        controls=[
+                                            # DESC => Control of toast text messages.
+                                            (
+                                                ft.Text(
+                                                    expand=True,
+                                                    value=self._desc,
+                                                    weight=ft.FontWeight.W_400,
+                                                    style=ft.TextThemeStyle.BODY_MEDIUM,
+                                                    color=set_color_balance(bgcolor=self._bgcolor_content),
+                                                )
+                                                if isinstance(self._desc, str)
+                                                else (
+                                                    self._desc
+                                                    if isinstance(self._desc, Control)
+                                                    else ft.VerticalDivider(
+                                                        width=0,
+                                                        thickness=0,
+                                                        color=ft.colors.TRANSPARENT,
+                                                    )
+                                                )
+                                            ),
+                                            # DESC => Control of toast content button close.
+                                            (
+                                                ButtonIcon(
+                                                    icon=ft.icons.CLOSE_OUTLINED,
+                                                    size=20,
+                                                    no_hover=True,
+                                                    on_click=lambda e: self.on_close_toast_event(e),
+                                                    color=set_color_balance(bgcolor=self._bgcolor_content),
+                                                )
+                                                if (self._title or self._auto_close) is None
+                                                else ft.VerticalDivider(
+                                                    width=0,
+                                                    thickness=0,
+                                                    color=ft.colors.TRANSPARENT,
+                                                )
+                                            ),
+                                        ],
+                                    ),
+                                    # DESC => Control of toast content actions.
+                                    (
                                         ft.Row(
-                                            alignment=ft.MainAxisAlignment.END,
+                                            alignment=self._actions_alignment if self._actions_alignment else ft.MainAxisAlignment.END,
                                             vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                                            spacing=5,
+                                            spacing=10,
                                             controls=self._actions,
                                         )
-                                        if self._actions and self._desc is None
-                                        else ft.VerticalDivider(
-                                            width=0,
-                                            thickness=0,
-                                            color=ft.colors.TRANSPARENT,
-                                        ),
-                                        # DESC => Control of toast header button close.
-                                        ButtonIcon(
-                                            icon=ft.icons.CLOSE_OUTLINED,
-                                            size=20,
-                                            no_hover=True,
-                                            on_click=lambda e: self.on_close_toast_event(e),
-                                            color=set_color_balance(bgcolor=self._bgcolor_header),
-                                        )
-                                        if self._auto_close is None
-                                        else ft.VerticalDivider(
-                                            width=0,
-                                            thickness=0,
-                                            color=ft.colors.TRANSPARENT,
-                                        ),
-                                    ],
-                                ),
-                            ],
-                        ),
-                    )
-                    if self._title
-                    else ft.Divider(height=0, color=ft.colors.TRANSPARENT),
-                    # DESC => Control of toast content.
-                    ft.Container(
-                        width=self._width,
-                        bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_content),
-                        padding=ft.padding.only(left=9, top=10, right=8, bottom=10),
-                        content=ft.Column(
-                            spacing=10 if self._actions else 0,
-                            controls=[
-                                # DESC => Control of toast content messages.
-                                ft.Row(
-                                    width=self._width,
-                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                                    vertical_alignment=ft.CrossAxisAlignment.START,
-                                    controls=[
-                                        # DESC => Control of toast text messages.
-                                        ft.Text(
-                                            expand=True,
-                                            value=self._desc,
-                                            weight=ft.FontWeight.W_400,
-                                            style=ft.TextThemeStyle.BODY_MEDIUM,
-                                            color=set_color_balance(bgcolor=self._bgcolor_content),
-                                        )
-                                        if isinstance(self._desc, str)
-                                        else self._desc
-                                        if isinstance(self._desc, Control)
-                                        else ft.VerticalDivider(
-                                            width=0,
-                                            thickness=0,
-                                            color=ft.colors.TRANSPARENT,
-                                        ),
-                                        # DESC => Control of toast content button close.
-                                        ButtonIcon(
-                                            icon=ft.icons.CLOSE_OUTLINED,
-                                            size=20,
-                                            no_hover=True,
-                                            on_click=lambda e: self.on_close_toast_event(e),
-                                            color=set_color_balance(bgcolor=self._bgcolor_content),
-                                        )
-                                        if (self._title or self._auto_close) is None
-                                        else ft.VerticalDivider(
-                                            width=0,
-                                            thickness=0,
-                                            color=ft.colors.TRANSPARENT,
-                                        ),
-                                    ],
-                                ),
-                                # DESC => Control of toast content actions.
-                                ft.Row(
-                                    alignment=self._actions_alignment if self._actions_alignment else ft.MainAxisAlignment.END,
-                                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                                    spacing=10,
-                                    controls=self._actions,
-                                )
-                                if self._actions
-                                else ft.Divider(height=0, thickness=0, color=ft.colors.TRANSPARENT),
-                            ],
-                        ),
-                    )
-                    if self._desc
-                    else ft.Divider(height=0, thickness=0, color=ft.colors.TRANSPARENT),
+                                        if self._actions
+                                        else ft.Divider(height=0, thickness=0, color=ft.colors.TRANSPARENT)
+                                    ),
+                                ],
+                            ),
+                        )
+                        if self._desc
+                        else ft.Divider(height=0, thickness=0, color=ft.colors.TRANSPARENT)
+                    ),
                     # DESC => Control of toast animation timer.
-                    ft.ProgressBar(
-                        width=self._width,
-                        color=self._color_progress,
-                        bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_progress),
-                        bar_height=1.5,
-                        value=0,
-                    )
-                    if self._auto_close
-                    else ft.Divider(height=0, color=ft.colors.TRANSPARENT),
+                    (
+                        ft.ProgressBar(
+                            width=self._width,
+                            color=self._color_progress,
+                            bgcolor=ft.colors.with_opacity(opacity=0.9, color=self._bgcolor_progress),
+                            bar_height=1.5,
+                            value=0,
+                        )
+                        if self._auto_close
+                        else ft.Divider(height=0, color=ft.colors.TRANSPARENT)
+                    ),
                 ],
             ),
         )

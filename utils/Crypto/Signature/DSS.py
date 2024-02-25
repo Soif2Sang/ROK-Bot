@@ -291,7 +291,7 @@ class FipsEcDsaSigScheme(DssSigScheme):
         """Verify that the strength of the hash matches or exceeds
         the strength of the EC. We fail if the hash is too weak."""
 
-        modulus_bits = self._key.pointQ.size_in_bits()
+        self._key.pointQ.size_in_bits()
 
         # SHS: SHA-2, SHA-3, truncated SHA-512
         sha224 = ("2.16.840.1.101.3.4.2.4", "2.16.840.1.101.3.4.2.7", "2.16.840.1.101.3.4.2.5")

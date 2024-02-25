@@ -1,12 +1,12 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from views.settings.profile.page_expedition import PageExpedition
 from utils.flet_translations import translate
 from views.settings.page_settings import PageSettings
 from views.settings.profile.page_academy_research import PageAcademyResearch
 from views.settings.profile.page_barbs import PageBarbs
 from views.settings.profile.page_character import PageCharacter
+from views.settings.profile.page_expedition import PageExpedition
 from views.settings.profile.page_fog import PageFog
 from views.settings.profile.page_gem import PageGem
 from views.settings.profile.page_heal import PageHeal
@@ -110,9 +110,11 @@ class SettingContainer(PageSettings):
         self.content.controls.append(
             ft.Switch(
                 label="Restart the game after switching\nto a new character (prevent freeze)",
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
-                else False,
+                value=(
+                    True
+                    if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
+                    else False
+                ),
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character"),
             )
         )

@@ -1,6 +1,4 @@
-import traceback
-from random import choice, random, uniform
-from time import sleep
+from random import random, uniform
 
 from PIL import Image
 
@@ -67,10 +65,7 @@ class GatherRssZoom(GatherRss):
         """
         self.restart_if_game_crashed()
         screen = self.adb.get_cv2_img()
-        if (
-            self.data[str(self.sel)]["schedules"][self.current_profile][self.node_place]
-            == "random"
-        ):
+        if self.data[str(self.sel)]["schedules"][self.current_profile][self.node_place] == "random":
             node_types = ["food", "wood", "stone", "gold"]
         else:
             node_types = [self.data[str(self.sel)]["schedules"][self.current_profile][self.node_place]]
@@ -107,9 +102,7 @@ class GatherRssZoom(GatherRss):
         self.check_download_page()
         self.leave_kd_buff()
         if self.check_log_back():
-            self.print(
-                "You interrupted rss gathering by connecting from an other device, bot is restarting it"
-            )
+            self.print("You interrupted rss gathering by connecting from an other device, bot is restarting it")
             return self.run(self.end_time)
 
         if self.find_cross():
@@ -149,7 +142,7 @@ class GatherRssZoom(GatherRss):
             if self.check_if_interrupt(screen):
                 return self.run(self.end_time)
 
-            if self.find_img(source=screen[:720//2,:], target="verification_button", confidence=0.6):
+            if self.find_img(source=screen[: 720 // 2, :], target="verification_button", confidence=0.6):
                 self.check_captcha()
                 screen = self.adb.get_cv2_img()
 
@@ -182,12 +175,8 @@ class GatherRssZoom(GatherRss):
         self.node_place = node_place
         self.run_game()
 
-        if (
-            EmulatorSingleton().getEmulator() == "bluestacks"
-            and not self.random_macro()
-        ):
+        if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
             return
-
 
         if node_place is None:
             self.leave_city()
@@ -226,10 +215,7 @@ class GatherRssZoom(GatherRss):
 
             for y in range(i):
                 if (
-                    self.data[str(self.sel)]["schedules"][self.current_profile].get(
-                        self.node_place, "nothing"
-                    )
-                    == "nothing"
+                    self.data[str(self.sel)]["schedules"][self.current_profile].get(self.node_place, "nothing") == "nothing"
                     or self.node_place == "Done"
                     or (not self.free_troop_commander_list())
                 ):

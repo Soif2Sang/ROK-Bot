@@ -1,6 +1,6 @@
-import sys
-import shutil
 import os
+import shutil
+import sys
 import zipfile
 from datetime import datetime
 

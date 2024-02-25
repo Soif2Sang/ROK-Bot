@@ -214,13 +214,13 @@ class TestImport_P192(unittest.TestCase):
 
     def test_import_sec1_uncompressed(self):
         key_file = load_file("ecc_p192_public.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P192')
         self.assertEqual(self.ref_public, key)
 
     def test_import_sec1_compressed(self):
         key_file = load_file("ecc_p192_public_compressed.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P192')
         self.assertEqual(self.ref_public, key)
 
@@ -324,13 +324,13 @@ class TestImport_P224(unittest.TestCase):
 
     def test_import_sec1_uncompressed(self):
         key_file = load_file("ecc_p224_public.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P224')
         self.assertEqual(self.ref_public, key)
 
     def test_import_sec1_compressed(self):
         key_file = load_file("ecc_p224_public_compressed.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P224')
         self.assertEqual(self.ref_public, key)
 
@@ -434,13 +434,13 @@ class TestImport_P256(unittest.TestCase):
 
     def test_import_sec1_uncompressed(self):
         key_file = load_file("ecc_p256_public.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P256')
         self.assertEqual(self.ref_public, key)
 
     def test_import_sec1_compressed(self):
         key_file = load_file("ecc_p256_public_compressed.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P256')
         self.assertEqual(self.ref_public, key)
 
@@ -509,7 +509,7 @@ class TestImport_P256(unittest.TestCase):
 
     def test_import_private_pem_with_ecparams(self):
         key_file = load_file("ecc_p256_private_ecparams.pem")
-        key = ECC.import_key(key_file)
+        ECC.import_key(key_file)
         # We just check if the import succeeds
 
     def test_import_private_pem_encrypted(self):
@@ -574,13 +574,13 @@ class TestImport_P384(unittest.TestCase):
 
     def test_import_sec1_uncompressed(self):
         key_file = load_file("ecc_p384_public.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P384')
         self.assertEqual(self.ref_public, key)
 
     def test_import_sec1_compressed(self):
         key_file = load_file("ecc_p384_public_compressed.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P384')
         self.assertEqual(self.ref_public, key)
 
@@ -709,13 +709,13 @@ class TestImport_P521(unittest.TestCase):
 
     def test_import_sec1_uncompressed(self):
         key_file = load_file("ecc_p521_public.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P521')
         self.assertEqual(self.ref_public, key)
 
     def test_import_sec1_compressed(self):
         key_file = load_file("ecc_p521_public_compressed.der")
-        value = extract_bitstring_from_spki(key_file)
+        extract_bitstring_from_spki(key_file)
         key = ECC.import_key(key_file, curve_name='P521')
         self.assertEqual(self.ref_public, key)
 
@@ -858,7 +858,7 @@ class TestExport_P192(unittest.TestCase):
         self.assertEqual(value, encoded)
 
     def test_export_public_sec1_compressed(self):
-        key_file = load_file("ecc_p192_public.der")
+        load_file("ecc_p192_public.der")
         encoded = self.ref_public.export_key(format="SEC1", compress=True)
 
         key_file_compressed_ref = load_file("ecc_p192_public_compressed.der")
@@ -1112,7 +1112,7 @@ class TestExport_P224(unittest.TestCase):
         self.assertEqual(value, encoded)
 
     def test_export_public_sec1_compressed(self):
-        key_file = load_file("ecc_p224_public.der")
+        load_file("ecc_p224_public.der")
         encoded = self.ref_public.export_key(format="SEC1", compress=True)
 
         key_file_compressed_ref = load_file("ecc_p224_public_compressed.der")
@@ -1366,7 +1366,7 @@ class TestExport_P256(unittest.TestCase):
         self.assertEqual(value, encoded)
 
     def test_export_public_sec1_compressed(self):
-        key_file = load_file("ecc_p256_public.der")
+        load_file("ecc_p256_public.der")
         encoded = self.ref_public.export_key(format="SEC1", compress=True)
 
         key_file_compressed_ref = load_file("ecc_p256_public_compressed.der")
@@ -1645,7 +1645,7 @@ class TestExport_P384(unittest.TestCase):
         self.assertEqual(value, encoded)
 
     def test_export_public_sec1_compressed(self):
-        key_file = load_file("ecc_p384_public.der")
+        load_file("ecc_p384_public.der")
         encoded = self.ref_public.export_key(format="SEC1", compress=True)
 
         key_file_compressed_ref = load_file("ecc_p384_public_compressed.der")
@@ -1932,7 +1932,7 @@ class TestExport_P521(unittest.TestCase):
         self.assertEqual(value, encoded)
 
     def test_export_public_sec1_compressed(self):
-        key_file = load_file("ecc_p521_public.der")
+        load_file("ecc_p521_public.der")
         encoded = self.ref_public.export_key(format="SEC1", compress=True)
 
         key_file_compressed_ref = load_file("ecc_p521_public_compressed.der")
@@ -2275,11 +2275,11 @@ class TestImport_Ed25519(unittest.TestCase):
 
     def test_import_openssh_private_clear(self):
         key_file = load_file("ecc_ed25519_private_openssh.pem")
-        key = ECC.import_key(key_file)
+        ECC.import_key(key_file)
 
     def test_import_openssh_private_password(self):
         key_file = load_file("ecc_ed25519_private_openssh_pwd.pem")
-        key = ECC.import_key(key_file, b"password")
+        ECC.import_key(key_file, b"password")
 
 
 class TestExport_Ed25519(unittest.TestCase):

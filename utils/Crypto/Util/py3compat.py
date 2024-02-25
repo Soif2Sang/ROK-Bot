@@ -90,7 +90,6 @@ if sys.version_info[0] == 2:
     from StringIO import StringIO
     BytesIO = StringIO
 
-    from sys import maxint
 
     iter_range = xrange
 
@@ -137,9 +136,7 @@ else:
     def byte_string(s):
         return isinstance(s, bytes)
 
-    from io import BytesIO
     from io import StringIO
-    from sys import maxsize as maxint
 
     iter_range = range
 
@@ -154,7 +151,6 @@ else:
                 isinstance(x, bytearray) or \
                 isinstance(x, memoryview)
 
-    from abc import ABC
 
     FileNotFoundError = FileNotFoundError
 

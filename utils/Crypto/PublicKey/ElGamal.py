@@ -55,7 +55,7 @@ def generate(bits, randfunc):
     # Generate a safe prime p
     # See Algorithm 4.86 in Handbook of Applied Cryptography
     obj.p = generate_probable_safe_prime(exact_bits=bits, randfunc=randfunc)
-    q = (obj.p - 1) >> 1
+    (obj.p - 1) >> 1
 
     # Generate generator g
     while 1:

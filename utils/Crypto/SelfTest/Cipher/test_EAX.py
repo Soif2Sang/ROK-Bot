@@ -461,9 +461,9 @@ class EaxFSMTests(unittest.TestCase):
             for auth_data in (None, b"333", self.data_128,
                               self.data_128 + b"3"):
                 if auth_data is None:
-                    assoc_len = None
+                    pass
                 else:
-                    assoc_len = len(auth_data)
+                    len(auth_data)
                 cipher = AES.new(self.key_128, AES.MODE_EAX,
                                  nonce=self.nonce_96)
                 if auth_data is not None:
@@ -674,7 +674,7 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Encrypt EAX Test #" + str(tv.id)
 
         try:
-            cipher = AES.new(tv.key, AES.MODE_EAX, tv.iv, mac_len=tv.tag_size)
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_EAX, tv.iv, mac_len=tv.tag_size)
         except ValueError as e:
             assert len(tv.iv) == 0 and "Nonce cannot be empty" in str(e)
             return
@@ -690,7 +690,7 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Decrypt EAX Test #" + str(tv.id)
 
         try:
-            cipher = AES.new(tv.key, AES.MODE_EAX, tv.iv, mac_len=tv.tag_size)
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_EAX, tv.iv, mac_len=tv.tag_size)
         except ValueError as e:
             assert len(tv.iv) == 0 and "Nonce cannot be empty" in str(e)
             return
@@ -709,7 +709,7 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Corrupt Decrypt EAX Test #" + str(tv.id)
         if len(tv.iv) == 0 or len(tv.ct) < 1:
             return
-        cipher = AES.new(tv.key, AES.MODE_EAX, tv.iv, mac_len=tv.tag_size)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_EAX, tv.iv, mac_len=tv.tag_size)
         cipher.update(tv.aad)
         ct_corrupt = strxor(tv.ct, b"\x00" * (len(tv.ct) - 1) + b"\x01")
         self.assertRaises(ValueError, cipher.decrypt_and_verify, ct_corrupt, tv.tag)

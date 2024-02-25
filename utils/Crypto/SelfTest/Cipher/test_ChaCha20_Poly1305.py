@@ -662,7 +662,7 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Encrypt %s Test #%s" % (tv.algo, tv.id)
 
         try:
-            cipher = ChaCha20_Poly1305.new(key=tv.key, nonce=tv.iv)
+            cipher = ChaCha20_Poly1305.new(key=tv.SUPABASE_KEY, nonce=tv.iv)
         except ValueError as e:
             assert len(tv.iv) not in (8, 12) and "Nonce must be" in str(e)
             return
@@ -678,7 +678,7 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Decrypt %s Test #%s" % (tv.algo, tv.id)
 
         try:
-            cipher = ChaCha20_Poly1305.new(key=tv.key, nonce=tv.iv)
+            cipher = ChaCha20_Poly1305.new(key=tv.SUPABASE_KEY, nonce=tv.iv)
         except ValueError as e:
             assert len(tv.iv) not in (8, 12) and "Nonce must be" in str(e)
             return
@@ -697,7 +697,7 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Corrupt Decrypt ChaCha20-Poly1305 Test #" + str(tv.id)
         if len(tv.iv) == 0 or len(tv.ct) < 1:
             return
-        cipher = ChaCha20_Poly1305.new(key=tv.key, nonce=tv.iv)
+        cipher = ChaCha20_Poly1305.new(key=tv.SUPABASE_KEY, nonce=tv.iv)
         cipher.update(tv.aad)
         ct_corrupt = strxor(tv.ct, b"\x00" * (len(tv.ct) - 1) + b"\x01")
         self.assertRaises(ValueError, cipher.decrypt_and_verify, ct_corrupt, tv.tag)

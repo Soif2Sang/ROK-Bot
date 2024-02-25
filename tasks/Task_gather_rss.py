@@ -42,7 +42,7 @@ class GatherRss(Task):
         self.print(f"Looking for : {self.data[str(self.sel)]['schedules'][self.current_profile].get(place)} {place}")
 
         type = self.data[str(self.sel)]["schedules"][self.current_profile].get(place)
-        if type == 'random':
+        if type == "random":
             type = choice(["food", "wood", "stone", "gold"])
         if type == "food":
             x = uniform(400, 472)

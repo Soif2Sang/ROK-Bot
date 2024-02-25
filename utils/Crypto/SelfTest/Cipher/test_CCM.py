@@ -857,8 +857,8 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Encrypt CCM Test #" + str(tv.id)
 
         try:
-            cipher = AES.new(tv.key, AES.MODE_CCM, tv.iv, mac_len=tv.tag_size,
-                                **self._extra_params)
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_CCM, tv.iv, mac_len=tv.tag_size,
+                             **self._extra_params)
         except ValueError as e:
             if len(tv.iv) not in range(7, 13 + 1, 2) and "Length of parameter 'nonce'" in str(e):
                 assert not tv.valid
@@ -879,8 +879,8 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Decrypt CCM Test #" + str(tv.id)
 
         try:
-            cipher = AES.new(tv.key, AES.MODE_CCM, tv.iv, mac_len=tv.tag_size,
-                                **self._extra_params)
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_CCM, tv.iv, mac_len=tv.tag_size,
+                             **self._extra_params)
         except ValueError as e:
             if len(tv.iv) not in range(7, 13 + 1, 2) and "Length of parameter 'nonce'" in str(e):
                 assert not tv.valid
@@ -904,8 +904,8 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Corrupt Decrypt CCM Test #" + str(tv.id)
         if len(tv.iv) not in range(7, 13 + 1, 2) or len(tv.ct) == 0:
             return
-        cipher = AES.new(tv.key, AES.MODE_CCM, tv.iv, mac_len=tv.tag_size,
-                            **self._extra_params)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_CCM, tv.iv, mac_len=tv.tag_size,
+                         **self._extra_params)
         cipher.update(tv.aad)
         ct_corrupt = strxor(tv.ct, b"\x00" * (len(tv.ct) - 1) + b"\x01")
         self.assertRaises(ValueError, cipher.decrypt_and_verify, ct_corrupt, tv.tag)

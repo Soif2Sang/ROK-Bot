@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from collections import defaultdict
 from datetime import date, datetime
@@ -11,9 +12,7 @@ class ApiSingleton:
     __instance = None
     FileLock = Lock()
     apikey = ""
-    supabase_url = ""
-    supabase_public_key = ""
-    tier = 1
+    tier = ""
 
     def __new__(cls):
         if cls.__instance is None:
@@ -28,27 +27,11 @@ class ApiSingleton:
         with self.FileLock:
             self.apikey = key
 
-    def getSupabaseUrl(self) -> str:
-        with self.FileLock:
-            return self.supabase_url
-
-    def setSupabaseUrl(self, supabase_url: str):
-        with self.FileLock:
-            self.supabase_url = supabase_url
-
-    def getSupabasePublicKey(self) -> str:
-        with self.FileLock:
-            return self.supabase_public_key
-
-    def setSupabasePublicKey(self, supabase_public_key: str):
-        with self.FileLock:
-            self.supabase_public_key = supabase_public_key
-
-    def getTier(self) -> int:
+    def getTier(self) -> str:
         with self.FileLock:
             return self.tier
 
-    def setTier(self, tier: int):
+    def setTier(self, tier: str):
         with self.FileLock:
             self.tier = tier
 
@@ -56,9 +39,8 @@ class ApiSingleton:
 class EmulatorSingleton:
     __instance = None
     FileLock = Lock()
+    EmulatorLock = Lock()
     emulator = ""
-    limit = 0
-
 
     def __new__(cls):
         if cls.__instance is None:
@@ -73,20 +55,12 @@ class EmulatorSingleton:
         with self.FileLock:
             self.emulator = mode
 
-    def getEmulatorLimit(self) -> int:
-        with self.FileLock:
-            return self.limit
-
-    def setEmulatorLimit(self, limit: int):
-        with self.FileLock:
-            self.limit = limit
-
     def startEmulator(self, emulator: str):
         path = FileSingleton().get_path()
         data = FileSingleton().get_data()
         emulator_choice = EmulatorSingleton().getEmulator()
 
-        with self.FileLock:
+        with self.EmulatorLock:
             if emulator_choice == "ld":
                 cmd = f'{path["LD-Console"]} launch --index {data.get(emulator).get("instance")}'
             else:
@@ -94,76 +68,7 @@ class EmulatorSingleton:
 
             subprocess.Popen(cmd)
 
-            sleep(4)
-
-
-class CaptchaSingleton:
-    __instance = None
-    FileLock = Lock()
-    captchas = defaultdict(int)
-    tier = None
-
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
-    def setTier(self, tier: str) -> None:
-        with self.FileLock:
-            self.tier = tier
-
-    def getTier(self) -> str:
-        with self.FileLock:
-            return self.tier
-
-    def getCaptchas(self) -> dict:
-        with self.FileLock:
-            return self.captchas
-
-    def setCaptchas(self, captchas: dict):
-        with self.FileLock:
-            self.captchas = captchas
-
-    def addCaptcha(self):
-        with self.FileLock:
-            self.captchas[datetime.now().date().strftime("%Y-%m-%d")] += 1
-
-
-class LinkSingleton:
-    __instance = None
-    FileLock = Lock()
-    sellix = ""
-    stripe = ""
-    allLinks = None
-
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
-    def getStripeLink(self) -> str:
-        with self.FileLock:
-            return self.stripe
-
-    def setStripeLink(self, link: str):
-        with self.FileLock:
-            self.stripe = link
-
-    def getSellixLink(self) -> str:
-        with self.FileLock:
-            return self.sellix
-
-    def setSellixLink(self, link: str):
-        with self.FileLock:
-            self.sellix = link
-
-    def setAllLinks(self, allLinks):
-        with self.Filelock:
-            self.allLinks = allLinks
-
-    def getAllLinks(self):
-        with self.FileLock:
-            return self.allLinks
+            sleep(5)
 
 class FileSingleton:
     __instance = None
@@ -177,6 +82,8 @@ class FileSingleton:
 
     def write(self, name, text: str):
         self.FileLock.acquire()
+        if not os.path.exists("./logs"):
+            os.mkdir("./logs")
         with open(f"./logs/{name}_logs.txt", "a+", encoding="utf-8") as logger:
             logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
         self.FileLock.release()
@@ -190,7 +97,6 @@ class FileSingleton:
 
     def getCachedData(self):
         if self.data is None:
-            print("data is none")
             self.data = self.get_data()
         return self.data
 

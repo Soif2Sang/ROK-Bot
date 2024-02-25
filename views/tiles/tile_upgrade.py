@@ -1,20 +1,16 @@
 from __future__ import annotations
 
-from time import sleep
-
 import flet as ft
 
-from utils.singletons import EmulatorSingleton
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from views.tiles.handler.config_handler import FrameUpgrade, Frame
-from views.tiles.tile import ConfigOverrider
-
 from utils.functions import FileSingleton
+from views.tiles.handler.config_handler import Frame
+from views.tiles.tile_slave import ConfigOverrider
 
 
 class TileUpgrade(ft.Container):
-    def __init__(self, page, number:str, **kwargs):
+    def __init__(self, page, number: str, **kwargs):
         super().__init__(**kwargs)
         self.FileSingleton = FileSingleton()
         data = self.FileSingleton.getCachedData()
@@ -65,6 +61,7 @@ class TileUpgrade(ft.Container):
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
+
     def long_press(self, e):
         self.enable_switch = not self.enable_switch
         self.selected = not self.selected

@@ -437,9 +437,9 @@ class GcmFSMTests(unittest.TestCase):
             for auth_data in (None, b"333", self.data,
                               self.data + b"3"):
                 if auth_data is None:
-                    assoc_len = None
+                    pass
                 else:
-                    assoc_len = len(auth_data)
+                    len(auth_data)
                 cipher = AES.new(self.key_128, AES.MODE_GCM,
                                  nonce=self.nonce_96)
                 if auth_data is not None:
@@ -801,8 +801,8 @@ for idx, tv in enumerate(test_vectors_nist):
     def single_test(self, tv=tv):
 
         self.description = tv.desc
-        cipher = AES.new(tv.key, AES.MODE_GCM, nonce=tv.iv,
-                             mac_len=len(tv.tag), use_clmul=self.use_clmul)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_GCM, nonce=tv.iv,
+                         mac_len=len(tv.tag), use_clmul=self.use_clmul)
         cipher.update(tv.aad)
         if "FAIL" in tv.others:
             self.assertRaises(ValueError, cipher.decrypt_and_verify,
@@ -845,8 +845,8 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Encrypt GCM Test #" + str(tv.id)
 
         try:
-            cipher = AES.new(tv.key, AES.MODE_GCM, tv.iv, mac_len=tv.tag_size,
-                        **self._extra_params)
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_GCM, tv.iv, mac_len=tv.tag_size,
+                             **self._extra_params)
         except ValueError as e:
             if len(tv.iv) == 0 and "Nonce cannot be empty" in str(e):
                 return
@@ -863,8 +863,8 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Decrypt GCM Test #" + str(tv.id)
 
         try:
-            cipher = AES.new(tv.key, AES.MODE_GCM, tv.iv, mac_len=tv.tag_size,
-                        **self._extra_params)
+            cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_GCM, tv.iv, mac_len=tv.tag_size,
+                             **self._extra_params)
         except ValueError as e:
             if len(tv.iv) == 0 and "Nonce cannot be empty" in str(e):
                 return
@@ -884,8 +884,8 @@ class TestVectorsWycheproof(unittest.TestCase):
         self._id = "Wycheproof Corrupt Decrypt GCM Test #" + str(tv.id)
         if len(tv.iv) == 0 or len(tv.ct) < 1:
             return
-        cipher = AES.new(tv.key, AES.MODE_GCM, tv.iv, mac_len=tv.tag_size,
-                    **self._extra_params)
+        cipher = AES.new(tv.SUPABASE_KEY, AES.MODE_GCM, tv.iv, mac_len=tv.tag_size,
+                         **self._extra_params)
         cipher.update(tv.aad)
         ct_corrupt = strxor(tv.ct, b"\x00" * (len(tv.ct) - 1) + b"\x01")
         self.assertRaises(ValueError, cipher.decrypt_and_verify, ct_corrupt, tv.tag)

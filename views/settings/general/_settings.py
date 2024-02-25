@@ -2,11 +2,14 @@ import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.flet_translations import translate
+from utils.singletons import FileSingleton
 from views.settings.general.page_profiles import PageProfiles
 from views.settings.general.page_redo import PageRedo
 from views.settings.page_settings import PageSettings
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
+
+fs = FileSingleton()
 
 
 class AllSettings(PageSettings):
@@ -43,7 +46,7 @@ class AllSettings(PageSettings):
                     margin=ft.margin.only(top=5, bottom=3),
                 ),
                 ft.OutlinedButton(
-                    text="Configure Workers",
+                    text=translate("Configure Workers"),
                     icon=ft.icons.SETTINGS,
                     on_click=lambda _: self.initial_page.go("/configure-workers"),
                     style=ButtonStyle(
@@ -125,13 +128,13 @@ class AllSettings(PageSettings):
         self.data = self.FileSingleton.get_data()
 
         if keyword in ["auto_scroll", "auto_refresh", "limit_logs"]:
-            self.data["interface"][keyword] = not self.data["interface"][keyword]
+            self.data["interface"][keyword] = not self.data["interface"].get(keyword, False)
         elif keyword == "enabled":
             self.data["discord"]["enabled"] = not self.data["discord"].get(keyword, False)
         elif keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
-            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
+            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)].get(keyword, False)
         else:
-            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
+            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)].get(keyword, False)
         self.FileSingleton.write_data(self.data)
 
     def create_advanced_switch(self, keyword: str, text: str, function):

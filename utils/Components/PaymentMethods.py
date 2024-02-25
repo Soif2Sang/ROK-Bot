@@ -1,5 +1,6 @@
 import flet as ft
 
+
 class ClickableLink(ft.Container):
     def __init__(self, tier, link, image, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -82,8 +83,12 @@ def payment_methods():
     sellix_icon = "https://s3-eu-west-1.amazonaws.com/tpd/logos/5f038a919ab82900015059fc/0x0.png"
     stripe_icon = "https://play-lh.googleusercontent.com/2PS6w7uBztfuMys5fgodNkTwTOE6bLVB2cJYbu5GHlARAK36FzO5bUfMDP9cEJk__cE"
 
-    stripe_col = ft.Column(controls=[ft.Text("Stripe")], alignment=ft.alignment.center, horizontal_alignment=ft.CrossAxisAlignment.CENTER, col=6)
-    sellix_col = ft.Column(controls=[ft.Text("Sellix")], alignment=ft.alignment.center, horizontal_alignment=ft.CrossAxisAlignment.CENTER, col=6)
+    stripe_col = ft.Column(
+        controls=[ft.Text("Stripe")], alignment=ft.alignment.center, horizontal_alignment=ft.CrossAxisAlignment.CENTER, col=6
+    )
+    sellix_col = ft.Column(
+        controls=[ft.Text("Sellix")], alignment=ft.alignment.center, horizontal_alignment=ft.CrossAxisAlignment.CENTER, col=6
+    )
 
     for tier in links["stripe"]:
         stripe_col.controls.append(ClickableLink(tiers[tier], links["stripe"][tier], stripe_icon))

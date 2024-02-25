@@ -1,12 +1,11 @@
-from random import choice, random, uniform
+from random import choice, uniform
 
 from tasks.Task import Task, get_name
 from tasks.Task_alliance_help import AllianceHelp
 from utils.functions import get_class
 
 
-class \
-        AcademyResearch(Task):
+class AcademyResearch(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
@@ -37,7 +36,6 @@ class \
 
     @get_name
     def select_tech(self, swipes=0):
-        i = 0
         source = self.adb.get_cv2_img()
         techs = self.adb.find_multiple_img(target="research_tech", source=source, confidence=0.7)
         cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)

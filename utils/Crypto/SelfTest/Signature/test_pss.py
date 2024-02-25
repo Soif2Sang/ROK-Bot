@@ -336,9 +336,9 @@ class TestVectorsPSSWycheproof(unittest.TestCase):
         self._id = "Wycheproof RSA PSS Test #%d (%s)" % (tv.id, tv.comment)
 
         hashed_msg = tv.hash_module.new(tv.msg)
-        signer = pss.new(tv.key, mask_func=tv.mgf, salt_bytes=tv.sLen)
+        signer = pss.new(tv.SUPABASE_KEY, mask_func=tv.mgf, salt_bytes=tv.sLen)
         try:
-            signature = signer.verify(hashed_msg, tv.sig)
+            signer.verify(hashed_msg, tv.sig)
         except ValueError as e:
             if tv.warning:
                 return
