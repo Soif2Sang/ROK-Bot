@@ -155,12 +155,13 @@ class Adb:
             sleep(1)
             return self.get_device().screencap()
 
-    @get_name
     def get_curr_device_screen_img_bytesIO(self):
         try:
             return io.BytesIO(self.get_device().screencap())
         except Exception as e:
             print(e)
+            self.print("EXCEPTION : get_curr_device_screen_img_bytesIO")
+            self.print(e)
             sleep(1)
             return io.BytesIO(self.get_device().screencap())
 
