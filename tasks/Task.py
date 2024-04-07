@@ -8,7 +8,7 @@ import shutil
 import sys
 import traceback
 from datetime import datetime
-from random import randint, uniform
+from random import choice, randint, uniform
 from time import sleep
 
 import cv2
@@ -280,10 +280,49 @@ class Task:
 
     @get_name
     def open_menu(self):
-        if self.find_img(target="menu_opened", confidence=0.8, source=self.adb.get_cv2_img()[720 // 6 :, 1280 // 2 :]) is None:
+        if self.find_img(target="menu_opened", confidence=0.8,
+                         source=self.adb.get_cv2_img()[720 // 6:, 1280 // 2:]) is None:
             x, y = uniform(1200, 1250), uniform(650, 690)
             self.click(x, y)
             self.better_sleep((1.725, 1.995))
+
+    @get_name
+    def open_inventory(self):
+        x, y = uniform(910, 950), uniform(650, 690)
+        self.click(x, y)
+        self.better_sleep((1.725, 1.995))
+
+    @get_name
+    def open_any_inventory_tab(self):
+        cords = [230, 400, 550, 705, 850, 1000]
+
+        x, y = choice(cords) + uniform(-10, 10), 80 + uniform(-10, 10)
+
+        self.click(x, y)
+        self.better_sleep((1.725, 1.995))
+
+
+    @get_name
+    def open_commander_tab(self):
+        self.click(1130 + uniform(-10, 10), 665 + uniform(-10, 10))
+        self.better_sleep((1.725, 1.995))
+
+    @get_name
+    def click_any_commander_in_list(self):
+        width = [90, 195]
+        height = [190, 330, 470, 600]
+
+        self.click(choice(width) + uniform(-10, 10), choice(height) + uniform(-10, 10))
+        self.better_sleep((1.725, 1.995))
+
+    def open_campaign(self):
+        self.click(830 + uniform(-10, 10), 676 + uniform(-10, 10))
+        self.better_sleep((1.725, 1.995))
+
+    def open_sunset_canyon(self):
+        self.click(780 + uniform(-10, 10), 310 + uniform(-10, 10))
+        self.better_sleep((1.725, 1.995))
+
 
     @get_name
     def zoom_out_city(self) -> None:
@@ -300,7 +339,7 @@ class Task:
 
                 if self.adb.is_ld:
                     hwnd = hwndChild
-                self.script_pause()
+
                 while self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
                     self.script_pause()
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
@@ -345,7 +384,7 @@ class Task:
         else:
             # x,y = uniform(225,285) , uniform(607,667)
             # self.click(x,y)
-            cv_image = cv_image[co[1] - 30 : co[1], co[0] - 60 : co[0] + 60]
+            cv_image = cv_image[co[1] - 30: co[1], co[0] - 60: co[0] + 60]
             # cv2.imwrite("level.png", cv_image)
             # string = pytesseract.image_to_string(cv_image,
             #                                      config=r'--oem 1 --psm 6 -c tessedit_char_whitelist=level:1234567890')
@@ -387,41 +426,48 @@ class Task:
         """
         Send adb signal to swipe to the right
         """
+        # I need to randomise the swipe by a little bit, for exemple having a range of 0 to 20 pixels
+        x1, y1 = uniform(970, 990), uniform(350, 370)
 
-        x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
-        x1 - uniform(710, 710)
-
-        self.swipe(980, 360, 300, 360)
+        return self.swipe(x1, y1, x1 - uniform(600, 620), y1 + uniform(-3, 3))
 
     def swipe_left(self) -> None:
         """
         Send adb signal to swipe to the left
         """
-        x1, y1, y2 = uniform(940, 960), uniform(335, 385), uniform(335, 385)
-        x1 - uniform(710, 710)
-        self.swipe(300, 360, 980, 360)
+        x1, y1 = uniform(290, 310), uniform(350, 370)
+
+        return self.swipe(x1, y1, x1 + uniform(600, 620), y1 + uniform(-3, 3))
 
     def swipe_up(self) -> None:
         """
         Send adb signal to swipe upward
         """
-        x1, y1 = uniform(600, 680), uniform(540, 560)
-        x1 + uniform(0, 30)
-        y1 - uniform(390, 397)
-        self.swipe(640, 150, 640, 570)
+        # Randomize the y-coordinates for the start and end points of the swipe
+        y1 = uniform(150, 170)
+        y2 = uniform(550, 570)
+
+        # Keep the x-coordinate almost the same
+        x = uniform(630, 650)
+
+        return self.swipe(x, y1, x + uniform(-3, 3), y2)
 
     def swipe_down(self) -> None:
         """
         Send adb signal to swipe downward
         """
-        x1, y1 = uniform(600, 680), uniform(540, 560)
-        x1 + uniform(0, 30)
-        y1 - uniform(390, 397)
-        self.swipe(640, 570, 640, 150)
+        # Randomize the y-coordinates for the start and end points of the swipe
+        y1 = uniform(550, 570)
+        y2 = uniform(130, 150)
+
+        # Keep the x-coordinate almost the same
+        x = uniform(630, 650)
+
+        return self.swipe(x, y1, x + uniform(-3, 3), y2)
 
     def swipe_right_low(self) -> None:
         """
-        Send adb signal to swipe to the right
+        Send adb signal to swipe t"o" the right
         """
         x1, y1, x2, y2 = (
             uniform(700, 720),
@@ -619,7 +665,7 @@ class Task:
                     self.better_sleep((1, 1))
 
     # @get_name
-    def better_sleep(self, limits: tuple[float, float], reduce_speed = True):
+    def better_sleep(self, limits: tuple[float, float], reduce_speed=True):
         a = limits[0]
         b = limits[1]
 
@@ -731,7 +777,7 @@ class Task:
 
     @get_name
     def save_captcha_slider(self):
-        captcha = self.adb.get_cv2_img()[139:511, 499 : 1280 - 353]
+        captcha = self.adb.get_cv2_img()[139:511, 499: 1280 - 353]
 
         for y in range(30):
             for i in range(captcha.shape[0]):
@@ -790,7 +836,7 @@ class Task:
     def save_captcha(self):
         cv_image = self.adb.get_cv2_img()
 
-        cropped_image = cv_image[100:560, 440:840]
+        cropped_image = cv_image[100:460, 410:860]
         # cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
         # im_pil = Image.fromarray(cropped_image)
         # im_pil.save(f"captcha{self.sel}.jpg", optimize=True, quality=80)
@@ -807,7 +853,7 @@ class Task:
         co = self.find_img(target="refresh_resolve", confidence=0.9)
         # print(f"{co = }")
         if co is not None:
-            x, y = co[0] + 3, co[1] + 3
+            x, y = co[0] + 5, co[1] + 5
             self.click(x, y)
             self.better_sleep((2, 3))
             return True
@@ -822,11 +868,12 @@ class Task:
             # print(f'{co}')
         co = self.find_img(source=cv_image[280:370, :], target="already_connected", confidence=0.9)
         if co is not None:
-            co = self.find_img(source=cv_image[720 // 2 :, 1280 // 3 : 1280 // 2], target="reconnect", confidence=0.9)
+            co = self.find_img(source=cv_image[720 // 2:, 1280 // 3: 1280 // 2], target="reconnect", confidence=0.9)
         if co is not None:
             if self.data.get(self.sel).get("schedules").get(self.current_profile).get("auto_log_back", False):
-                if self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back1") > self.data.get(self.sel).get(
-                    "schedules"
+                if self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back1") > self.data.get(
+                        self.sel).get(
+                        "schedules"
                 ).get(self.current_profile).get("log_back2"):
                     (
                         self.data[self.sel]["schedules"][self.current_profile]["log_back1"],
@@ -860,7 +907,7 @@ class Task:
     def check_mge(self, cv_image=None):
         if cv_image is None:
             cv_image = self.adb.get_cv2_img()
-        co = self.find_img(target="mightiest_gov", source=cv_image[: 720 // 3, 1280 // 2 :])
+        co = self.find_img(target="mightiest_gov", source=cv_image[: 720 // 3, 1280 // 2:])
         if co is not None:
             self.click(co[0] + uniform(10, 30) + 1280 // 2, co[1] + uniform(10, 30))
             self.better_sleep((1.3, 2))
@@ -871,7 +918,7 @@ class Task:
     def close_osiris_popup(self, cv_image=None):
         if cv_image is None:
             cv_image = self.adb.get_cv2_img()
-        if self.find_img(target="osiris_invitation", source=cv_image[: 720 // 2, 1280 // 4 : 1280 - 1280 // 4]):
+        if self.find_img(target="osiris_invitation", source=cv_image[: 720 // 2, 1280 // 4: 1280 - 1280 // 4]):
             self.click(1280 / 2, 720 / 2)
             self.better_sleep((3.5, 4.7))
             self.click(960, 108)
@@ -896,7 +943,7 @@ class Task:
 
                 self.print("You just got disconnected", ft.colors.AMBER)
                 co = self.find_img(target="reconnect", confidence=0.85)
-    
+
                 a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                 print(a)
                 self.click(a[0], a[1])
@@ -921,10 +968,10 @@ class Task:
             self.run_game()
             screen = self.adb.get_cv2_img()
             if (
-                self.find_img(target="menu_button", confidence=0.8, source=screen)
-                or self.find_img(target="map_icon", confidence=0.8, source=screen)
-                or self.find_img(target="hammer", confidence=0.8, source=screen)
-                or self.find_img(target="inbox", confidence=0.8, source=screen)
+                    self.find_img(target="menu_button", confidence=0.8, source=screen)
+                    or self.find_img(target="map_icon", confidence=0.8, source=screen)
+                    or self.find_img(target="hammer", confidence=0.8, source=screen)
+                    or self.find_img(target="inbox", confidence=0.8, source=screen)
             ):
                 condition = False
 
@@ -1073,7 +1120,8 @@ class Task:
             i += 1
             if i == 6:
                 self.print("Error, unable to resolve the captcha for 5 times in a row !")
-                self.send_discord_message("Error, unable to resolve the captcha for 5 times in a row. You have to solve it manually.")
+                self.send_discord_message(
+                    "Error, unable to resolve the captcha for 5 times in a row. You have to solve it manually.")
                 while self.find_img(target="close_refresh_ok", confidence=0.75):
                     self.better_sleep((10, 10))
             resolved = True
@@ -1093,8 +1141,10 @@ class Task:
                 api_key = self.data["API_KEY"]
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
+
             if self.data["API_KEY"] != "":
                 api_key = self.data["API_KEY"]
+
             self.print("Trying to resolve the captcha")
 
             captcha = self.save_captcha()
@@ -1106,12 +1156,15 @@ class Task:
             self.debug(result)
 
             co = string_to_co(result["code"])
+
             if self.adb.find_img_cv(captcha) is not None:
                 for x, y in co:
-                    self.click(x, y)
+                    self.click(x + 410, y + 100)
                     self.better_sleep((0.4, 0.795))
-                self.click(uniform(700, 830), uniform(570, 600))
+
+                self.click(uniform(700, 830), uniform(480, 520))
                 self.better_sleep((1, 1.795))
+
             captchaId = result["captchaId"]
             self.better_sleep((3, 4))
 
@@ -1207,7 +1260,8 @@ class Task:
         if screen is None:
             screen = self.adb.get_cv2_img()
 
-        if self.find_img(target="download_page", source=screen[: 720 // 2, 1280 // 4 : 1280 - 1280 // 4], confidence=0.8):
+        if self.find_img(target="download_page", source=screen[: 720 // 2, 1280 // 4: 1280 - 1280 // 4],
+                         confidence=0.8):
             self.click(uniform(1018, 1041), uniform(127, 146))
             self.better_sleep((1.925, 2.795))
             screen = self.adb.get_cv2_img()
@@ -1233,12 +1287,12 @@ class Task:
         :return: True if in city, False if not
         """
         return (
-            self.find_img(
-                target="checkpoint_star",
-                source=self.adb.get_cv2_img()[:60, 380:600],
-                confidence=0.97,
-            )
-            is None
+                self.find_img(
+                    target="checkpoint_star",
+                    source=self.adb.get_cv2_img()[:60, 380:600],
+                    confidence=0.97,
+                )
+                is None
         )
 
     def get_config(self):
@@ -1249,28 +1303,33 @@ class Task:
         if screen is None:
             image = self.adb.get_cv2_img()
 
-        while cos := self.adb.find_multiple_img(target="close_window", source=image[: 720 // 2, 1280 // 2 :]):
+        while cos := self.adb.find_multiple_img(target="close_window", source=image[: 720 // 2, 1280 // 2:]):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()
 
-        while cos := self.adb.find_multiple_img(target="close_window2", source=image[: 720 // 2, : 1280 // 4], confidence=0.83):
+        while cos := self.adb.find_multiple_img(target="close_window2", source=image[: 720 // 2, : 1280 // 4],
+                                                confidence=0.83):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()
 
-        while cos := self.adb.find_multiple_img(target="close_window3", source=image[: 720 // 2, 1280 // 2 :], confidence=0.83):
+        while cos := self.adb.find_multiple_img(target="close_window3", source=image[: 720 // 2, 1280 // 2:],
+                                                confidence=0.83):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()
 
-        while cos := self.adb.find_multiple_img(target="close_chat", source=image[720 // 4 : 720 - 720 // 4, : 1280 // 2], confidence=0.83):
+        while cos := self.adb.find_multiple_img(target="close_chat",
+                                                source=image[720 // 4: 720 - 720 // 4, : 1280 // 2 + 50],
+                                                confidence=0.9):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9) + 720 // 4)
             self.better_sleep((1.3, 2.8))
+            image = self.adb.get_cv2_img()
 
     def get_text(self):
         return self.tile.get_text()
@@ -1292,15 +1351,15 @@ class Task:
         return dilate
 
     def get_neighboring_image(
-        self,
-        image,
-        center_point,
-        grid_width=1280,
-        grid_height=720,
-        up=50,
-        left=20,
-        right=60,
-        down=85,
+            self,
+            image,
+            center_point,
+            grid_width=1280,
+            grid_height=720,
+            up=50,
+            left=20,
+            right=60,
+            down=85,
     ):
         """Gets the neighboring points around a center point on the grid."""
         x, y = center_point[0], center_point[1]
@@ -1347,8 +1406,9 @@ class Task:
                 # print(distances)
                 # if distances:
                 if (
-                    word.split("KM")[0].isnumeric()
-                    and int(word.split("KM")[0]) > int(self.data[str(self.sel)]["schedules"][self.current_profile].get("radius", 40)) + 15
+                        word.split("KM")[0].isnumeric()
+                        and int(word.split("KM")[0]) > int(
+                    self.data[str(self.sel)]["schedules"][self.current_profile].get("radius", 40)) + 15
                 ):
                     if co[0] < 500 and co[1] < 220:
                         self.swipe(co[0] + 90, co[1] + 90, 640, 360)
@@ -1430,17 +1490,17 @@ class Task:
     def validate_co(self, co: tuple[int, int]) -> None | tuple[int, int]:
         if co is not None:
             if (
-                (co[0] < 550 and co[1] < 100)
-                or ((1180 < co[0] < 1235) and (520 < co[1] < 620))
-                or ((1159 < co[0] < 1235) and (150 < co[1] < 195))
-                or (co[0] < 556 and co[1] > 630)
-                or (co[0] < 110 and co[1] > 495)
-                or (co[0] > 1040 and co[1] < 160)
-                or (co[1] > 515 and co[0] > 1175)
-                or (co[0] < 120 and co[1] < 120)
-                or (co[0] < 685 and co[1] > 615)
-                or co[0] < 100
-                or co[1] < 35
+                    (co[0] < 550 and co[1] < 100)
+                    or ((1180 < co[0] < 1235) and (520 < co[1] < 620))
+                    or ((1159 < co[0] < 1235) and (150 < co[1] < 195))
+                    or (co[0] < 556 and co[1] > 630)
+                    or (co[0] < 110 and co[1] > 495)
+                    or (co[0] > 1040 and co[1] < 160)
+                    or (co[1] > 515 and co[0] > 1175)
+                    or (co[0] < 120 and co[1] < 120)
+                    or (co[0] < 685 and co[1] > 615)
+                    or co[0] < 100
+                    or co[1] < 35
             ):
                 co = None
         return co
@@ -1582,16 +1642,17 @@ class Task:
             for y in range(img.size[1]):
                 pixel = img.getpixel((i, y))
                 if (
-                    (
-                        (pixel[0] < 5)
-                        and (pixel[1] < 5)
-                        and (175 < pixel[2] < 196)
-                        and ((pixel[0] != 2) and (pixel[1] != 4) and (pixel[2] != 183))
-                    )
-                    or ((pixel[0] < 2) and (116 < pixel[1] < 119) and (175 < pixel[2] < 179))
-                    or ((pixel[0] < 5) and (142 < pixel[1] < 150) and (190 < pixel[2] < 200) and (pixel[2] != 193) and (pixel[2] != 192))
-                    or ((pixel[0] < 10) and (pixel[1] > 187) and (pixel[2] < 10))
-                    or (pixel in occupied_colors)
+                        (
+                                (pixel[0] < 5)
+                                and (pixel[1] < 5)
+                                and (175 < pixel[2] < 196)
+                                and ((pixel[0] != 2) and (pixel[1] != 4) and (pixel[2] != 183))
+                        )
+                        or ((pixel[0] < 2) and (116 < pixel[1] < 119) and (175 < pixel[2] < 179))
+                        or ((pixel[0] < 5) and (142 < pixel[1] < 150) and (190 < pixel[2] < 200) and (
+                        pixel[2] != 193) and (pixel[2] != 192))
+                        or ((pixel[0] < 10) and (pixel[1] > 187) and (pixel[2] < 10))
+                        or (pixel in occupied_colors)
                 ) and (pixel not in whitelist):
                     self.print(f"Node occupied {pixel}")
                     return True
