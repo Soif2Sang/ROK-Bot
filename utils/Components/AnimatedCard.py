@@ -1,17 +1,23 @@
 from flet import *
 
+from utils.singletons import ApiSingleton
+
 
 class AnimatedCard(UserControl):
-    def __init__(self, image_source_path, function):  # Corrected here
+    def __init__(self, image_source_path, function, tier = "tier1"):  # Corrected here
         super().__init__()
         self.image_source_path = image_source_path
-        self.function = function
+        self.tier = tier
+        if ApiSingleton().getTier() < tier:
+            self.function = lambda e: self.page.generate_toast("Only available for Tier 4", "PC Version is only available for tier 4")
+        else:
+            self.function = function
 
     def build(self):
         self._container = Container(
             width=220,
             height=300,
-            bgcolor=colors.BLACK26,
+            bgcolor=colors.RED_ACCENT if ApiSingleton().getTier() < self.tier else colors.BLACK26,
             border_radius=12,
             on_hover=lambda e: self.AnimatedCardHover(e),
             on_click=self.function,

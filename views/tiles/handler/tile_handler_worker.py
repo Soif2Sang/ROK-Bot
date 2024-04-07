@@ -4,7 +4,8 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from utils.constants import VERSION_TYPE
+from utils.constants import (VERSION_TYPE, default_dic, default_profile,
+                             default_worker_settings)
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
 from utils.singletons import EmulatorSingleton, FileSingleton
@@ -145,157 +146,18 @@ class TileHandlerWorker(ft.ListView):
 
         if emulator == "bluestacks":
             instances = get_dic_instances()
-        else:
+        elif emulator == "ld":
             instances = get_dic_instances_ld()
+        else:
+            instances = {"pc": {'name': 'pc', 'instance': 'pc', 'port': -1}}
 
         self.fetched_instances = instances
 
-        default_dic = {
-            "instance": "",
-            "name": "",
-            "host": "127.0.0.1",
-            "port": 0,
-            "API_KEY": "",
-            "loop_task": False,
-            "time_to_wait_loop1": 60,
-            "time_to_wait_loop2": 110,
-            "leave_game_loop": True,
-            "scheduler": False,
-            "schedules": {},
-            "emulator": emulator,
-        }
-        default_profile = {
-            "timing": [],
-            "enable_timing": False,
-            "enabled": False,
-            "kingdom": 0,
-            "city_x": 0,
-            "city_y": 0,
-            "radius": 30,
-            "First": "stone",
-            "Second": "food",
-            "Third": "gold",
-            "Fourth": "wood",
-            "Fifth": "food",
-            "Sixth": "food",
-            "Seventh": "food",
-            "First_level": 5,
-            "Second_level": 5,
-            "Third_level": 5,
-            "Fourth_level": 5,
-            "Fifth_level": 5,
-            "Sixth_level": 4,
-            "Seventh_level": 4,
-            "rss_custom_preset": False,
-            "auto_reconnect": True,
-            "auto_captcha": True,
-            "check_donation": False,
-            "gather_alliance_pit": False,
-            "use_enhanced_buff": False,
-            "gather_rss": False,
-            "buy_merchant": False,
-            "claim_daily_quests": False,
-            "collect_ressource": False,
-            "defeat_barbarians": False,
-            "barbarians_level": 25,
-            "barbarians_preset": {
-                "1": False,
-                "2": False,
-                "3": False,
-                "4": False,
-                "5": False,
-                "6": False,
-                "7": False,
-            },
-            "gather_gem": False,
-            "gem_check1": 60,
-            "gem_check2": 120,
-            "gem_experimental": False,
-            "recenter_feature": True,
-            "gather_gem_duration1": 60,
-            "gather_gem_duration2": 90,
-            "gather_gem_spiral_method": True,
-            "gather_gem_swipe_check": True,
-            "gather_gem_compare_march_duration": True,
-            "gather_gem_enable_node_limit": False,
-            "claim_mails": False,
-            "gather_gem_note_limit": 0,
-            "restart_game": False,
-            "switch_character": False,
-            "leave_game_switch_character": False,
-            "scout_fog": False,
-            "scout_duration1": 60,
-            "scout_duration2": 90,
-            "slow_mode": False,
-            "sleep_multiplicator": 1,
-            "auto_log_back": True,
-            "log_back1": 5,
-            "log_back2": 10,
-            "claim_daily_vip": False,
-            "claim_daily_chest": False,
-            "claim_campaign": False,
-            "start_fort": False,
-            "rally_type": "cav",
-            "rally_time": 10,
-            "rally_radius": 20,
-            "rally_count": 2,
-            "mauraudeurs_forts": False,
-            "heal_troop": False,
-            "healing_building_x": 980,
-            "healing_building_y": 267,
-            "healing_count": 1500,
-            "material_production": False,
-            "material_choice_1": "leather",
-            "material_choice_2": "leather",
-            "material_choice_3": "leather",
-            "material_choice_4": "leather",
-            "material_choice_5": "leather",
-            "alliance_help": False,
-            "train_troops": False,
-            "infantry_camp": [],
-            "cavalry_camp": [],
-            "archery_camp": [],
-            "siege_camp": [],
-            "hospital": [],
-            "scout_camp": [],
-            "infantry_enable": True,
-            "cavalry_enable": True,
-            "archery_enable": True,
-            "siege_enable": True,
-            "infantry_tier": "t1",
-            "cavalry_tier": "t1",
-            "archery_tier": "t1",
-            "siege_tier": "t1",
-            "city_transfer": [],
-            "transfer_enable": False,
-            "transfer_food": 0,
-            "transfer_wood": 0,
-            "transfer_stone": 0,
-            "transfer_gold": 0,
-            "upgrade_city": False,
-            "kill_marauders": False,
-            "kill_marauders_duration": [30, 90],
-            "rally_skip_back": False,
-            "gather_rss_method": False,
-            "fast_rss_transfer": False,
-            "city_hall_position": [],
-            "upgrade_city_method": "normal",
-            "academic_research": False,
-            "academy_position": [],
-            "buy_merchant_skip": False,
-            "expedition_shop_ethel": False,
-            "expedition_shop_items": False,
-        }
+        default_dic["emulator"] = emulator
 
         for i in range(1, 4):
             default_dic["schedules"][i] = copy.deepcopy(default_profile)
         default_dic["schedules"][1]["enabled"] = True
-
-        default_worker_settings = {
-            "loop_task": True,
-            "waiting_cooldown": [60, 90],
-            "close_emulator": True
-        }
 
         for i, instance in enumerate(instances):
             if str(i) not in data["workers"][emulator]:
