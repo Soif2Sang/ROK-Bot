@@ -3,7 +3,7 @@ import traceback
 # from utils.easyOcr import Reader
 from collections.abc import Callable
 from datetime import datetime
-from random import randint, random, uniform
+from random import randint, random, shuffle, uniform
 from time import sleep
 
 import cv2
@@ -140,12 +140,30 @@ class GatherGem(Task):
                 self.better_sleep((1.825, 2.495))
                 self.select_lineup_color(color=color)
                 default_image = self.adb.get_cv2_img()
-                for i in range(7):  # change if you have 6-7 troops
-                    default_color = default_image[260 + i * 50, 1100]
-                    self.click(uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50))
+                #
+                # for i in range(7):  # change if you have 6-7 troops
+                #     default_color = default_image[260 + i * 50, 1100]
+                #
+                #     self.click(uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50))
+                #     self.better_sleep((1, 2))
+                #     new_image = self.adb.get_cv2_img()
+                #     if (default_color != new_image[260 + i * 50, 1100]).all():
+                #         co = self.find_img(target="troops_march_button")
+                #         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
+                #         self.better_sleep((0.5, 0.7))
+                #         self.print("New Troop sent !", "green")
+                #         self.nodes_gathered += 1
+                #         return True
+
+
+                default_color_boxes = [[default_image[260 + i * 50, 1100], 260 + i * 50, i] for i in range(7)]
+                shuffle(default_color_boxes)
+
+                for default_color in default_color_boxes:
+                    self.click(uniform(1096, 1118), default_color[1] + uniform(0, 10))
                     self.better_sleep((1, 2))
                     new_image = self.adb.get_cv2_img()
-                    if (default_color != new_image[260 + i * 50, 1100]).all():
+                    if (default_color[0] != new_image[default_color[1], 1100]).all():
                         co = self.find_img(target="troops_march_button")
                         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
                         self.better_sleep((0.5, 0.7))
@@ -224,7 +242,7 @@ class GatherGem(Task):
                     # cv2.imwrite("test.png",cropped_image)
                     string = self.extract_text(img=cropped_image, allowlist="1234567890:")
                     # string = string.replace(":","")
-                    self.debug(string)
+                    # self.debug(string)
 
                     pattern = r"\d\d:\d\d:\d\d"  # Regular expression pattern
 
@@ -251,7 +269,7 @@ class GatherGem(Task):
 
             fastest = timer[0][1]
             # print(timer)
-            self.debug(f"fastest is {timer[0][0]}")
+            # self.debug(f"fastest is {timer[0][0]}")
             self.click(x=fastest[0], y=fastest[1])
             self.better_sleep((0.9, 1.3))
             fastest = timer[0][2]
@@ -390,6 +408,11 @@ class GatherGem(Task):
         # for second_string in ["left", "mid", "right"]:
         #     for first_string in ["up", "mid", "down"]:
         #         icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
+
+
+        if random() > 0.93:
+            self.random_interaction(zoomed_in=False)
+
         for i in range(14):
             icons.append(f"GemDeposit{i}")
         for icon in icons:
@@ -535,6 +558,10 @@ class GatherGem(Task):
 
                     if self.data[str(self.sel)]["schedules"][self.current_profile].get("alliance_help"):
                         AllianceHelp(self).run()
+
+                if random() > 0.8:
+                    self.random_interaction(zoomed_in=True)
+
             # self.better_sleep((1, 1.895))
             self.close_windows()
             self.check_captcha()

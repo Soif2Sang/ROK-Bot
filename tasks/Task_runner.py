@@ -1,14 +1,13 @@
 import subprocess
 import traceback
 from datetime import timedelta
-from random import randint, shuffle, uniform
+from random import choice, randint, shuffle, uniform
 from time import sleep, time
 
 import flet as ft
 import win32gui
 from PIL import Image
 
-from utils.android_debug_bridge import DeviceNotFoundException
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
@@ -35,6 +34,7 @@ from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
+from utils.android_debug_bridge import DeviceNotFoundException
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.functions import (current_time, get_dic_instances,
@@ -169,7 +169,10 @@ class TaskRunner(Task):
                         continue
                 if func.task_name() in ["GatherRss", "GatherGem"]:
                     self.check_captcha()
+
+                func.random_interaction = self.random_interaction
                 func.run()
+
                 if func.task_name() in ["GatherRss", "GatherGem"]:
                     self.check_captcha()
             except Exception as e:
@@ -926,6 +929,74 @@ class TaskRunner(Task):
         cmd = f"taskkill /PID {self.pid} /F"
         print(f"[ {current_time()} ] [ {self.name} ] Executing {cmd}")
         subprocess.Popen(cmd)
+
+
+    def open_chat_and_leave(self):
+        self.click(147, 680)
+        self.better_sleep((4, 7))
+
+    def open_random_rss_type(self):
+        cords = []
+
+        cords.append([715, 12])
+        cords.append([850, 12])
+        cords.append([970, 12])
+        cords.append([1100, 12])
+
+        cord = choice(cords)
+
+        self.click(cord[0], cord[1])
+        self.better_sleep((1.3, 4))
+
+    def open_any_rankings(self):
+        self.enter_profile()
+        self.better_sleep((2, 5))
+        self.click(400 + uniform(-10, 10), 600 + uniform(-10, 10))
+        self.better_sleep((2, 5))
+
+        cords = [[326, 212], [660, 212], [980, 212], [326, 420], [660, 420], [980, 420], [326, 600], [660, 600], [980, 600]]
+
+        cord = choice(cords)
+
+        self.click(cord[0], cord[1])
+        self.better_sleep((4, 9))
+
+    @get_name
+    def random_interaction(self, zoomed_in=False):
+        tasks = self.get_available_task(self.current_profile)
+
+
+        def open_menu_and_go_canyon():
+            self.open_menu()
+            self.open_campaign()
+            self.open_sunset_canyon()
+
+        def open_inventory_and_go_in_any_tab():
+            self.open_menu()
+            self.open_inventory()
+            self.open_any_inventory_tab()
+
+        def open_commander_list_and_click_on_heros():
+            self.open_menu()
+            self.open_commander_tab()
+            self.click_any_commander_in_list()
+
+        interactions = [self.open_chat_and_leave, self.enter_profile, self.open_any_rankings, open_menu_and_go_canyon, open_inventory_and_go_in_any_tab, open_commander_list_and_click_on_heros]
+
+        if zoomed_in:
+            interactions.append(self.open_random_rss_type)
+
+            if any(isinstance(task, AllianceDonation) for task in tasks):
+                interactions.append(AllianceDonation(self).run)
+
+        if any(isinstance(task, ClaimMail) for task in tasks):
+            interactions.append(ClaimMail(self).run)
+
+        func = choice(interactions)
+
+        func()
+        self.better_sleep((1.2, 2.7))
+        self.close_windows()
 
     @get_name
     def run_update(self):
