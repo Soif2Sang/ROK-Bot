@@ -17,13 +17,14 @@ try:
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
     from utils.Components.PaymentMethods import payment_methods
-    from utils.constants import TOAST_HISTORY, VERSION_NUMBER, VERSION_TYPE, BOT_NAME
+    from utils.constants import (BOT_NAME, TOAST_HISTORY, VERSION_NUMBER,
+                                 VERSION_TYPE)
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
     from utils.functions import (FileSingleton, get_dic_instances,
                                  get_dic_instances_ld, getchecksum)
-    from utils.singletons import EmulatorSingleton
+    from utils.singletons import ApiSingleton, EmulatorSingleton
     from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
@@ -55,7 +56,11 @@ if "API_KEY" not in data:
     fileSingleton.write_data(data)
 
 if "workers" not in data:
-    data["workers"] = {"ld": {}, "bluestacks": {}}
+    data["workers"] = {"ld": {}, "bluestacks": {}, "pc": {}}
+    fileSingleton.write_data(data)
+
+if "pc" not in data["workers"]:
+    data["workers"]["pc"] = {}
     fileSingleton.write_data(data)
 
 if "interface" not in data:
@@ -254,6 +259,9 @@ def emulator_choice(page: ft.Page, params, basket):
 
             cmd = f"{path_file['LD-Console'].replace('ldconsole', 'adb')} start-server"
             subprocess.Popen(cmd)
+        elif "pc" in e.control.data:
+            EmulatorSingleton().setEmulator("pc")
+
 
         Main(page)
 
@@ -266,9 +274,10 @@ def emulator_choice(page: ft.Page, params, basket):
                         controls=[
                             AnimatedCard("bluestacks_logo.png", go_main),
                             AnimatedCard("ld_logo.png", go_main),
+                            # AnimatedCard("pc.ico", go_main, "tier4") ,
                         ],
                         top=100,
-                        left=240,
+                        left=120,
                     ),
                 ]
             )

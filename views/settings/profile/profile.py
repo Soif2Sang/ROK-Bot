@@ -2,6 +2,7 @@ import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.flet_translations import translate
+from utils.singletons import EmulatorSingleton
 from views.settings.page_settings import PageSettings
 from views.settings.profile.page_academy_research import PageAcademyResearch
 from views.settings.profile.page_barbs import PageBarbs
@@ -38,40 +39,43 @@ class SettingContainer(PageSettings):
         self.data = self.FileSingleton.get_data()
 
         self.create_advanced_switch("gather_gem", "Gem Gathering", PageGem)
-        self.create_advanced_switch("gather_rss", "Resources Gathering", PageRss)
-        self.create_normal_switch("collect_ressource", "Collect City Resources")
-        self.create_normal_switch("use_enhanced_buff", "Apply Enhanced Buff")
-        self.create_normal_switch("buy_merchant", "Buy Mysterious Merchant")
-        self.create_normal_switch("check_donation", "Donate to Alliance")
-        self.create_normal_switch("gather_alliance_pit", "Alliance Pit Gathering")
 
-        # ##
-        self.create_advanced_switch("material_production", "Produce Materials", PageMaterials)
-        self.create_advanced_switch("train_troops", "Troops Training", PageTraining)
-        self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
-        self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
-        self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
-        self.create_advanced_switch("claim_campaign", "Claim Expedition Rewards", PageExpedition)
-        self.create_normal_switch("claim_mails", "Claim Mails")
-        self.create_normal_switch("alliance_help", "Help Alliance")
-        #
-        self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", PageBarbs)
-        self.create_advanced_switch("start_fort", "Start Fort Rally", PageRally)
-        self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
-        self.create_advanced_switch("scout_fog", "Explore Fog", PageFog)
-        self.create_advanced_switch("upgrade_city", "Upgrade City", PageUpgradeCity)
-        self.create_advanced_switch("academic_research", "Academic Research", PageAcademyResearch)
+        if EmulatorSingleton().getEmulator() != "pc":
+            self.create_advanced_switch("gather_rss", "Resources Gathering", PageRss)
+            self.create_normal_switch("collect_ressource", "Collect City Resources")
+            self.create_normal_switch("use_enhanced_buff", "Apply Enhanced Buff")
+            self.create_normal_switch("buy_merchant", "Buy Mysterious Merchant")
+            self.create_normal_switch("check_donation", "Donate to Alliance")
+            self.create_normal_switch("gather_alliance_pit", "Alliance Pit Gathering")
 
-        self.create_advanced_switch("heal_troop", "Troops Healing", PageHeal)
-        self.create_advanced_switch("transfer_enable", "Transfer Resources", PageTransfer)
-        #
-        self.content.controls.append(ft.Divider())
-        #
-        self.create_normal_switch("auto_reconnect", "Reconnect on Network Issues")
-        self.create_advanced_switch("auto_log_back", "Log Back on Device Switch", PageLogback)
-        self.create_normal_switch("auto_captcha", "Solve Captcha")
+            # ##
+            self.create_advanced_switch("material_production", "Produce Materials", PageMaterials)
+            self.create_advanced_switch("train_troops", "Troops Training", PageTraining)
+            self.create_normal_switch("claim_daily_vip", "Claim VIP Chests")
+            self.create_normal_switch("claim_daily_chest", "Claim Daily Chests")
+            self.create_normal_switch("claim_daily_quests", "Claim Daily Quests")
+            self.create_advanced_switch("claim_campaign", "Claim Expedition Rewards", PageExpedition)
+            self.create_normal_switch("claim_mails", "Claim Mails")
+            self.create_normal_switch("alliance_help", "Help Alliance")
+            #
+            self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", PageBarbs)
+            self.create_advanced_switch("start_fort", "Start Fort Rally", PageRally)
+            self.create_advanced_switch("kill_marauders", "Kill Marauders", PageMarauders)
+            self.create_advanced_switch("scout_fog", "Explore Fog", PageFog)
+            self.create_advanced_switch("upgrade_city", "Upgrade City", PageUpgradeCity)
+            self.create_advanced_switch("academic_research", "Academic Research", PageAcademyResearch)
+
+            self.create_advanced_switch("heal_troop", "Troops Healing", PageHeal)
+            self.create_advanced_switch("transfer_enable", "Transfer Resources", PageTransfer)
+            #
+            self.content.controls.append(ft.Divider())
+            #
+            self.create_normal_switch("auto_reconnect", "Reconnect on Network Issues")
+            self.create_advanced_switch("auto_log_back", "Log Back on Device Switch", PageLogback)
+            self.create_normal_switch("auto_captcha", "Solve Captcha")
+            self.create_advanced_switch("switch_character", "Switch Characters", PageCharacter)
+
         self.create_slow_mode()
-        self.create_advanced_switch("switch_character", "Switch Characters", PageCharacter)
 
     def submit(self, e, keyword, method):
         self.data = self.FileSingleton.get_data()

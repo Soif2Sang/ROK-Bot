@@ -9,7 +9,7 @@ from views.tiles.handler.logging_handler import Logger
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
-class Frame(ft.Tabs):
+class InstanceTabs(ft.Tabs):
     def __init__(self, page, number: str, **kwargs):
         super().__init__(**kwargs)
         self.number = number
