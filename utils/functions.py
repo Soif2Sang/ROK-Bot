@@ -55,7 +55,7 @@ def string_to_co(string):
     matches_x = re.findall(pattern_x, string)
     matches_y = re.findall(pattern_y, string)
 
-    return [(int(pair[0]) + 441, int(pair[1]) + 101) for pair in list(zip(matches_x, matches_y))]
+    return [(int(pair[0]), int(pair[1])) for pair in list(zip(matches_x, matches_y))]
 
 
 def string_to_co_slide(string):
