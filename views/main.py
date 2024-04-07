@@ -3,9 +3,10 @@ import flet as ft
 from utils.constants import TOAST_HISTORY
 from utils.flet_toast.core import Position
 from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
+from utils.singletons import EmulatorSingleton
 # from views.tiles.handler.tile_handler_worker import TileHandlerWorker
 from utils.supabase_auth import SupabaseClient
-from views.tiles.handler.tile_handler import TileHandler
+from views.tiles.handler.tile_handler_pc import TileHandlerPC
 from views.tiles.handler.tile_handler_worker import TileHandlerWorker
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
@@ -24,9 +25,10 @@ def Main(page: ft.Page, days=950):
     page.theme = theme
 
     # if page.UPGRADE:
-    page.tile_manager = TileHandlerWorker(page)
-    # else:
-    #     page.tile_manager = TileHandler(page)
+    if EmulatorSingleton().getEmulator() != "pc":
+        page.tile_manager = TileHandlerWorker(page)
+    else:
+        page.tile_manager = TileHandlerPC(page)
 
     page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
 

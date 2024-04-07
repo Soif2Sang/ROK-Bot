@@ -6,33 +6,27 @@ import traceback
 from time import sleep
 
 import flet as ft
-from flet_route import Routing, path, Basket, Params
-
+from flet_route import Basket, Params, Routing, path
 
 try:
+    from utils.auth import selfApi
     from utils.Components.AnimatedCard import AnimatedCard
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
-    from utils.auth import selfApi
-    from utils.constants import (
-        BREZILIAN,
-        toasts_history,
-        global_name,
-        ownerid,
-        global_secret,
-        brezilian_secret,
-        brezilian_name,
-    )
+    from utils.constants import (BOT_NAME, TOAST_HISTORY, VERSION_TYPE,
+                                 VERSION_TYPE_name, VERSION_TYPE_secret,
+                                 global_name, global_secret, ownerid)
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastsFlexible
-    from utils.functions import FileSingleton, getchecksum, get_dic_instances, get_dic_instances_ld
-    from utils.singletons import EmulatorSingleton, LinkSingleton
+    from utils.functions import (FileSingleton, get_dic_instances,
+                                 get_dic_instances_ld, getchecksum)
+    from utils.singletons import EmulatorSingleton
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives
-    from views.login.login import LoginUI
+    from views.group_choice import EmulatorGroup
+    from views.login.login_old import LoginUI
     from views.main import Main
     from views.profile_settings import viewProfileSettings
-    from views.group_choice import EmulatorGroup
 except Exception as e:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -46,9 +40,9 @@ except Exception as e:
         page.update()
 
     keyauthapp = selfApi(
-        name=global_name if not BREZILIAN else brezilian_name,
+        name=global_name if VERSION_TYPE == "global" else VERSION_TYPE_name,
         ownerid=ownerid,
-        secret=global_secret if not BREZILIAN else brezilian_secret,
+        secret=global_secret if VERSION_TYPE == "global" else VERSION_TYPE_secret,
         version="2.0",
         hash_to_check=getchecksum(),
     )
@@ -65,6 +59,7 @@ if "API_KEY" not in data:
     data["API_KEY"] = ""
     fileSingleton.write_data(data)
 
+
 def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
@@ -77,9 +72,9 @@ def main(page: ft.Page):
         ready = False
         try:
             page.keyauthapp = selfApi(
-                name=global_name if not BREZILIAN else brezilian_name,
+                name=global_name if VERSION_TYPE == "global" else VERSION_TYPE_name,
                 ownerid=ownerid,
-                secret=global_secret if not BREZILIAN else brezilian_secret,
+                secret=global_secret if VERSION_TYPE == "global" else VERSION_TYPE_secret,
                 version="2.0",
                 hash_to_check=getchecksum(),
             )
@@ -112,7 +107,7 @@ def main(page: ft.Page):
             auto_close=None,
             trigger=None,
             width=360,
-            set_history=toasts_history,
+            set_history=TOAST_HISTORY,
             position=Position.TOP_RIGHT,
             bgcolor_title=bgcolor_title,
         )
@@ -227,6 +222,7 @@ def emulator_choice(page: ft.Page, params: Params, basket: Basket):
                         controls=[
                             AnimatedCard("bluestacks_logo.png", go_main),
                             AnimatedCard("ld_logo.png", go_main),
+                            AnimatedCard("ld_logo.png", go_main),
                         ],
                         top=100,
                         left=240,
@@ -244,7 +240,7 @@ def login(page: ft.Page, params, basket):
     page.window_width = 1920 / 2
     page.window_height = 1080 / 2
     page.window_resizable = False
-    page.title = "RokNet"
+    page.title = BOT_NAME
 
     return ft.View(
         route="/login",

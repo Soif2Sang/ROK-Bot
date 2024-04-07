@@ -1,30 +1,11 @@
-import datetime
 import json
-import subprocess
-from random import randint, uniform
-from threading import Thread
 from time import time
 
 import cv2
-import flet as ft
-import numpy as np
-import win32api
-import win32con
-import win32gui
-from MTM import matchTemplates
-
-from Task_claim_campaign import ClaimCampaign
-from android_debug_bridge_bluestacks import AdbBluestacks
-from auth import selfApi
-from constants import BREZILIAN
-from functions import getchecksum, increment_captcha_requests
-from twocaptcha import TwoCaptcha
-
-import taskscod.COD_Task_daily_vip
+from numpy import where
+from Task_gather_gem_spiral import GatherGemSpiral
 
 # from tasks.Task_title import Title
-from tasks import Task_gather_rss_default
-
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 # from taskscod.COD_Task_daily_chest import DailyChest
 # from taskscod.COD_Task_gather_rss import GatherRss
@@ -33,6 +14,7 @@ from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_pit import AlliancePit
 from tasks.Task_buy_merchant import BuyMerchant
+from tasks.Task_claim_campaign import ClaimCampaign
 from tasks.Task_claim_daily_quests import DailyQuests
 from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_daily_chest2 import DailyChest2
@@ -47,7 +29,8 @@ from tasks.Task_runner import TaskRunner
 from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.singletons import FileSingleton, ApiSingleton
+from utils.resources import ImageSingleton
+from utils.singletons import FileSingleton
 
 # from utils.android_debug_bridge import *
 DEBUG = True
@@ -58,7 +41,9 @@ file = FileSingleton()
 
 data = file.get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
+from pytesseract import pytesseract
 
+pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 class Page:
     def __init__(self):
@@ -90,10 +75,10 @@ class Bot:
     def __init__(self, adb):
         self.adb: AdbLd = adb
         self.device = adb.get_device()
-        self.main_task = Task(Frame(adb.number))  # tasksGEM / tasks
+        self.main_task = Task(Frame(adb.instance))  # tasksGEM / tasks
         self.main_task.adb = adb
         # self.task = Tasks(self.adb)
-        self.main_task.set_sel(str(adb.number))
+        self.main_task.set_sel(str(adb.instance))
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.merchant = BuyMerchant(self.main_task)
@@ -122,7 +107,7 @@ class Bot:
         # self.code_training = COD_Task_training.TroopTraining(self.main_task)
         # self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
         self.maraudeurs = Marauders(self.main_task)
-        self.gem = GatherGem(self.main_task)
+        self.gem = GatherGemSpiral(self.main_task)
         # self.title = Title(self.main_task)
         # self.rkp = Rkp(self.adb)
         # self.rkp.set_sel('4')
@@ -161,7 +146,7 @@ class lightTile:
         super().__init__(**kwargs)
 
         with open("user_settings.json") as config_file:
-            data = json.load(config_file)
+            json.load(config_file)
 
         self.started = True
         self.stopped = False
@@ -202,89 +187,108 @@ def perf(function):
     print(f"It took {time() - start}")
     return a
 
+def find_multiple_img(target, source, confidence=0.9):
+    img_to_find = ImageSingleton().get_file_name(target)
+
+    result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
+    needle_w = img_to_find.shape[1]
+    needle_h = img_to_find.shape[0]
+
+    min_val, max_val, min_loc, max_loc = minMaxLoc(result)
+    min_thresh = confidence
+    # print(min_thresh>confidence)
+    location = where(result >= min_thresh)
+    location = list(zip(*location[::-1]))
+    # print(location)
+
+    rectangles = []
+    for loc in location:
+        rect = [int(loc[0]), int(loc[1]), needle_w, needle_h]
+        rectangles.append(rect)
+    # print(rectangles)
+
+    localisations = []
+
+    for i in range(len(rectangles)):
+        if target == "back_icon":
+            # print(file_name)
+            # print(rectangles[i][0])
+            # print(rectangles[i][0]+1000)
+            localisations.append((rectangles[i][0] + 1000, rectangles[i][1]))
+        else:
+            localisations.append((rectangles[i][0], rectangles[i][1]))
+    element_to_delete = []
+    for i in range(len(localisations) - 1):
+        if (
+                (localisations[i][0] + 1 == localisations[i + 1][0])
+                or (localisations[i][0] - 1 == localisations[i + 1][0])
+                or (localisations[i][0] == localisations[i + 1][0])
+        ) and (
+                (localisations[i][1] + 1 == localisations[i + 1][1])
+                or (localisations[i][1] - 1 == localisations[i + 1][1])
+                or (localisations[i][1] == localisations[i + 1][1])
+        ):
+            element_to_delete.append(localisations[i])
+
+    # print(element_to_delete)
+    for element in element_to_delete:
+        localisations.remove(element)
+    return localisations
+
+
+from cv2 import (COLOR_BGR2GRAY, THRESH_BINARY, THRESH_OTSU, TM_CCOEFF_NORMED,
+                 bitwise_not, cvtColor, destroyAllWindows, imread, imshow,
+                 matchTemplate, minMaxLoc, threshold, waitKey)
 
 if __name__ == "__main__":
-    # upgrade_all()
 
-    # print(TwoCaptcha("9c5059a65dd40980bd2fc113f616060e").balance())
-    from ppadb.client import Client as PPADBClient
-    bot = get_bot("3")
-    print(bot.task.check_chest())
+
+    bo = get_bot("0")
+    bo.hunt.select_lineup_color(color="red")
+    # bo.gem.run()
     exit()
-    keyauthapp = selfApi(
-        name="Rokbd" if not BREZILIAN else "RokbdBR",
-        ownerid="7oofxdj8uH",
-        secret="a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
-        if not BREZILIAN
-        else "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6",
-        version="2.0",
-        hash_to_check=getchecksum(),
-    )
 
-    keyauthapp.login("maxence", "fe")
-    keys = json.loads(keyauthapp.var("keys"))
-    print(keys)
-    ApiSingleton().setApiKey(keys["2captcha"])
-    ApiSingleton().setSupabasePublicKey(keys["supabase_public_key"])
-    ApiSingleton().setSupabaseUrl(keys["supabase_url"])
+    screen = imread("./screen_city_hall.png")
 
-    bot = get_bot("2")
-    bot.task.solve_captcha()
-    exit()
-    bot.task.handle_captcha_limit("maxou")
-    # print(id(bot.task.fileSingleton))
-    #
-    exit()
-    # bot.expedition.run()
-    # bot.vip.run()
+    x, y = data["0"]["schedules"]["1"].get("city_hall_position")
+    label_y = max(0, y - 200)
+    label_x_left = max(0, x - 100)
+    label_x_right = min(720, x + 100)
+    roi = screen[label_y:y, label_x_left:label_x_right]
 
-    for i in range(15):
-        print(bot.task.in_city())
-    # self.find_img(
-    #     target="checkpoint_star",
-    #     source=self.adb.get_cv2_img()[:60, 380:600],
-    #     confidence=0.97,
-    # )
-    print(bot.task.find_img(target="hammer"))
-    exit()
-    # adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
-    # cmd = f"{adb_path} connect 127.0.0.1-5564"
-    # subprocess.Popen(cmd)
-    # host, port = "127.0.0.1", 5037
-    # client = PPADBClient(host="127.0.0.1", port=5037)
-    # print()
-    # d = client.device("emulator-5554")
-    # print(d)
-    # print(d.screencap())
+    # Convert the ROI to grayscale
+    gray = cvtColor(roi, COLOR_BGR2GRAY)
 
-    def check_emulator_status(emulator_id):
-        path = fS.get_path()
-        cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {emulator_id} shell getprop sys.boot_completed"
-        command = f"adb "
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        print(result.stdout)
-        return result.stdout.strip() == "1"
+    # Threshold the grayscale image
+    _, thresh = threshold(gray, 0, 255, THRESH_BINARY | THRESH_OTSU)
 
-    AdbLd("1", "emulator", 5556).wait_boot_complete()
+    # Invert the thresholded image
+    thresh = bitwise_not(thresh)
 
-    while True:
-        print(check_emulator_status("emulator-5556"))
-    exit()
-    client = PPADBClient(host="127.0.0.1", port=5037)
-    devices = client.devices()
+    # Define the list of Tesseract configurations to test
+    configurations = [
+        "--oem 1 --psm 3",
+        "--oem 1 --psm 4",
+        "--oem 1 --psm 6",
+        "--oem 3 --psm 3",
+        "--oem 3 --psm 4",
+        "--oem 3 --psm 6",
+        "--oem 3 --psm 10"
+    ]
 
-    start = time()
-    print("Start", time() - start)
-    a = AdbLd("5")
-    print(a.wait_boot_complete(30, 0))
-    print("boot complete", time() - start)
-    # bot = get_bot("3")
-    # bot.rss.run()
-    # bot.alliance.run()
-    # print(bot.task.in_city())
-    # bot.rss.run()
-    # file = cv2.imread('screenshot_test.png')
-    # print(bot.task.find_img(target='checkpoint_star',source=file[:70, 200:600]))
-    # bot.vip.run()
-    # bot.rss.run()
-    # bot.task.close_windows()
+    # Process the ROI with each configuration
+    for config in configurations:
+        print(f"Configuration: {config}")
+
+        # Perform OCR with Tesseract
+        text = pytesseract.image_to_string(thresh, config=config)
+        print("Extracted text:")
+        print(text)
+        print()
+
+        # Display the ROI with OpenCV (for visualization purposes)
+        imshow('ROI', thresh)
+        waitKey(0)  # Wait for any key press to close the window
+
+    # Close all OpenCV windows
+    destroyAllWindows()

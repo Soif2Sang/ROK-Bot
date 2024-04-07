@@ -6,10 +6,13 @@ import flet as ft
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
+from tasks.TaskPC import Task as TaskPC
+from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
 from utils.functions import (FileSingleton, get_all_vms_running,
                              get_all_vms_running_ld)
 from utils.singletons import EmulatorSingleton
-from views.tiles.handler.config_handler import Frame
+from views.tiles.handler.config_handler import InstanceTabs
+from views.tiles.tile_slave import ConfigOverrider
 
 
 class Tile(ft.Container):
@@ -23,8 +26,12 @@ class Tile(ft.Container):
         self.paused = False
         self.stopped = False
 
-        self.main_task = Task(self)
-        self.runner = TaskRunner(self.main_task, self)
+        if EmulatorSingleton().getEmulator() == "pc":
+            self.main_task = TaskPC(self)
+            self.runner = TaskPCRunner(self.main_task, self)
+        else:
+            self.main_task = Task(self)
+            self.runner = TaskRunner(self.main_task, self)
 
         if self.initial_page.UPGRADE:
             self.tasks_process = threading.Thread(target=self.runner.run_update)
@@ -39,7 +46,7 @@ class Tile(ft.Container):
         self.button_start = ft.IconButton(icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start)
         self.button_stop = ft.IconButton(icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop)
 
-        self.config_overrider = ConfigOverrider(self.initial_page, number)
+        # self.config_overrider = ConfigOverrider(self.initial_page, number)
         self.text_name = ft.Text(value=data[str(number)]["name"], width=80)
         self.text_status = ft.Text(value="", width=120)
 
@@ -59,7 +66,7 @@ class Tile(ft.Container):
                         self.text_status,
                     ]
                 ),
-                self.config_overrider,
+                # self.config_overrider,
             ],
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -81,7 +88,7 @@ class Tile(ft.Container):
             self.initial_page.body.controls.pop()
 
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
@@ -127,10 +134,13 @@ class Tile(ft.Container):
 
     def start_tasks(self):
         if not self.tasks_process.is_alive():
-            if self.initial_page.UPGRADE:
-                self.tasks_process = threading.Thread(target=self.runner.run_update)
-            else:
+            if EmulatorSingleton().getEmulator() == "pc":
                 self.tasks_process = threading.Thread(target=self.runner.run)
+            else:
+                if self.initial_page.UPGRADE:
+                    self.tasks_process = threading.Thread(target=self.runner.run_update)
+                else:
+                    self.tasks_process = threading.Thread(target=self.runner.run)
             self.tasks_process.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
@@ -146,12 +156,12 @@ class Tile(ft.Container):
 
     def add_text(self, phrase: str, color=None):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_divider()
