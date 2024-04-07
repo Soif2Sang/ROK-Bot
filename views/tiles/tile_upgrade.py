@@ -5,7 +5,7 @@ import flet as ft
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from utils.functions import FileSingleton
-from views.tiles.handler.config_handler import Frame
+from views.tiles.handler.config_handler import InstanceTabs
 from views.tiles.tile_slave import ConfigOverrider
 
 
@@ -93,7 +93,7 @@ class TileUpgrade(ft.Container):
             self.initial_page.body.controls.pop()
 
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
@@ -111,13 +111,13 @@ class TileUpgrade(ft.Container):
 
     def add_text(self, phrase: str, color=None):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_divider()
 

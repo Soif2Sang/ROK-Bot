@@ -2,12 +2,14 @@ import threading
 
 import flet as ft
 
-from utils.flet_translations import translate
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
+from tasks.TaskPC import Task as TaskPC
+from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
+from utils.flet_translations import translate
 from utils.functions import FileSingleton
 from utils.singletons import EmulatorSingleton
-from views.tiles.handler.config_handler import Frame
+from views.tiles.handler.config_handler import InstanceTabs
 from views.tiles.tile_slave import TileSlave
 
 
@@ -21,8 +23,13 @@ class TileWorker(ft.ExpansionTile):
         self.paused = False
         self.stopped = False
 
-        self.main_task = Task(self)
-        self.runner = TaskRunner(self.main_task, self)
+        if EmulatorSingleton().getEmulator() == "pc":
+            self.main_task = TaskPC(self)
+            self.runner = TaskPCRunner(self.main_task, self)
+        else:
+            self.main_task = Task(self)
+            self.runner = TaskRunner(self.main_task, self)
+
         self.runner.worker = self
         self.tasks_process = threading.Thread(target=self.runner.run4)
 
@@ -133,7 +140,7 @@ class TileWorker(ft.ExpansionTile):
             self.initial_page.body.controls.pop()
 
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
@@ -148,13 +155,13 @@ class TileWorker(ft.ExpansionTile):
 
     def add_text(self, phrase: str, color=None):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_divider()
 

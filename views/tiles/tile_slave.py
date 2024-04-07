@@ -3,7 +3,7 @@ import copy
 import flet as ft
 
 from utils.functions import FileSingleton
-from views.tiles.handler.config_handler import Frame
+from views.tiles.handler.config_handler import InstanceTabs
 
 # from views.tiles.handler.config_handler import Frame
 
@@ -105,7 +105,7 @@ class TileSlave(ft.Container):
             self.initial_page.body.controls.pop()
 
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.body.controls.append(self.initial_page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
@@ -120,12 +120,12 @@ class TileSlave(ft.Container):
 
     def add_text(self, phrase: str, color=None):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
         if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = Frame(self.initial_page, self.number)
+            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
 
         self.initial_page.frames[self.number].add_divider()
