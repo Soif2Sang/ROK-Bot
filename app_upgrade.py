@@ -26,7 +26,7 @@ try:
                                  get_dic_instances_ld, getchecksum)
     from utils.singletons import ApiSingleton, EmulatorSingleton
     from utils.supabase_auth import SupabaseClient
-    from views.city_layout import viewCityLayout
+    from views.city_layout import viewCityLayout, viewGatherGemMap
     from views.config_path import find_file_in_all_drives
     from views.login.login import LoginScreen
     from views.main import Main
@@ -111,6 +111,11 @@ def main(page: ft.Page):
             url=f"/city-layout/:instance_index/:profile_index",
             clear=True,
             view=viewCityLayout,
+        ),
+        path(
+            url=f"/gather-gems/:instance_index/:profile_index",
+            clear=True,
+            view=viewGatherGemMap,
         ),
         path(
             url=f"/profile/:instance_index/:profile_index/settings",

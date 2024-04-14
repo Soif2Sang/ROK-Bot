@@ -8,6 +8,7 @@ import flet as ft
 import win32gui
 from PIL import Image
 
+from tasks.Task_gather_gem_map import GatherGemMap
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp

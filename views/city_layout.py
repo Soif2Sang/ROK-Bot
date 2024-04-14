@@ -1,8 +1,11 @@
 import base64
+import io
 import traceback
 
+import cv2
 import flet as ft
 import flet_route
+from PIL import Image
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
@@ -53,6 +56,43 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
             ),
             ft.Text(value="Click on the building button you wanna set, then click in the center of the building."),
             CityPlacement(image_byte, params.instance_index, params.profile_index),
+        ],
+    )
+
+def viewGatherGemMap(page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket) -> ft.View:
+    page.window_width = 900
+    page.window_height = 500
+    emulator_choice = EmulatorSingleton().getEmulator()
+
+    if emulator_choice == "bluestacks":
+        adb = AdbBluestacks(str(params.instance_index))
+    else:
+        adb = AdbLd(str(params.instance_index))
+
+    image = adb.get_cv2_img()
+    image = image[:146, 1072:]
+
+    cv2.imwrite("assets/map.png", image)
+
+    def returnHome():
+        page.window_width = 450
+        page.window_height = 700
+        page.go("/")
+
+    return ft.View(
+        f"/gather-gems/{params.instance_index}/{params.profile_index}",
+        controls=[
+            ft.Container(
+                bgcolor=ft.colors.SURFACE_VARIANT,
+                content=ft.Row(
+                    controls=[
+                        ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: returnHome()),
+                        ft.Text(value="Go back"),
+                    ]
+                ),
+            ),
+            ft.Text(value="Click anywhere on the map to set the center of the searching area."),
+            MapContainer(image, params.instance_index, params.profile_index),
         ],
     )
 
@@ -163,6 +203,63 @@ class CityPlacement(ft.Container):
                 opacity=0.7,
             )
         )
+        self.page.update()
+
+    def remove_self(self, e):
+        self.main_container.controls.remove(e.control)
+        print(e.control)
+        print(e.control.SUPABASE_KEY)
+        try:
+            self.data = self.FileSingleton.get_data()
+            print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.SUPABASE_KEY])
+
+            self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.SUPABASE_KEY] = []
+
+        except Exception:
+            traceback.print_exc()
+            return
+        print(self.data[str(self.instance)]["schedules"][str(self.profile)][e.control.SUPABASE_KEY])
+
+        self.FileSingleton.write_data(self.data)
+        self.page.update()
+
+class MapContainer(ft.Container):
+    def __init__(self, image64, instance, profile, **kwargs):
+        super().__init__(**kwargs)
+        self.instance = instance
+        self.profile = profile
+        self.current_build = None
+        self.FileSingleton = FileSingleton()
+        self.data = self.FileSingleton.get_data()
+
+        self.main_container = ft.Stack(
+            controls=[
+                ft.Container(
+                    image_src="map.png",
+                    height=146*2,
+                    width=208*2,
+                    image_fit=ft.ImageFit.FILL,
+                    on_click=self.on_tap_update,
+                )
+            ]
+        )
+
+        self.content = ft.Row(controls=[self.main_container])
+
+    def on_tap_update(self, e: ft.TapEvent):
+
+        left, top = e.local_x, e.local_y
+        print(left, top)
+
+        try:
+            self.data = self.FileSingleton.get_data()
+            self.data[str(self.instance)]["schedules"][str(self.profile)]['gather_gem_center_pos'] = (left/2+1072, top/2)
+            self.FileSingleton.write_data(self.data)
+        except Exception:
+            traceback.print_exc()
+            return
+
+        self.page.generate_toast("Success", "Center of the searching area set!", ft.icons.INFO, ft.colors.GREEN_300)
         self.page.update()
 
     def remove_self(self, e):
