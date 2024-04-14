@@ -197,7 +197,7 @@ class BarbFort(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.find_img(target=f"{color}_icon", confidence=0.95) is None and self.find_img(target="troops_march_button") is not None:
+        while self.find_img(target=f"{color}_icon", confidence=0.93) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
