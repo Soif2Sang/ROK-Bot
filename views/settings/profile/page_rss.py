@@ -11,6 +11,34 @@ class PageRss(BasePage):
         super().__init__(profile)
 
         keys = ["First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh"]
+        self.values = {}
+
+        for key in keys:
+            self.values[key] = FletRowRss(
+                key=key,
+                instance_index=self.instance_index,
+                profile_index=self.profile_index,
+            )
+
+        self.search_methods_radio_group = ft.RadioGroup(
+            content=ft.Column([
+                ft.Radio(value="default", label=translate("Search with default loop method")),
+                ft.Radio(value="spiral", label=translate("Search with zooming method")),
+            ]),
+            on_change=self.toggle_search_method,
+            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"]
+        )
+
+        self.availability_dropdown = ft.Dropdown(
+                        width=100,
+                        options=[
+                            ft.dropdown.Option(text="On all characters", key="all"),
+                            ft.dropdown.Option(text="Only first character", key="only_first"),
+                            ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
+                        ],
+                        on_change=self.update_availability,
+                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_availability"]
+                    )
 
         self.add_control(
             GenerateCard(
@@ -19,34 +47,45 @@ class PageRss(BasePage):
                     "If you plan on having the safest configuration, take a look at 'Zoom out method' and 'random' node choice!"
                 ),
             ),
-            ft.Switch(
-                label=translate("Use Yellow presets as gatherers"),
-                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rss_custom_preset"] else False,
-                on_change=lambda _: self.reverse_keyword("rss_custom_preset"),
+            ft.Divider(),
+            ft.Text("Availability", weight=ft.FontWeight.BOLD),
+            ft.Divider(),
+            ft.ResponsiveRow(
+                controls=[
+                    ft.Text("When to activate"),
+                    self.availability_dropdown
+                ],
             ),
-            ft.Switch(
-                label=translate("Use zoom out method\n(the bot won't read node levels but is safer)"),
-                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"] else False,
-                on_change=lambda _: self.reverse_keyword("gather_rss_method"),
-            ),
+            ft.Divider(),
+            ft.Text("Search Methods", weight=ft.FontWeight.BOLD),
+            ft.Divider(),
+            self.search_methods_radio_group,
+            ft.Divider(),
+            ft.Text("Settings", weight=ft.FontWeight.BOLD),
+            ft.Divider(),
+            *self.values.values()
         )
 
-        for key in keys:
-            self.add_control(
-                FletRowRss(
-                    key=key,
-                    instance_index=self.instance_index,
-                    profile_index=self.profile_index,
-                )
-            )
+    def toggle_node_levels(self, value):
+        for rows in self.values.values():
+            rows.node_level_dropdown.disabled = value
 
-    def reverse_keyword(self, keyword: str):
-        super().reverse_keyword(keyword)
-
+    def update_availability(self, e):
         self.data = self.FileSingleton.get_data()
-        if keyword == "gather_rss_method":
-            for control in self.profile.content.controls[-7:]:
-                control.controls[2].controls[0].disabled = self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                    "gather_rss_method"
-                ]
+
+        data = e.control.value
+
+        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_availability"] = data
+
+        self.FileSingleton.write_data(self.data)
+
+    def toggle_search_method(self, e):
+        self.data = self.FileSingleton.get_data()
+        data = e.control.value
+
+        self.toggle_node_levels(data != "default")
+
+        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"] = data
+
+        self.FileSingleton.write_data(self.data)
         self.profile.initial_page.update()

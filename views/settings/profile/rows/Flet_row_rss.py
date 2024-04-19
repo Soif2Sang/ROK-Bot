@@ -11,6 +11,26 @@ class FletRowRss(ft.ResponsiveRow):
         self.data = self.FileSingleton.get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
+
+        self.node_level_dropdown = ft.Dropdown(
+            content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
+            label=translate("Node Level"),
+            options=[
+                ft.dropdown.Option("1"),
+                ft.dropdown.Option("2"),
+                ft.dropdown.Option("3"),
+                ft.dropdown.Option("4"),
+                ft.dropdown.Option("5"),
+                ft.dropdown.Option("6"),
+                ft.dropdown.Option("7"),
+                ft.dropdown.Option("8"),
+                ft.dropdown.Option("9"),
+            ],
+            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
+            on_change=lambda e: self.submit(e, f"{key}_level", int),
+            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"],
+        )
+
         self.controls = [
             ft.Column(
                 controls=[
@@ -44,24 +64,7 @@ class FletRowRss(ft.ResponsiveRow):
             ),
             ft.Column(
                 controls=[
-                    ft.Dropdown(
-                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
-                        label=translate("Node Level"),
-                        options=[
-                            ft.dropdown.Option("1"),
-                            ft.dropdown.Option("2"),
-                            ft.dropdown.Option("3"),
-                            ft.dropdown.Option("4"),
-                            ft.dropdown.Option("5"),
-                            ft.dropdown.Option("6"),
-                            ft.dropdown.Option("7"),
-                            ft.dropdown.Option("8"),
-                            ft.dropdown.Option("9"),
-                        ],
-                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
-                        on_change=lambda e: self.submit(e, f"{key}_level", int),
-                        disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"],
-                    ),
+                    self.node_level_dropdown
                 ],
                 col=3,
                 height=50,
