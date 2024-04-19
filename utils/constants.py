@@ -2,7 +2,7 @@ from typing import Literal
 
 DEBUG = False
 VERSION_TYPE: Literal["global", "brazilian"] = "global"
-VERSION_NUMBER = "3.3.1"
+VERSION_NUMBER = "3.3.2"
 TOAST_HISTORY = {}
 
 names = {"global": "RokNet", "brazilian": "ROKBOT"}
@@ -155,7 +155,7 @@ default_profile = {
     "kill_marauders": False,
     "kill_marauders_duration": [30, 90],
     "rally_skip_back": False,
-    "gather_rss_method": False,
+    "gather_rss_method": "default",
     "fast_rss_transfer": False,
     "city_hall_position": [],
     "upgrade_city_method": "normal",
@@ -165,5 +165,7 @@ default_profile = {
     "expedition_shop_ethel": False,
     "expedition_shop_items": False,
     "gather_gem_method": "map",
-    "gather_gem_center_pos": []
+    "gather_gem_center_pos": [],
+    "gather_gem_availability": "all",
+    "gather_rss_availability": "all",
 }
