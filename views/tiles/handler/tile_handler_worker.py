@@ -108,7 +108,7 @@ class TileHandlerWorker(ft.ListView):
         self.initial_page = page
         self.height = 300
         self.expand = 0
-        self.spacing = 5
+        self.spacing = 1
         self.FileSingleton = FileSingleton()
         self.tiles: dict[str, TileWorker] = {}
         self.navigation_bar: NavigationBar = NavigationBar(self.initial_page, self)
