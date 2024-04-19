@@ -13,6 +13,7 @@ from utils.singletons import EmulatorSingleton
 class GatherGemMap(GatherGem):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask)
+        self.max_distance = 3
         self.herite(MainTask)
         self.end_time = None
         self.block = False
@@ -80,7 +81,11 @@ class GatherGemMap(GatherGem):
         pos = self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_center_pos")
 
         raison = self.max_distance
-        self.click(uniform(-raison, raison) + pos[0], uniform(-raison, raison) + pos[1])
+
+        x = uniform(-raison, raison) + pos[0]
+        y = uniform(-raison, raison) + pos[1] - 10
+
+        self.click(x, y)
         self.better_sleep((1, 2))
 
     @get_class
@@ -89,6 +94,7 @@ class GatherGemMap(GatherGem):
         Gather gems
         """
         self.end_time = end_time
+
         if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
             return
 
@@ -127,7 +133,7 @@ class GatherGemMap(GatherGem):
             )
 
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
-        self.max_distance = int(self.data[str(self.sel)]["schedules"][self.current_profile].get("radius") // 10)
+        self.max_distance = self.data[str(self.sel)]["schedules"][self.current_profile].get("radius") / 6
 
         self.go_back_to_city()
 
