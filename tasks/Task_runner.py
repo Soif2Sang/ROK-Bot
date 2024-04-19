@@ -210,13 +210,18 @@ class TaskRunner(Task):
             "map": GatherGemMap
         }
 
+        rss_task = {
+            "default": GatherRssDefault,
+            "zoom": GatherRssZoom
+        }
+
         tasks = [
             ("claim_campaign", ClaimCampaign),
             ("collect_ressource", CollectResource),
             ("buy_merchant", BuyMerchant),
             (
                 "gather_rss",
-                GatherRssDefault if not profile.get("gather_rss_method") else GatherRssZoom,
+                rss_task[profile.get("gather_rss_method")],
             ),
             ("use_enhanced_buff", UseEnhancedBuff),
             ("check_donation", AllianceDonation),
@@ -240,7 +245,25 @@ class TaskRunner(Task):
             ("academic_research", AcademyResearch),
         ]
 
-        lib_tasks = [task_class(self) for profile_key, task_class in tasks if profile.get(profile_key, False)]
+        for task_key, task_class in tasks:
+            if profile.get(task_key, False):
+                if task_key == "gather_rss":
+                    if profile["gather_rss_availability"] == "all":
+                        lib_tasks.append(task_class(self))
+                    elif profile["gather_rss_availability"] == "only_first" and self.character_index == 1:
+                        lib_tasks.append(task_class(self))
+                    elif profile["gather_rss_availability"] == "all_except_first" and self.character_index != 1:
+                        lib_tasks.append(task_class(self))
+                elif task_key == "gather_gem":
+                    if profile["gather_gem_availability"] == "all":
+                        lib_tasks.append(task_class(self))
+                    elif profile["gather_gem_availability"] == "only_first" and self.character_index == 1:
+                        lib_tasks.append(task_class(self))
+                    elif profile["gather_gem_availability"] == "all_except_first" and self.character_index != 1:
+                        lib_tasks.append(task_class(self))
+                else:
+                    lib_tasks.append(task_class(self))
+
         shuffle(lib_tasks)
         tasks_names = [task.task_name() for task in lib_tasks]
 
@@ -276,6 +299,7 @@ class TaskRunner(Task):
 
         if profile.get("claim_mails", False):
             lib_tasks.append(ClaimMail(self))
+
         return lib_tasks
 
     @get_name
@@ -646,15 +670,15 @@ class TaskRunner(Task):
                         self.wait_until_connected()
                         # Characters remaining
                         boolean = True
-                        nb_characters = 2
+                        self.character_index = 2
                         while co_first and boolean:
-                            self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
-                            nb_characters += 1
+                            self.print(f"Character n°{self.character_index}", ft.colors.CYAN_ACCENT_700)
+                            self.character_index += 1
                             self.execute_tasks(self.get_available_task(profile), profile)
                             self.better_sleep((1.2, 4))
 
                             self.check_captcha()
-                            boolean = self.switch_character(co_first, nb_characters, 0)
+                            boolean = self.switch_character(co_first, self.character_index, 0)
                             self.wait_until_connected()
                     if not self.data[self.sel]["scheduler"]:
                         break
@@ -765,10 +789,10 @@ class TaskRunner(Task):
                     self.wait_until_connected()
                     # Characters remaining
                     boolean = True
-                    nb_characters = 2
+                    self.character_index = 2
                     while co_first and boolean:
-                        self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
-                        nb_characters += 1
+                        self.print(f"Character n°{self.character_index}", ft.colors.CYAN_ACCENT_700)
+                        self.character_index += 1
                         self.execute_tasks(
                             self.get_available_task(self.current_profile),
                             self.current_profile,
@@ -776,7 +800,7 @@ class TaskRunner(Task):
                         self.better_sleep((2.2, 4))
 
                         self.check_captcha()
-                        boolean = self.switch_character(co_first, nb_characters, 0)
+                        boolean = self.switch_character(co_first, self.character_index, 0)
                         self.wait_until_connected()
 
                 self.set_status("")
@@ -843,6 +867,7 @@ class TaskRunner(Task):
                 emulator_started_at = time()
 
                 self.tile = enabled_tile
+                self.character_index = 1
                 self.set_sel(self.tile.number)
                 can_go = True
                 for profile in self.data[self.sel]["schedules"]:
@@ -884,10 +909,10 @@ class TaskRunner(Task):
                         self.wait_until_connected()
                         # Characters remaining
                         boolean = True
-                        nb_characters = 2
+                        self.character_index = 2
                         while co_first and boolean:
-                            self.print(f"Character n°{nb_characters}", ft.colors.CYAN_ACCENT_700)
-                            nb_characters += 1
+                            self.print(f"Character n°{self.character_index}", ft.colors.CYAN_ACCENT_700)
+                            self.character_index += 1
                             self.execute_tasks(
                                 self.get_available_task(self.current_profile),
                                 self.current_profile,
@@ -895,7 +920,7 @@ class TaskRunner(Task):
                             self.better_sleep((2.2, 4))
 
                             self.check_captcha()
-                            boolean = self.switch_character(co_first, nb_characters, 0)
+                            boolean = self.switch_character(co_first, self.character_index, 0)
                             self.wait_until_connected()
 
                 self.set_status("")
@@ -1059,15 +1084,15 @@ class TaskRunner(Task):
                         self.wait_until_connected()
                         # Characters remaining
                         boolean = True
-                        nb_characters = 2
+                        self.character_index = 2
                         while boolean:
-                            self.print(f"Character n°{nb_characters}", "blue")
-                            nb_characters += 1
+                            self.print(f"Character n°{self.character_index}", "blue")
+                            self.character_index += 1
                             tasks = self.get_available_task(profile)
                             self.execute_tasks(tasks, profile)
                             self.better_sleep((1.2, 4))
 
-                            boolean = self.switch_character(co_first, nb_characters)
+                            boolean = self.switch_character(co_first, self.character_index)
                             if self.data.get(self.sel).get("schedules").get(self.current_profile).get("leave_game_switch_character", False):
                                 self.leave_game()
                             self.wait_until_connected()
