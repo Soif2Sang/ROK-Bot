@@ -90,7 +90,6 @@ class PageGem(BasePage):
         scanning_radius_text_field = ft.TextField(
             label=translate("Scanning radius (km) :"),
             value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["radius"],
-            width=300,
             content_padding=ft.padding.all(10),
             on_change=lambda e: self.submit(e, "radius", int),
             input_filter=ft.NumbersOnlyInputFilter(),
@@ -111,7 +110,7 @@ class PageGem(BasePage):
         )
 
         map_switch = ft.Switch(
-            label=translate("Map method (Will use your selected area)"),
+            label=translate("Map method (Will use your selected area) /!SAFEST!/"),
             value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] == "map",
             on_change=self.toggle_search_method,
             data="map"
@@ -168,6 +167,17 @@ class PageGem(BasePage):
             value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"]
         )
 
+        self.availability_dropdown = ft.Dropdown(
+                        width=100,
+                        options=[
+                            ft.dropdown.Option(text="On all characters", key="all"),
+                            ft.dropdown.Option(text="Only first character", key="only_first"),
+                            ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
+                        ],
+                        on_change=self.update_availability,
+                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_availability"]
+                    )
+
 
         # Adding controls
         self.add_control(
@@ -176,7 +186,15 @@ class PageGem(BasePage):
                 title=translate("*REQUIREMENT*"),
                 subtitle=translate("Pre-configure yellow-lineups with gathering gem commanders!"),
             ),
-
+            ft.Divider(),
+            ft.Text("Availability", weight=ft.FontWeight.BOLD),
+            ft.Divider(),
+            ft.ResponsiveRow(
+                controls=[
+                    ft.Text("When to activate"),
+                    self.availability_dropdown
+                ],
+            ),
             ft.Divider(),
             ft.Text("General Settings", weight=ft.FontWeight.BOLD),
             ft.Divider(),
@@ -258,6 +276,15 @@ class PageGem(BasePage):
 
     def toggle_map(self, value):
         self.set_area_location_button.disabled = value
+
+    def update_availability(self, e):
+        self.data = self.FileSingleton.get_data()
+
+        data = e.control.value
+
+        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_availability"] = data
+
+        self.FileSingleton.write_data(self.data)
 
     def toggle_search_method(self, e):
         self.data = self.FileSingleton.get_data()

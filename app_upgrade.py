@@ -71,6 +71,13 @@ if "discord" not in data:
     data["discord"] = {"user_id": 0, "enabled": False}
     fileSingleton.write_data(data)
 
+for instances in data:
+    if not "schedules" in data[instances]:
+        continue
+    for profiles in data[instances]["schedules"]:
+        if data[instances]["schedules"][profiles]["gather_rss_method"] not in ["default", "spiral"]:
+            data[instances]["schedules"][profiles]["gather_rss_method"] = "default"
+            fileSingleton.write_data(data)
 
 def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
