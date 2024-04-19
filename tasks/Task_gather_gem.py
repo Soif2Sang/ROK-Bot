@@ -81,7 +81,7 @@ class GatherGem(Task):
         """
         deadstop = 0
 
-        while self.find_img(target=f"{color}_icon", confidence=0.95) is None and self.find_img(target="troops_march_button") is not None:
+        while self.find_img(target=f"{color}_icon", confidence=0.93) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
@@ -363,6 +363,10 @@ class GatherGem(Task):
         return False
 
     @get_name
+    def random_interaction(self, zoomed_in):
+        pass
+
+    @get_name
     def scan_gem(self):
         """
         Scan device screenshot to find gem node,          not 100% working need improvement
@@ -410,8 +414,9 @@ class GatherGem(Task):
         #         icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
 
 
-        if random() > 0.93:
-            self.random_interaction(zoomed_in=False)
+        # if random() > 0.93:
+        #
+        #     self.random_interaction(zoomed_in=False)
 
         for i in range(14):
             icons.append(f"GemDeposit{i}")
@@ -703,7 +708,7 @@ class GatherGem(Task):
             if self.check_if_interrupt(screen):
                 return self.run(self.end_time)
 
-            if self.find_img(source=screen[: 720 // 2, :], target="verification_button", confidence=0.6):
+            if self.find_img(source=screen[: 500, :], target="verification_button", confidence=0.6):
                 self.check_captcha()
                 screen = self.adb.get_cv2_img()
 

@@ -25,6 +25,7 @@ from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
 from tasks.Task_gather_gem_default import GatherGemDefault
 from tasks.Task_gather_gem_spiral import GatherGemSpiral
+from tasks.Task_gather_gem_map import GatherGemMap
 from tasks.Task_gather_rss_default import GatherRssDefault
 from tasks.Task_gather_rss_zoom import GatherRssZoom
 from tasks.Task_heal_troop import HealTroop
@@ -203,6 +204,12 @@ class TaskRunner(Task):
         # print(profile)
         lib_tasks = []
 
+        gem_task = {
+            "default": GatherGemDefault,
+            "spiral": GatherGemSpiral,
+            "map": GatherGemMap
+        }
+
         tasks = [
             ("claim_campaign", ClaimCampaign),
             ("collect_ressource", CollectResource),
@@ -216,7 +223,7 @@ class TaskRunner(Task):
             ("defeat_barbarians", HuntBarbarians),
             (
                 "gather_gem",
-                GatherGemDefault if not profile.get("gather_gem_spiral_method") else GatherGemSpiral,
+                gem_task[profile.get("gather_gem_method")],
             ),
             ("scout_fog", ClearFog),
             ("claim_daily_vip", DailyVip),

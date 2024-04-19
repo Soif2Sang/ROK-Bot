@@ -2,7 +2,7 @@ from typing import Literal
 
 DEBUG = False
 VERSION_TYPE: Literal["global", "brazilian"] = "global"
-VERSION_NUMBER = "3.2.6"
+VERSION_NUMBER = "3.3.1"
 TOAST_HISTORY = {}
 
 names = {"global": "RokNet", "brazilian": "ROKBOT"}
@@ -164,4 +164,6 @@ default_profile = {
     "buy_merchant_skip": False,
     "expedition_shop_ethel": False,
     "expedition_shop_items": False,
+    "gather_gem_method": "map",
+    "gather_gem_center_pos": []
 }
