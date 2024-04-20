@@ -57,6 +57,7 @@ class SettingContainer(PageSettings):
             self.create_advanced_switch("claim_campaign", "Claim Expedition Rewards", PageExpedition)
             self.create_normal_switch("claim_mails", "Claim Mails")
             self.create_normal_switch("alliance_help", "Help Alliance")
+            self.create_normal_switch("help_alliance_building", "Help Alliance Buildings")
             #
             self.create_advanced_switch("defeat_barbarians", "Hunt Barbarians", PageBarbs)
             self.create_advanced_switch("start_fort", "Start Fort Rally", PageRally)

@@ -39,14 +39,14 @@ class ImageSingleton:
                 )  # Extract the name without extension
                 image = imread(os.path.join(dir + "/items", filename))
                 self.image_dict[name] = image
-
-        for filename in os.listdir(dir + "/pc"):
-            if filename.endswith(".png"):
-                name = (
-                    "pc\\" + os.path.splitext(filename)[0]
-                )  # Extract the name without extension
-                image = imread(os.path.join(dir + "/pc", filename))
-                self.image_dict[name] = image
+        #
+        # for filename in os.listdir(dir + "/pc"):
+        #     if filename.endswith(".png"):
+        #         name = (
+        #             "pc\\" + os.path.splitext(filename)[0]
+        #         )  # Extract the name without extension
+        #         image = imread(os.path.join(dir + "/pc", filename))
+        #         self.image_dict[name] = image
 
     def get_file_name(self, file_name):
         if file_name not in self.image_dict:
