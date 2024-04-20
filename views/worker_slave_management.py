@@ -1,10 +1,14 @@
+from typing import List
+
 import flet as ft
 
+from schemas.worker_schemas import InstanceSchema
+from test_random_x import open_worker_settings, open_emulator_settings, write_worker_settings
 from utils.flet_translations import translate
-from utils.singletons import EmulatorSingleton, FileSingleton
+from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton
 
 fs = FileSingleton()
-
+ss = SettingsSingleton()
 
 class SlaveDraggable(ft.Draggable):
     def __init__(self, instance, *args, **kwargs):
@@ -49,30 +53,34 @@ class Worker(ft.Container):
         self.instance = instance
 
         data = fs.getCachedData()
+        
+        self.emulator_settings = ss.emulator_settings
+        self.worker_settings = ss.worker_settings
+            
+        self.emulator_type = EmulatorSingleton().getEmulatorType()
 
-        for instance in data["workers"][EmulatorSingleton().getEmulator()][instance]["instances"]:
-            i = instance["instance"]
+        for instanceSchema in self.worker_settings.worker_type[self.emulator_type].workers[instance].instances:
+            name = self.emulator_settings.emulators[instanceSchema.instance].name
             self.slaves.controls.append(
                 ft.Chip(
-                    label=ft.Text(data[i]["name"]),
+                    label=ft.Text(name),
                     on_delete=self.on_delete,
                     delete_icon_tooltip="remove",
                     label_padding=0,
                     width=100,
                     height=50,
-                    data=i,
-                    tooltip=data[i]["name"],
+                    data=instanceSchema.instance,
+                    tooltip=name,
                 )
             )
 
             for control in self.manager.slaves.controls:
-                if control.data == i:
+                if control.data == instanceSchema.instance:
                     self.manager.slaves.controls.remove(control)
 
         self.add_dragtarget()
 
     def open_settings(self, e):
-        data = fs.getCachedData()
         self.dlg_modal = ft.AlertDialog(
             content=ft.ListView(
                 width=400,
@@ -80,8 +88,8 @@ class Worker(ft.Container):
                 controls=[
                     ft.Switch(
                         label=translate("Re-do all the tasks until stopped"),
-                        value=data["workers"][EmulatorSingleton().getEmulator()][self.instance]["loop_task"],
-                        on_change=lambda e: self.reverse_keyword(e, "loop_task"),
+                        value=self.worker_settings.worker_type[self.emulator_type].workers[self.instance].loop_task,
+                        on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance], "loop_task", bool),
                     ),
                     ft.Container(
                         ft.Text(
@@ -94,19 +102,19 @@ class Worker(ft.Container):
                             controls=[
                                 ft.TextField(
                                     label="Minimum",
-                                    value=data["workers"][EmulatorSingleton().getEmulator()][self.instance]["waiting_cooldown"][0],
+                                    value=str(self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown.min),
                                     content_padding=ft.padding.all(10),
                                     col=6,
                                     input_filter=ft.NumbersOnlyInputFilter(),
-                                    on_change=lambda e: self.submit_keyword(e, "waiting_cooldown", 0),
+                                    on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown, "min", int),
                                 ),
                                 ft.TextField(
                                     label="Maximum",
-                                    value=data["workers"][EmulatorSingleton().getEmulator()][self.instance]["waiting_cooldown"][1],
+                                    value=str(self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown.max),
                                     content_padding=ft.padding.all(10),
                                     col=6,
                                     input_filter=ft.NumbersOnlyInputFilter(),
-                                    on_change=lambda e: self.submit_keyword(e, "waiting_cooldown", 1),
+                                    on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown, "max", int),
                                 ),
                             ],
                         ),
@@ -114,8 +122,8 @@ class Worker(ft.Container):
                     ),
                     ft.Switch(
                         label=translate("Close the Emulator once all the task are completed."),
-                        value=data["workers"][EmulatorSingleton().getEmulator()][self.instance]["close_emulator"],
-                        on_change=lambda e: self.reverse_keyword(e, "close_emulator"),
+                        value=self.worker_settings.worker_type[self.emulator_type].workers[self.instance].close_emulator,
+                        on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance], "close_emulator", bool),
                     ),
                 ],
             ),
@@ -166,7 +174,7 @@ class Worker(ft.Container):
         e.control.update()
 
     def on_accept(self, e):
-        data = fs.getCachedData()
+        emulator_settings = ss.emulator_settings
         src = self.initial_page.get_control(e.src_id)
 
         instance = src.content.data
@@ -178,7 +186,7 @@ class Worker(ft.Container):
         self.slaves.controls.remove(e.control)
         self.slaves.controls.append(
             ft.Chip(
-                label=ft.Text(data[instance]["name"]),
+                label=ft.Text(emulator_settings.emulators[instance].name),
                 on_delete=self.on_delete,
                 delete_icon_tooltip="remove",
                 label_padding=0,
@@ -188,47 +196,34 @@ class Worker(ft.Container):
             )
         )
 
-        data["workers"][EmulatorSingleton().getEmulator()][self.instance]["instances"] = self.get_all()
-
-        fs.write_data(data)
+        self.worker_settings.worker_type[self.emulator_type].workers[self.instance].instances = self.get_all()
+        ss.write_worker_settings(self.worker_settings)
 
         self.add_dragtarget()
         self.initial_page.update()
 
     def on_delete(self, e):
-        data = fs.getCachedData()
+        emulator_settings = ss.emulator_settings
 
-        self.manager.slaves.controls.append(SlaveDraggable(data[e.control.data]["name"], data=e.control.data))
+        self.manager.slaves.controls.append(SlaveDraggable(emulator_settings.emulators[e.control.data].name, data=e.control.data))
         self.slaves.controls.remove(e.control)
 
-        data["workers"][EmulatorSingleton().getEmulator()][self.instance]["instances"] = self.get_all()
-        fs.write_data(data)
+        self.worker_settings.worker_type[self.emulator_type].workers[self.instance].instances = self.get_all()
+        ss.write_worker_settings(self.worker_settings)
 
         self.initial_page.update()
 
     def get_all(self):
-        order = []
+        order: List[InstanceSchema] = []
         for control in self.slaves.controls:
             if isinstance(control, ft.Chip):
-                order.append({"instance": control.data})
-
+                order.append(InstanceSchema(instance=control.data))
         return order
 
-    def reverse_keyword(self, e, param):
-        data = fs.getCachedData()
-        data["workers"][EmulatorSingleton().getEmulator()][self.instance][param] = e.control.value
-        fs.write_data(data)
-
-    def submit_keyword(self, e, param, index):
-        if not e.control.value:
-            e.control.value = "0"
-            self.initial_page.update()
-
-        data = fs.getCachedData()
-        data["workers"][EmulatorSingleton().getEmulator()][self.instance][param][index] = int(e.control.value)
-        fs.write_data(data)
-
-
+    def submit_with_context(self, e, context, keyword, method):
+        setattr(context, keyword, method(e.control.value))
+        ss.write_worker_settings(self.worker_settings)
+        
 class WorkerSlaveManagement(ft.ListView):
     def __init__(self, page, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -237,15 +232,25 @@ class WorkerSlaveManagement(ft.ListView):
 
         self.slaves = ft.Row(wrap=True)
         self.workers = ft.Row(wrap=True)
+        self.emulator_type = EmulatorSingleton().getEmulatorType()
 
-        data = FileSingleton().getCachedData()
+        # for key, value in data.items():
+        #     if isinstance(value, dict) and ("instance" in value) and value.get("emulator") == self.emulator_type:
+        #         self.slaves.controls.append(SlaveDraggable(value["name"], data=value["instance"]))
 
-        for key, value in data.items():
-            if isinstance(value, dict) and ("instance" in value) and value.get("emulator") == EmulatorSingleton().getEmulator():
-                self.slaves.controls.append(SlaveDraggable(value["name"], data=value["instance"]))
+        emulator_settings = ss.emulator_settings
+        worker_settings = ss.worker_settings
 
-        for worker in data["workers"][EmulatorSingleton().getEmulator()]:
-            self.workers.controls.append(Worker(worker, self))
+        for emulatorSchema in emulator_settings.emulators.values():
+            if emulatorSchema.emulator != self.emulator_type:
+                continue
+            self.slaves.controls.append(SlaveDraggable(emulatorSchema.name, data=emulatorSchema.instance))
+
+        for workerKey in worker_settings.worker_type[self.emulator_type].workers.keys():
+            self.workers.controls.append(Worker(workerKey, self))
+
+        # for worker in data["workers"][self.emulator_type]:
+        #     self.workers.controls.append(Worker(worker, self))
 
         self.controls = [self.slaves, ft.Divider(), self.workers]
 

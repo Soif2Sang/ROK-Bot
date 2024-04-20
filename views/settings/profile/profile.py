@@ -40,7 +40,7 @@ class SettingContainer(PageSettings):
 
         self.create_advanced_switch("gather_gem", "Gem Gathering", PageGem)
 
-        if EmulatorSingleton().getEmulator() != "pc":
+        if EmulatorSingleton().getEmulatorType() != "pc":
             self.create_advanced_switch("gather_rss", "Resources Gathering", PageRss)
             self.create_normal_switch("collect_ressource", "Collect City Resources")
             self.create_normal_switch("use_enhanced_buff", "Apply Enhanced Buff")
@@ -245,6 +245,7 @@ class SettingContainer(PageSettings):
                         width=125,
                         label="Factor",
                         options=[
+                            ft.dropdown.Option("0.5x"),
                             ft.dropdown.Option("1.0x"),
                             ft.dropdown.Option("1.25x"),
                             ft.dropdown.Option("1.5x"),

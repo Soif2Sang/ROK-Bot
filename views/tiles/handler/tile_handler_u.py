@@ -134,7 +134,7 @@ class TileManagerUpgrade(ft.ListView):
     def refresh(self):
         data = self.FileSingleton.get_data()
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
 
         if emulator == "bluestacks":
             instances = get_dic_instances()

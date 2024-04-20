@@ -1,8 +1,8 @@
 import threading
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal
-
 import flet as ft
+
+from typing import Dict, Any, List, Literal
+from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 
 

@@ -26,8 +26,8 @@ class GatherGemMap(GatherGem):
         return super().recenter(deadstop)
 
     def go_back_to_city(self, deadstop=0):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("recenter_feature", False):
-            return super().go_back_to_city(deadstop)
+        # if self.data[str(self.sel)]["schedules"][self.current_profile].get("recenter_feature", False):
+        return super().go_back_to_city(deadstop)
 
     @get_name
     def go_city(self, x, y, last=None) -> int:
@@ -95,7 +95,7 @@ class GatherGemMap(GatherGem):
         """
         self.end_time = end_time
 
-        if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
+        if EmulatorSingleton().getEmulatorType() == "bluestacks" and not self.random_macro():
             return
 
         self.run_game()

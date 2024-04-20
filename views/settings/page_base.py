@@ -1,10 +1,11 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from singletons import SettingsSingleton
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rsetattr
 
-
+ss = SettingsSingleton()
 class BasePage:
     def __init__(self, profile):
         super().__init__()
@@ -15,6 +16,10 @@ class BasePage:
         self.profile_index = profile.profile_index
         self.profile = profile
         self.profile.content.controls = []
+
+        self.tasks = ss.emulator_settings.emulators[str(self.instance_index)].schedules[str(self.profile_index)].tasks
+        self.context = None
+
         self.add_control(
             ft.Container(
                 content=ft.Row(
@@ -135,3 +140,7 @@ class BasePage:
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 ),
             )
+
+    def submit_with_context(self, e):
+        rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)

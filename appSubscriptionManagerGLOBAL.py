@@ -5,7 +5,8 @@ import flet as ft
 import requests
 
 from utils.auth import selfApi
-from utils.constants import brezilian_name, brezilian_secret, global_name, global_secret
+from utils.constants import (VERSION_TYPE_name, VERSION_TYPE_secret,
+                             global_name, global_secret)
 from utils.functions import getchecksum
 
 SELLER_KEY = "f6386c16787e0eb51b24d168205267e6"
@@ -13,10 +14,10 @@ SELLER_KEY = "f6386c16787e0eb51b24d168205267e6"
 keyauthapp = selfApi(name=global_name, ownerid="7oofxdj8uH", secret=global_secret, version="2.0", hash_to_check=getchecksum())
 
 
-SELLER_KEY = "85f1f39bf61d1a04394b216f3efe4215"
-
-keyauthapp = selfApi(name=brezilian_name, ownerid="7oofxdj8uH", secret=brezilian_secret, version="2.0", hash_to_check=getchecksum())
-
+# SELLER_KEY = "85f1f39bf61d1a04394b216f3efe4215"
+#
+# keyauthapp = selfApi(name=VERSION_TYPE_name, ownerid="7oofxdj8uH", secret=VERSION_TYPE_secret, version="2.0", hash_to_check=getchecksum())
+#
 
 class CreateUser(ft.Column):
     def __init__(self, *args, **kwargs):

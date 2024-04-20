@@ -175,7 +175,7 @@ class GatherRssZoom(GatherRss):
         self.node_place = node_place
         self.run_game()
 
-        if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
+        if EmulatorSingleton().getEmulatorType() == "bluestacks" and not self.random_macro():
             return
 
         if node_place is None:

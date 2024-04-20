@@ -28,7 +28,7 @@ def image_to_base64(image_byte):
 def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket) -> ft.View:
     page.window_width = 900
     page.window_height = 500
-    emulator_choice = EmulatorSingleton().getEmulator()
+    emulator_choice = EmulatorSingleton().getEmulatorType()
 
     if emulator_choice == "bluestacks":
         adb = AdbBluestacks(str(params.instance_index))
@@ -63,7 +63,7 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
 def viewGatherGemMap(page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket) -> ft.View:
     page.window_width = 900
     page.window_height = 500
-    emulator_choice = EmulatorSingleton().getEmulator()
+    emulator_choice = EmulatorSingleton().getEmulatorType()
 
     if emulator_choice == "bluestacks":
         adb = AdbBluestacks(str(params.instance_index))

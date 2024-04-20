@@ -5,10 +5,13 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
+from schemas.emulator_schemas import EmulatorSettingsSchema
+from schemas.worker_schemas import WorkerTypeSchema, WorkerSettingsSchema, InstanceSchema, WorkerListSchema
+from test_random_x import open_worker_settings, open_emulator_settings, write_emulator_settings, write_worker_settings
 from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
-from utils.singletons import EmulatorSingleton, FileSingleton
+from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton
 from views.login.login import ClickableLink, links, sellix_icon, stripe_icon, tiers
 from views.tiles.tile_worker import TileWorker
 
@@ -141,7 +144,7 @@ class TileHandlerWorker(ft.ListView):
     def refresh(self):
         data = self.FileSingleton.get_data()
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
 
         if platform.system() == "Darwin":
             instances = {"pc": {'name': 'pc', 'instance': 'pc', 'port': -1}}
@@ -154,46 +157,69 @@ class TileHandlerWorker(ft.ListView):
 
         self.fetched_instances = instances
 
-        default_dic["emulator"] = emulator
+        ss = SettingsSingleton()
 
-        for i in range(1, 4):
-            default_dic["schedules"][i] = copy.deepcopy(default_profile)
-        default_dic["schedules"][1]["enabled"] = True
+        worker_settings = ss.worker_settings
+        emulator_settings = ss.emulator_settings
+
+        # default_dic["emulator"] = emulator
+
+        # for i in range(1, 4):
+        #     default_dic["schedules"][i] = copy.deepcopy(default_profile)
+        # default_dic["schedules"][1]["enabled"] = True
+        # for i, instance in enumerate(instances):
+        #     if str(i) not in data["workers"][emulator]:
+        #         data["workers"][emulator][str(i)] = {**default_worker_settings, "instances": [{"instance": instance}]}
+        #     else:
+        #         data["workers"][emulator][str(i)] = {**default_worker_settings, **data["workers"][emulator][str(i)]}
+        #
+        #     if instance not in data:
+        #         data[instance] = copy.deepcopy(default_dic)
+        #     else:
+        #         for key in default_dic:
+        #             if key not in data[instance]:
+        #                 data[instance][key] = copy.deepcopy(default_dic[key])
+        #
+        #         for key in default_profile:
+        #             for i in range(1, 4):
+        #                 if key not in data[instance]["schedules"][str(i)]:
+        #                     data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
+        #
+        #     data[instance].update({
+        #         "instance": instances[instance]["instance"],
+        #         "name": instances[instance]["name"],
+        #         "port": int(instances[instance]["port"])
+        #     })
 
         for i, instance in enumerate(instances):
-            if str(i) not in data["workers"][emulator]:
-                data["workers"][emulator][str(i)] = {**default_worker_settings, "instances": [{"instance": instance}]}
-            else:
-                data["workers"][emulator][str(i)] = {**default_worker_settings, **data["workers"][emulator][str(i)]}
+            if emulator not in worker_settings.worker_type:
+                worker_settings.worker_type[emulator] = WorkerListSchema()
+            if str(i) not in worker_settings.worker_type[emulator].workers:
+                worker_settings.worker_type[emulator].workers[str(i)] = WorkerSettingsSchema(instances=[InstanceSchema(instance=instance)])
+            if instance not in emulator_settings.emulators:
+                emulator_settings.emulators[instance] = EmulatorSettingsSchema(
+                    emulator=emulator,
+                    instance=instances[instance]["instance"],
+                    name=instances[instance]["name"],
+                    port=int(instances[instance]["port"])
+                )
 
-            if instance not in data:
-                data[instance] = copy.deepcopy(default_dic)
-            else:
-                for key in default_dic:
-                    if key not in data[instance]:
-                        data[instance][key] = copy.deepcopy(default_dic[key])
+                emulator_settings.emulators[instance].schedules["1"].enabled = True
 
-                for key in default_profile:
-                    for i in range(1, 4):
-                        if key not in data[instance]["schedules"][str(i)]:
-                            data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
-
-            data[instance].update(
-                {"instance": instances[instance]["instance"], "name": instances[instance]["name"], "port": int(instances[instance]["port"])}
-            )
-
-        self.FileSingleton.write_data(data)
+        # self.FileSingleton.write_data(data)
+        ss.write_emulator_settings(emulator_settings)
+        ss.write_worker_settings(worker_settings)
 
         for i in range(len(self.controls) - 1):
             self.controls.pop()
 
         if instances:
-            for worker in data["workers"][emulator]:
-                if data["workers"][emulator][worker]["instances"]:
+            for worker in worker_settings.worker_type[emulator].workers:
+                if worker_settings.worker_type[emulator].workers[worker].instances:
                     self.add_tile(worker)
 
-        self.initial_page.update()
-        return
+        return self.initial_page.update()
+
         if instances:
             for instance in instances:
                 if str(instance[0]) in self.tiles:

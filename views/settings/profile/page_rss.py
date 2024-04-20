@@ -10,6 +10,8 @@ class PageRss(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
 
+        self.context = self.tasks.gather_rss
+
         keys = ["First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh"]
         self.values = {}
 
@@ -28,7 +30,7 @@ class PageRss(BasePage):
                 ]
             ),
             on_change=self.toggle_search_method,
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"],
+            value=self.context.method
         )
 
         self.availability_dropdown = ft.Dropdown(
@@ -39,7 +41,7 @@ class PageRss(BasePage):
                 ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
             ],
             on_change=self.update_availability,
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_availability"],
+            value=self.context.availability,
         )
 
         self.add_control(

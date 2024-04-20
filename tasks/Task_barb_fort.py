@@ -520,7 +520,7 @@ class BarbFort(Task):
 
     @get_class
     def run(self):
-        if EmulatorSingleton().getEmulator() == "bluestacks":
+        if EmulatorSingleton().getEmulatorType() == "bluestacks":
             self.random_macro()
         # if not self.enough_action_points():
         #     self.print("Bot detected you are low in action point, bot prefers to not start a rally !")

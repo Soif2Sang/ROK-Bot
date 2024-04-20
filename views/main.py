@@ -26,7 +26,7 @@ def Main(page: ft.Page, days=950):
     page.theme = theme
 
     # if page.UPGRADE:
-    if EmulatorSingleton().getEmulator() != "pc":
+    if EmulatorSingleton().getEmulatorType() != "pc":
         page.tile_manager = TileHandlerWorker(page)
     else:
         page.tile_manager = TileHandlerPC(page)

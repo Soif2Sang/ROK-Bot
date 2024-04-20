@@ -7,6 +7,7 @@ from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from tasks.TaskPC import Task as TaskPC
 from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
+from test_random_x import open_worker_settings
 from utils.flet_translations import translate
 from utils.functions import FileSingleton
 from utils.singletons import EmulatorSingleton
@@ -24,7 +25,7 @@ class TileWorker(ft.ExpansionTile):
         self.paused = False
         self.stopped = False
 
-        # if EmulatorSingleton().getEmulator() == "pc":
+        # if EmulatorSingleton().getEmulatorType() == "pc":
         #     self.main_task = TaskPC(self)
         #     self.runner = TaskPCRunner(self.main_task, self)
         # else:
@@ -174,12 +175,21 @@ class TileWorker(ft.ExpansionTile):
 
     def refresh_tile(self):
         self.controls = []
-        data = self.FileSingleton.getCachedData()
-        emulator = EmulatorSingleton().getEmulator()
+        # data = self.FileSingleton.getCachedData()
+        emulator_type = EmulatorSingleton().getEmulatorType()
 
-        for instance in data["workers"][emulator][self.number]["instances"]:
-            if instance["instance"] not in self.slaves:
-                self.slaves[instance["instance"]] = TileSlave(self.initial_page, instance["instance"])
-            self.controls.append(self.slaves[instance["instance"]])
+        worker_settings = open_worker_settings()
+
+        # for instance in data["workers"][emulator_type][self.number]["instances"]:
+        #     if instance["instance"] not in self.slaves:
+        #         self.slaves[instance["instance"]] = TileSlave(self.initial_page, instance["instance"])
+        #     self.controls.append(self.slaves[instance["instance"]])
+
+
+        for instanceSchema in worker_settings.worker_type[emulator_type].workers[self.number].instances:
+            instance = instanceSchema.instance
+            if instance not in self.slaves:
+                self.slaves[instance] = TileSlave(self.initial_page, instance)
+            self.controls.append(self.slaves[instance])
 
         self.initial_page.update()

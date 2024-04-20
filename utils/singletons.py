@@ -1,11 +1,16 @@
 import json
 import os
 import subprocess
+import threading
 from collections import defaultdict
 from datetime import date, datetime
 from threading import Lock
 from time import sleep
 from typing import Literal
+
+from schemas.application_schemas import ApplicationSettingsSchema
+from schemas.emulator_schemas import EmulatorListSchema
+from schemas.worker_schemas import WorkerTypeSchema
 
 
 class ApiSingleton:
@@ -47,7 +52,7 @@ class EmulatorSingleton:
             cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def getEmulator(self) -> Literal["ld", "bluestacks"]:
+    def getEmulatorType(self) -> Literal["ld", "bluestacks"]:
         with self.FileLock:
             return self.emulator
 
@@ -58,7 +63,7 @@ class EmulatorSingleton:
     def startEmulator(self, emulator: str):
         path = FileSingleton().get_path()
         data = FileSingleton().get_data()
-        emulator_choice = EmulatorSingleton().getEmulator()
+        emulator_choice = EmulatorSingleton().getEmulatorType()
 
         with self.EmulatorLock:
             if emulator_choice == "ld":
@@ -132,6 +137,74 @@ class FileSingleton:
         self.FileLock.release()
         return data
 
+class SettingsSingleton:
+    _instance = None
+    _lock = threading.Lock()
+    emulator_settings: EmulatorListSchema = None
+    worker_settings: WorkerTypeSchema = None
+    application_settings: ApplicationSettingsSchema = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.open_application_settings()
+            cls._instance.open_worker_settings()
+            cls._instance.open_emulator_settings()
+        return cls._instance
+
+    def open_application_settings(self) -> ApplicationSettingsSchema:
+        with self._lock:
+            if not os.path.exists("application_settings.json"):
+                with open("application_settings.json", 'w') as f:
+                    data = ApplicationSettingsSchema().to_dict()
+                    json.dump(data, f, indent=4)
+            else:
+                with open("application_settings.json", 'r') as f:
+                    data = ApplicationSettingsSchema.from_dict(json.loads(f.read()))
+            self.application_settings = data
+            return data
+
+    def open_worker_settings(self) -> WorkerTypeSchema:
+        with self._lock:
+            if not os.path.exists("worker_settings.json"):
+                with open("worker_settings.json", 'w') as f:
+                    data = WorkerTypeSchema().to_dict()
+                    json.dump(data, f, indent=4)
+            else:
+                with open("worker_settings.json", 'r') as f:
+                    data = WorkerTypeSchema.from_dict(json.loads(f.read()))
+            self.worker_settings = data
+            return data
+
+    def open_emulator_settings(self) -> EmulatorListSchema:
+        with self._lock:
+            if not os.path.exists("emulator_settings.json"):
+                with open("emulator_settings.json", 'w') as f:
+                    data = EmulatorListSchema().to_dict()
+                    json.dump(data, f, indent=4)
+            else:
+                with open("emulator_settings.json", 'r') as f:
+                    data = EmulatorListSchema.from_dict(json.loads(f.read()))
+            self.emulator_settings = data
+            return data
+
+    def write_application_settings(self, data: ApplicationSettingsSchema):
+        with self._lock:
+            with open("application_settings.json", 'w') as f:
+                json.dump(data.to_dict(), f, indent=4)
+            self.application_settings = data
+
+    def write_worker_settings(self, data: WorkerTypeSchema):
+        with self._lock:
+            with open("worker_settings.json", 'w') as f:
+                json.dump(data.to_dict(), f, indent=4)
+            self.worker_settings = data
+
+    def write_emulator_settings(self, data: EmulatorListSchema):
+        with self._lock:
+            with open("emulator_settings.json", 'w') as f:
+                json.dump(data.to_dict(), f, indent=4)
+            self.emulator_settings = data
 
 def current_time():
     return datetime.now().strftime("%H:%M:%S")

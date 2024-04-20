@@ -34,7 +34,7 @@ class GatherGemDefault(GatherGem):
         """
         self.end_time = end_time
 
-        if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
+        if EmulatorSingleton().getEmulatorType() == "bluestacks" and not self.random_macro():
             return
 
         self.run_game()
