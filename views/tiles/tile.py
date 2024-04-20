@@ -25,7 +25,7 @@ class Tile(ft.Container):
         self.paused = False
         self.stopped = False
 
-        if EmulatorSingleton().getEmulator() == "pc":
+        if EmulatorSingleton().getEmulatorType() == "pc":
             self.main_task = TaskPC(self)
             self.runner = TaskPCRunner(self.main_task, self)
         else:
@@ -133,7 +133,7 @@ class Tile(ft.Container):
 
     def start_tasks(self):
         if not self.tasks_process.is_alive():
-            if EmulatorSingleton().getEmulator() == "pc":
+            if EmulatorSingleton().getEmulatorType() == "pc":
                 self.tasks_process = threading.Thread(target=self.runner.run)
             else:
                 if self.initial_page.UPGRADE:

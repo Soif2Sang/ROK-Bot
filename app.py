@@ -284,7 +284,7 @@ def login(page: ft.Page, params, basket):
 
 
 def group_choice(page: ft.Page, params, basket):
-    emulator = EmulatorSingleton().getEmulator()
+    emulator = EmulatorSingleton().getEmulatorType()
 
     if emulator == "bluestacks":
         instances = get_dic_instances()

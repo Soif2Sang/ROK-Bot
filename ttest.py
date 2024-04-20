@@ -1,100 +1,70 @@
-from time import sleep
+from ctypes import windll
 
-import flet as ft
-
-data = {
-    "workers": {
-        "ld": {
-            "0": {"loop_task": True, "waiting_cooldown": [90, 110], "instances": [{"instance": "0"}, {"instance": "1"}]},
-            "1": {"loop_task": True, "waiting_cooldown": [90, 120], "instances": [{"instance": "2"}, {"instance": "3"}]},
-            "2": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "4"}, {"instance": "5"}]},
-            "3": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
-            "4": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
-            "5": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
-        },
-        "bluestacks": {
-            "0": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64"}]},
-            "1": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_10"}]},
-            "2": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_13"}]},
-            "3": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_22"}]},
-            "4": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_8"}]},
-            "5": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_9"}]},
-        },
-    }
-}
-
-fus = {"width": 100, "height": 50, "border_radius": 5, "margin": ft.margin.symmetric(horizontal=4)}
-
-instances = ["Instance 1", "Instance 2", "Instance 3", "Instance 4", "Instance 5"]
+import win32gui
+import win32ui
+from PIL import Image
 
 
-class SlaveDraggable(ft.Draggable):
-    def __init__(self, instance, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.data = instance
-        self.group = "all"
-        self.content = ft.Container(content=ft.Text(instance), bgcolor=ft.colors.SURFACE_VARIANT, **fus)
+def game_screenshot():
+    hwnd = win32gui.FindWindow(None, 'Rise of Kingdoms')
+
+    # Change the line below depending on whether you want the whole window
+    # or just the client area.
+    #left, top, right, bot = win32gui.GetClientRect(hwnd)
+    left, top, right, bot = win32gui.GetWindowRect(hwnd)
+    print(win32gui.GetWindowRect(hwnd))
+    if left<0:
+        left=int(left*96/120)
+        right=int(right*96/120)
+        top=int(top*96/120)
+        bot=int(bot*96/120)
+
+    right=right-(15*96/120)
+    bot=bot- (35*96/120)
+
+    print(left,right)
+    w = right - left
+    h = bot - top
+
+    # w *= 1.25
+    # h *= 1.25
+    w = int(w)
+    h = int(h)
+
+    hwndDC = win32gui.GetWindowDC(hwnd)
+    mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
+    saveDC = mfcDC.CreateCompatibleDC()
+
+    saveBitMap = win32ui.CreateBitmap()
+    saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+
+    saveDC.SelectObject(saveBitMap)
+
+    # Change the line below depending on whether you want the whole window
+    # or just the client area.
+    #result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 1)
+    result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 3)
+    print(result)
+
+    bmpinfo = saveBitMap.GetInfo()
+    bmpstr = saveBitMap.GetBitmapBits(True)
+
+    im = Image.frombuffer(
+        'RGB',
+        (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
+        bmpstr, 'raw', 'BGRX', 0, 1)
+
+    win32gui.DeleteObject(saveBitMap.GetHandle())
+    saveDC.DeleteDC()
+    mfcDC.DeleteDC()
+    win32gui.ReleaseDC(hwnd, hwndDC)
+    print(result)
+    if result == 1:
+        print("#PrintWindow Succeeded")
+        im.save("screenshot.png")
+
+    return im
 
 
-class SlaveDragTarget(ft.DragTarget):
-    def __init__(self, instance=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.group = "all"
-        if instance:
-            self.content = SlaveDraggable(instance)
-        else:
-            self.content = ft.Container(**fus, bgcolor=ft.colors.ON_SURFACE_VARIANT)
-
-        self.on_accept = self.accept
-        # self.on_leave = self.leave
-
-    def accept(self, e):
-        print(e)
-        src = e.page.get_control(e.src_id)
-        e.control.content = SlaveDraggable(src.data)
-
-        self.page.update()
-
-    def leave(self, e):
-        e.control.content = ft.Container(
-            width=50,
-            height=50,
-            bgcolor=ft.colors.BLUE_GREY_100,
-            border_radius=5,
-        )
-        self.page.update()
-
-
-class WorkerDragtarget(ft.Container):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.width = 130
-        self.height = 330
-        self.content = ft.Column(
-            controls=[ft.Text("Worker", size=20), ft.Divider(), ft.ListView(height=300, expand=1, spacing=5)],
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            alignment=ft.alignment.center,
-        )
-        self.bgcolor = ft.colors.RED
-        self.alignment = ft.alignment.center
-        self.border_radius = 5
-        self.margin = ft.margin.all(5)
-
-        for _ in instances:
-            self.add_dragtarget()
-
-    def add_dragtarget(self):
-        self.content.controls[-1].controls.append(SlaveDragTarget())
-
-
-def main(page: ft.Page):
-    line = ft.Row()
-    for name in instances:
-        line.controls.append(SlaveDragTarget(instance=name))
-
-    page.add(line)
-
-    page.add(WorkerDragtarget())
-
-
-ft.app(target=main)
+if __name__ == '__main__':
+    game_screenshot()

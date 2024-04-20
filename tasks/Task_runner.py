@@ -569,7 +569,7 @@ class TaskRunner(Task):
 
         self.FileSingleton.get_path()
         data = self.FileSingleton.get_data()
-        emulator_choice = EmulatorSingleton().getEmulator()
+        emulator_choice = EmulatorSingleton().getEmulatorType()
 
         if not win32gui.FindWindow(None, self.name):
             print(f"Bot will wait until the device is properly booted.")
@@ -733,7 +733,7 @@ class TaskRunner(Task):
             self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
             return
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
 
         self.set_sel(tiles[0].number)
         self.data = self.update_data()
@@ -857,7 +857,7 @@ class TaskRunner(Task):
             self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
             return
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
         self.data = self.update_data()
         loop_task = 1 if not self.data["workers"][emulator][self.worker.number]["loop_task"] else 9999999
 

@@ -47,7 +47,7 @@ class TileHandlerPC(ft.ListView):
     def refresh(self):
         data = self.FileSingleton.get_data()
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
 
         instances = {"pc": {"name": "pc", "instance": "pc", "port": -1}}
 

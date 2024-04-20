@@ -44,7 +44,7 @@ class Task:
         self.current_profile: str = "1"
         self.tile = tile
         self.sel: str = tile.number
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
 
         if self.tile.__class__.__name__ != "TileWorker":
             if emulator == "bluestacks":
