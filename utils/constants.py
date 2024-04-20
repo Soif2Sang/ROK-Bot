@@ -168,4 +168,5 @@ default_profile = {
     "gather_gem_center_pos": [],
     "gather_gem_availability": "all",
     "gather_rss_availability": "all",
+    "help_alliance_building": False,
 }

@@ -3,6 +3,8 @@ from time import time
 
 import cv2
 from numpy import where
+
+from Task_alliance_build import AllianceFlag
 from Task_gather_gem_spiral import GatherGemSpiral
 
 # from tasks.Task_title import Title
@@ -100,6 +102,7 @@ class Bot:
         self.help = AllianceHelp(self.main_task)
         self.training = TroopTraining(self.main_task)
         self.hunt = HuntBarbarians(self.main_task)
+        self.build = AllianceFlag(self.main_task)
         self.runner = TaskRunner(self.main_task, self.main_task.tile)
         # self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
         # self.cod_chest = DailyChest(self.main_task)
@@ -243,8 +246,9 @@ from cv2 import (COLOR_BGR2GRAY, THRESH_BINARY, THRESH_OTSU, TM_CCOEFF_NORMED,
 if __name__ == "__main__":
 
 
-    bo = get_bot("0")
-    bo.hunt.select_lineup_color(color="red")
+    bo = get_bot("4")
+    bo.build.run()
+    # bo.hunt.select_lineup_color(color="red")
     # bo.gem.run()
     exit()
 
