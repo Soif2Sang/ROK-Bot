@@ -1,6 +1,7 @@
 import flet as ft
 from schemas.emulator_schemas import TaskClaimDailyExpeditionRewardsSchema
 
+from schemas.emulator_schemas import TaskClaimDailyExpeditionRewardsSchema
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 
