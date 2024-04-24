@@ -1,6 +1,7 @@
 import flet as ft
 from schemas.emulator_schemas import TaskBuyMysteriousMerchantSchema
 
+from schemas.emulator_schemas import TaskBuyMysteriousMerchantSchema
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 
