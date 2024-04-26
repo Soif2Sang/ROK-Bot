@@ -8,7 +8,7 @@ import flet as ft
 import win32gui
 from PIL import Image
 
-from Task_alliance_build import AllianceBuilding
+from tasks.Task_alliance_build import AllianceBuilding
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation

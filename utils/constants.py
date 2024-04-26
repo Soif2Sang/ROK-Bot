@@ -1,8 +1,8 @@
 from typing import Literal
 
 DEBUG = False
-VERSION_TYPE: Literal["global", "brazilian"] = "global"
-VERSION_NUMBER = "3.3.5"
+VERSION_TYPE: Literal["global", "brazilian"] = "brazilian"
+VERSION_NUMBER = "3.3.6"
 TOAST_HISTORY = {}
 
 names = {"global": "RokNet", "brazilian": "ROKBOT"}

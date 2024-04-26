@@ -5,7 +5,7 @@ from time import time
 import cv2
 from numpy import where
 
-from Task_gather_gem_spiral import GatherGemSpiral
+from tasks.Task_gather_gem_spiral import GatherGemSpiral
 
 # from tasks.Task_title import Title
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
