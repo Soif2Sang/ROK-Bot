@@ -563,9 +563,9 @@ class GatherGem(Task):
 
                     if self.data[str(self.sel)]["schedules"][self.current_profile].get("alliance_help"):
                         AllianceHelp(self).run()
-
-                if random() > 0.8:
-                    self.random_interaction(zoomed_in=True)
+                #
+                # if random() > 0.8:
+                #     self.random_interaction(zoomed_in=True)
 
             # self.better_sleep((1, 1.895))
             self.close_windows()
