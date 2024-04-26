@@ -82,7 +82,7 @@ class Bot:
         self.main_task = Task(Frame(adb.instance))  # tasksGEM / tasks
         self.main_task.adb = adb
         # self.task = Tasks(self.adb)
-        self.main_task.set_sel(str(adb.instance))
+        self.main_task.set_instance_id(str(adb.instance))
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.merchant = BuyMerchant(self.main_task)

@@ -44,7 +44,7 @@ from utils.android_debug_bridge_ld_player import AdbLd
 from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid
 from utils.pc_bridge import PcBridge
 from utils.singletons import EmulatorSingleton
-from views.frametime import is_in_frametime, random_time_in_frametime
+from views.frametime import is_slot_runnable, random_time_in_frametime
 
 
 class TaskRunner(Task):
@@ -609,7 +609,7 @@ class TaskRunner(Task):
                         when_go = 0
                         print(f"Profile {profile} enabled")
                         for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                            if is_in_frametime(t[0], t[1]):
+                            if is_slot_runnable(t[0], t[1]):
                                 can_go = True
                                 when_go = random_time_in_frametime(t[0], t[1])
                                 print(f"{when_go=}")
@@ -721,7 +721,7 @@ class TaskRunner(Task):
                 if self.data[self.sel]["schedules"]["1"]["enable_timing"]:
                     can_go = False
                     for t in self.data[self.sel]["schedules"]["1"]["timing"]:
-                        if is_in_frametime(t[0], t[1]):
+                        if is_slot_runnable(t[0], t[1]):
                             self.print(f"Profile 1 able to run")
                             can_go = True
                             break
@@ -846,7 +846,7 @@ class TaskRunner(Task):
                     else:
                         if self.data[self.sel]["schedules"][profile]["enable_timing"]:
                             for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                                if is_in_frametime(t[0], t[1]):
+                                if is_slot_runnable(t[0], t[1]):
                                     self.print(f"Profile 1 able to run")
                                     can_go = True
                                     break
@@ -952,7 +952,7 @@ class TaskRunner(Task):
                         can_go = False
                         when_go = 0
                         for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                            if is_in_frametime(t[0], t[1]):
+                            if is_slot_runnable(t[0], t[1]):
                                 can_go = True
                                 when_go = random_time_in_frametime(t[0], t[1])
                                 print(f"{when_go=}")
