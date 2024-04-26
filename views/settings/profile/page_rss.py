@@ -52,7 +52,7 @@ class PageRss(BasePage):
             ft.Divider(),
             ft.ResponsiveRow(
                 controls=[
-                    ft.Text("When to activate"),
+                    ft.Text("Condition to run task"),
                     self.availability_dropdown
                 ],
             ),
@@ -63,6 +63,13 @@ class PageRss(BasePage):
             ft.Divider(),
             ft.Text("Settings", weight=ft.FontWeight.BOLD),
             ft.Divider(),
+            ft.Switch(
+                label=translate("Use Yellow presets as gatherers"),
+                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
+                    "rss_custom_preset"] else False,
+                on_change=lambda _: self.reverse_keyword("rss_custom_preset"),
+            ),
+            ft.Container(height=10),
             *self.values.values()
         )
 

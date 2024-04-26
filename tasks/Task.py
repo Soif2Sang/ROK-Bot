@@ -1590,10 +1590,12 @@ class Task:
             (4, 145, 193),
             (3, 145, 193),
             (4, 145, 194),
-            (248, 157, 48)
+            (248, 157, 48),
+            (3, 147, 197),
+            (2, 146, 198),
+            (2, 4, 183),
         ]
         occupied_colors = [
-            (2, 4, 183),
             (233, 233, 233),
             (247, 156, 47),
             (207, 131, 40),
@@ -1655,7 +1657,7 @@ class Task:
                         or ((pixel[0] < 10) and (pixel[1] > 187) and (pixel[2] < 10))
                         or (pixel in occupied_colors)
                 ) and (pixel not in whitelist):
-                    self.print(f"Node occupied {pixel}")
+                    self.print(f"Node occupied, if you think it is a mistake, please report this: {pixel}")
                     return True
         return False
 
