@@ -24,7 +24,7 @@ def is_valid_time(time_str):
         return False
 
 
-def is_in_frametime(first, second):
+def is_slot_runnable(first, second):
     current_time = datetime.now().time()
     start_time = datetime.strptime(first, "%H:%M").time()
     end_time = datetime.strptime(second, "%H:%M").time()
