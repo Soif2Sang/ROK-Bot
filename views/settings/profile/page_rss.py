@@ -52,7 +52,7 @@ class PageRss(BasePage):
             ft.Divider(),
             ft.ResponsiveRow(
                 controls=[
-                    ft.Text("When to activate"),
+                    ft.Text("Condition to run task"),
                     self.availability_dropdown
                 ],
             ),
