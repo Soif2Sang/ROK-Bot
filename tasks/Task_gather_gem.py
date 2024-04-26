@@ -156,14 +156,14 @@ class GatherGem(Task):
                 #         return True
 
 
-                default_color_boxes = [[default_image[260 + i * 50, 1100], 260 + i * 50, i] for i in range(7)]
+                default_color_boxes = [[default_image[260 + i * 50, 1097], 260 + i * 50, i] for i in range(7)]
                 shuffle(default_color_boxes)
 
                 for default_color in default_color_boxes:
                     self.click(uniform(1096, 1118), default_color[1] + uniform(0, 10))
                     self.better_sleep((1, 2))
                     new_image = self.adb.get_cv2_img()
-                    if (default_color[0] != new_image[default_color[1], 1100]).all():
+                    if (default_color[0] != new_image[default_color[1], 1097]).all():
                         co = self.find_img(target="troops_march_button")
                         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
                         self.better_sleep((0.5, 0.7))
