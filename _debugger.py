@@ -1,11 +1,11 @@
 import json
+from random import uniform
 from time import time
 
 import cv2
 from numpy import where
 
-from Task_alliance_build import AllianceFlag
-from Task_gather_gem_spiral import GatherGemSpiral
+from tasks.Task_gather_gem_spiral import GatherGemSpiral
 
 # from tasks.Task_title import Title
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
@@ -102,7 +102,6 @@ class Bot:
         self.help = AllianceHelp(self.main_task)
         self.training = TroopTraining(self.main_task)
         self.hunt = HuntBarbarians(self.main_task)
-        self.build = AllianceFlag(self.main_task)
         self.runner = TaskRunner(self.main_task, self.main_task.tile)
         # self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
         # self.cod_chest = DailyChest(self.main_task)
@@ -247,7 +246,17 @@ if __name__ == "__main__":
 
 
     bo = get_bot("4")
-    bo.build.run()
+    default_image = bo.adb.get_cv2_img()
+    for i in range(7):  # change if you have 6-7 troops
+        default_color = default_image[260 + i * 50, 1097]
+        x_click, y_click = uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50)
+        bo.task.click(x_click, y_click)
+        bo.task.better_sleep((1, 2))
+        new_image = bo.task.adb.get_cv2_img()
+        if (default_color != new_image[260 + i * 50, 1097]).all():
+            print(f"Troop {i + 1} is selected")
+        else:
+            print(f"Troop {i + 1} is not selected")
     # bo.hunt.select_lineup_color(color="red")
     # bo.gem.run()
     exit()
