@@ -8,7 +8,6 @@ import flet as ft
 import win32gui
 from PIL import Image
 
-from tasks.Task_gather_gem_map import GatherGemMap
 from tasks.Task_academy_research import AcademyResearch
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
@@ -24,11 +23,12 @@ from tasks.Task_daily_chest import DailyChest
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
 from tasks.Task_gather_gem_default import GatherGemDefault
+from tasks.Task_gather_gem_map import GatherGemMap
 from tasks.Task_gather_rss_default import GatherRssDefault
 from tasks.Task_gather_rss_zoom import GatherRssZoom
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
-from tasks.Task_maraudeurs import Marauders
+from tasks.Task_maraudeurs_default import Marauders
 from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
@@ -38,8 +38,7 @@ from tasks.TaskPC_gather_gem_spiral import GatherGemSpiral
 from utils.android_debug_bridge import DeviceNotFoundException
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import (current_time, get_dic_instances,
-                             get_dic_instances_ld, get_name, get_window_pid)
+from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid
 from utils.pc_bridge import PcBridge
 from utils.singletons import EmulatorSingleton
 from views.frametime import is_in_frametime, random_time_in_frametime
@@ -388,7 +387,7 @@ class TaskRunner(Task):
             if rounds == 0:
                 rounds = +1
             for _ in range(rounds):
-                x2, y2 = x + uniform(-20,20), uniform(580, 645)
+                x2, y2 = x + uniform(-20, 20), uniform(580, 645)
                 self.swipe(x, y, x2, y2)
                 self.better_sleep((3.5, 4.7))
             self.click(co_first[0] + uniform(30, 300), co_first[1] + uniform(-30, 0))
@@ -863,7 +862,7 @@ class TaskRunner(Task):
 
                     self.tile.runner = self
                     self.set_status("Starting..")
-                    
+
                     # First character
                     self.current_profile = profile
 
@@ -906,8 +905,6 @@ class TaskRunner(Task):
                     f"The bot took {timedelta(seconds=int(time() - emulator_started_at))} to complete all the tasks on this emulator.",
                     "green",
                 )
-
-
 
             if self.data["workers"][emulator][self.worker.number]["loop_task"]:
                 waiting_cooldown = self.data["workers"][emulator][self.worker.number]["waiting_cooldown"]

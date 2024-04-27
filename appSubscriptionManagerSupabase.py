@@ -28,7 +28,9 @@ class CreateUser(ft.Column):
 
         self.button = ft.FilledButton(text="Create/Extend User", on_click=self.generate)
 
-        self.controls.append(ft.Container( margin=ft.margin.only(top=10), content=ft.Column([self.username, self.password, self.days, self.button])))
+        self.controls.append(
+            ft.Container(margin=ft.margin.only(top=10), content=ft.Column([self.username, self.password, self.days, self.button]))
+        )
 
     def submit(self, e):
         return
@@ -66,7 +68,9 @@ class CreateUser(ft.Column):
                 return
 
         if self.password.value:
-            supabaseClient.client.auth.sign_up({"email": self.username.value.strip().lower(), "password": self.password.value.strip().lower()})
+            supabaseClient.client.auth.sign_up(
+                {"email": self.username.value.strip().lower(), "password": self.password.value.strip().lower()}
+            )
             supabaseClient.client.auth.sign_out()
 
             supabaseClient.login("brazil@manager.com", "brazil@manager.com")
@@ -86,6 +90,7 @@ class CreateUser(ft.Column):
         self.page.randomtext.value = "User created/extended"
 
         self.page.update()
+
 
 class ModifyVersion(ft.Column):
     def __init__(self, version, *args, **kwargs):

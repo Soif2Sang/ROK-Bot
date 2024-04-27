@@ -7,7 +7,7 @@
 # TODO IMPORTING NECESSARY LIBRARYIES
 ########################################################################################################################
 # LIB python libraryies
-from typing import (Optional, Union)
+from typing import Optional, Union
 
 # LIB => flet libraryies
 import flet as ft

@@ -1,5 +1,6 @@
 import re
 import traceback
+
 # from utils.easyOcr import Reader
 from collections.abc import Callable
 from datetime import datetime
@@ -81,7 +82,10 @@ class GatherGem(Task):
         """
         deadstop = 0
 
-        while self.find_img(target=f"pc\\{color}_icon", confidence=0.98) is None and self.find_img(target="pc\\troops_march_button", confidence=0.7) is not None:
+        while (
+            self.find_img(target=f"pc\\{color}_icon", confidence=0.98) is None
+            and self.find_img(target="pc\\troops_march_button", confidence=0.7) is not None
+        ):
             if deadstop == 5:
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))

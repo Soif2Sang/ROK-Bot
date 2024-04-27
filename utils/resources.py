@@ -18,25 +18,19 @@ class ImageSingleton:
         self.image_dict = {}
         for filename in os.listdir(dir):
             if filename.endswith(".png"):
-                name = os.path.splitext(filename)[
-                    0
-                ]  # Extract the name without extension
+                name = os.path.splitext(filename)[0]  # Extract the name without extension
                 image = imread(os.path.join(dir, filename))
                 self.image_dict[name] = image
 
         for filename in os.listdir(dir + "/buffs"):
             if filename.endswith(".png"):
-                name = (
-                    "buffs\\" + os.path.splitext(filename)[0]
-                )  # Extract the name without extension
+                name = "buffs\\" + os.path.splitext(filename)[0]  # Extract the name without extension
                 image = imread(os.path.join(dir + "/buffs", filename))
                 self.image_dict[name] = image
 
         for filename in os.listdir(dir + "/items"):
             if filename.endswith(".png"):
-                name = (
-                    "items\\" + os.path.splitext(filename)[0]
-                )  # Extract the name without extension
+                name = "items\\" + os.path.splitext(filename)[0]  # Extract the name without extension
                 image = imread(os.path.join(dir + "/items", filename))
                 self.image_dict[name] = image
         #
