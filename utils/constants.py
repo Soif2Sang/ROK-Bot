@@ -1,8 +1,8 @@
 from typing import Literal
 
 DEBUG = False
-VERSION_TYPE: Literal["global", "brazilian"] = "brazilian"
-VERSION_NUMBER = "3.3.6"
+VERSION_TYPE: Literal["global", "brazilian"] = "global"
+VERSION_NUMBER = "3.3.7"
 TOAST_HISTORY = {}
 
 names = {"global": "RokNet", "brazilian": "ROKBOT"}
@@ -22,11 +22,7 @@ SUPABASE_KEY: str = (
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dHBiYmFkcmRuZm96Y2tmamRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDUxNDU2ODAsImV4cCI6MjAyMDcyMTY4MH0.K3da9dT4qw9e3osKrQakBEPVjeLWMDo0dEdytVLLqfY"
 )
 
-default_worker_settings = {
-    "loop_task": True,
-    "waiting_cooldown": [60, 90],
-    "close_emulator": True
-}
+default_worker_settings = {"loop_task": True, "waiting_cooldown": [60, 90], "close_emulator": True}
 
 default_dic = {
     "instance": "",

@@ -8,9 +8,9 @@ import flet as ft
 import win32gui
 from PIL import Image
 
-from tasks.Task_alliance_build import AllianceBuilding
 from tasks.Task import Task
 from tasks.Task_academy_research import AcademyResearch
+from tasks.Task_alliance_build import AllianceBuilding
 from tasks.Task_alliance_donation import AllianceDonation
 from tasks.Task_alliance_help import AllianceHelp
 from tasks.Task_alliance_pit import AlliancePit
@@ -25,13 +25,13 @@ from tasks.Task_daily_chest import DailyChest
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
 from tasks.Task_gather_gem_default import GatherGemDefault
-from tasks.Task_gather_gem_spiral import GatherGemSpiral
 from tasks.Task_gather_gem_map import GatherGemMap
+from tasks.Task_gather_gem_spiral import GatherGemSpiral
 from tasks.Task_gather_rss_default import GatherRssDefault
 from tasks.Task_gather_rss_zoom import GatherRssZoom
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
-from tasks.Task_maraudeurs import Marauders
+from tasks.Task_maraudeurs_default import Marauders
 from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
@@ -39,8 +39,7 @@ from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge import DeviceNotFoundException
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import (current_time, get_dic_instances,
-                             get_dic_instances_ld, get_name, get_window_pid)
+from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid
 from utils.singletons import EmulatorSingleton
 from views.frametime import is_in_frametime, random_time_in_frametime
 
@@ -48,6 +47,7 @@ from views.frametime import is_in_frametime, random_time_in_frametime
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
         super().__init__(MainTask.tile)
+        self.has_started_once = False
         self.herite(MainTask)
 
     def task_name(self):
@@ -205,16 +205,9 @@ class TaskRunner(Task):
         # print(profile)
         lib_tasks = []
 
-        gem_task = {
-            "default": GatherGemDefault,
-            "spiral": GatherGemSpiral,
-            "map": GatherGemMap
-        }
+        gem_task = {"default": GatherGemDefault, "spiral": GatherGemSpiral, "map": GatherGemMap}
 
-        rss_task = {
-            "default": GatherRssDefault,
-            "zoom": GatherRssZoom
-        }
+        rss_task = {"default": GatherRssDefault, "zoom": GatherRssZoom}
 
         tasks = [
             ("claim_campaign", ClaimCampaign),
@@ -325,6 +318,8 @@ class TaskRunner(Task):
         self.close_windows()
         self.check_captcha()
 
+        self.go_city()
+
         self.enter_profile()
         self.better_sleep((1.925, 2.795))
         self.enter_setting()
@@ -424,7 +419,7 @@ class TaskRunner(Task):
             if rounds == 0:
                 rounds = +1
             for _ in range(rounds):
-                x2, y2 = x + uniform(-20,20), uniform(580, 645)
+                x2, y2 = x + uniform(-20, 20), uniform(580, 645)
                 self.swipe(x, y, x2, y2)
                 self.better_sleep((3.5, 4.7))
             self.click(co_first[0] + uniform(30, 300), co_first[1] + uniform(-30, 0))
@@ -898,7 +893,7 @@ class TaskRunner(Task):
                     self.start_emulator(self.tile.number)
                     self.tile.runner = self
                     self.set_status("Starting..")
-                    
+
                     # First character
                     self.current_profile = profile
 
@@ -942,8 +937,6 @@ class TaskRunner(Task):
                     "green",
                 )
 
-
-
             if self.data["workers"][emulator][self.worker.number]["loop_task"]:
                 waiting_cooldown = self.data["workers"][emulator][self.worker.number]["waiting_cooldown"]
                 waiting_cooldown.sort()
@@ -960,12 +953,77 @@ class TaskRunner(Task):
                 self.tile = self.worker
                 self.set_timer(time_before_redo_tasks)
 
+    def run(self):
+        self.set_sel(self.tile.number)
+        self.character_index = 1
+        self.has_started_once = False
+        emulator = EmulatorSingleton().getEmulator()
+        can_go = True
+
+        for profile in self.data[self.sel]["schedules"]:
+            can_go = False
+
+            if not self.data[self.sel]["schedules"][profile]["enabled"]:
+                continue
+            else:
+                if self.data[self.sel]["schedules"][profile]["enable_timing"]:
+                    for t in self.data[self.sel]["schedules"][profile]["timing"]:
+                        if is_in_frametime(t[0], t[1]):
+                            self.print(f"Profile 1 able to run")
+                            can_go = True
+                            break
+                    if not can_go:
+                        print(f"The current time does not match the rules you set")
+                        continue
+
+            self.has_started_once = True
+            if emulator == "bluestacks":
+                self.adb = AdbBluestacks(self.tile.number, task_reference=self)
+            else:
+                self.adb = AdbLd(self.tile.number, task_reference=self)
+
+            self.start_emulator(self.tile.number)
+            self.tile.runner = self
+            self.set_status("Starting..")
+
+            # First character
+            self.current_profile = profile
+
+            if self.get_config().get("switch_character"):
+                self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
+            # First character
+            self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
+
+            if self.get_config().get("switch_character", False):
+                self.check_captcha()
+                co_first = self.switch_character()
+                self.wait_until_connected()
+                # Characters remaining
+                boolean = True
+                self.character_index = 2
+                while co_first and boolean:
+                    self.print(f"Character n°{self.character_index}", ft.colors.CYAN_ACCENT_700)
+                    self.character_index += 1
+                    self.execute_tasks(
+                        self.get_available_task(self.current_profile),
+                        self.current_profile,
+                    )
+                    self.better_sleep((2.2, 4))
+
+                    self.check_captcha()
+                    boolean = self.switch_character(co_first, self.character_index, 0)
+                    self.wait_until_connected()
+
+        self.set_status("")
+
+        if not can_go:
+            self.leave_game()
+
     def kill_instance(self):
         self.pid = get_window_pid(self.adb.name)
         cmd = f"taskkill /PID {self.pid} /F"
         print(f"[ {current_time()} ] [ {self.name} ] Executing {cmd}")
         subprocess.Popen(cmd)
-
 
     def open_chat_and_leave(self):
         self.click(147, 680)
@@ -1001,7 +1059,6 @@ class TaskRunner(Task):
     def random_interaction(self, zoomed_in=False):
         tasks = self.get_available_task(self.current_profile)
 
-
         def open_menu_and_go_canyon():
             self.open_menu()
             self.open_campaign()
@@ -1017,7 +1074,14 @@ class TaskRunner(Task):
             self.open_commander_tab()
             self.click_any_commander_in_list()
 
-        interactions = [self.open_chat_and_leave, self.enter_profile, self.open_any_rankings, open_menu_and_go_canyon, open_inventory_and_go_in_any_tab, open_commander_list_and_click_on_heros]
+        interactions = [
+            self.open_chat_and_leave,
+            self.enter_profile,
+            self.open_any_rankings,
+            open_menu_and_go_canyon,
+            open_inventory_and_go_in_any_tab,
+            open_commander_list_and_click_on_heros,
+        ]
 
         if zoomed_in:
             interactions.append(self.open_random_rss_type)

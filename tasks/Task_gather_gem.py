@@ -1,5 +1,6 @@
 import re
 import traceback
+
 # from utils.easyOcr import Reader
 from collections.abc import Callable
 from datetime import datetime
@@ -154,7 +155,6 @@ class GatherGem(Task):
                 #         self.print("New Troop sent !", "green")
                 #         self.nodes_gathered += 1
                 #         return True
-
 
                 default_color_boxes = [[default_image[260 + i * 50, 1097], 260 + i * 50, i] for i in range(7)]
                 shuffle(default_color_boxes)
@@ -412,7 +412,6 @@ class GatherGem(Task):
         # for second_string in ["left", "mid", "right"]:
         #     for first_string in ["up", "mid", "down"]:
         #         icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
-
 
         # if random() > 0.93:
         #
@@ -708,7 +707,7 @@ class GatherGem(Task):
             if self.check_if_interrupt(screen):
                 return self.run(self.end_time)
 
-            if self.find_img(source=screen[: 500, :], target="verification_button", confidence=0.6):
+            if self.find_img(source=screen[:500, :], target="verification_button", confidence=0.6):
                 self.check_captcha()
                 screen = self.adb.get_cv2_img()
 

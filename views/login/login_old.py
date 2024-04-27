@@ -9,9 +9,7 @@ import flet as ft
 
 from utils.auth import selfApi, update_user_info
 from utils.Components.PaymentMethods import payment_methods
-from utils.constants import (VERSION_TYPE, VERSION_TYPE_name,
-                             VERSION_TYPE_secret, global_name, global_secret,
-                             ownerid)
+from utils.constants import VERSION_TYPE, VERSION_TYPE_name, VERSION_TYPE_secret, global_name, global_secret, ownerid
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, getchecksum
 from utils.singletons import ApiSingleton

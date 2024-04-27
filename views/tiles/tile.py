@@ -8,8 +8,7 @@ from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from tasks.TaskPC import Task as TaskPC
 from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
-from utils.functions import (FileSingleton, get_all_vms_running,
-                             get_all_vms_running_ld)
+from utils.functions import FileSingleton, get_all_vms_running, get_all_vms_running_ld
 from utils.singletons import EmulatorSingleton
 from views.tiles.handler.config_handler import InstanceTabs
 from views.tiles.tile_slave import ConfigOverrider

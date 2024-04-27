@@ -34,7 +34,7 @@ class PageGem(BasePage):
             value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kingdom"],
             content_padding=ft.padding.all(10),
             on_change=lambda e: self.submit(e, "kingdom", str),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != 'default',
+            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != "default",
         )
 
         self.city_x_text_field = ft.TextField(
@@ -42,7 +42,7 @@ class PageGem(BasePage):
             value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_x"],
             content_padding=ft.padding.all(10),
             on_change=lambda e: self.submit(e, "city_x", int),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != 'default',
+            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != "default",
         )
 
         self.city_y_text_field = ft.TextField(
@@ -50,7 +50,7 @@ class PageGem(BasePage):
             value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_y"],
             content_padding=ft.padding.all(10),
             on_change=lambda e: self.submit(e, "city_y", int),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != 'default',
+            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != "default",
         )
 
         # Number of Nodes Controls
@@ -113,8 +113,7 @@ class PageGem(BasePage):
             label=translate("Map method (Will use your selected area) /!SAFEST!/"),
             value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] == "map",
             on_change=self.toggle_search_method,
-            data="map"
-            ,
+            data="map",
         )
 
         self.detect_free_marches_switch = ft.Switch(
@@ -147,37 +146,38 @@ class PageGem(BasePage):
             on_change=lambda _: self.reverse_keyword("restart_game"),
         )
         self.search_methods_radio_group = ft.RadioGroup(
-            content=ft.Column([
-                ft.Radio(value="default", label=translate("Normal path method (will use cords)")),
-                ft.Container(
-                    content=ft.Column(
-                        controls=[
-                            self.kingdom_text_field,
-                            self.city_x_text_field,
-                            self.city_y_text_field,
-                        ],
+            content=ft.Column(
+                [
+                    ft.Radio(value="default", label=translate("Normal path method (will use cords)")),
+                    ft.Container(
+                        content=ft.Column(
+                            controls=[
+                                self.kingdom_text_field,
+                                self.city_x_text_field,
+                                self.city_y_text_field,
+                            ],
+                        ),
+                        margin=ft.margin.only(left=50),
                     ),
-                    margin=ft.margin.only(left=50),
-                ),
-                ft.Radio(value="map", label=translate("Map method (Will use your selected area)")),
-                ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
-                ft.Radio(value="spiral", label=translate("Spiral path method (only around your city)")),
-            ]),
+                    ft.Radio(value="map", label=translate("Map method (Will use your selected area)")),
+                    ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
+                    ft.Radio(value="spiral", label=translate("Spiral path method (only around your city)")),
+                ]
+            ),
             on_change=self.toggle_search_method,
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"]
+            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"],
         )
 
         self.availability_dropdown = ft.Dropdown(
-                        width=100,
-                        options=[
-                            ft.dropdown.Option(text="On all characters", key="all"),
-                            ft.dropdown.Option(text="Only first character", key="only_first"),
-                            ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
-                        ],
-                        on_change=self.update_availability,
-                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_availability"]
-                    )
-
+            width=100,
+            options=[
+                ft.dropdown.Option(text="On all characters", key="all"),
+                ft.dropdown.Option(text="Only first character", key="only_first"),
+                ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
+            ],
+            on_change=self.update_availability,
+            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_availability"],
+        )
 
         # Adding controls
         self.add_control(
@@ -190,15 +190,11 @@ class PageGem(BasePage):
             ft.Text("Availability", weight=ft.FontWeight.BOLD),
             ft.Divider(),
             ft.ResponsiveRow(
-                controls=[
-                    ft.Text("Condition to run task"),
-                    self.availability_dropdown
-                ],
+                controls=[ft.Text("Condition to run task"), self.availability_dropdown],
             ),
             ft.Divider(),
             ft.Text("General Settings", weight=ft.FontWeight.BOLD),
             ft.Divider(),
-
             ft.ResponsiveRow(
                 controls=[
                     ft.Column(controls=[min_duration_text_field], col={"sm": 4, "xs": 12}),
@@ -209,7 +205,6 @@ class PageGem(BasePage):
             ft.Divider(),
             ft.Text("Search Methods", weight=ft.FontWeight.BOLD),
             ft.Divider(),
-
             # self.normal_switch,
             # ft.Container(
             #     content=ft.Column(
@@ -221,19 +216,14 @@ class PageGem(BasePage):
             #     ),
             #     margin=ft.margin.only(left=50),
             # ),
-
             # map_switch,
             # ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
-
             # spiral_switch,
             self.search_methods_radio_group,
-
             ft.Divider(),
             ft.Text("Other Settings", weight=ft.FontWeight.BOLD),
             ft.Divider(),
-
             self.detect_free_marches_switch,
-
             ft.Container(
                 content=ft.Column(
                     controls=[
@@ -243,9 +233,7 @@ class PageGem(BasePage):
                 ),
                 margin=ft.margin.only(left=50),
             ),
-
             self.max_nodes_switch,
-
             ft.Container(
                 content=ft.Column(
                     controls=[
@@ -254,7 +242,6 @@ class PageGem(BasePage):
                 ),
                 margin=ft.margin.only(left=50),
             ),
-
             recenter_view_switch,
             compare_march_speed_switch,
             restart_game_switch,
@@ -264,13 +251,11 @@ class PageGem(BasePage):
         self.spiral_switch = spiral_switch
         self.map_switch = map_switch
 
-
     def toggle_default(self, value):
         self.kingdom_text_field.disabled = value
         self.city_x_text_field.disabled = value
         self.city_y_text_field.disabled = value
 
-        
     def toggle_spiral(self, value):
         pass
 

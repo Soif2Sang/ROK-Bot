@@ -63,9 +63,7 @@ class FletRowRss(ft.ResponsiveRow):
                 height=50,
             ),
             ft.Column(
-                controls=[
-                    self.node_level_dropdown
-                ],
+                controls=[self.node_level_dropdown],
                 col=3,
                 height=50,
             ),

@@ -2,15 +2,13 @@ import subprocess
 from time import time
 
 import pytesseract as tess
-from cv2 import (COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor,
-                 inRange, matchTemplate, minMaxLoc)
+from cv2 import COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor, inRange, matchTemplate, minMaxLoc
 from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
-from utils.functions import (FileSingleton, accurate_sleep, current_time,
-                             get_dic_instances, get_name)
+from utils.functions import FileSingleton, accurate_sleep, current_time, get_dic_instances, get_name
 from utils.resources import ImageSingleton
 
 bridge = None

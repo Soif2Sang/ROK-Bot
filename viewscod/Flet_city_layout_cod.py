@@ -21,7 +21,7 @@ def main(page: ft.Page):
         "siege_camp": 3,
         # "hospital":4,
         "scout_camp": 4,
-        "research_center": 5
+        "research_center": 5,
         # "city_transfer":6,
     }
 
@@ -109,7 +109,7 @@ def main(page: ft.Page):
             ft.ElevatedButton(
                 text="Set Academy",
                 on_click=lambda _: setCurrentBuild("research_center"),
-            )
+            ),
             # , ft.ElevatedButton(text="Set City to transfer", on_click=lambda _: setCurrentBuild("city_transfer"))
         ]
     )
@@ -129,7 +129,7 @@ def main2(sel, profile):
         "siege_camp": 3,
         # "hospital":4,
         "scout_camp": 4,
-        "research_center": 5
+        "research_center": 5,
         # "city_transfer":6,
     }
 

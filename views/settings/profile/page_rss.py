@@ -21,24 +21,26 @@ class PageRss(BasePage):
             )
 
         self.search_methods_radio_group = ft.RadioGroup(
-            content=ft.Column([
-                ft.Radio(value="default", label=translate("Search with default loop method")),
-                ft.Radio(value="spiral", label=translate("Search with zooming method")),
-            ]),
+            content=ft.Column(
+                [
+                    ft.Radio(value="default", label=translate("Search with default loop method")),
+                    ft.Radio(value="spiral", label=translate("Search with zooming method")),
+                ]
+            ),
             on_change=self.toggle_search_method,
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"]
+            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"],
         )
 
         self.availability_dropdown = ft.Dropdown(
-                        width=100,
-                        options=[
-                            ft.dropdown.Option(text="On all characters", key="all"),
-                            ft.dropdown.Option(text="Only first character", key="only_first"),
-                            ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
-                        ],
-                        on_change=self.update_availability,
-                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_availability"]
-                    )
+            width=100,
+            options=[
+                ft.dropdown.Option(text="On all characters", key="all"),
+                ft.dropdown.Option(text="Only first character", key="only_first"),
+                ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
+            ],
+            on_change=self.update_availability,
+            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_availability"],
+        )
 
         self.add_control(
             GenerateCard(
@@ -51,10 +53,7 @@ class PageRss(BasePage):
             ft.Text("Availability", weight=ft.FontWeight.BOLD),
             ft.Divider(),
             ft.ResponsiveRow(
-                controls=[
-                    ft.Text("Condition to run task"),
-                    self.availability_dropdown
-                ],
+                controls=[ft.Text("Condition to run task"), self.availability_dropdown],
             ),
             ft.Divider(),
             ft.Text("Search Methods", weight=ft.FontWeight.BOLD),
@@ -65,8 +64,7 @@ class PageRss(BasePage):
             ft.Divider(),
             ft.Switch(
                 label=translate("Use Yellow presets as gatherers"),
-                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][
-                    "rss_custom_preset"] else False,
+                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rss_custom_preset"] else False,
                 on_change=lambda _: self.reverse_keyword("rss_custom_preset"),
             ),
             ft.Container(height=10),

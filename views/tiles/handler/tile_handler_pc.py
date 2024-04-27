@@ -4,11 +4,9 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from utils.constants import (VERSION_TYPE, default_dic, default_profile,
-                             default_worker_settings)
+from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
-from utils.functions import (get_all_vms_running, get_all_vms_running_ld,
-                             get_dic_instances, get_dic_instances_ld)
+from utils.functions import get_all_vms_running, get_all_vms_running_ld, get_dic_instances, get_dic_instances_ld
 from utils.singletons import EmulatorSingleton, FileSingleton
 from views.tiles.handler.tile_handler_worker import NavigationBar
 from views.tiles.tile import Tile
@@ -51,7 +49,7 @@ class TileHandlerPC(ft.ListView):
 
         emulator = EmulatorSingleton().getEmulator()
 
-        instances = {"pc": {'name': 'pc', 'instance': 'pc', 'port': -1}}
+        instances = {"pc": {"name": "pc", "instance": "pc", "port": -1}}
 
         self.fetched_instances = instances
 
@@ -79,11 +77,9 @@ class TileHandlerPC(ft.ListView):
                         if key not in data[instance]["schedules"][str(i)]:
                             data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
 
-            data[instance].update({
-                "instance": instances[instance]["instance"],
-                "name": instances[instance]["name"],
-                "port": int(instances[instance]["port"])
-            })
+            data[instance].update(
+                {"instance": instances[instance]["instance"], "name": instances[instance]["name"], "port": int(instances[instance]["port"])}
+            )
 
         self.FileSingleton.write_data(data)
 
@@ -96,7 +92,6 @@ class TileHandlerPC(ft.ListView):
 
         for i in range(len(self.controls) - 1):
             self.controls.pop()
-
 
         return self.add_tile("pc")
         if instances:
