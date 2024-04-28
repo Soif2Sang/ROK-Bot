@@ -31,7 +31,7 @@ from tasks.Task_gather_rss_default import GatherRssDefault
 from tasks.Task_gather_rss_zoom import GatherRssZoom
 from tasks.Task_heal_troop import HealTroop
 from tasks.Task_hunt_barbarians import HuntBarbarians
-from tasks.Task_maraudeurs_default import Marauders
+from tasks.Task_maraudeurs_map import Marauders
 from tasks.Task_produce_materials import ProduceMaterials
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_training import TroopTraining
