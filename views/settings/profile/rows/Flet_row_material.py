@@ -1,20 +1,19 @@
 import flet as ft
+from schemas.emulator_schemas import TaskProduceMaterialsSchema
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rgetattr, rsetattr
+from utils.singletons import ss
 
 
 class FletRowMaterial(ft.Row):
-    def __init__(self, keys, i, instance_index, profile_index):
+    def __init__(self, key, context: TaskProduceMaterialsSchema):
         super().__init__()
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
-        self.instance_index = instance_index
-        self.profile_index = profile_index
+        self.context = context
         self.controls = [
             ft.Container(
                 width=100,
-                content=ft.Text(translate(f"{keys[i - 1]} choice :")),
+                content=ft.Text(translate(f"{key.split('_')[0].capitalize()} choice :")),
                 alignment=ft.alignment.center_right,
             ),
             ft.Dropdown(
@@ -28,21 +27,12 @@ class FletRowMaterial(ft.Row):
                     ft.dropdown.Option("ebony"),
                     ft.dropdown.Option("bones"),
                 ],
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"material_choice_{i}"],
-                on_change=lambda e: self.submit(e, f"material_choice_{i}", str),
+                value=rgetattr(self.context, f"{key}.type"),
+                on_change=self.submit_with_context,
+                data={"path": f"{key}.type", "type": str},
             ),
         ]
 
-    def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", "API_KEY"]:
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            self.FileSingleton.write_data(self.data)
-            return
-        if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
-        else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
-                e.control.value.replace("x", "").replace("level ", "")
-            )
-        self.FileSingleton.write_data(self.data)
+    def submit_with_context(self, e):
+        rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)

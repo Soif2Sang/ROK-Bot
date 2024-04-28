@@ -34,7 +34,7 @@ def webhook():
     try:
         s = SupabaseClient()
     except Exception as e:
-        return Response(response=str(e), status=500, mimetype='application/json')
+        return Response(response=str(e), status=500, mimetype="application/json")
     event = None
     payload = request.data
     try:
@@ -42,14 +42,14 @@ def webhook():
         print(event)
     except Exception as e:
         print("⚠️  Webhook error while parsing basic request." + str(e))
-        return Response(response="Webhook error while parsing basic request." + str(e), status=400, mimetype='application/json')
+        return Response(response="Webhook error while parsing basic request." + str(e), status=400, mimetype="application/json")
     if endpoint_secret:
         sig_header = request.headers.get("stripe-signature")
         try:
             event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
         except stripe.error.SignatureVerificationError as e:
             print("⚠️  Webhook signature verification failed." + str(e))
-            return Response(response="Webhook signature verification failed." + str(e), status=400, mimetype='application/json')
+            return Response(response="Webhook signature verification failed." + str(e), status=400, mimetype="application/json")
 
     # Handle the event
     if event and event["type"] == "checkout.session.completed":
@@ -75,10 +75,10 @@ def webhook():
             s.client.rpc("create_subscription", {"user_id": user["user_id"], "tier": tier, "days": 30}).execute()
 
         except Exception as e:
-            return Response(response=str(e), status=400, mimetype='application/json')
+            return Response(response=str(e), status=400, mimetype="application/json")
     else:
-        return Response(response="Wrong event", status=400, mimetype='application/json')
-    return Response(response="Success", status=200, mimetype='application/json')
+        return Response(response="Wrong event", status=400, mimetype="application/json")
+    return Response(response="Success", status=200, mimetype="application/json")
 
 
 @application.route("/webhook/sellix", methods=["POST"])
@@ -95,13 +95,13 @@ def sellix_webhook():
 
         if not hmac.compare_digest(signature, header_signature):
             # Invalid webhook
-            return Response(response="Webhook signature verification failed.", status=400, mimetype='application/json')
+            return Response(response="Webhook signature verification failed.", status=400, mimetype="application/json")
 
         # Parse the JSON payload
         webhook_data = json.loads(payload)
 
         if not (webhook_data["event"] == "order:paid"):
-            return Response(response="Wrong event", status=400, mimetype='application/json')
+            return Response(response="Wrong event", status=400, mimetype="application/json")
 
         data = webhook_data.get("data", {})
         # Extract custom fields from the webhook data
@@ -126,8 +126,9 @@ def sellix_webhook():
 
         s.client.rpc("create_subscription", {"user_id": user["user_id"], "tier": tier, "days": 30}).execute()
     except Exception as e:
-        return Response(response=str(e), status=400, mimetype='application/json')
-    return Response(response="Success", status=200, mimetype='application/json')
+        return Response(response=str(e), status=400, mimetype="application/json")
+    return Response(response="Success", status=200, mimetype="application/json")
+
 
 @application.route("/")
 def home():

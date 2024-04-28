@@ -5,8 +5,7 @@ import flet as ft
 import requests
 
 from utils.auth import selfApi
-from utils.constants import (VERSION_TYPE_name, VERSION_TYPE_secret,
-                             global_name, global_secret)
+from utils.constants import VERSION_TYPE_name, VERSION_TYPE_secret, global_name, global_secret
 from utils.functions import getchecksum
 
 SELLER_KEY = "f6386c16787e0eb51b24d168205267e6"

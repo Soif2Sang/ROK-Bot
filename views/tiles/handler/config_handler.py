@@ -1,7 +1,9 @@
 import flet as ft
+from schemas.emulator_schemas import EmulatorSettingsSchema
 
 from utils.flet_translations import translate
 from utils.functions import FileSingleton
+from utils.singletons import ss
 from views.settings.general.general_tab import InterfaceSettings
 from views.settings.profile.profile import SettingContainer
 from views.tiles.handler.logging_handler import Logger
@@ -21,21 +23,16 @@ class InstanceTabs(ft.Tabs):
         self.tabs.append(ft.Tab(content=self.logger, text=translate("Activity Logs")))
         self.tabs.append(ft.Tab(content=self.settings, text=translate("Settings")))
         self.tabs.append(InterfaceSettings(page, number))
-        #
-        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 1), text=translate("Profile 1")))
-        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 2), text=translate("Profile 2")))
-        # self.settings.tabs.append(ft.Tab(content=ProfileSettings(page, self, number, 3), text=translate("Profile 3")))
 
         self.settings.tabs.append(ft.Tab(content=SettingContainer(page, number, 1), text=translate("Profile 1")))
         self.settings.tabs.append(ft.Tab(content=SettingContainer(page, number, 2), text=translate("Profile 2")))
         self.settings.tabs.append(ft.Tab(content=SettingContainer(page, number, 3), text=translate("Profile 3")))
 
-        self.FileSingleton = FileSingleton()
+        emulator_settings: EmulatorSettingsSchema = ss.emulator_settings.emulators[str(self.number)]
 
-        data = self.FileSingleton.get_data()
-        for profile in data[str(number)]["schedules"]:
-            if data[str(number)]["schedules"][profile]["enabled"]:
-                self.settings.selected_index = int(profile) - 1
+        for key, schedule in emulator_settings.schedules.items():
+            if schedule.enabled:
+                self.settings.selected_index = int(key) - 1
                 break
 
     def add_text(self, texte: str, color=None):

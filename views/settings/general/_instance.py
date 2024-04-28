@@ -1,7 +1,10 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+from functions import rgetattr, rsetattr
+from schemas.emulator_schemas import EmulatorSettingsSchema
 
 from utils.flet_translations import translate
+from utils.singletons import ss
 from views.settings.general.page_profiles import PageProfiles
 from views.settings.general.page_redo import PageRedo
 from views.settings.page_settings import PageSettings
@@ -84,73 +87,31 @@ class GeneralSettings(PageSettings):
         #     ),
         # )
 
-    def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
-        if keyword == "API_KEY":
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
-        if keyword == "user_id":
-            self.data["discord"]["user_id"] = method(e.control.value)
-
-        self.FileSingleton.write_data(self.data)
-
-    def reverse_keyword(self, keyword: str, index=None):
-        self.data = self.FileSingleton.get_data()
-
-        if keyword in ["auto_scroll", "auto_refresh", "limit_logs"]:
-            self.data["interface"][keyword] = not self.data["interface"][keyword]
-        elif keyword == "enabled":
-            self.data["discord"]["enabled"] = not self.data["discord"].get(keyword, False)
-        elif keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
-            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
-        else:
-            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
-        self.FileSingleton.write_data(self.data)
-
     def create_advanced_switch(self, keyword: str, text: str, function):
-        self.data = self.FileSingleton.get_data()
-        if keyword not in ["loop_task", "scheduler"]:
-            self.content.controls.append(
-                ft.Row(
-                    controls=[
-                        ft.Switch(
-                            label=translate(text),
-                            value=True if self.data[str(self.instance_index)][keyword] else False,
-                            on_change=lambda _: self.reverse_keyword(keyword),
+        self.content.controls.append(
+            ft.Row(
+                controls=[
+                    ft.Switch(
+                        label=translate(text),
+                        value=rgetattr(self.instance_context, keyword),
+                        on_change=self.submit_with_context,
+                        data={"path": keyword, "type": bool},
+                    ),
+                    ft.OutlinedButton(
+                        text=translate("Settings"),
+                        icon=ft.icons.SETTINGS,
+                        on_click=lambda _: function(self),
+                        style=ButtonStyle(
+                            shape={
+                                ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
+                            },
                         ),
-                        ft.OutlinedButton(
-                            text=translate("Settings"),
-                            icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(self),
-                            style=ButtonStyle(
-                                shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-                                }
-                            ),
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                )
-            )
-        else:
-            self.content.controls.append(
-                ft.Row(
-                    controls=[
-                        ft.Switch(
-                            label=translate(text),
-                            value=True if self.data[str(self.instance_index)][keyword] else False,
-                            on_change=lambda _: self.reverse_keyword(keyword),
-                        ),
-                        ft.OutlinedButton(
-                            text=translate("Settings"),
-                            icon=ft.icons.SETTINGS,
-                            on_click=lambda _: function(self),
-                            style=ButtonStyle(
-                                shape={
-                                    ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-                                },
-                            ),
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                ),
-            )
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            ),
+        )
+
+    def submit_with_context(self, e):
+        rsetattr(ss.emulator_settings.emulators[self.instance_index], e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)

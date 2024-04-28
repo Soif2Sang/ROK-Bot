@@ -149,7 +149,6 @@ default_profile = {
     "buy_merchant_skip": False,
     "expedition_shop_ethel": False,
     "expedition_shop_items": False,
-
     "gather_gem": False,
     "gem_check1": 60,
     "gem_check2": 120,

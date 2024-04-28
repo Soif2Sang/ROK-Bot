@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Literal
+from typing import Any, Dict, List, Literal
 
 from dataclasses_json import dataclass_json
 
@@ -30,11 +30,13 @@ class MinMaxSchema:
     min: int = 0
     max: int = 0
 
+
 @dataclass_json
 @dataclass
 class NodeLimitSchema:
     enabled: bool = False
     fixed_node_limit: int = 0
+
 
 @dataclass_json
 @dataclass
@@ -88,7 +90,7 @@ class TaskApplyBuffSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskBuyMysteriousMerchantSchema(TaskSchema):
-    pass
+    skip_second_row: bool = False
 
 
 @dataclass_json
@@ -121,11 +123,19 @@ class TaskProduceMaterialsSchema(TaskSchema):
 
 @dataclass_json
 @dataclass
+class TroopTrainingSchema:
+    enabled: bool = False
+    tier: Literal["t1", "t2", "t3", "t4", "t5"] = "t1"
+    location: CordsSchema = field(default_factory=CordsSchema)
+
+
+@dataclass_json
+@dataclass
 class TaskTroopTraining(TaskSchema):
-    infantry_camp: CordsSchema = field(default_factory=CordsSchema)
-    cavalry_camp: CordsSchema = field(default_factory=CordsSchema)
-    archery_camp: CordsSchema = field(default_factory=CordsSchema)
-    siege_camp: CordsSchema = field(default_factory=CordsSchema)
+    infantry: TroopTrainingSchema = field(default_factory=TroopTrainingSchema)
+    cavalry: TroopTrainingSchema = field(default_factory=TroopTrainingSchema)
+    archery: TroopTrainingSchema = field(default_factory=TroopTrainingSchema)
+    siege: TroopTrainingSchema = field(default_factory=TroopTrainingSchema)
 
 
 @dataclass_json
@@ -167,24 +177,30 @@ class TaskAllianceHelpSchema(TaskSchema):
 
 @dataclass_json
 @dataclass
-class TaskKillBarbarianSchema(TaskSchema):
-    target_level: int = 25
-    enable_first_preset: bool = False
-    enable_second_preset: bool = False
-    enable_third_preset: bool = False
-    enable_fourth_preset: bool = False
-    enable_fifth_preset: bool = False
-    enable_sixth_preset: bool = False
-    enable_seventh_preset: bool = False
-
-
-@dataclass_json
-@dataclass
 class TaskAllianceFortSchema(TaskSchema):
     skip_leader_back: bool = False
     mobilisation_time: Literal[5, 10, 30] = 5
     rally_type: Literal["inf", "cav", "archers"] = "cav"
     marauders_mode: bool = False
+
+
+@dataclass_json
+@dataclass
+class TroopPresetSelectionSchema:
+    first: bool = False
+    second: bool = False
+    third: bool = False
+    fourth: bool = False
+    fifth: bool = False
+    sixth: bool = False
+    seventh: bool = False
+
+
+@dataclass_json
+@dataclass
+class TaskKillBarbarianSchema(TaskSchema):
+    target_level: int = 25
+    presets_selection: TroopPresetSelectionSchema = field(default_factory=TroopPresetSelectionSchema)
 
 
 @dataclass_json
@@ -218,10 +234,20 @@ class TaskTroopHealingSchema(TaskSchema):
 @dataclass
 class TaskResourcesTransferSchema(TaskSchema):
     fast_transfer: bool = False
+    transfer_position: CordsSchema = field(default_factory=CordsSchema)
     food_amount: int = 0
     wood_amount: int = 0
     stone_amount: int = 0
     gold_amount: int = 0
+
+
+@dataclass_json
+@dataclass
+class TaskMaraudersSchema(TaskSchema):
+    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
+    searching_radius: int = 30
+    map_center_pos: CordsSchema = field(default_factory=CordsSchema)
+    presets_selection: TroopPresetSelectionSchema = field(default_factory=TroopPresetSelectionSchema)
 
 
 @dataclass_json
@@ -246,8 +272,7 @@ class TaskLibrarySchema:
     claim_daily_vip_chest: TaskClaimDailyVipChestSchema = field(default_factory=TaskClaimDailyVipChestSchema)
     claim_daily_chest: TaskClaimDailyChestSchema = field(default_factory=TaskClaimDailyChestSchema)
     claim_daily_quest: TaskClaimDailyQuestSchema = field(default_factory=TaskClaimDailyQuestSchema)
-    claim_daily_expedition_rewards: TaskClaimDailyExpeditionRewardsSchema = field(
-        default_factory=TaskClaimDailyExpeditionRewardsSchema)
+    claim_daily_expedition_rewards: TaskClaimDailyExpeditionRewardsSchema = field(default_factory=TaskClaimDailyExpeditionRewardsSchema)
     claim_mail: TaskClaimMailSchema = field(default_factory=TaskClaimMailSchema)
     alliance_help: TaskAllianceHelpSchema = field(default_factory=TaskAllianceHelpSchema)
     kill_barbarian: TaskKillBarbarianSchema = field(default_factory=TaskKillBarbarianSchema)
@@ -257,25 +282,66 @@ class TaskLibrarySchema:
     academic_research: TaskAcademicResearchSchema = field(default_factory=TaskAcademicResearchSchema)
     troop_healing: TaskTroopHealingSchema = field(default_factory=TaskTroopHealingSchema)
     resources_transfer: TaskResourcesTransferSchema = field(default_factory=TaskResourcesTransferSchema)
+    marauders: TaskMaraudersSchema = field(default_factory=TaskMaraudersSchema)
+
+
+@dataclass_json
+@dataclass
+class TimeSlotSchema:
+    allowed_time_slots: List[AllowedTimeSlotsSchema] = field(default_factory=list)
+    enabled: bool = False
+
+
+@dataclass_json
+@dataclass
+class LogBackFromErrorSchema:
+    enabled: bool = False
+    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
+
+
+@dataclass_json
+@dataclass
+class SleepFactorSchema:
+    enabled: bool = False
+    factor: float = 1
+
+
+@dataclass_json
+@dataclass
+class SwitchCharacterSchema:
+    enabled: bool = False
+    restart_during_game_load: bool = False
+
+
+@dataclass_json
+@dataclass
+class CaptchaSolverSchema:
+    enabled: bool = False
+
+
+@dataclass_json
+@dataclass
+class LogBackFromDeviceSwitchSchema:
+    enabled: bool = False
+    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
 
 
 @dataclass_json
 @dataclass
 class ProfileSchema:
     enabled: bool = False
-    allowed_time_slots: List[AllowedTimeSlotsSchema] = field(default_factory=list)
-    enable_time_slots: TaskSchema = field(default_factory=TaskSchema)
 
-    enable_reconnect_on_error: bool = True
-    enable_log_back_on_device_switch: bool = True
-    log_back_on_device_switch_duration: MinMaxSchema = field(default_factory=MinMaxSchema)
-    enable_captcha_solver: bool = True
-    enable_switch_character: bool = True
-    enable_switch_character_restart_during_game_load: bool = False
-    enable_sleep_factor: bool = True
-    sleep_factor: int = 1
+    time_slot: TimeSlotSchema = field(default_factory=TimeSlotSchema)
+    log_back_from_error: LogBackFromErrorSchema = field(default_factory=LogBackFromErrorSchema)
+    log_back_from_device_switch: LogBackFromDeviceSwitchSchema = field(default_factory=LogBackFromDeviceSwitchSchema)
+
+    captcha_solver: CaptchaSolverSchema = field(default_factory=CaptchaSolverSchema)
+
+    switch_character: SwitchCharacterSchema = field(default_factory=SwitchCharacterSchema)
+    sleep_factor: SleepFactorSchema = field(default_factory=SleepFactorSchema)
 
     tasks: TaskLibrarySchema = field(default_factory=TaskLibrarySchema)
+
 
 @dataclass_json
 @dataclass
@@ -289,11 +355,14 @@ class EmulatorSettingsSchema:
     # loop_duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=60, max=120))
     # leave_game_loop: bool = True
     scheduler: bool = False
-    schedules: Dict[str, ProfileSchema] = field(default_factory=lambda: {
-        "1": ProfileSchema(),
-        "2": ProfileSchema(),
-        "3": ProfileSchema(),
-    })
+    schedules: Dict[str, ProfileSchema] = field(
+        default_factory=lambda: {
+            "1": ProfileSchema(),
+            "2": ProfileSchema(),
+            "3": ProfileSchema(),
+        }
+    )
+
 
 @dataclass_json
 @dataclass

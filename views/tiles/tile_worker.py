@@ -2,12 +2,12 @@ import threading
 
 import flet as ft
 from Worker_runner import WorkerRunner
+from test_random_x import open_worker_settings
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from tasks.TaskPC import Task as TaskPC
 from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
-from test_random_x import open_worker_settings
 from utils.flet_translations import translate
 from utils.functions import FileSingleton
 from utils.singletons import EmulatorSingleton
@@ -184,7 +184,6 @@ class TileWorker(ft.ExpansionTile):
         #     if instance["instance"] not in self.slaves:
         #         self.slaves[instance["instance"]] = TileSlave(self.initial_page, instance["instance"])
         #     self.controls.append(self.slaves[instance["instance"]])
-
 
         for instanceSchema in worker_settings.worker_type[emulator_type].workers[self.number].instances:
             instance = instanceSchema.instance

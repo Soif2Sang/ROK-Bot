@@ -1,7 +1,7 @@
 import flet as ft
-
 from functions import rsetattr
 from singletons import SettingsSingleton
+
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
@@ -76,8 +76,7 @@ class PageGem(BasePage):
             content_padding=ft.padding.all(10),
             on_change=self.submit_with_context,
             input_filter=ft.NumbersOnlyInputFilter(),
-            data={"path": "duration.min", "type": int}
-
+            data={"path": "duration.min", "type": int},
         )
 
         max_duration_text_field = ft.TextField(
@@ -86,8 +85,7 @@ class PageGem(BasePage):
             content_padding=ft.padding.all(10),
             on_change=self.submit_with_context,
             input_filter=ft.NumbersOnlyInputFilter(),
-            data={"path": "duration.max", "type": int}
-
+            data={"path": "duration.max", "type": int},
         )
 
         scanning_radius_text_field = ft.TextField(
@@ -96,8 +94,7 @@ class PageGem(BasePage):
             content_padding=ft.padding.all(10),
             on_change=self.submit_with_context,
             input_filter=ft.NumbersOnlyInputFilter(),
-            data={"path": "searching_radius", "type": int}
-
+            data={"path": "searching_radius", "type": int},
         )
 
         # self.normal_switch = ft.Switch(
@@ -131,16 +128,17 @@ class PageGem(BasePage):
             label=translate("Set the maximum of nodes to gather"),
             value=self.context.node_limit.enabled,
             on_change=self.submit_with_context,
-            data={"path": "node_limit.enabled", "type": bool})
+            data={"path": "node_limit.enabled", "type": bool},
+        )
 
         self.node_limit_text_field = ft.TextField(
             label=translate("Fixed number of nodes to gather :"),
             value=str(self.context.node_limit.fixed_node_limit),
             content_padding=ft.padding.all(10),
-            on_change=self.submit_with_context,
             # disabled=not self.context.node_limit.enabled,
             input_filter=ft.NumbersOnlyInputFilter(),
-            data={"path": "node_limit.fixed_node_limit", "type": int}
+            on_change=self.submit_with_context,
+            data={"path": "node_limit.fixed_node_limit", "type": int},
         )
 
         # recenter_view_switch = ft.Switch(
@@ -153,7 +151,7 @@ class PageGem(BasePage):
             label=translate("Compare march speed (Increase gem gathering\nbut increase number of actions)"),
             value=self.context.compare_march_duration,
             on_change=self.submit_with_context,
-            data={"path": "compare_march_duration", "type": bool}
+            data={"path": "compare_march_duration", "type": bool},
         )
 
         # restart_game_switch = ft.Switch(
@@ -190,8 +188,8 @@ class PageGem(BasePage):
                 ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
             ],
             value=self.context.availability,
-            on_change = self.submit_with_context,
-            data = {"path": "availability", "type": str}
+            on_change=self.submit_with_context,
+            data={"path": "availability", "type": str},
         )
 
         # Adding controls
@@ -199,8 +197,7 @@ class PageGem(BasePage):
             GenerateCard(
                 level=translate("warning"),
                 title=translate("*REQUIREMENT*"),
-                subtitle=translate(
-                    "Pre-configure yellow-lineups with gathering gem commanders!\nConfigure the center of the search zone"),
+                subtitle=translate("Pre-configure yellow-lineups with gathering gem commanders!\nConfigure the center of the search zone"),
             ),
             ft.Divider(),
             ft.Text("Availability", weight=ft.FontWeight.BOLD),
@@ -235,14 +232,11 @@ class PageGem(BasePage):
             # map_switch,
             # ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
             # spiral_switch,
-
             # self.search_methods_radio_group,
             self.set_area_location_button,
-
             ft.Divider(),
             ft.Text("Other Settings", weight=ft.FontWeight.BOLD),
             ft.Divider(),
-
             # self.detect_free_marches_switch,
             #
             # ft.Container(
@@ -254,7 +248,6 @@ class PageGem(BasePage):
             #     ),
             #     margin=ft.margin.only(left=50),
             # ),
-
             self.max_nodes_switch,
             ft.Container(
                 content=ft.Column(
@@ -264,7 +257,6 @@ class PageGem(BasePage):
                 ),
                 margin=ft.margin.only(left=50),
             ),
-
             compare_march_speed_switch,
             # recenter_view_switch,
             # restart_game_switch,
