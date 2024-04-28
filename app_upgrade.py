@@ -17,13 +17,11 @@ try:
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
     from utils.Components.PaymentMethods import payment_methods
-    from utils.constants import (BOT_NAME, TOAST_HISTORY, VERSION_NUMBER,
-                                 VERSION_TYPE)
+    from utils.constants import BOT_NAME, TOAST_HISTORY, VERSION_NUMBER, VERSION_TYPE
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
-    from utils.functions import (FileSingleton, get_dic_instances,
-                                 get_dic_instances_ld, getchecksum)
+    from utils.functions import FileSingleton, get_dic_instances, get_dic_instances_ld, getchecksum
     from utils.singletons import ApiSingleton, EmulatorSingleton
     from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout, viewGatherGemMap
@@ -78,6 +76,7 @@ for instances in data:
         if data[instances]["schedules"][profiles]["gather_rss_method"] not in ["default", "spiral"]:
             data[instances]["schedules"][profiles]["gather_rss_method"] = "default"
             fileSingleton.write_data(data)
+
 
 def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -273,7 +272,6 @@ def emulator_choice(page: ft.Page, params, basket):
             subprocess.Popen(cmd)
         elif "pc" in e.control.data:
             EmulatorSingleton().setEmulator("pc")
-
 
         Main(page)
 

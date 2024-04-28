@@ -4,13 +4,11 @@ import re
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from utils.constants import (VERSION_TYPE, default_dic, default_profile,
-                             default_worker_settings)
+from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
 from utils.singletons import EmulatorSingleton, FileSingleton
-from views.login.login import (ClickableLink, links, sellix_icon, stripe_icon,
-                               tiers)
+from views.login.login import ClickableLink, links, sellix_icon, stripe_icon, tiers
 from views.tiles.tile_worker import TileWorker
 
 
@@ -149,7 +147,7 @@ class TileHandlerWorker(ft.ListView):
         elif emulator == "ld":
             instances = get_dic_instances_ld()
         else:
-            instances = {"pc": {'name': 'pc', 'instance': 'pc', 'port': -1}}
+            instances = {"pc": {"name": "pc", "instance": "pc", "port": -1}}
 
         self.fetched_instances = instances
 
@@ -177,11 +175,9 @@ class TileHandlerWorker(ft.ListView):
                         if key not in data[instance]["schedules"][str(i)]:
                             data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
 
-            data[instance].update({
-                "instance": instances[instance]["instance"],
-                "name": instances[instance]["name"],
-                "port": int(instances[instance]["port"])
-            })
+            data[instance].update(
+                {"instance": instances[instance]["instance"], "name": instances[instance]["name"], "port": int(instances[instance]["port"])}
+            )
 
         self.FileSingleton.write_data(data)
 
@@ -190,7 +186,8 @@ class TileHandlerWorker(ft.ListView):
 
         if instances:
             for worker in data["workers"][emulator]:
-                self.add_tile(worker)
+                if data["workers"][emulator][worker]["instances"]:
+                    self.add_tile(worker)
 
         self.initial_page.update()
         return

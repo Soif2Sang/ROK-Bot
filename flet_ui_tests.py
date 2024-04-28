@@ -1,6 +1,5 @@
 import flet as ft
 from flet import Container, Image, Page, colors
-
 from flet_toast.core import Position
 from flet_toast.toasts_flexible import ToastsFlexible
 from tiles.handler.logging_handler import Logger

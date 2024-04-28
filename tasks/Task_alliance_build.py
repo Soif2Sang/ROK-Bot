@@ -215,7 +215,7 @@ class AllianceBuilding(Task):
         """
         screen = self.adb.get_cv2_img()
 
-        images = self.adb.find_multiple_img("is_alliance_pit_expended", confidence=0.79, source=screen[0:720,1076:1151])
+        images = self.adb.find_multiple_img("is_alliance_pit_expended", confidence=0.79, source=screen[0:720, 1076:1151])
         if images:
             for image in images:
                 self.click(image[0] + 1076, image[1])
@@ -231,14 +231,14 @@ class AllianceBuilding(Task):
 
         self.better_sleep((1, 2))
 
-        if not (co:=self.find_img(target="alliance_building_alert_icon")):
+        if not (co := self.find_img(target="alliance_building_alert_icon")):
             self.print("No Alliance build available.", "red")
             return self.close_windows()
 
-        self.click(co[0], co[1]+ 30)
+        self.click(co[0], co[1] + 30)
         self.better_sleep((1.3, 2))
 
-        if (co:=self.find_img(target="join_fortress_icon")):
+        if co := self.find_img(target="join_fortress_icon"):
             self.click(co[0], co[1])
             self.better_sleep((1.3, 2))
 

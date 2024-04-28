@@ -1,5 +1,4 @@
 import os
-import os
 import sys
 import threading
 import traceback
@@ -9,11 +8,10 @@ from time import sleep
 import flet as ft
 import gotrue
 
+from utils.constants import BOT_NAME, VERSION_TYPE
 from utils.flet_translations import translate
-from utils.constants import (VERSION_TYPE, BOT_NAME)
 from utils.singletons import ApiSingleton, FileSingleton
-from utils.supabase_auth import (HwidAlreadyLinked, NoSubscriptionFound,
-                                 SupabaseClient)
+from utils.supabase_auth import HwidAlreadyLinked, NoSubscriptionFound, SupabaseClient
 
 links = {
     "stripe": {
@@ -34,6 +32,7 @@ tiers = {"default": "Tier 1", "tier2": "Tier 2", "tier3": "Tier 3", "tier4": "Ti
 
 sellix_icon = "https://play-lh.googleusercontent.com/k_QwUjQQ7ZLilxE4at86Pn6Bpmef-60p23x4FUve-SKtbDPGJcyYN791xPw2ml-xmc1E=s256-rw"
 stripe_icon = "https://play-lh.googleusercontent.com/2PS6w7uBztfuMys5fgodNkTwTOE6bLVB2cJYbu5GHlARAK36FzO5bUfMDP9cEJk__cE"
+
 
 def update_user_info(password, username):
     data = FileSingleton().get_data()
@@ -56,11 +55,17 @@ class LoginScreen(ft.ResponsiveRow):
         self.data = self.fileSingleton.get_data()
 
         button_style = ft.ButtonStyle(
-            shape={ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=5)}, color=ft.colors.WHITE, bgcolor=ft.colors.BLACK,
+            shape={ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=5)},
+            color=ft.colors.WHITE,
+            bgcolor=ft.colors.BLACK,
         )
 
-        self.textfield_username = ft.TextField(label=translate("Username"), **textField, value=self.data.get("user", {}).get("username", ""))
-        self.textfield_password = ft.TextField(label=translate("Password"), **textField, value=self.data.get("user", {}).get("password", ""))
+        self.textfield_username = ft.TextField(
+            label=translate("Username"), **textField, value=self.data.get("user", {}).get("username", "")
+        )
+        self.textfield_password = ft.TextField(
+            label=translate("Password"), **textField, value=self.data.get("user", {}).get("password", "")
+        )
         self.button_login = ft.OutlinedButton(text=translate("Submit"), style=button_style, col=12, on_click=self.login)
 
         auth_col = ft.Column(
@@ -85,16 +90,26 @@ class LoginScreen(ft.ResponsiveRow):
                 controls=[
                     ft.Text("Where to subscribe", size=20, color=ft.colors.GREY_700, weight=ft.FontWeight.W_400),
                     stripe_col,
-                    sellix_col
+                    sellix_col,
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             )
         else:
             tier_col = ft.Column(
                 controls=[
-                    ClickableLink(translate("Our Website"), "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"),
-                    ClickableLink("Discord", "https://discord.com/invite/bGqsXm3HTs", "https://assets.stickpng.com/images/62b2261f038aad4d3ed7ca48.png"),
-                    ClickableLink("Whatsapp", "https://api.whatsapp.com/send/?phone=5521989499644&text&type=phone_number&app_absent=0", "https://static.whatsapp.net/rsrc.php/v3/y7/r/DSxOAUB0raA.png"),
+                    ClickableLink(
+                        translate("Our Website"), "https://rokbotsbrasil.com/#", "https://rokbotsbrasil.com/images/willy%20wonka%20logo.png"
+                    ),
+                    ClickableLink(
+                        "Discord",
+                        "https://discord.com/invite/bGqsXm3HTs",
+                        "https://assets.stickpng.com/images/62b2261f038aad4d3ed7ca48.png",
+                    ),
+                    ClickableLink(
+                        "Whatsapp",
+                        "https://api.whatsapp.com/send/?phone=5521989499644&text&type=phone_number&app_absent=0",
+                        "https://static.whatsapp.net/rsrc.php/v3/y7/r/DSxOAUB0raA.png",
+                    ),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             )

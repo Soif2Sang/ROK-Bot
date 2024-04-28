@@ -70,6 +70,7 @@ class EmulatorSingleton:
 
             sleep(5)
 
+
 class FileSingleton:
     __instance = None
     FileLock = Lock()

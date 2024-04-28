@@ -5,8 +5,6 @@ from time import time
 import cv2
 from numpy import where
 
-from tasks.Task_gather_gem_spiral import GatherGemSpiral
-
 # from tasks.Task_title import Title
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 # from taskscod.COD_Task_daily_chest import DailyChest
@@ -22,10 +20,11 @@ from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_daily_chest2 import DailyChest2
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_gather_gem_default import GatherGem
+from tasks.Task_gather_gem_spiral import GatherGemSpiral
 from tasks.Task_gather_rss_default import GatherRss, GatherRssDefault
 from tasks.Task_hunt_barbarians import HuntBarbarians
 from tasks.Task_kingdom_ranking import KingdomRanking
-from tasks.Task_maraudeurs import Marauders
+from tasks.Task_maraudeurs_default import Marauders
 from tasks.Task_rss_transfert import RssTransfer
 from tasks.Task_runner import TaskRunner
 from tasks.Task_training import TroopTraining
@@ -46,6 +45,7 @@ data = file.get_data()
 from pytesseract import pytesseract
 
 pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
+
 
 class Page:
     def __init__(self):
@@ -189,6 +189,7 @@ def perf(function):
     print(f"It took {time() - start}")
     return a
 
+
 def find_multiple_img(target, source, confidence=0.9):
     img_to_find = ImageSingleton().get_file_name(target)
 
@@ -222,13 +223,13 @@ def find_multiple_img(target, source, confidence=0.9):
     element_to_delete = []
     for i in range(len(localisations) - 1):
         if (
-                (localisations[i][0] + 1 == localisations[i + 1][0])
-                or (localisations[i][0] - 1 == localisations[i + 1][0])
-                or (localisations[i][0] == localisations[i + 1][0])
+            (localisations[i][0] + 1 == localisations[i + 1][0])
+            or (localisations[i][0] - 1 == localisations[i + 1][0])
+            or (localisations[i][0] == localisations[i + 1][0])
         ) and (
-                (localisations[i][1] + 1 == localisations[i + 1][1])
-                or (localisations[i][1] - 1 == localisations[i + 1][1])
-                or (localisations[i][1] == localisations[i + 1][1])
+            (localisations[i][1] + 1 == localisations[i + 1][1])
+            or (localisations[i][1] - 1 == localisations[i + 1][1])
+            or (localisations[i][1] == localisations[i + 1][1])
         ):
             element_to_delete.append(localisations[i])
 
@@ -238,12 +239,23 @@ def find_multiple_img(target, source, confidence=0.9):
     return localisations
 
 
-from cv2 import (COLOR_BGR2GRAY, THRESH_BINARY, THRESH_OTSU, TM_CCOEFF_NORMED,
-                 bitwise_not, cvtColor, destroyAllWindows, imread, imshow,
-                 matchTemplate, minMaxLoc, threshold, waitKey)
+from cv2 import (
+    COLOR_BGR2GRAY,
+    THRESH_BINARY,
+    THRESH_OTSU,
+    TM_CCOEFF_NORMED,
+    bitwise_not,
+    cvtColor,
+    destroyAllWindows,
+    imread,
+    imshow,
+    matchTemplate,
+    minMaxLoc,
+    threshold,
+    waitKey,
+)
 
 if __name__ == "__main__":
-
 
     bo = get_bot("4")
     default_image = bo.adb.get_cv2_img()
@@ -286,7 +298,7 @@ if __name__ == "__main__":
         "--oem 3 --psm 3",
         "--oem 3 --psm 4",
         "--oem 3 --psm 6",
-        "--oem 3 --psm 10"
+        "--oem 3 --psm 10",
     ]
 
     # Process the ROI with each configuration
@@ -300,7 +312,7 @@ if __name__ == "__main__":
         print()
 
         # Display the ROI with OpenCV (for visualization purposes)
-        imshow('ROI', thresh)
+        imshow("ROI", thresh)
         waitKey(0)  # Wait for any key press to close the window
 
     # Close all OpenCV windows

@@ -25,9 +25,7 @@ from pytesseract import pytesseract
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.discord_utils import send_discord_message
-from utils.functions import (FileSingleton, colorize_name, colorize_output,
-                             current_time, get_name, string_to_co,
-                             string_to_co_slide)
+from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_name, string_to_co, string_to_co_slide
 from utils.pc_bridge import PcBridge
 from utils.singletons import ApiSingleton, EmulatorSingleton
 from utils.supabase_auth import SupabaseClient
@@ -38,6 +36,8 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 BUTTON_CITY = (1230, 680)
+
+
 class Task:
     def __init__(self, tile):
         self.FileSingleton = FileSingleton()
@@ -191,7 +191,7 @@ class Task:
         """
 
         cv_image = self.adb.get_cv2_img()
-        cropped_image = cv_image[132:132+35, 1240:1266]
+        cropped_image = cv_image[132 : 132 + 35, 1240:1266]
         text = self.extract_text(cropped_image, allowlist="01234567/")
 
         if len(text) == 3:
@@ -314,6 +314,7 @@ class Task:
             self.adb.set_game_focus()
             pyautogui.scroll(-1000)
             self.better_sleep((1, 1))
+
     @get_name
     def click_loop(self) -> None:
         if not self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
@@ -471,7 +472,7 @@ class Task:
             self.click(BUTTON_CITY[0] + uniform(0, 10), BUTTON_CITY[1] + uniform(0, 10))
             self.better_sleep((1.5, 2))
         else:
-            self.click(BUTTON_CITY[0]+ uniform(0, 10), BUTTON_CITY[1] + uniform(0, 10))
+            self.click(BUTTON_CITY[0] + uniform(0, 10), BUTTON_CITY[1] + uniform(0, 10))
             self.better_sleep((2.5, 3.5))
             if tries == 0:
                 return self.leave_city(1)
@@ -613,7 +614,7 @@ class Task:
                     self.better_sleep((1, 1))
 
     # @get_name
-    def better_sleep(self, limits: tuple[float, float], reduce_speed = True):
+    def better_sleep(self, limits: tuple[float, float], reduce_speed=True):
         a = limits[0]
         b = limits[1]
 
@@ -890,7 +891,7 @@ class Task:
 
                 self.print("You just got disconnected", ft.colors.AMBER)
                 co = self.find_img(target="reconnect", confidence=0.85)
-    
+
                 a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
                 print(a)
                 self.click(a[0], a[1])
@@ -1266,7 +1267,9 @@ class Task:
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()
 
-        while cos := self.adb.find_multiple_img(target="pc\\close_chat", source=image[720 // 4 : 720 - 720 // 4, : 1280 // 2], confidence=0.83):
+        while cos := self.adb.find_multiple_img(
+            target="pc\\close_chat", source=image[720 // 4 : 720 - 720 // 4, : 1280 // 2], confidence=0.83
+        ):
             co = cos[-1]
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9) + 720 // 4)
             self.better_sleep((1.3, 2.8))

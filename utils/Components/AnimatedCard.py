@@ -4,7 +4,7 @@ from utils.singletons import ApiSingleton
 
 
 class AnimatedCard(UserControl):
-    def __init__(self, image_source_path, function, tier = "tier1"):  # Corrected here
+    def __init__(self, image_source_path, function, tier="tier1"):  # Corrected here
         super().__init__()
         self.image_source_path = image_source_path
         self.tier = tier

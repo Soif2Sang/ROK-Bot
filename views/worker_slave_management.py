@@ -33,7 +33,7 @@ class Worker(ft.Container):
         self.initial_page = manager.initial_page
         self.manager = manager
         self.border_radius = 3
-        self.name = ft.Text(value=translate(f"Worker") +f" {instance}")
+        self.name = ft.Text(value=translate(f"Worker") + f" {instance}")
         self.option = ft.IconButton(icon=ft.icons.SETTINGS_SHARP, on_click=self.open_settings)
         self.slaves = ft.ListView(expand=1, height=250)
         self.content = ft.Column(

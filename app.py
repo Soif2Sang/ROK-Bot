@@ -13,13 +13,19 @@ try:
     from utils.Components.AnimatedCard import AnimatedCard
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
-    from utils.constants import (BOT_NAME, TOAST_HISTORY, VERSION_TYPE,
-                                 VERSION_TYPE_name, VERSION_TYPE_secret,
-                                 global_name, global_secret, ownerid)
+    from utils.constants import (
+        BOT_NAME,
+        TOAST_HISTORY,
+        VERSION_TYPE,
+        VERSION_TYPE_name,
+        VERSION_TYPE_secret,
+        global_name,
+        global_secret,
+        ownerid,
+    )
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastsFlexible
-    from utils.functions import (FileSingleton, get_dic_instances,
-                                 get_dic_instances_ld, getchecksum)
+    from utils.functions import FileSingleton, get_dic_instances, get_dic_instances_ld, getchecksum
     from utils.singletons import EmulatorSingleton
     from views.city_layout import viewCityLayout
     from views.config_path import find_file_in_all_drives

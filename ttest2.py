@@ -1,12 +1,11 @@
 import flet as ft
 
+
 def main(page: ft.Page):
     page.title = "Drag and Drop example"
 
     def drag_will_accept(e):
-        e.control.content.border = ft.border.all(
-            2, ft.colors.BLACK45 if e.data == "true" else ft.colors.RED
-        )
+        e.control.content.border = ft.border.all(2, ft.colors.BLACK45 if e.data == "true" else ft.colors.RED)
         e.control.update()
 
     def drag_accept(e):
@@ -21,16 +20,15 @@ def main(page: ft.Page):
             ),
         )
 
-
         e.control.update()
 
     def drag_leave(e):
         e.control.content = ft.Container(
-                        width=50,
-                        height=50,
-                        bgcolor=ft.colors.BLUE_GREY_100,
-                        border_radius=5,
-                    )
+            width=50,
+            height=50,
+            bgcolor=ft.colors.BLUE_GREY_100,
+            border_radius=5,
+        )
         e.control.update()
 
     page.add(
@@ -101,5 +99,6 @@ def main(page: ft.Page):
             ]
         )
     )
+
 
 ft.app(target=main)

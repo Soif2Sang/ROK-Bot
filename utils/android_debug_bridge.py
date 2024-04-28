@@ -8,14 +8,12 @@ from os.path import exists
 from time import sleep, time
 
 import pytesseract as tess
-from cv2 import (COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor,
-                 inRange, matchTemplate, minMaxLoc)
+from cv2 import COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor, inRange, matchTemplate, minMaxLoc
 from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import (FileSingleton, current_time, get_dic_instances,
-                             get_name)
+from utils.functions import FileSingleton, current_time, get_dic_instances, get_name
 from utils.resources import ImageSingleton
 
 bridge = None
@@ -87,11 +85,13 @@ class Adb:
         if self.port != int(instances[self.instance]["port"]):
             self.data = self.FileSingleton.get_data()
 
-            self.data[self.instance].update({
-                "instance": instances[self.instance]["instance"],
-                "name": instances[self.instance]["name"],
-                "port": int(instances[self.instance]["port"])
-            })
+            self.data[self.instance].update(
+                {
+                    "instance": instances[self.instance]["instance"],
+                    "name": instances[self.instance]["name"],
+                    "port": int(instances[self.instance]["port"]),
+                }
+            )
 
             self.port = self.data[self.instance]["port"]
 
@@ -216,11 +216,11 @@ class Adb:
                 if target == "gem_search_button":
                     source = source[470:600, 0:150]
                 if target == "button_level":
-                    source = source[720 // 2 - 50:, :]
+                    source = source[720 // 2 - 50 :, :]
                 if target in ["minus_button", "plus_button"]:
-                    source = source[720 // 2:, :]
+                    source = source[720 // 2 :, :]
                 if target == "search_button":
-                    source = source[720 // 2:, : 1280 // 4]
+                    source = source[720 // 2 :, : 1280 // 4]
 
             img_to_find = self.images.get_file_name(target)
             # bot.adb.get_cv2_img()
@@ -296,13 +296,13 @@ class Adb:
         element_to_delete = []
         for i in range(len(localisations) - 1):
             if (
-                    (localisations[i][0] + 1 == localisations[i + 1][0])
-                    or (localisations[i][0] - 1 == localisations[i + 1][0])
-                    or (localisations[i][0] == localisations[i + 1][0])
+                (localisations[i][0] + 1 == localisations[i + 1][0])
+                or (localisations[i][0] - 1 == localisations[i + 1][0])
+                or (localisations[i][0] == localisations[i + 1][0])
             ) and (
-                    (localisations[i][1] + 1 == localisations[i + 1][1])
-                    or (localisations[i][1] - 1 == localisations[i + 1][1])
-                    or (localisations[i][1] == localisations[i + 1][1])
+                (localisations[i][1] + 1 == localisations[i + 1][1])
+                or (localisations[i][1] - 1 == localisations[i + 1][1])
+                or (localisations[i][1] == localisations[i + 1][1])
             ):
                 element_to_delete.append(localisations[i])
 
@@ -369,21 +369,20 @@ class Adb:
     #
     def resource_amount_image_to_string(self):
         result_list = []
-        boxes = [
-            (695, 10, 770, 34), (820, 10, 890, 34), (943, 10, 1015, 34), (1065, 10, 1140, 34)]
+        boxes = [(695, 10, 770, 34), (820, 10, 890, 34), (943, 10, 1015, 34), (1065, 10, 1140, 34)]
         for box in boxes:
             x0, y0, x1, y1 = box
             imsch = self.get_cv2_img()
             imsch = imsch[y0:y1, x0:x1]
             resource_image = Image.fromarray(imsch)
             try:
-                result_list.append(abs(int(img_to_string(resource_image)
-                                           .replace('.', '')
-                                           .replace('B', '00000000')
-                                           .replace('M', '00000')
-                                           .replace('K', '00')
-                                           ))
-                                   )
+                result_list.append(
+                    abs(
+                        int(
+                            img_to_string(resource_image).replace(".", "").replace("B", "00000000").replace("M", "00000").replace("K", "00")
+                        )
+                    )
+                )
             except Exception as e:
                 result_list.append(-1)
         return result_list
@@ -399,13 +398,12 @@ class Adb:
             with open(rf"{string}", "r") as file:
                 data_instance = file.read().split("\n")
         except:
-            print(
-                "The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
+            print("The pass you provided is wrong ! We are looking for something like : \n C:\ProgramData\BlueStacks_nxt\bluestacks.conf")
 
         liste_info = []
         for element in data_instance:
             if ((("bst.instance.Nougat64" in element) and ("adb_port" in element)) and "status" not in element) or (
-                    ("bst.instance.Nougat64" in element) and ("display_name" in element)
+                ("bst.instance.Nougat64" in element) and ("display_name" in element)
             ):
                 liste_info.append(element)
 
@@ -456,8 +454,7 @@ class Adb:
 def img_to_string(pil_image):
     # pil_image.save(resource_path("test.png"))
     tess.pytesseract.tesseract_cmd = "tesseract\\tesseract.exe"
-    result = tess.image_to_string(pil_image, lang="eng", config="--psm 6").replace("\t", "").replace("\n", "").replace(
-        "\f", "")
+    result = tess.image_to_string(pil_image, lang="eng", config="--psm 6").replace("\t", "").replace("\n", "").replace("\f", "")
     return result
 
 

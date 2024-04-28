@@ -2,28 +2,30 @@ from time import sleep
 
 import flet as ft
 
-data = {"workers": {
-    "ld": {"0": {"loop_task": True, "waiting_cooldown": [90, 110], "instances": [{"instance": "0"}, {"instance": "1"}]},
-           "1": {"loop_task": True, "waiting_cooldown": [90, 120], "instances": [{"instance": "2"}, {"instance": "3"}]},
-           "2": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "4"}, {"instance": "5"}]},
-           "3": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
-           "4": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
-           "5": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []}},
-    "bluestacks": {"0": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64"}]},
-                   "1": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_10"}]},
-                   "2": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_13"}]},
-                   "3": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_22"}]},
-                   "4": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_8"}]},
-                   "5": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_9"}]}}}}
-
-fus = {
-    'width': 100,
-    'height': 50,
-    'border_radius': 5,
-    'margin': ft.margin.symmetric(horizontal=4)
+data = {
+    "workers": {
+        "ld": {
+            "0": {"loop_task": True, "waiting_cooldown": [90, 110], "instances": [{"instance": "0"}, {"instance": "1"}]},
+            "1": {"loop_task": True, "waiting_cooldown": [90, 120], "instances": [{"instance": "2"}, {"instance": "3"}]},
+            "2": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "4"}, {"instance": "5"}]},
+            "3": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
+            "4": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
+            "5": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": []},
+        },
+        "bluestacks": {
+            "0": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64"}]},
+            "1": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_10"}]},
+            "2": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_13"}]},
+            "3": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_22"}]},
+            "4": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_8"}]},
+            "5": {"loop_task": True, "waiting_cooldown": [60, 90], "instances": [{"instance": "Nougat64_9"}]},
+        },
+    }
 }
 
-instances = ['Instance 1', 'Instance 2', 'Instance 3', 'Instance 4', 'Instance 5']
+fus = {"width": 100, "height": 50, "border_radius": 5, "margin": ft.margin.symmetric(horizontal=4)}
+
+instances = ["Instance 1", "Instance 2", "Instance 3", "Instance 4", "Instance 5"]
 
 
 class SlaveDraggable(ft.Draggable):
@@ -31,11 +33,7 @@ class SlaveDraggable(ft.Draggable):
         super().__init__(*args, **kwargs)
         self.data = instance
         self.group = "all"
-        self.content = ft.Container(
-            content=ft.Text(instance),
-            bgcolor=ft.colors.SURFACE_VARIANT,
-            **fus
-        )
+        self.content = ft.Container(content=ft.Text(instance), bgcolor=ft.colors.SURFACE_VARIANT, **fus)
 
 
 class SlaveDragTarget(ft.DragTarget):
@@ -45,10 +43,7 @@ class SlaveDragTarget(ft.DragTarget):
         if instance:
             self.content = SlaveDraggable(instance)
         else:
-            self.content = ft.Container(
-                **fus,
-                bgcolor=ft.colors.ON_SURFACE_VARIANT
-            )
+            self.content = ft.Container(**fus, bgcolor=ft.colors.ON_SURFACE_VARIANT)
 
         self.on_accept = self.accept
         # self.on_leave = self.leave
@@ -77,7 +72,9 @@ class WorkerDragtarget(ft.Container):
         self.height = 330
         self.content = ft.Column(
             controls=[ft.Text("Worker", size=20), ft.Divider(), ft.ListView(height=300, expand=1, spacing=5)],
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.alignment.center)
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.alignment.center,
+        )
         self.bgcolor = ft.colors.RED
         self.alignment = ft.alignment.center
         self.border_radius = 5
@@ -87,9 +84,7 @@ class WorkerDragtarget(ft.Container):
             self.add_dragtarget()
 
     def add_dragtarget(self):
-        self.content.controls[-1].controls.append(
-            SlaveDragTarget()
-        )
+        self.content.controls[-1].controls.append(SlaveDragTarget())
 
 
 def main(page: ft.Page):
@@ -99,9 +94,7 @@ def main(page: ft.Page):
 
     page.add(line)
 
-    page.add(
-        WorkerDragtarget()
-    )
+    page.add(WorkerDragtarget())
 
 
 ft.app(target=main)
