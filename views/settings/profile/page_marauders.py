@@ -18,48 +18,9 @@ class PageMarauders(BasePage):
                     "Pre-configure your red lineups with commanders who have the same march speed.\nIf you intend to use this feature extensively, I recommend running it for 3-4 hours and enabling the option to redo tasks. This will allow your troops to return to the city for healing."
                 ),
             ),
-            ft.Container(
-                content=ft.ResponsiveRow(
-                    controls=[
-                        ft.Column(
-                            controls=[
-                                ft.TextField(
-                                    label=translate("Your kingdom :"),
-                                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kingdom"],
-                                    content_padding=ft.padding.all(10),
-                                    on_change=lambda e: self.submit(e, "kingdom", str),
-                                )
-                            ],
-                            col=4,
-                        ),
-                        ft.Column(
-                            controls=[
-                                ft.TextField(
-                                    label=translate("Area location X coordinates :"),
-                                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_x"],
-                                    content_padding=ft.padding.all(10),
-                                    on_change=lambda e: self.submit(e, "city_x", int),
-                                    input_filter=ft.NumbersOnlyInputFilter(),
-                                )
-                            ],
-                            col=4,
-                        ),
-                        ft.Column(
-                            controls=[
-                                ft.TextField(
-                                    label=translate("Area location Y coordinates :"),
-                                    value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_y"],
-                                    content_padding=ft.padding.all(10),
-                                    on_change=lambda e: self.submit(e, "city_y", int),
-                                    input_filter=ft.NumbersOnlyInputFilter(),
-                                )
-                            ],
-                            col=4,
-                        ),
-                    ],
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                ),
-                margin=ft.margin.only(bottom=10),
+            ft.OutlinedButton(
+                text=translate("Set area location"),
+                on_click=lambda _: self.initial_page.go(f"/gather-gems/{self.instance_index}/{self.profile_index}"),
             ),
             ft.ResponsiveRow(
                 controls=[
