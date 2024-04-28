@@ -231,6 +231,8 @@ def emulator_choice(page: ft.Page, params, basket):
 
     def go_main(e):
         if platform.system() == "Darwin":
+            EmulatorSingleton().setEmulator("ld")
+
             return Main(page)
 
         path_file = FileSingleton().get_path()
