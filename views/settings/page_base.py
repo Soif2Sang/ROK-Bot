@@ -1,11 +1,12 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-
+from schemas.emulator_schemas import ProfileSchema, TaskLibrarySchema
 from singletons import SettingsSingleton
-from utils.flet_translations import translate
-from utils.functions import FileSingleton, rsetattr
 
-ss = SettingsSingleton()
+from utils.flet_translations import translate
+from utils.functions import FileSingleton, rgetattr, rsetattr
+
+
 class BasePage:
     def __init__(self, profile):
         super().__init__()
@@ -17,8 +18,9 @@ class BasePage:
         self.profile = profile
         self.profile.content.controls = []
 
-        self.tasks = ss.emulator_settings.emulators[str(self.instance_index)].schedules[str(self.profile_index)].tasks
-        self.context = None
+        self.context: ProfileSchema = ss.emulator_settings.emulators[str(self.instance_index)].schedules[str(self.profile_index)]
+
+        self.tasks: TaskLibrarySchema = self.context.tasks
 
         self.add_control(
             ft.Container(
@@ -86,13 +88,10 @@ class BasePage:
 
         self.FileSingleton.write_data(data)
 
-    def create_normal_switch(self, keyword: str, text: str):
+    def create_normal_switch(self, keyword: str, text: str, data=None):
         self.data = self.FileSingleton.get_data()
-        return ft.Switch(
-            label=translate(text),
-            value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
-            on_change=lambda _: self.reverse_keyword(keyword),
-        )
+
+        return ft.Switch(label=translate(text), value=rgetattr(self.context, keyword), on_change=self.submit_with_context, data=data)
 
     def create_advanced_switch(self, keyword: str, text: str, function):
         self.data = self.FileSingleton.get_data()

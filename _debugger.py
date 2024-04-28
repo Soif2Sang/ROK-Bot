@@ -4,7 +4,6 @@ from time import time
 
 import cv2
 from numpy import where
-
 from Task_gather_gem_map import GatherGemMap
 from Task_gather_gem_spiral import GatherGemSpiral
 

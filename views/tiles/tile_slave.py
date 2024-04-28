@@ -1,8 +1,10 @@
 import copy
 
 import flet as ft
+from schemas.emulator_schemas import EmulatorSettingsSchema
 
 from utils.functions import FileSingleton
+from utils.singletons import ss
 from views.tiles.handler.config_handler import InstanceTabs
 
 # from views.tiles.handler.config_handler import Frame
@@ -11,10 +13,8 @@ from views.tiles.handler.config_handler import InstanceTabs
 class ConfigOverrider(ft.PopupMenuButton):
     def __init__(self, page, index, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fileSingleton = FileSingleton()
         self.index = index
         self.initial_page = page
-        self.config = self.fileSingleton.getCachedData()[self.index]
         self.icon = ft.icons.FILE_UPLOAD_OUTLINED
         self.init()
 
@@ -34,41 +34,41 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.initial_page.update()
 
     def override_settings(self, e):
-        data = self.fileSingleton.getCachedData()
-        self.config = copy.deepcopy(data[self.index])
+        instance = ss.emulator_settings.emulators[str(e.control.data)].instance
+        name = ss.emulator_settings.emulators[str(e.control.data)].name
+        host = ss.emulator_settings.emulators[str(e.control.data)].host
+        port = ss.emulator_settings.emulators[str(e.control.data)].port
 
-        instance = data[str(e.control.data)]["instance"]
-        name = data[str(e.control.data)]["name"]
-        host = data[str(e.control.data)]["host"]
-        port = data[str(e.control.data)]["port"]
+        ss.emulator_settings.emulators[str(e.control.data)] = copy.deepcopy(ss.emulator_settings.emulators[str(self.index)])
 
-        data[str(e.control.data)] = copy.deepcopy(self.config)
+        ss.emulator_settings.emulators[str(e.control.data)].instance = instance
+        ss.emulator_settings.emulators[str(e.control.data)].name = name
+        ss.emulator_settings.emulators[str(e.control.data)].host = host
+        ss.emulator_settings.emulators[str(e.control.data)].port = port
 
-        data[str(e.control.data)]["instance"] = instance
-        data[str(e.control.data)]["name"] = name
-        data[str(e.control.data)]["host"] = host
-        data[str(e.control.data)]["port"] = port
-
-        self.fileSingleton.write_data(data)
+        ss.write_emulator_settings(ss.emulator_settings)
 
         if str(e.control.data) in self.initial_page.frames:
             for tab in self.initial_page.frames[str(e.control.data)].settings.tabs:
                 tab.content.content.controls = []
                 tab.content.init()
+
         self.initial_page.update()
 
 
 class TileSlave(ft.Container):
     def __init__(self, page, number, **kwargs):
         super().__init__(**kwargs)
-        self.FileSingleton = FileSingleton()
-        data = self.FileSingleton.getCachedData()
         self.number = number
         self.initial_page = page
+        self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[str(self.number)]
+
         self.padding = ft.padding.only(left=10)
         self.margin = ft.margin.only(bottom=3, left=15)
-        self.text_name = ft.Text(value=data[str(number)]["name"], width=80)
+
+        self.text_name = ft.Text(value=self.context.name, width=80)
         self.text_status = ft.Text(value="")
+
         self.config_overrider = ConfigOverrider(self.initial_page, number)
 
         self.border_radius = 3

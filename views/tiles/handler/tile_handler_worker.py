@@ -4,10 +4,10 @@ import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-
 from schemas.emulator_schemas import EmulatorSettingsSchema
-from schemas.worker_schemas import WorkerTypeSchema, WorkerSettingsSchema, InstanceSchema, WorkerListSchema
-from test_random_x import open_worker_settings, open_emulator_settings, write_emulator_settings, write_worker_settings
+from schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
+from test_random_x import open_emulator_settings, open_worker_settings, write_emulator_settings, write_worker_settings
+
 from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
@@ -196,18 +196,19 @@ class TileHandlerWorker(ft.ListView):
                 worker_settings.worker_type[emulator] = WorkerListSchema()
             if str(i) not in worker_settings.worker_type[emulator].workers:
                 worker_settings.worker_type[emulator].workers[str(i)] = WorkerSettingsSchema(instances=[InstanceSchema(instance=instance)])
-            if instance not in emulator_settings.emulators:
-                emulator_settings.emulators[instance] = EmulatorSettingsSchema(
+
+            if instance not in ss.emulator_settings.emulators:
+                ss.emulator_settings.emulators[instance] = EmulatorSettingsSchema(
                     emulator=emulator,
                     instance=instances[instance]["instance"],
                     name=instances[instance]["name"],
-                    port=int(instances[instance]["port"])
+                    port=int(instances[instance]["port"]),
                 )
 
-                emulator_settings.emulators[instance].schedules["1"].enabled = True
+                ss.emulator_settings.emulators[instance].schedules["1"].enabled = True
 
         # self.FileSingleton.write_data(data)
-        ss.write_emulator_settings(emulator_settings)
+        ss.write_emulator_settings(ss.emulator_settings)
         ss.write_worker_settings(worker_settings)
 
         for i in range(len(self.controls) - 1):

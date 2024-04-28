@@ -1,14 +1,15 @@
 from typing import List
 
 import flet as ft
-
 from schemas.worker_schemas import InstanceSchema
-from test_random_x import open_worker_settings, open_emulator_settings, write_worker_settings
+from test_random_x import open_emulator_settings, open_worker_settings, write_worker_settings
+
 from utils.flet_translations import translate
 from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton
 
 fs = FileSingleton()
 ss = SettingsSingleton()
+
 
 class SlaveDraggable(ft.Draggable):
     def __init__(self, instance, *args, **kwargs):
@@ -53,10 +54,10 @@ class Worker(ft.Container):
         self.instance = instance
 
         data = fs.getCachedData()
-        
+
         self.emulator_settings = ss.emulator_settings
         self.worker_settings = ss.worker_settings
-            
+
         self.emulator_type = EmulatorSingleton().getEmulatorType()
 
         for instanceSchema in self.worker_settings.worker_type[self.emulator_type].workers[instance].instances:
@@ -89,7 +90,9 @@ class Worker(ft.Container):
                     ft.Switch(
                         label=translate("Re-do all the tasks until stopped"),
                         value=self.worker_settings.worker_type[self.emulator_type].workers[self.instance].loop_task,
-                        on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance], "loop_task", bool),
+                        on_change=lambda e: self.submit_with_context(
+                            e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance], "loop_task", bool
+                        ),
                     ),
                     ft.Container(
                         ft.Text(
@@ -102,19 +105,33 @@ class Worker(ft.Container):
                             controls=[
                                 ft.TextField(
                                     label="Minimum",
-                                    value=str(self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown.min),
+                                    value=str(
+                                        self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown.min
+                                    ),
                                     content_padding=ft.padding.all(10),
                                     col=6,
                                     input_filter=ft.NumbersOnlyInputFilter(),
-                                    on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown, "min", int),
+                                    on_change=lambda e: self.submit_with_context(
+                                        e,
+                                        self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown,
+                                        "min",
+                                        int,
+                                    ),
                                 ),
                                 ft.TextField(
                                     label="Maximum",
-                                    value=str(self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown.max),
+                                    value=str(
+                                        self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown.max
+                                    ),
                                     content_padding=ft.padding.all(10),
                                     col=6,
                                     input_filter=ft.NumbersOnlyInputFilter(),
-                                    on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown, "max", int),
+                                    on_change=lambda e: self.submit_with_context(
+                                        e,
+                                        self.worker_settings.worker_type[self.emulator_type].workers[self.instance].waiting_cooldown,
+                                        "max",
+                                        int,
+                                    ),
                                 ),
                             ],
                         ),
@@ -123,7 +140,9 @@ class Worker(ft.Container):
                     ft.Switch(
                         label=translate("Close the Emulator once all the task are completed."),
                         value=self.worker_settings.worker_type[self.emulator_type].workers[self.instance].close_emulator,
-                        on_change=lambda e: self.submit_with_context(e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance], "close_emulator", bool),
+                        on_change=lambda e: self.submit_with_context(
+                            e, self.worker_settings.worker_type[self.emulator_type].workers[self.instance], "close_emulator", bool
+                        ),
                     ),
                 ],
             ),
@@ -223,7 +242,8 @@ class Worker(ft.Container):
     def submit_with_context(self, e, context, keyword, method):
         setattr(context, keyword, method(e.control.value))
         ss.write_worker_settings(self.worker_settings)
-        
+
+
 class WorkerSlaveManagement(ft.ListView):
     def __init__(self, page, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -1,4 +1,5 @@
 import flet as ft
+from schemas.emulator_schemas import SwitchCharacterSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
@@ -9,6 +10,7 @@ class PageCharacter(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
 
+        self.context: SwitchCharacterSchema = self.context.switch_character
         self.add_control(
             GenerateCard(
                 level="notice",
@@ -16,20 +18,12 @@ class PageCharacter(BasePage):
             ),
             ft.Switch(
                 label=translate("Restart the game after switching\nto a new character (prevent freeze)"),
-                value=(
-                    True
-                    if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
-                    else False
-                ),
-                on_change=lambda _: self.reverse_keyword("leave_game_switch_character"),
+                value=self.context.restart_during_game_load,
+                on_change=self.submit_with_context,
+                data={"path": "restart_during_game_load", "type": bool},
             ),
-            # ft.Divider(),
-            # ft.Text("Character Whitelist"),
         )
 
         # self.row_whitelist = ft.ResponsiveRow()
         # [self.row_whitelist.controls.append(ft.Checkbox(label=f"Profile {i}", col=4)) for i in range(9)]
         # self.add_control(self.row_whitelist)
-
-    def reverse_keyword(self, keyword: str):
-        super().reverse_keyword(keyword)

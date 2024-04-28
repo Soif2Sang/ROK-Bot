@@ -1,6 +1,8 @@
 import flet as ft
+from schemas.application_schemas import ApplicationSettingsSchema
 
 from utils.functions import FileSingleton
+from utils.singletons import ss
 
 fileSingleton = FileSingleton()
 
@@ -8,16 +10,14 @@ fileSingleton = FileSingleton()
 class Logger(ft.ListView):
     def __init__(self, frame, page, **kwargs):
         super().__init__(**kwargs)
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
-        if "interface" not in self.data:
-            self.data["interface"] = {"auto_scroll": True, "auto_refresh": True}
-        self.FileSingleton.write_data(self.data)
-        self.auto_scroll = self.data["interface"]["auto_scroll"]
-        self.limit_logs = self.data["interface"].get("limit_logs", False)
-
         self.parent = frame
         self.initial_page = page
+
+        application_settings: ApplicationSettingsSchema = ss.application_settings
+
+        self.auto_scroll = application_settings.interface.enable_auto_scroll
+        self.limit_logs = application_settings.interface.enable_limit_logs
+        self.auto_refresh = application_settings.interface.enable_auto_refresh
 
     def add_text(self, texte: str, color=None):
         text = ft.Text(value=texte, weight=ft.FontWeight.W_600, color=color)

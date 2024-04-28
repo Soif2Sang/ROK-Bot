@@ -30,9 +30,11 @@ def check_translations_in_files(directory, translations):
     for translation in trans:
         translations[translation.origin] = translation.text
 
+
 def translate_to_portuguese(text):
     translator = Translator()
-    return translator.translate(text, src='en', dest='pt')
+    return translator.translate(text, src="en", dest="pt")
+
 
 # Call the function with the 'views' directory and your translations dictionary
 check_translations_in_files("views", translations)

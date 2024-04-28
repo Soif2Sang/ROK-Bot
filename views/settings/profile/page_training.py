@@ -16,12 +16,15 @@ class PageTraining(BasePage):
             "siege",
         ]
 
+        self.context = self.tasks.troop_training
+
         for key in keys:
             self.add_control(
                 FletRowTraining(
                     key=key,
-                    instance_index=self.instance_index,
-                    profile_index=self.profile_index,
+                    context=self.context,
+                    # instance_index=self.instance_index,
+                    # profile_index=self.profile_index,
                 )
             )
 

@@ -10,7 +10,7 @@ from views.settings.profile.page_character import PageCharacter
 from views.settings.profile.page_fog import PageFog
 from views.settings.profile.page_gem import PageGem
 from views.settings.profile.page_heal import PageHeal
-from views.settings.profile.page_logback import PageLogback
+from views.settings.profile.page_logback_from_device_switch import PageLogback
 from views.settings.profile.page_marauders import PageMarauders
 from views.settings.profile.page_materials import PageMaterials
 from views.settings.profile.page_rally import PageRally
@@ -37,7 +37,7 @@ class SettingContainer(ft.Container):
 
         # self.theme = ft.Theme(color_scheme=ft.ColorScheme(primary=color_bank[self.profile_index]))
         # self.init()
-
+        self.context = ""
         self.init()
 
     def goBack(self):

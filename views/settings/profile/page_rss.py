@@ -2,6 +2,7 @@ import flet as ft
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
+from utils.singletons import ss
 from views.settings.page_base import BasePage
 from views.settings.profile.rows.Flet_row_rss import FletRowRss
 
@@ -17,9 +18,7 @@ class PageRss(BasePage):
 
         for key in keys:
             self.values[key] = FletRowRss(
-                key=key,
-                instance_index=self.instance_index,
-                profile_index=self.profile_index,
+                key=key, instance_index=self.instance_index, profile_index=self.profile_index, context=self.context
             )
 
         self.search_methods_radio_group = ft.RadioGroup(
@@ -30,7 +29,7 @@ class PageRss(BasePage):
                 ]
             ),
             on_change=self.toggle_search_method,
-            value=self.context.method
+            value=self.context.method,
         )
 
         self.availability_dropdown = ft.Dropdown(
@@ -40,8 +39,9 @@ class PageRss(BasePage):
                 ft.dropdown.Option(text="Only first character", key="only_first"),
                 ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
             ],
-            on_change=self.update_availability,
             value=self.context.availability,
+            on_change=self.submit_with_context,
+            data={"path": "availability", "type": str},
         )
 
         self.add_control(
@@ -66,8 +66,9 @@ class PageRss(BasePage):
             ft.Divider(),
             ft.Switch(
                 label=translate("Use Yellow presets as gatherers"),
-                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rss_custom_preset"] else False,
-                on_change=lambda _: self.reverse_keyword("rss_custom_preset"),
+                value=self.context.use_custom_preset,
+                on_change=self.submit_with_context,
+                data={"path": "use_custom_preset", "type": bool},
             ),
             ft.Container(height=10),
             *self.values.values()
@@ -87,12 +88,11 @@ class PageRss(BasePage):
         self.FileSingleton.write_data(self.data)
 
     def toggle_search_method(self, e):
-        self.data = self.FileSingleton.get_data()
         data = e.control.value
 
         self.toggle_node_levels(data != "default")
 
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"] = data
+        self.context.method = data
 
-        self.FileSingleton.write_data(self.data)
+        ss.write_emulator_settings(ss.emulator_settings)
         self.profile.initial_page.update()

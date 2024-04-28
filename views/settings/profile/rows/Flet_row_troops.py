@@ -1,22 +1,28 @@
 import flet as ft
+from schemas.emulator_schemas import TaskTroopTraining
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rgetattr, rsetattr
+from utils.singletons import ss
 
 
 class FletRowTraining(ft.ResponsiveRow):
-    def __init__(self, key, instance_index, profile_index):
+    def __init__(self, key, context: TaskTroopTraining):
         super().__init__()
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
-        self.instance_index = instance_index
-        self.profile_index = profile_index
         self.content_padding = ft.padding.all(10)
+        self.context = context
+        # self.instance_index = instance_index
+        # self.profile_index = profile_index
+        #
+        # self.emulator_settings = ss.open_emulator_settings()
+        # self.context = self.emulator_settings.emulators[str(self.instance_index)].schedules[str(self.profile_index)].tasks.troop_training
+
         self.controls = [
             ft.Switch(
                 label=translate(f"Train {key}"),
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_enable"],
-                on_change=lambda e: self.submit(e, f"{key}_enable", bool),
+                value=rgetattr(self.context, f"{key}.enabled"),
+                on_change=self.submit_with_context,
+                data={"path": f"{key}.enabled", "type": bool},
                 col=6,
             ),
             ft.Dropdown(
@@ -30,26 +36,15 @@ class FletRowTraining(ft.ResponsiveRow):
                     ft.dropdown.Option("t5"),
                     ft.dropdown.Option("highest"),
                 ],
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_tier"],
-                on_change=lambda e: self.submit(e, f"{key}_tier", str),
+                value=rgetattr(self.context, f"{key}.tier"),
+                on_change=self.submit_with_context,
+                data={"path": f"{key}.tier", "type": str},
                 height=40,
                 content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                 col=6,
             ),
         ]
 
-    def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
-
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", "API_KEY"]:
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            print(self.data[str(self.instance_index)][keyword])
-            self.FileSingleton.write_data(self.data)
-            return
-        if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
-        else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
-                e.control.value.replace("x", "").replace("level ", "")
-            )
-        self.FileSingleton.write_data(self.data)
+    def submit_with_context(self, e):
+        rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)

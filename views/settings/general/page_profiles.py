@@ -1,7 +1,9 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+from functions import rsetattr
 
 from utils.flet_translations import translate
+from utils.singletons import ss
 from views.settings.page_base import BasePage
 
 
@@ -15,8 +17,9 @@ class PageProfiles(BasePage):
                     ft.Switch(
                         label=translate("Profile n°1"),
                         active_track_color="#3b8ed0",
-                        value=True if self.data[str(self.instance_index)]["schedules"][str(1)]["enabled"] else False,
-                        on_change=lambda _: self.reverse_keyword("enabled", 1),
+                        value=ss.emulator_settings.emulators[self.instance_index].schedules["1"].enabled,
+                        on_change=self.submit_with_context,
+                        data="1",
                     ),
                     ft.OutlinedButton(
                         text=translate("Settings"),
@@ -37,8 +40,9 @@ class PageProfiles(BasePage):
                     ft.Switch(
                         label=translate("Profile n°2"),
                         active_track_color="#ba4543",
-                        value=True if self.data[str(self.instance_index)]["schedules"][str(2)]["enabled"] else False,
-                        on_change=lambda _: self.reverse_keyword("enabled", 2),
+                        value=ss.emulator_settings.emulators[self.instance_index].schedules["2"].enabled,
+                        on_change=self.submit_with_context,
+                        data="2",
                     ),
                     ft.OutlinedButton(
                         text=translate("Settings"),
@@ -59,8 +63,9 @@ class PageProfiles(BasePage):
                     ft.Switch(
                         label=translate("Profile n°3"),
                         active_track_color="#dec433",
-                        value=True if self.data[str(self.instance_index)]["schedules"][str(3)]["enabled"] else False,
-                        on_change=lambda _: self.reverse_keyword("enabled", 3),
+                        value=ss.emulator_settings.emulators[self.instance_index].schedules["3"].enabled,
+                        on_change=self.submit_with_context,
+                        data="3",
                     ),
                     ft.OutlinedButton(
                         text=translate("Settings"),
@@ -79,18 +84,6 @@ class PageProfiles(BasePage):
         )
         self.profile.initial_page.update()
 
-    def reverse_keyword(self, keyword: str, index=None):
-        if index is None:
-            index = self.profile_index
-
-        self.data = self.FileSingleton.get_data()
-
-        if keyword in ["auto_scroll", "auto_refresh", "limit_logs"]:
-            self.data["interface"]["keyword"] = not self.data["interface"]["keyword"]
-        elif keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
-            self.data[str(self.instance_index)]["schedules"][str(index)][keyword] = not self.data[str(self.instance_index)]["schedules"][
-                str(index)
-            ][keyword]
-        else:
-            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
-        self.FileSingleton.write_data(self.data)
+    def submit_with_context(self, e):
+        ss.emulator_settings.emulators[self.instance_index].schedules[e.control.data].enabled = e.control.value
+        ss.write_emulator_settings(ss.emulator_settings)

@@ -18,15 +18,14 @@ try:
     from utils.Components.filescan import generate_filescan
     from utils.Components.maintenance import generate_maintenance
     from utils.Components.PaymentMethods import payment_methods
-    from utils.constants import (BOT_NAME, TOAST_HISTORY, VERSION_NUMBER,
-                                 VERSION_TYPE)
+    from utils.constants import BOT_NAME, TOAST_HISTORY, VERSION_NUMBER, VERSION_TYPE
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
     from utils.functions import FileSingleton, get_dic_instances, get_dic_instances_ld, getchecksum
     from utils.singletons import ApiSingleton, EmulatorSingleton, SettingsSingleton
     from utils.supabase_auth import SupabaseClient
-    from views.city_layout import viewCityLayout, viewGatherGemMap
+    from views.city_layout import viewCityLayout, viewSetCenterMap
     from views.config_path import find_file_in_all_drives
     from views.login.login import LoginScreen
     from views.main import Main
@@ -38,6 +37,7 @@ except Exception as e:
     traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
     traceback_str = "".join(traceback_list)
     traceback.print_exc()
+
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
@@ -121,9 +121,9 @@ def main(page: ft.Page):
             view=viewCityLayout,
         ),
         path(
-            url=f"/gather-gems/:instance_index/:profile_index",
+            url=f"/set-center/:task/:instance_index/:profile_index",
             clear=True,
-            view=viewGatherGemMap,
+            view=viewSetCenterMap,
         ),
         path(
             url=f"/profile/:instance_index/:profile_index/settings",

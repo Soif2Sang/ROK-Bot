@@ -78,7 +78,7 @@ class AllSettings(PageSettings):
             ft.TextField(
                 label=translate("Custom API key:"),
                 value=self.application_settings.captcha.api_key,
-                on_change=lambda e: self.submit_with_context(e,self.application_settings.captcha, "api_key", str),
+                on_change=lambda e: self.submit_with_context(e, self.application_settings.captcha, "api_key", str),
                 content_padding=ft.padding.all(10),
             ),
             ft.Divider(),

@@ -6,8 +6,7 @@ import win32api
 import win32con
 import win32gui
 import win32process
-from cv2 import (COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor,
-                 inRange, matchTemplate, minMaxLoc)
+from cv2 import COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor, inRange, matchTemplate, minMaxLoc
 from numpy import array, ndarray, where
 
 from ttest import game_screenshot
@@ -22,8 +21,8 @@ def click(x, y):
     win32api.SetCursorPos((x, y))
 
     # Send a left mouse button down event
-    handle = win32gui.FindWindow(None, 'Rise of Kingdoms')
-    print("Window `{0:s}` handle: 0x{1:016X}".format('Rise of Kingdoms', handle))
+    handle = win32gui.FindWindow(None, "Rise of Kingdoms")
+    print("Window `{0:s}` handle: 0x{1:016X}".format("Rise of Kingdoms", handle))
     if not handle:
         print("Invalid window handle")
         return
@@ -47,6 +46,8 @@ def click(x, y):
 # click(500, 500)
 
 images = ImageSingleton()
+
+
 def find_img(filename, confidence, pil_image=None):
     if not pil_image:
         pil_image = game_screenshot()
@@ -64,11 +65,14 @@ def find_img(filename, confidence, pil_image=None):
 def get_game_pos():
     left, top, right, bot = win32gui.GetWindowRect(get_game_handle())
     return left + 5, top + 30, right + 5, bot + 30
+
+
 def get_game_handle():
-    return win32gui.FindWindow(None, 'Rise of Kingdoms')
+    return win32gui.FindWindow(None, "Rise of Kingdoms")
+
 
 def set_game_focus(handle):
-    print("Window `{0:s}` handle: 0x{1:016X}".format('Rise of Kingdoms', handle))
+    print("Window `{0:s}` handle: 0x{1:016X}".format("Rise of Kingdoms", handle))
     if not handle:
         print("Invalid window handle")
         return
@@ -76,35 +80,38 @@ def set_game_focus(handle):
     win32process.AttachThreadInput(win32api.GetCurrentThreadId(), remote_thread, True)
     prev_handle = win32gui.SetFocus(handle)
 
+
 def zoom_out():
     left, top, right, bot = get_game_pos()
-    pyautogui.moveTo(left + 1280/2, top + 720/2)
+    pyautogui.moveTo(left + 1280 / 2, top + 720 / 2)
     set_game_focus(get_game_handle())
     pyautogui.scroll(-1000)
+
 
 # while find_img("pc\\loop", 0.8):
 #     zoom_out()
 
 
-def swipe(direction: Literal['up', 'down', 'left', 'right']):
+def swipe(direction: Literal["up", "down", "left", "right"]):
     left, top, right, bot = get_game_pos()
 
     pyautogui.moveTo(left + 1280 / 2, top + 720 / 2)
     set_game_focus(get_game_handle())
     x, y = left + 1280 / 2, top + 720 / 2
-    if direction == 'up':
+    if direction == "up":
         y += 400
-    elif direction == 'down':
+    elif direction == "down":
         y -= 400
-    elif direction == 'left':
+    elif direction == "left":
         x -= 500
-    elif direction == 'right':
+    elif direction == "right":
         x += 500
-    pyautogui.dragTo(button='left', x=x,y=y, duration=0.4)
+    pyautogui.dragTo(button="left", x=x, y=y, duration=0.4)
+
 
 icons = []
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # game_screenshot()
     print(find_img(filename="pc\\checkpoint_star", confidence=0.9))
 #

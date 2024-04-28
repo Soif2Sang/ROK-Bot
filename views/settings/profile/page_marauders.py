@@ -1,4 +1,5 @@
 import flet as ft
+from schemas.emulator_schemas import TaskMaraudersSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
@@ -9,6 +10,13 @@ from views.settings.profile.rows.Flet_row_presets import FletRowPresets
 class PageMarauders(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
+        self.context: TaskMaraudersSchema = self.tasks.marauders
+
+        self.set_area_location_button = ft.OutlinedButton(
+            text=translate("Set area location"),
+            on_click=lambda _: self.initial_page.go(f"/set-center/marauders/{self.instance_index}/{self.profile_index}"),
+            # disabled=self.context.search_method != "map",
+        )
 
         self.add_control(
             GenerateCard(
@@ -28,11 +36,10 @@ class PageMarauders(BasePage):
                         controls=[
                             ft.TextField(
                                 label=translate("Minimum Killing Duration (mins)"),
-                                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kill_marauders_duration"][
-                                    0
-                                ],
+                                value=str(self.context.duration.min),
+                                on_change=self.submit_with_context,
+                                data={"path": "duration.min", "type": int},
                                 content_padding=ft.padding.all(10),
-                                on_change=lambda e: self.submit_marauders(e, 0),
                                 input_filter=ft.NumbersOnlyInputFilter(),
                             )
                         ],
@@ -42,11 +49,10 @@ class PageMarauders(BasePage):
                         controls=[
                             ft.TextField(
                                 label=translate("Maximum Killing Duration (mins)"),
-                                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kill_marauders_duration"][
-                                    1
-                                ],
+                                value=str(self.context.duration.max),
+                                on_change=self.submit_with_context,
+                                data={"path": "duration.max", "type": int},
                                 content_padding=ft.padding.all(10),
-                                on_change=lambda e: self.submit_marauders(e, 1),
                                 input_filter=ft.NumbersOnlyInputFilter(),
                             )
                         ],
@@ -57,17 +63,13 @@ class PageMarauders(BasePage):
             ft.Divider(),
             ft.Text(value=translate("Peacekeeper presets")),
             ft.Column(
-                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in range(1, 8)],
+                controls=[
+                    FletRowPresets(preset_index, self.context)
+                    for preset_index in ["first", "second", "third", "fourth", "fifth", "sixth", "seventh"]
+                ],
                 wrap=True,
                 spacing=10,
                 run_spacing=10,
                 height=150,
             ),
         )
-
-    def submit_marauders(self, e, index):
-        self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kill_marauders_duration"][index] = (
-            e.control.value if e.control.value is not None or e.control.value != "" else 0
-        )
-        self.FileSingleton.write_data(self.data)

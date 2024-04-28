@@ -465,7 +465,7 @@ class GatherGem(Task):
                 if self.find_cross(notify=False):
                     break
 
-                #DeprecationWarning
+                # DeprecationWarning
                 if not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_swipe_check"):
                     if not self.click_on_node():
                         break
