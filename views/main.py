@@ -4,6 +4,7 @@ from utils.constants import TOAST_HISTORY
 from utils.flet_toast.core import Position
 from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
 from utils.singletons import EmulatorSingleton
+
 # from views.tiles.handler.tile_handler_worker import TileHandlerWorker
 from utils.supabase_auth import SupabaseClient
 from views.tiles.handler.tile_handler_pc import TileHandlerPC

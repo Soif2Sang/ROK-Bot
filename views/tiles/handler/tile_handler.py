@@ -6,8 +6,7 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
-from utils.functions import (get_all_vms_running, get_all_vms_running_ld,
-                             get_dic_instances, get_dic_instances_ld)
+from utils.functions import get_all_vms_running, get_all_vms_running_ld, get_dic_instances, get_dic_instances_ld
 from utils.singletons import EmulatorSingleton, FileSingleton
 from views.tiles.tile import Tile
 

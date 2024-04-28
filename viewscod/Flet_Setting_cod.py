@@ -616,9 +616,11 @@ class SettingContainer(ft.Container):
             ft.Switch(
                 label="Restart the game after switching\nto a new character (prevent freeze)",
                 active_track_color=self.color_choice,
-                value=True
-                if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
-                else False,
+                value=(
+                    True
+                    if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["leave_game_switch_character"]
+                    else False
+                ),
                 on_change=lambda _: self.reverse_keyword("leave_game_switch_character"),
             )
         )
@@ -897,9 +899,11 @@ class SettingContainer(ft.Container):
                     ft.Switch(
                         label="Kill barbs with AP",
                         active_track_color=self.color_choice,
-                        value=True
-                        if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["defeat_barbarians"]
-                        else False,
+                        value=(
+                            True
+                            if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["defeat_barbarians"]
+                            else False
+                        ),
                         on_change=lambda _: self.reverse_keyword("defeat_barbarians"),
                     )
                 ],

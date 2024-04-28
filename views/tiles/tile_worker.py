@@ -1,6 +1,7 @@
 import threading
 
 import flet as ft
+from Worker_runner import WorkerRunner
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
@@ -23,15 +24,18 @@ class TileWorker(ft.ExpansionTile):
         self.paused = False
         self.stopped = False
 
-        if EmulatorSingleton().getEmulator() == "pc":
-            self.main_task = TaskPC(self)
-            self.runner = TaskPCRunner(self.main_task, self)
-        else:
-            self.main_task = Task(self)
-            self.runner = TaskRunner(self.main_task, self)
+        # if EmulatorSingleton().getEmulator() == "pc":
+        #     self.main_task = TaskPC(self)
+        #     self.runner = TaskPCRunner(self.main_task, self)
+        # else:
+        #     self.main_task = Task(self)
+        #     self.runner = TaskRunner(self.main_task, self)
+        #
+        # self.runner.worker = self
+        # self.tasks_process = threading.Thread(target=self.runner.run4)
 
-        self.runner.worker = self
-        self.tasks_process = threading.Thread(target=self.runner.run4)
+        self.runner = WorkerRunner(self.number, self)
+        self.tasks_process = threading.Thread(target=self.runner.run, args=(self.controls,))
 
         self.button_select = ft.IconButton(
             icon=ft.icons.SETTINGS,
@@ -126,7 +130,7 @@ class TileWorker(ft.ExpansionTile):
 
     def start_tasks(self):
         if not self.tasks_process.is_alive():
-            self.tasks_process = threading.Thread(target=self.runner.run4, args=(self.controls,))
+            self.tasks_process = threading.Thread(target=self.runner.run, args=(self.controls,))
             self.tasks_process.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")

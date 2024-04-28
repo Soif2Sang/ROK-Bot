@@ -1,12 +1,15 @@
 import os
-from supabase import create_client, Client
 
-from supabase_auth import SupabaseClient
-from views.login.login2 import LoginScreen
 import flet as ft
+from supabase import Client, create_client
+from supabase_auth import SupabaseClient
+
+from views.login.login2 import LoginScreen
 
 url: str = "https://rytpbbadrdnfozckfjde.supabase.co"
-key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dHBiYmFkcmRuZm96Y2tmamRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDUxNDU2ODAsImV4cCI6MjAyMDcyMTY4MH0.K3da9dT4qw9e3osKrQakBEPVjeLWMDo0dEdytVLLqfY"
+key: str = (
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dHBiYmFkcmRuZm96Y2tmamRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDUxNDU2ODAsImV4cCI6MjAyMDcyMTY4MH0.K3da9dT4qw9e3osKrQakBEPVjeLWMDo0dEdytVLLqfY"
+)
 # supabase: Client = create_client(url, key)
 
 # print(supabase.auth.sign_in_with_password({'email': "maxou@gmail.com", "password": "maxou@gmail.com"}))

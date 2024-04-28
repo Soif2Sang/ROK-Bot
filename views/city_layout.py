@@ -59,6 +59,7 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
         ],
     )
 
+
 def viewGatherGemMap(page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket) -> ft.View:
     page.window_width = 900
     page.window_height = 500
@@ -223,6 +224,7 @@ class CityPlacement(ft.Container):
         self.FileSingleton.write_data(self.data)
         self.page.update()
 
+
 class MapContainer(ft.Container):
     def __init__(self, image64, instance, profile, **kwargs):
         super().__init__(**kwargs)
@@ -236,8 +238,8 @@ class MapContainer(ft.Container):
             controls=[
                 ft.Container(
                     image_src="map.png",
-                    height=146*2,
-                    width=208*2,
+                    height=146 * 2,
+                    width=208 * 2,
                     image_fit=ft.ImageFit.FILL,
                     on_click=self.on_tap_update,
                 )
@@ -253,7 +255,7 @@ class MapContainer(ft.Container):
 
         try:
             self.data = self.FileSingleton.get_data()
-            self.data[str(self.instance)]["schedules"][str(self.profile)]['gather_gem_center_pos'] = (left/2+1072, top/2)
+            self.data[str(self.instance)]["schedules"][str(self.profile)]["gather_gem_center_pos"] = (left / 2 + 1072, top / 2)
             self.FileSingleton.write_data(self.data)
         except Exception:
             traceback.print_exc()

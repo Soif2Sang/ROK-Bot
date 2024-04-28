@@ -10,10 +10,10 @@ from uuid import uuid4  # gen random guid
 import flet as ft
 import requests
 import win32security
-
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
+
 from utils.Components.PaymentMethods import payment_methods
 from utils.constants import VERSION_TYPE
 from utils.functions import FileSingleton

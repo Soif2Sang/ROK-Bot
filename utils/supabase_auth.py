@@ -6,8 +6,7 @@ import subprocess
 import win32security
 from supabase import create_client
 
-from utils.constants import (SUPABASE_KEY, SUPABASE_URL, VERSION_NUMBER,
-                             VERSION_TYPE)
+from utils.constants import SUPABASE_KEY, SUPABASE_URL, VERSION_NUMBER, VERSION_TYPE
 
 
 class HwidAlreadyLinked(Exception):
@@ -77,7 +76,7 @@ class SupabaseClient:
 
         filtered = []
         for row in data[1]:
-            if row['user_id'] == self.client.auth.get_session().user.id:
+            if row["user_id"] == self.client.auth.get_session().user.id:
                 filtered.append(row)
 
         return filtered
