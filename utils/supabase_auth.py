@@ -3,7 +3,6 @@ import os
 import platform
 import subprocess
 
-import win32security
 from supabase import create_client
 
 from utils.constants import SUPABASE_KEY, SUPABASE_URL, VERSION_NUMBER, VERSION_TYPE
@@ -25,6 +24,7 @@ class others:
                 hwid = f.read()
                 return hwid
         elif platform.system() == "Windows":
+            import win32security
             winuser = os.getlogin()
             sid = win32security.LookupAccountName(None, winuser)[
                 0

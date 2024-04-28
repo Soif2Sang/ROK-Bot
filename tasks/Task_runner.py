@@ -5,7 +5,13 @@ from random import choice, randint, shuffle, uniform
 from time import sleep, time
 
 import flet as ft
-import win32gui
+try:
+    import win32api
+    import win32con
+    import win32gui
+except:
+    pass
+
 from PIL import Image
 
 from tasks.Task import Task

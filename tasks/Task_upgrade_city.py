@@ -2,10 +2,12 @@ import random
 from random import uniform
 from time import sleep
 
-import win32api
-import win32con
-import win32gui
-
+try:
+    import win32api
+    import win32con
+    import win32gui
+except:
+    pass
 from tasks.Task import Task
 from tasks.Task_alliance_help import AllianceHelp
 from utils.functions import filter_coordinate, get_class, get_name

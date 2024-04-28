@@ -10,8 +10,12 @@ from time import perf_counter, sleep
 
 import pyautogui
 import requests
-import win32gui
-import win32process
+
+try:
+    import win32gui, win32api
+    import win32process
+except:
+    pass
 from decohints import decohints
 
 from utils.constants import DEBUG
@@ -19,6 +23,21 @@ from utils.singletons import ApiSingleton, FileSingleton
 
 dir = "./"
 
+def find_file(root_folder, rex):
+    for root, dirs, files in os.walk(root_folder):
+        for f in files:
+            path = os.path.join(root, f)
+            result = rex.search(path)
+            if result:
+                return path
+
+
+def find_file_in_all_drives(file_name):
+    # create a regular expression for the file
+    rex = re.compile(file_name)
+    for drive in win32api.GetLogicalDriveStrings().split("\000")[:-1]:
+        if result := find_file(drive, rex):
+            return result
 
 def word_to_color(word):
     hash_object = hashlib.sha256()
