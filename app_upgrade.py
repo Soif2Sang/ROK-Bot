@@ -1,4 +1,5 @@
 import logging
+import platform
 
 logging.basicConfig(level=logging.ERROR)
 import json
@@ -39,8 +40,8 @@ except Exception as e:
     def handleError(page: ft.Page):
         page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
         page.vertical_alignment = ft.MainAxisAlignment.CENTER
-        page.add(ft.Text("An error occurred, send this message to the developer"))
-        page.add(ft.Text(value=traceback_str, color="red"))
+        page.add(ft.Text("An error occurred, send this message to the developer", selectable=True))
+        page.add(ft.Text(value=traceback_str, color="red", selectable=True))
         page.update()
 
     ft.app(target=handleError)
@@ -229,6 +230,11 @@ def emulator_choice(page: ft.Page, params, basket):
     page.window_height = 1080 / 2
 
     def go_main(e):
+        if platform.system() == "Darwin":
+            EmulatorSingleton().setEmulator("ld")
+
+            return Main(page)
+
         path_file = FileSingleton().get_path()
 
         print(e.control.data)

@@ -13,9 +13,13 @@ from time import sleep
 
 import cv2
 import flet as ft
-import win32api
-import win32con
-import win32gui
+
+try:
+    import win32api
+    import win32con
+    import win32gui
+except:
+    pass
 from numpy import array, ndarray
 from PIL import Image, ImageFile
 from pytesseract import pytesseract
