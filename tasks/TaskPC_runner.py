@@ -5,7 +5,10 @@ from random import randint, shuffle, uniform
 from time import sleep, time
 
 import flet as ft
-import win32gui
+try:
+    import win32gui
+except:
+    pass
 from PIL import Image
 
 from tasks.Task_academy_research import AcademyResearch

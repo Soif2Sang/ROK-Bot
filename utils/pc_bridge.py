@@ -3,18 +3,25 @@ import shutil
 import subprocess
 import threading
 import traceback
-from ctypes import windll
+try:
+    from ctypes import windll
+except:
+    pass
 from datetime import date
 from os.path import exists
 from time import sleep, time
 
 import pyautogui
 import pytesseract as tess
-import win32api
-import win32con
-import win32gui
-import win32process
-import win32ui
+
+try:
+    import win32api
+    import win32con
+    import win32gui
+    import win32process
+    import win32ui
+except:
+    pass
 from cv2 import COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor, inRange, matchTemplate, minMaxLoc
 from numpy import array, ndarray, where
 from PIL import Image

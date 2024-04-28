@@ -1,4 +1,5 @@
 import copy
+import platform
 import re
 
 import flet as ft
@@ -142,7 +143,9 @@ class TileHandlerWorker(ft.ListView):
 
         emulator = EmulatorSingleton().getEmulator()
 
-        if emulator == "bluestacks":
+        if platform.system() == "Darwin":
+            instances = {"pc": {'name': 'pc', 'instance': 'pc', 'port': -1}}
+        elif emulator == "bluestacks":
             instances = get_dic_instances()
         elif emulator == "ld":
             instances = get_dic_instances_ld()

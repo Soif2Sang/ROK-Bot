@@ -91,9 +91,14 @@ class FileSingleton:
 
     def get_data(self):
         self.FileLock.acquire()
-        with open(f"./user_settings.json", encoding="utf-8") as config_file:
-            data = json.load(config_file)
-        self.FileLock.release()
+        try:
+            if not os.path.exists("./user_settings.json"):
+                with open("./user_settings.json", "w", encoding="utf-8") as config_file:
+                    json.dump({}, config_file)  # Creates the file with an empty JSON object if it doesn't exist
+            with open("./user_settings.json", "r", encoding="utf-8") as config_file:
+                data = json.load(config_file)
+        finally:
+            self.FileLock.release()
         return data
 
     def getCachedData(self):
@@ -103,9 +108,14 @@ class FileSingleton:
 
     def get_path(self):
         self.FileLock.acquire()
-        with open(f"./path.json", encoding="utf-8") as config_file:
-            path = json.load(config_file)
-        self.FileLock.release()
+        try:
+            if not os.path.exists("./path.json"):
+                with open("./path.json", "w", encoding="utf-8") as config_file:
+                    json.dump({}, config_file)  # Creates the file with an empty JSON object if it doesn't exist
+            with open("./path.json", "r", encoding="utf-8") as config_file:
+                path = json.load(config_file)
+        finally:
+            self.FileLock.release()
         return path
 
     def write_data(self, data):
