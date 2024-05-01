@@ -4,7 +4,7 @@ from PIL import Image
 
 from tasks.Task import Task
 from tasks.Task_gather_rss import GatherRss
-from utils.functions import get_class, get_name
+from utils.functions import get_class, get_name, rgetattr
 from utils.singletons import EmulatorSingleton
 
 # from utils.easyOcr import Reader
@@ -16,6 +16,7 @@ class GatherRssZoom(GatherRss):
         self.herite(MainTask)
         self.end_time = None
         self.block = False
+        self.context_task = self.context_profile.tasks.gather_rss
 
     def task_name(self):
         return "GatherRss"
@@ -65,10 +66,12 @@ class GatherRssZoom(GatherRss):
         """
         self.restart_if_game_crashed()
         screen = self.adb.get_cv2_img()
-        if self.data[str(self.sel)]["schedules"][self.current_profile][self.node_place] == "random":
+
+        node_type = rgetattr(self.context_task, self.node_place.lower() + '_node').type
+        if node_type == "random":
             node_types = ["food", "wood", "stone", "gold"]
         else:
-            node_types = [self.data[str(self.sel)]["schedules"][self.current_profile][self.node_place]]
+            node_types = [node_type]
         list_nodes = []
         for node_type in node_types:
             list_nodes.append(f"{node_type}_icon_zoom")
@@ -215,7 +218,7 @@ class GatherRssZoom(GatherRss):
 
             for y in range(i):
                 if (
-                    self.data[str(self.sel)]["schedules"][self.current_profile].get(self.node_place, "nothing") == "nothing"
+                    rgetattr(self.context_task, node_place.lower() + '_node').type == "nothing"
                     or self.node_place == "Done"
                     or (not self.free_troop_commander_list())
                 ):

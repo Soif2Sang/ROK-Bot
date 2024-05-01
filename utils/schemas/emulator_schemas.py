@@ -57,14 +57,14 @@ class TaskGatherGemSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class NodeChoiceSchema:
-    type: Literal["food", "wood", "stone", "gold", "nothing"] = "food"
+    type: Literal["food", "wood", "stone", "gold", "random", "nothing"] = "food"
     level: int = 6
 
 
 @dataclass_json
 @dataclass
 class TaskGatherRssSchema(TaskSchema):
-    method: Literal["default", "spiral"] = "spiral"
+    search_method: Literal["default", "spiral"] = "spiral"
     use_custom_preset: bool = False
     first_node: NodeChoiceSchema = field(default_factory=NodeChoiceSchema)
     second_node: NodeChoiceSchema = field(default_factory=NodeChoiceSchema)
@@ -183,6 +183,10 @@ class TaskAllianceFortSchema(TaskSchema):
     rally_type: Literal["inf", "cav", "archers"] = "cav"
     marauders_mode: bool = False
 
+    map_center_pos: CordsSchema = field(default_factory=CordsSchema)
+    searching_radius: int = 30
+
+
 
 @dataclass_json
 @dataclass
@@ -209,6 +213,10 @@ class TaskExploreFogSchema(TaskSchema):
     duration: MinMaxSchema = field(default_factory=MinMaxSchema)
     scout_camp_position: CordsSchema = field(default_factory=CordsSchema)
 
+@dataclass_json
+@dataclass
+class TaskHelpAllianceBuilding(TaskSchema):
+    pass
 
 @dataclass_json
 @dataclass
@@ -265,8 +273,13 @@ class TaskLibrarySchema:
     collect_city_resources: TaskCollectCityResourcesSchema = field(default_factory=TaskCollectCityResourcesSchema)
     apply_buff: TaskApplyBuffSchema = field(default_factory=TaskApplyBuffSchema)
     buy_mysterious_merchant: TaskBuyMysteriousMerchantSchema = field(default_factory=TaskBuyMysteriousMerchantSchema)
-    donate_to_alliance: TaskDonateToAllianceSchema = field(default_factory=TaskDonateToAllianceSchema)
+
+    alliance_donation: TaskDonateToAllianceSchema = field(default_factory=TaskDonateToAllianceSchema)
     alliance_pit: TaskAlliancePitSchema = field(default_factory=TaskAlliancePitSchema)
+    alliance_help: TaskAllianceHelpSchema = field(default_factory=TaskAllianceHelpSchema)
+    alliance_fort: TaskAllianceFortSchema = field(default_factory=TaskAllianceFortSchema)
+    help_alliance_building: TaskHelpAllianceBuilding = field(default_factory=TaskHelpAllianceBuilding)
+
     produce_materials: TaskProduceMaterialsSchema = field(default_factory=TaskProduceMaterialsSchema)
     troop_training: TaskTroopTraining = field(default_factory=TaskTroopTraining)
     claim_daily_vip_chest: TaskClaimDailyVipChestSchema = field(default_factory=TaskClaimDailyVipChestSchema)
@@ -274,16 +287,13 @@ class TaskLibrarySchema:
     claim_daily_quest: TaskClaimDailyQuestSchema = field(default_factory=TaskClaimDailyQuestSchema)
     claim_daily_expedition_rewards: TaskClaimDailyExpeditionRewardsSchema = field(default_factory=TaskClaimDailyExpeditionRewardsSchema)
     claim_mail: TaskClaimMailSchema = field(default_factory=TaskClaimMailSchema)
-    alliance_help: TaskAllianceHelpSchema = field(default_factory=TaskAllianceHelpSchema)
     kill_barbarian: TaskKillBarbarianSchema = field(default_factory=TaskKillBarbarianSchema)
-    alliance_fort: TaskAllianceFortSchema = field(default_factory=TaskAllianceFortSchema)
     explore_fog: TaskExploreFogSchema = field(default_factory=TaskExploreFogSchema)
     upgrade_city: TaskUpgradeCitySchema = field(default_factory=TaskUpgradeCitySchema)
     academic_research: TaskAcademicResearchSchema = field(default_factory=TaskAcademicResearchSchema)
     troop_healing: TaskTroopHealingSchema = field(default_factory=TaskTroopHealingSchema)
     resources_transfer: TaskResourcesTransferSchema = field(default_factory=TaskResourcesTransferSchema)
     marauders: TaskMaraudersSchema = field(default_factory=TaskMaraudersSchema)
-
 
 @dataclass_json
 @dataclass

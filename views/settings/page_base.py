@@ -1,7 +1,7 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 from schemas.emulator_schemas import ProfileSchema, TaskLibrarySchema
-from singletons import SettingsSingleton
+from utils.singletons import ss
 
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, rgetattr, rsetattr

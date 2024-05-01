@@ -45,7 +45,7 @@ class SettingContainer(PageSettings):
             self.create_normal_switch("tasks.collect_city_resources.enabled", "Collect City Resources")
             self.create_normal_switch("tasks.apply_buff.enabled", "Apply Enhanced Buff")
             self.create_normal_switch("tasks.buy_mysterious_merchant.enabled", "Buy Mysterious Merchant")
-            self.create_normal_switch("tasks.donate_to_alliance.enabled", "Donate to Alliance")
+            self.create_normal_switch("tasks.alliance_donation.enabled", "Donate to Alliance")
             self.create_normal_switch("tasks.alliance_pit.enabled", "Alliance Pit Gathering")
 
             # ##

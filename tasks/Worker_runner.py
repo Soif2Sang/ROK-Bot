@@ -16,7 +16,7 @@ from utils.singletons import EmulatorSingleton
 class WorkerRunner:
     instance_id: str
     tile_worker: TileWorkerSchema
-    emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulator()
+    emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
     FileSingleton = FileSingleton()
 
     def update_data(self):

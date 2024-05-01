@@ -29,7 +29,8 @@ from schemas.emulator_schemas import EmulatorSettingsSchema, ProfileSchema
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.discord_utils import send_discord_message
-from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_name, string_to_co, string_to_co_slide
+from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_name, string_to_co, \
+    string_to_co_slide, rgetattr
 from utils.singletons import ApiSingleton, EmulatorSingleton, ss
 from utils.supabase_auth import SupabaseClient
 from utils.twocaptcha import TimeoutException, TwoCaptcha
@@ -1349,7 +1350,7 @@ class Task:
         return image[min_y:max_y, min_x:max_x]
 
     @get_name
-    def recenter(self, deadstop=0, task="tasks.marauders.location.kingdom"):
+    def recenter(self, deadstop=0, path="marauders.searching_radius"):
         image = self.adb.get_cv2_img()
 
         if co := self.find_img(source=image, target="green_home_button"):
@@ -1385,7 +1386,7 @@ class Task:
                 # if distances:
                 if (
                     word.split("KM")[0].isnumeric()
-                    and int(word.split("KM")[0]) > int(self.data[str(self.sel)]["schedules"][self.current_profile].get("radius", 40)) + 15
+                    and int(word.split("KM")[0]) > rgetattr(self.context_profile.tasks, path) + 15
                 ):
                     if co[0] < 500 and co[1] < 220:
                         self.swipe(co[0] + 90, co[1] + 90, 640, 360)
@@ -1415,7 +1416,7 @@ class Task:
                         self.swipe(co[0], co[1] + 90, 640, 360)
 
                     self.better_sleep((1, 2))
-                    return self.recenter(deadstop=deadstop + 1)
+                    return self.recenter(deadstop=deadstop + 1, path=path)
 
     @get_name
     def go_back_to_city(self, deadstop=0):

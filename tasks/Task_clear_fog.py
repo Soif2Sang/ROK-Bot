@@ -9,37 +9,26 @@ class ClearFog(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.explore_fog
 
     def task_name(self):
         return "ClearFog"
 
     @get_class
     def run(self, starting_time=None):
-        self.data = self.update_data()
         self.leave_city()
         self.better_sleep((1, 1.895))
         self.go_city()
         if starting_time is None:
             starting_time = time()
-        time()
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("scout_duration1", 60) > self.data[str(self.sel)]["schedules"][
-            self.current_profile
-        ].get("scout_duration2", 90):
-            (
-                self.data[self.sel]["schedules"][self.current_profile]["scout_duration1"],
-                self.data[self.sel]["schedules"][self.current_profile]["scout_duration2"],
-            ) = (
-                self.data[self.sel]["schedules"][self.current_profile]["scout_duration2"],
-                self.data[self.sel]["schedules"][self.current_profile]["scout_duration1"],
-            )
 
         generated_time = (
             randint(
-                self.data[str(self.sel)]["schedules"][self.current_profile].get("scout_duration1"),
-                self.data[str(self.sel)]["schedules"][self.current_profile].get("scout_duration2"),
+                self.context_task.duration.min * 60,
+                self.context_task.duration.max * 60,
             )
-            * 60
         )
+
         time_to_beat = starting_time + generated_time
         self.print(f"Clearing fog for ~{generated_time // 60} minutes")
         count = False
@@ -49,8 +38,8 @@ class ClearFog(Task):
                 return self.run(starting_time)
             self.check_reconnect()
             if not count:
-                scout = self.data[str(self.sel)]["schedules"][self.current_profile]["scout_camp"]
-                x, y = scout[0], scout[1]
+                scout = self.context_task.scout_camp_position
+                x, y = scout.x, scout.y
                 self.click(uniform(x - 10, x + 10), uniform(y - 10, y - 10))
                 self.better_sleep((1.25, 1.75))
                 co = self.find_img(target="scout_button")

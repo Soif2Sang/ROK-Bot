@@ -9,19 +9,20 @@ class AcademyResearch(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.academic_research
 
     def task_name(self):
         return "AcademyResearch"
 
     @get_name
     def academy_coordinates(self):
-        return self.data[str(self.sel)]["schedules"][self.current_profile].get("academy_position", [])
+        return self.context_task.academy_position
 
     @get_name
     def enter_academy(self):
         for _ in range(2):
-            x, y = self.academy_coordinates()
-            self.click(x, y)
+            academy_coordinates = self.academy_coordinates()
+            self.click(academy_coordinates.x, academy_coordinates.y)
             self.better_sleep((0.9, 1.5))
         if self.find_img("building_speedups") is None:
             if co := self.find_img("academy"):

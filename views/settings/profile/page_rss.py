@@ -29,7 +29,7 @@ class PageRss(BasePage):
                 ]
             ),
             on_change=self.toggle_search_method,
-            value=self.context.method,
+            value=self.context.search_method,
         )
 
         self.availability_dropdown = ft.Dropdown(
@@ -92,7 +92,7 @@ class PageRss(BasePage):
 
         self.toggle_node_levels(data != "default")
 
-        self.context.method = data
+        self.context.search_method = data
 
         ss.write_emulator_settings(ss.emulator_settings)
         self.profile.initial_page.update()

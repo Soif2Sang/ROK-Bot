@@ -12,6 +12,7 @@ class ClaimCampaign(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.claim_daily_expedition_rewards
 
     def task_name(self):
         return "ClaimCampaign"
@@ -59,8 +60,8 @@ class ClaimCampaign(Task):
                 self.click(co[0] + uniform(0, 149), co[1] + uniform(0, 20))
                 self.better_sleep((1.3, 2.2))
                 if (
-                    self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_ethel"]
-                    or self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_items"]
+                    self.context_task.enable_buy_items
+                    or self.context_task.enable_buy_heads
                 ):
                     self.click(160, 100)
                     self.better_sleep((1.3, 2.2))
@@ -70,12 +71,12 @@ class ClaimCampaign(Task):
                     refresh = (1040, 330)
                     shuffle(items)
 
-                    if self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_ethel"]:
+                    if self.context_task.enable_buy_heads:
                         for i in range(3):
                             self.click(ethel[0] + uniform(-3, 3), ethel[1] + uniform(-3, 3))
                             self.better_sleep((0.7, 1.2))
 
-                    if self.data[str(self.sel)]["schedules"][self.current_profile]["expedition_shop_items"]:
+                    if self.context_task.enable_buy_items:
                         for i in range(2):
                             for item in items:
                                 self.click(item[0] + uniform(-3, 3), item[1] + uniform(-3, 3))

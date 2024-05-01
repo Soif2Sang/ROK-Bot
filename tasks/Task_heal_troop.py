@@ -13,6 +13,7 @@ class HealTroop(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.troop_healing
 
     def task_name(self):
         return "HealTroop"
@@ -73,11 +74,10 @@ class HealTroop(Task):
                     tier_icons[0][1] + uniform(-15, 10),
                 )
                 self.better_sleep((1, 1.8))
-            # print(f"{self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_building_x') =}")
-            healing_hut = self.data[str(self.sel)]["schedules"][self.current_profile]["hospital"]
-            self.FileSingleton.write(self.name, f"Healing building placement (randomised) : {healing_hut}")
-            self.click(healing_hut[0], healing_hut[1])
-            # print("après les healing_hut")
+
+            hospital_position = self.context_task.hospital_position
+            self.click(hospital_position.x, hospital_position.y)
+
             co = self.find_img(target="heal_icon")
             if co is None:
                 co = self.find_img(target="heal_icon")
@@ -99,7 +99,7 @@ class HealTroop(Task):
                 string = string.replace(",", "")
             nb_heal = string.split("/")
             print(string, nb_heal)
-            if int(self.data[str(self.sel)]["schedules"][self.current_profile].get("healing_count")) > int(nb_heal[0]):
+            if self.context_task.healing_batch_size > int(nb_heal[0]):
                 self.click(uniform(880, 1018), uniform(560, 600))
                 self.better_sleep((1, 1.5))
                 AllianceHelp(self).run()
@@ -113,13 +113,13 @@ class HealTroop(Task):
             string = "input keyevent 67 67 67 67 67 67 67 67 67"
             self.adb.get_device().shell(string)
             self.better_sleep((0.3, 0.5))
-            self.adb.get_device().shell(f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('healing_count')}")
+            self.adb.get_device().shell(f"input text {self.context_task.healing_batch_size}")
             self.better_sleep((1, 1.5))
             self.click(uniform(187, 170), uniform(226, 400))
             self.click(uniform(880, 1018), uniform(560, 600))
             self.better_sleep((1, 1.5))
             self.click_help()
-            self.click(healing_hut[0], healing_hut[1])
+            self.click(hospital_position.x, hospital_position.y)
 
     def click_help(self):
         AllianceHelp(self).run()

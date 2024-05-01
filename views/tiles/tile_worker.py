@@ -2,7 +2,6 @@ import threading
 
 import flet as ft
 from Worker_runner import WorkerRunner
-from test_random_x import open_worker_settings
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
@@ -10,7 +9,7 @@ from tasks.TaskPC import Task as TaskPC
 from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
 from utils.flet_translations import translate
 from utils.functions import FileSingleton
-from utils.singletons import EmulatorSingleton
+from utils.singletons import EmulatorSingleton, ss
 from views.tiles.handler.config_handler import InstanceTabs
 from views.tiles.tile_slave import TileSlave
 
@@ -178,7 +177,7 @@ class TileWorker(ft.ExpansionTile):
         # data = self.FileSingleton.getCachedData()
         emulator_type = EmulatorSingleton().getEmulatorType()
 
-        worker_settings = open_worker_settings()
+        worker_settings = ss.open_worker_settings()
 
         # for instance in data["workers"][emulator_type][self.number]["instances"]:
         #     if instance["instance"] not in self.slaves:

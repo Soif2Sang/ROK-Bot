@@ -18,6 +18,22 @@ class PageRally(BasePage):
                 title=translate("*REQUIREMENT*"),
                 subtitle=translate("Pre-configure the first red slot from the commanders presets with a rally leader!"),
             ),
+            ft.Text("Search Methods", weight=ft.FontWeight.BOLD),
+            ft.Divider(),
+            ft.OutlinedButton(
+                text=translate("Set area location"),
+                on_click=lambda _: self.initial_page.go(f"/set-center/alliance_fort/{self.instance_index}/{self.profile_index}"),
+                # disabled=self.context.search_method != "map",
+            ),
+            ft.TextField(
+                label=translate("Scanning radius (km) :"),
+                value=str(self.context.searching_radius),
+                content_padding=ft.padding.all(10),
+                on_change=self.submit_with_context,
+                input_filter=ft.NumbersOnlyInputFilter(),
+                data={"path": "searching_radius", "type": int},
+            ),
+            ft.Divider(),
             ft.Switch(
                 label=translate("Look for Marauders forts (only pre-kvk)"),
                 value=self.context.marauders_mode,

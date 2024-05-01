@@ -8,6 +8,7 @@ class BuyMerchant(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.buy_mysterious_merchant
 
     def task_name(self):
         return "BuyMerchant"
@@ -93,7 +94,7 @@ class BuyMerchant(Task):
             return self.print("Merchant seems inaccessible.")
         self.print("Robbing the shop.", "green")
         self.click(co[0] + uniform(0, 10), co[1] + uniform(0, 10))
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("buy_merchant_skip", False):
+        if self.context_task.skip_second_row:
             self.buy_from_shop_light()
         else:
             self.buy_from_shop()

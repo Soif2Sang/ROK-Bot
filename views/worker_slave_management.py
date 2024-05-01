@@ -2,7 +2,6 @@ from typing import List
 
 import flet as ft
 from schemas.worker_schemas import InstanceSchema
-from test_random_x import open_emulator_settings, open_worker_settings, write_worker_settings
 
 from utils.flet_translations import translate
 from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton
