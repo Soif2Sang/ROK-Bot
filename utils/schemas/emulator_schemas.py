@@ -41,7 +41,7 @@ class NodeLimitSchema:
 @dataclass_json
 @dataclass
 class TaskGatherGemSchema(TaskSchema):
-    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
+    duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=30, max=90))
     searching_radius: int = 30
     node_limit: NodeLimitSchema = field(default_factory=NodeLimitSchema)
     compare_march_duration: bool = True
@@ -210,7 +210,7 @@ class TaskKillBarbarianSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskExploreFogSchema(TaskSchema):
-    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
+    duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=5, max=30))
     scout_camp_position: CordsSchema = field(default_factory=CordsSchema)
 
 @dataclass_json
@@ -252,7 +252,7 @@ class TaskResourcesTransferSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskMaraudersSchema(TaskSchema):
-    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
+    duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=30, max=90))
     searching_radius: int = 30
     map_center_pos: CordsSchema = field(default_factory=CordsSchema)
     presets_selection: TroopPresetSelectionSchema = field(default_factory=TroopPresetSelectionSchema)
@@ -306,7 +306,7 @@ class TimeSlotSchema:
 @dataclass
 class LogBackFromErrorSchema:
     enabled: bool = False
-    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
+    duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=5, max=10))
 
 
 @dataclass_json
@@ -333,7 +333,7 @@ class CaptchaSolverSchema:
 @dataclass
 class LogBackFromDeviceSwitchSchema:
     enabled: bool = False
-    duration: MinMaxSchema = field(default_factory=MinMaxSchema)
+    duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=5, max=10))
 
 
 @dataclass_json

@@ -7,6 +7,7 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
+from singletons import ss
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
 from utils.functions import FileSingleton, accurate_sleep, current_time, get_dic_instances, get_name
 from utils.resources import ImageSingleton
@@ -57,7 +58,7 @@ class AdbBluestacks(Adb):
 
     @get_name
     def get_device(self, host="127.0.0.1", max_attempts=10, timeout=2):
-        self.port = str(self.data[str(self.instance)]["port"])
+        self.port = str(ss.emulator_settings.emulators[str(self.instance)].port)
 
         for attempt in range(max_attempts):
             device = self.client.device(f"{host}:{self.port}")
@@ -68,8 +69,8 @@ class AdbBluestacks(Adb):
             self.print(f"Device Not Found")
             self.update_port()
             self.connect_to_device()
-            path = self.FileSingleton.get_path()
-            cmd = f"{path['HD-Player'].replace('Player', 'Adb')} -s {host}:{self.port} shell eco i"
+
+            cmd = f"{ss.application_settings.paths.bluestacks.player.replace('Player', 'Adb')} -s {host}:{self.port} shell eco i"
             subprocess.run(cmd)
             accurate_sleep(timeout)
 
@@ -77,14 +78,12 @@ class AdbBluestacks(Adb):
 
     @get_name
     def stop_server(self):
-        path = self.FileSingleton.get_path()
-        cmd = f"{path['HD-Player'].replace('Player', 'Adb')} kill-server"
+        cmd = f"{ss.application_settings.paths.bluestacks.player.replace('Player', 'Adb')} kill-server"
         subprocess.run(cmd)
 
     @get_name
     def start_server(self):
-        path = self.FileSingleton.get_path()
-        cmd = f"{path['HD-Player'].replace('Player', 'Adb')} start-server"
+        cmd = f"{ss.application_settings.paths.bluestacks.player.replace('Player', 'Adb')} start-server"
         subprocess.run(cmd)
 
     def is_game_alive(self):

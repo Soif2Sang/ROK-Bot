@@ -8,8 +8,6 @@ import flet as ft
 class RowFinder(ft.Row):
     def __init__(self, mot, **kwargs):
         super().__init__(**kwargs)
-        self.FileSingleton = FileSingleton()
-        self.path_json = self.FileSingleton.get_path()
         self.mot = mot
         self.enhanced_mot = self.mot.split("\\")[0]
         self.text = ft.Text(value=f"Set {self.enhanced_mot} file location")
