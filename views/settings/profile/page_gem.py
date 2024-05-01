@@ -65,7 +65,7 @@ class PageGem(BasePage):
         # Button Controls
         self.set_area_location_button = ft.OutlinedButton(
             text=translate("Set area location"),
-            on_click=lambda _: self.initial_page.go(f"/gather-gems/{self.instance_index}/{self.profile_index}"),
+            on_click=lambda _: self.initial_page.go(f"/set-center/gather_gem/{self.instance_index}/{self.profile_index}"),
             # disabled=self.context.search_method != "map",
         )
 
@@ -197,7 +197,7 @@ class PageGem(BasePage):
             GenerateCard(
                 level=translate("warning"),
                 title=translate("*REQUIREMENT*"),
-                subtitle=translate("Pre-configure yellow-lineups with gathering gem commanders!\nConfigure the center of the search zone"),
+                subtitle=translate("Pre-configure yellow-lineups with gathering gem commanders!"),
             ),
             ft.Divider(),
             ft.Text("Availability", weight=ft.FontWeight.BOLD),

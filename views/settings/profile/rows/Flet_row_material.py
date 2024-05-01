@@ -12,7 +12,7 @@ class FletRowMaterial(ft.Row):
         self.context = context
         self.controls = [
             ft.Container(
-                width=100,
+                width=120,
                 content=ft.Text(translate(f"{key.split('_')[0].capitalize()} choice :")),
                 alignment=ft.alignment.center_right,
             ),

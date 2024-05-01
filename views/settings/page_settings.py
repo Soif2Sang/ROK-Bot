@@ -31,7 +31,7 @@ class PageSettings(ft.Container):
 
     def goBack(self):
         self.content.controls = []
-        self.data = self.FileSingleton.get_data()
+        # self.data = self.FileSingleton.get_data()
         self.init()
         self.initial_page.update()
 

@@ -1,5 +1,6 @@
 import flet as ft
 
+from schemas.emulator_schemas import TaskGatherRssSchema
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, rsetattr
 from utils.singletons import ss
@@ -12,7 +13,7 @@ class FletRowRss(ft.ResponsiveRow):
         self.data = self.FileSingleton.get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
-        self.context = context
+        self.context: TaskGatherRssSchema = context
 
         self.node_level_dropdown = ft.Dropdown(
             content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
@@ -31,7 +32,7 @@ class FletRowRss(ft.ResponsiveRow):
             # value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
             value=getattr(self.context, f"{key.lower()}_node").level,
             on_change=self.submit_with_context,
-            disabled=self.context.method == "spiral",
+            disabled=self.context.search_method == "spiral",
             data={"path": f"{key.lower()}_node.level", "type": int},
         )
 

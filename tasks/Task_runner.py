@@ -45,8 +45,8 @@ from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge import DeviceNotFoundException
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid
-from utils.singletons import EmulatorSingleton
+from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid, rgetattr
+from utils.singletons import EmulatorSingleton, ss
 from views.frametime import is_in_frametime, random_time_in_frametime
 
 
@@ -154,7 +154,7 @@ class TaskRunner(Task):
             self.set_current_task(func.task_name())
 
             # self.set_status()
-            if self.data[self.sel]["schedules"][profile].get("alliance_help", False):
+            if self.context_profile.tasks.alliance_help.enabled:
                 AllianceHelp(self).run()
 
             if func.task_name() in [
@@ -203,11 +203,14 @@ class TaskRunner(Task):
         self.check_captcha()
 
     def get_available_task(self, profile: str = None):
-        # self.data = self.update_data()
-        if profile is None:
-            profile = self.data.get(self.sel)
-        else:
-            profile = self.data.get(self.sel).get("schedules").get(profile)
+        # # self.data = self.update_data()
+        # if profile is None:
+        #     profile = self.data.get(self.sel)
+        # else:
+        #     profile = self.data.get(self.sel).get("schedules").get(profile)
+        #
+        profile = self.context.schedules[profile]
+
         # print(profile)
         lib_tasks = []
 
@@ -216,52 +219,44 @@ class TaskRunner(Task):
         rss_task = {"default": GatherRssDefault, "zoom": GatherRssZoom}
 
         tasks = [
-            ("claim_campaign", ClaimCampaign),
-            ("collect_ressource", CollectResource),
-            ("buy_merchant", BuyMerchant),
             (
                 "gather_rss",
-                rss_task[profile.get("gather_rss_method")],
+                rss_task[profile.tasks.gather_rss.search_method],
             ),
-            ("use_enhanced_buff", UseEnhancedBuff),
-            ("check_donation", AllianceDonation),
-            ("defeat_barbarians", HuntBarbarians),
             (
                 "gather_gem",
-                gem_task[profile.get("gather_gem_method")],
+                gem_task[profile.tasks.gather_gem.search_method],
             ),
-            ("scout_fog", ClearFog),
-            ("claim_daily_vip", DailyVip),
-            ("start_fort", BarbFort),
-            ("heal_troop", HealTroop),
-            ("material_production", ProduceMaterials),
+            ("collect_city_resources", CollectResource),
+            ("apply_buff", UseEnhancedBuff),
+            ("buy_mysterious_merchant", BuyMerchant),
+            ("alliance_donation", AllianceDonation),
+            ("alliance_pit", AlliancePit),
+            ("alliance_fort", BarbFort),
+
+            ("produce_materials", ProduceMaterials),
+            ("troop_training", TroopTraining),
+            ("claim_daily_vip_chest", DailyVip),
             ("claim_daily_chest", DailyChest),
-            ("claim_daily_quests", DailyQuests),
-            ("auto_upgrade", UpgradeCity),
-            ("train_troops", TroopTraining),
-            ("transfer_enable", RssTransfer),
-            ("kill_marauders", Marauders),
-            ("gather_alliance_pit", AlliancePit),
+            ("claim_daily_quest", DailyQuests),
+            ("claim_daily_expedition_rewards", ClaimCampaign),
+
+            ("kill_barbarian", HuntBarbarians),
+            ("explore_fog", ClearFog),
+            ("upgrade_city", UpgradeCity),
             ("academic_research", AcademyResearch),
+            ("troop_healing", HealTroop),
+            ("resources_transfer", RssTransfer),
+            ("marauders", Marauders),
         ]
 
         for task_key, task_class in tasks:
-            if profile.get(task_key, False):
-                if task_key == "gather_rss":
-                    if profile["gather_rss_availability"] == "all":
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_rss_availability"] == "only_first" and self.character_index == 1:
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_rss_availability"] == "all_except_first" and self.character_index != 1:
-                        lib_tasks.append(task_class(self))
-                elif task_key == "gather_gem":
-                    if profile["gather_gem_availability"] == "all":
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_gem_availability"] == "only_first" and self.character_index == 1:
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_gem_availability"] == "all_except_first" and self.character_index != 1:
-                        lib_tasks.append(task_class(self))
-                else:
+            if rgetattr(profile.tasks, task_key).enabled:
+                if rgetattr(profile.tasks, task_key).availability == "all":
+                    lib_tasks.append(task_class(self))
+                elif rgetattr(profile.tasks, task_key).availability == "only_first" and self.character_index == 1:
+                    lib_tasks.append(task_class(self))
+                elif rgetattr(profile.tasks, task_key).availability == "all_except_first" and self.character_index != 1:
                     lib_tasks.append(task_class(self))
 
         shuffle(lib_tasks)
@@ -294,13 +289,13 @@ class TaskRunner(Task):
                     lib_tasks[hunt_index],
                 )
 
-        if profile.get("upgrade_city", False):
+        if profile.tasks.upgrade_city.enabled:
             lib_tasks.append(UpgradeCity(self))
 
-        if profile.get("claim_mails", False):
+        if profile.tasks.claim_mail.enabled:
             lib_tasks.append(ClaimMail(self))
 
-        if profile.get("help_alliance_building", False):
+        if profile.tasks.help_alliance_building.enabled:
             lib_tasks.insert(0, AllianceBuilding(self))
 
         return lib_tasks
@@ -567,8 +562,6 @@ class TaskRunner(Task):
             while True:
                 self.better_sleep((1, 1))
 
-        self.FileSingleton.get_path()
-        data = self.FileSingleton.get_data()
         emulator_choice = EmulatorSingleton().getEmulatorType()
 
         if not win32gui.FindWindow(None, self.name):
@@ -597,14 +590,11 @@ class TaskRunner(Task):
             instances = get_dic_instances()
 
         for instance in instances:
-            data[str(instance)]["instance"] = instances[str(instance)]["instance"]
-            data[str(instance)]["name"] = instances[str(instance)]["name"]
-            data[str(instance)]["port"] = int(instances[str(instance)]["port"])
+            ss.emulator_settings.emulators[instance].instance = instances[instance]["instance"]
+            ss.emulator_settings.emulators[instance].name = instances[instance]["name"]
+            ss.emulator_settings.emulators[instance].port = int(instances[instance]["port"])
 
-        self.data = data
-        self.FileSingleton.write_data(data)
-        # self.worker.main_task.adb.connect_to_device()
-        # self.worker.runner.adb.connect_to_device()
+        ss.write_emulator_settings(ss.emulator_settings)
 
     @get_name
     def run(self):
@@ -963,19 +953,19 @@ class TaskRunner(Task):
         self.set_sel(self.tile.number)
         self.character_index = 1
         self.has_started_once = False
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
         can_go = True
 
-        for profile in self.data[self.sel]["schedules"]:
+        for profile in self.context.schedules:
             can_go = False
 
-            if not self.data[self.sel]["schedules"][profile]["enabled"]:
+            if not self.context.schedules[profile]:
                 continue
             else:
-                if self.data[self.sel]["schedules"][profile]["enable_timing"]:
-                    for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                        if is_in_frametime(t[0], t[1]):
-                            self.print(f"Profile 1 able to run")
+                if self.context.schedules[profile].time_slot.enabled:
+                    for slot in self.context.schedules[profile].time_slot.allowed_time_slots:
+                        if is_in_frametime(slot.start, slot.end):
+                            self.print(f"Profile {profile} able to run")
                             can_go = True
                             break
                     if not can_go:
@@ -995,12 +985,12 @@ class TaskRunner(Task):
             # First character
             self.current_profile = profile
 
-            if self.get_config().get("switch_character"):
+            if self.context.schedules[profile].switch_character.enabled:
                 self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
             # First character
             self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
 
-            if self.get_config().get("switch_character", False):
+            if self.context.schedules[profile].switch_character.enabled:
                 self.check_captcha()
                 co_first = self.switch_character()
                 self.wait_until_connected()

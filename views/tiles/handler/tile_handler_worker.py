@@ -6,7 +6,6 @@ import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 from schemas.emulator_schemas import EmulatorSettingsSchema
 from schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
-from test_random_x import open_emulator_settings, open_worker_settings, write_emulator_settings, write_worker_settings
 
 from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
@@ -147,7 +146,7 @@ class TileHandlerWorker(ft.ListView):
         emulator = EmulatorSingleton().getEmulatorType()
 
         if platform.system() == "Darwin":
-            instances = {"pc": {'name': 'pc', 'instance': 'pc', 'port': -1}}
+            instances = {"0": {"name": "LD-Player", "instance": "ld", "port": 5554}}
         elif emulator == "bluestacks":
             instances = get_dic_instances()
         elif emulator == "ld":
@@ -194,6 +193,7 @@ class TileHandlerWorker(ft.ListView):
         for i, instance in enumerate(instances):
             if emulator not in worker_settings.worker_type:
                 worker_settings.worker_type[emulator] = WorkerListSchema()
+
             if str(i) not in worker_settings.worker_type[emulator].workers:
                 worker_settings.worker_type[emulator].workers[str(i)] = WorkerSettingsSchema(instances=[InstanceSchema(instance=instance)])
 
@@ -206,6 +206,10 @@ class TileHandlerWorker(ft.ListView):
                 )
 
                 ss.emulator_settings.emulators[instance].schedules["1"].enabled = True
+            else:
+                ss.emulator_settings.emulators[instance].instance = instances[instance]["instance"]
+                ss.emulator_settings.emulators[instance].name = instances[instance]["name"]
+                ss.emulator_settings.emulators[instance].port = int(instances[instance]["port"])
 
         # self.FileSingleton.write_data(data)
         ss.write_emulator_settings(ss.emulator_settings)
