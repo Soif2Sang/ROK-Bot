@@ -119,8 +119,6 @@ class CityPlacement(ft.Container):
         self.instance = instance
         self.profile = profile
         self.current_attribute = None
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
 
         self.main_container = ft.Stack(
             controls=[
@@ -227,8 +225,6 @@ class MapContainer(ft.Container):
         self.profile = profile
         self.task = task
         self.current_build = None
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
 
         self.main_container = ft.Stack(
             controls=[

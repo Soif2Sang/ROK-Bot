@@ -138,8 +138,6 @@ class RowTimezone(ft.Row):
 class ManagerTimezone(ft.ListView):
     def __init__(self, instance, profile, **kwargs):
         super().__init__(**kwargs)
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
         self.instance = str(instance)
         self.profile = str(profile)
         self.spacing = 10

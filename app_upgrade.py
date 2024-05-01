@@ -23,7 +23,7 @@ try:
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
     from utils.functions import FileSingleton, get_dic_instances, get_dic_instances_ld, getchecksum
-    from utils.singletons import ApiSingleton, EmulatorSingleton, SettingsSingleton
+    from utils.singletons import ApiSingleton, EmulatorSingleton, SettingsSingleton, ss
     from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout, viewSetCenterMap
     from views.config_path import find_file_in_all_drives
@@ -47,37 +47,6 @@ except Exception as e:
 
     ft.app(target=handleError)
     exit()
-
-fileSingleton = FileSingleton()
-data = fileSingleton.getCachedData()
-
-if "API_KEY" not in data:
-    data["API_KEY"] = ""
-    fileSingleton.write_data(data)
-
-if "workers" not in data:
-    data["workers"] = {"ld": {}, "bluestacks": {}, "pc": {}}
-    fileSingleton.write_data(data)
-
-if "pc" not in data["workers"]:
-    data["workers"]["pc"] = {}
-    fileSingleton.write_data(data)
-
-if "interface" not in data:
-    data["interface"] = {"auto_scroll": True, "auto_refresh": True, "limit_logs": True}
-    fileSingleton.write_data(data)
-
-if "discord" not in data:
-    data["discord"] = {"user_id": 0, "enabled": False}
-    fileSingleton.write_data(data)
-
-for instances in data:
-    if not "schedules" in data[instances]:
-        continue
-    for profiles in data[instances]["schedules"]:
-        if data[instances]["schedules"][profiles]["gather_rss_method"] not in ["default", "spiral"]:
-            data[instances]["schedules"][profiles]["gather_rss_method"] = "default"
-            fileSingleton.write_data(data)
 
 
 def main(page: ft.Page):
@@ -236,46 +205,39 @@ def emulator_choice(page: ft.Page, params, basket):
 
             return Main(page)
 
-        path_file = FileSingleton().get_path()
-
-        print(e.control.data)
         if "bluestacks" in e.control.data:
             EmulatorSingleton().setEmulator("bluestacks")
 
-            if not os.path.exists(path_file["bluestacks"]) or not os.path.exists(path_file["HD-Player"]):
+            if not os.path.exists(ss.application_settings.paths.bluestacks.config) or not os.path.exists(ss.application_settings.paths.bluestacks.player):
                 page.go("/emulator-loading")
                 page.update()
 
                 if result := find_file_in_all_drives("bluestacks\.conf"):
-                    path_file["bluestacks\.conf".split("\\")[0]] = result
-                    with open("./path.json", "w", encoding="UTF-8") as f:
-                        json.dump(path_file, f, indent=2)
-
+                    ss.application_settings.paths.bluestacks.config = result
                 if result := find_file_in_all_drives("HD-Player\.exe"):
-                    path_file["HD-Player\.exe".split("\\")[0]] = result
-                    with open("./path.json", "w", encoding="UTF-8") as f:
-                        json.dump(path_file, f, indent=2)
+                    ss.application_settings.paths.bluestacks.player = result
 
-            cmd = f"{path_file['HD-Player'].replace('Player', 'Adb')} start-server"
+                ss.write_application_settings(ss.application_settings)
+
+            cmd = f"{ss.application_settings.paths.bluestacks.player.replace('Player', 'Adb')} start-server"
             subprocess.Popen(cmd)
 
         elif "ld" in e.control.data:
             EmulatorSingleton().setEmulator("ld")
 
-            if not path_file.get("LD-Console", False) or not os.path.exists(path_file.get("LD-Console", "fzfgrerg")):
+            if not os.path.exists(ss.application_settings.paths.ldplayer.ldconsole):
                 page.go("/emulator-loading")
                 page.update()
 
                 if result := find_file_in_all_drives(r"LDPlayer9\\ldconsole\.exe"):
-                    path_file["LD-Console"] = result
-                    with open("./path.json", "w", encoding="UTF-8") as f:
-                        json.dump(path_file, f, indent=2)
+                    ss.application_settings.paths.ldplayer.ldconsole = result
+                    ss.write_application_settings(ss.application_settings)
                 else:
                     page.generate_toast("LD9 Missing", "Unable to load LD Player 9 Configuration")
                     while 1:
                         sleep(1)
 
-            cmd = f"{path_file['LD-Console'].replace('ldconsole', 'adb')} start-server"
+            cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} start-server"
             subprocess.Popen(cmd)
         elif "pc" in e.control.data:
             EmulatorSingleton().setEmulator("pc")

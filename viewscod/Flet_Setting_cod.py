@@ -18,8 +18,6 @@ color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 class SettingContainer(ft.Container):
     def __init__(self, page, instance_index: str, profile_index: int):
         super().__init__()
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
         self.page = page
         self.instance_index = instance_index
         self.profile_index = profile_index

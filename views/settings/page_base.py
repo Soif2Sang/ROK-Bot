@@ -10,8 +10,6 @@ from utils.functions import FileSingleton, rgetattr, rsetattr
 class BasePage:
     def __init__(self, profile):
         super().__init__()
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
         self.initial_page = profile.initial_page
         self.instance_index = profile.instance_index
         self.profile_index = profile.profile_index
@@ -46,54 +44,10 @@ class BasePage:
         for ctrl in control:
             self.profile.content.controls.append(ctrl)
 
-    def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", "API_KEY"]:
-            if e.control.value.strip() == "":
-                self.data[str(self.instance_index)][keyword] = 0
-                e.control.value = "0"
-            else:
-                self.data[str(self.instance_index)][keyword] = method(e.control.value)
-        elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            if e.control.value.strip() == "":
-                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(0)
-            else:
-                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
-        else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
-                e.control.value.replace("x", "").replace("level ", "")
-            )
-        self.FileSingleton.write_data(self.data)
-
-    def reverse_keyword(self, keyword: str):
-        data = self.FileSingleton.get_data()
-
-        if keyword == "auto_scroll" or keyword == "limit_logs":
-            data["interface"][keyword] = not data["interface"].get(keyword, False)
-            self.FileSingleton.write_data(data)
-            if keyword == "auto_scroll":
-                for frame in self.profile.initial_page.frames:
-                    self.profile.initial_page.frames[frame].logger.auto_scroll = data["interface"][keyword]
-                self.initial_page.update()
-        elif keyword == "enabled":
-            data["discord"]["enabled"] = not data["discord"].get(keyword, False)
-        elif keyword == "leave_game_loop":
-            data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
-        else:
-            data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = not self.data[str(self.instance_index)][
-                "schedules"
-            ][str(self.profile_index)][keyword]
-
-        self.data = data
-
-        self.FileSingleton.write_data(data)
-
     def create_normal_switch(self, keyword: str, text: str, data=None):
-        self.data = self.FileSingleton.get_data()
-
         return ft.Switch(label=translate(text), value=rgetattr(self.context, keyword), on_change=self.submit_with_context, data=data)
 
-    def create_advanced_switch(self, keyword: str, text: str, function):
+    def create_advanced_switch(self, keyword: str, text: str, function, data=None):
         self.data = self.FileSingleton.get_data()
         if keyword not in ["loop_task", "scheduler"]:
             return ft.Row(
@@ -101,7 +55,8 @@ class BasePage:
                     ft.Switch(
                         label=translate(text),
                         value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
-                        on_change=lambda _: self.reverse_keyword(keyword),
+                        on_change=self.submit_with_context,
+                        data=data
                     ),
                     ft.OutlinedButton(
                         text=translate("Settings"),

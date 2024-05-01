@@ -230,7 +230,6 @@ class Task:
     @get_name
     def random_macro(self) -> bool:
         try:
-            path_json = self.FileSingleton.get_path()
             for name in [
                 "com.lilithgame.roc.gp.cfg",
                 "com.rok.gp.vn.cfg",
@@ -238,7 +237,7 @@ class Task:
                 "com.lilithgames.rok.gp.jp.cfg",
                 "com.lilithgames.rok.gpkr.cfg",
             ]:
-                path = path_json["bluestacks"][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
+                path = ss.application_settings.paths.bluestacks.config[:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
                 if os.path.isfile(path):
                     break
 

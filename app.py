@@ -71,7 +71,6 @@ def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.window_width = 450
     page.window_height = 400
-    page.FileSingleton = FileSingleton()
     ready = False
 
     for i in range(3):
