@@ -1,7 +1,7 @@
 import copy
 
 import flet as ft
-from schemas.emulator_schemas import EmulatorSettingsSchema
+from utils.schemas.emulator_schemas import EmulatorSettingsSchema
 
 from utils.functions import FileSingleton
 from utils.singletons import ss

@@ -1,9 +1,9 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from functions import rgetattr, rsetattr
-from schemas.emulator_schemas import EmulatorSettingsSchema
+from utils.schemas.emulator_schemas import EmulatorSettingsSchema
 
 from utils.flet_translations import translate
+from utils.functions import rgetattr, rsetattr
 from utils.singletons import ss
 from views.settings.general.page_profiles import PageProfiles
 from views.settings.general.page_redo import PageRedo

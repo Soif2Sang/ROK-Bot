@@ -1,9 +1,6 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from functions import rsetattr
 
-from functions import rsetattr
-from utils.singletons import ss
 from utils.flet_translations import translate
 from utils.singletons import ss
 from views.settings.page_base import BasePage

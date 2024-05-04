@@ -1,8 +1,6 @@
 import flet as ft
-from schemas.application_schemas import ApplicationSettingsSchema
+from utils.schemas.application_schemas import ApplicationSettingsSchema
 
-from schemas.application_schemas import ApplicationSettingsSchema
-from utils.singletons import ss
 from utils.functions import FileSingleton
 from utils.singletons import ss
 

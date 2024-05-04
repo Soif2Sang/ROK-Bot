@@ -1,8 +1,8 @@
 import threading
-import flet as ft
-
-from typing import Dict, Any, List, Literal
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Literal
+
+import flet as ft
 from dataclasses_json import dataclass_json
 
 
@@ -33,21 +33,26 @@ class BluestacksPathSchema:
     config: str = ""
     player: str = ""
 
+
 @dataclass_json
 @dataclass
 class LdplayerPathSchema:
     ldconsole: str = ""
+
+
 @dataclass_json
 @dataclass
 class PathSchema:
     bluestacks: BluestacksPathSchema = field(default_factory=BluestacksPathSchema)
     ldplayer: LdplayerPathSchema = field(default_factory=LdplayerPathSchema)
 
+
 @dataclass_json
 @dataclass
 class UserSchema:
     email: str = ""
     password: str = ""
+
 
 @dataclass_json
 @dataclass
@@ -57,6 +62,7 @@ class ApplicationSettingsSchema:
     captcha: CaptchaSettingsSchema = field(default_factory=CaptchaSettingsSchema)
     paths: PathSchema = field(default_factory=PathSchema)
     user: UserSchema = field(default_factory=UserSchema)
+
 
 @dataclass_json
 @dataclass

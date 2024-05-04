@@ -1,14 +1,13 @@
 import os
 import sys
 import threading
-import traceback
 from datetime import datetime, timezone
 from time import sleep
 
 import flet as ft
 import gotrue
+from utils.schemas.application_schemas import UserSchema
 
-from schemas.application_schemas import UserSchema
 from utils.constants import BOT_NAME, VERSION_TYPE
 from utils.flet_translations import translate
 from utils.singletons import ApiSingleton, FileSingleton, ss
@@ -58,12 +57,8 @@ class LoginScreen(ft.ResponsiveRow):
             bgcolor=ft.colors.BLACK,
         )
 
-        self.textfield_username = ft.TextField(
-            label=translate("Email"), value=ss.application_settings.user.email,**textField
-        )
-        self.textfield_password = ft.TextField(
-            label=translate("Password"), value=ss.application_settings.user.password, **textField
-        )
+        self.textfield_username = ft.TextField(label=translate("Email"), value=ss.application_settings.user.email, **textField)
+        self.textfield_password = ft.TextField(label=translate("Password"), value=ss.application_settings.user.password, **textField)
         self.button_login = ft.OutlinedButton(text=translate("Submit"), style=button_style, col=12, on_click=self.login)
 
         auth_col = ft.Column(

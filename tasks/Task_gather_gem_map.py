@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import choice, randint, uniform
+from random import randint, uniform
 from time import time
 
 from tasks.Task import Task
@@ -24,7 +24,7 @@ class GatherGemMap(GatherGem):
         return "GatherGem"
 
     def recenter(self, deadstop=0):
-        return super().recenter(deadstop, 'gather_gem.searching_radius')
+        return super().recenter(deadstop, "gather_gem.searching_radius")
 
     def go_back_to_city(self, deadstop=0):
         # if self.data[str(self.sel)]["schedules"][self.current_profile].get("recenter_feature", False):
@@ -121,7 +121,6 @@ class GatherGemMap(GatherGem):
                     self.context_task.duration.min * 60,
                     self.context_task.duration.max * 60,
                 )
-
             )
 
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")

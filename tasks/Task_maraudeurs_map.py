@@ -5,11 +5,10 @@ from time import sleep, time
 
 import cv2
 from PIL import Image
-from singletons import EmulatorSingleton
 
 from tasks.Task import Task
 from utils.functions import current_time, get_class, get_name, rgetattr
-
+from utils.singletons import EmulatorSingleton
 
 # from utils.easyOcr import Reader
 
@@ -528,7 +527,7 @@ class Marauders(Task):
         self.click(1100, 640)
         self.better_sleep((1.525, 1.995))
 
-        preset_indexes = {'first': 1, 'second': 2, 'third': 3, 'fourth': 4, 'fifth': 5, 'sixth': 6, 'seventh': 7}
+        preset_indexes = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7}
         for preset, value in preset_indexes.items():
             if not rgetattr(self.context_task.presets_selection, preset):
                 hunters += 1
@@ -543,7 +542,6 @@ class Marauders(Task):
         for _ in range(hunters):
             self.better_sleep((3, 3))
         return hunters
-
 
     def get_neighboring_image(
         self,

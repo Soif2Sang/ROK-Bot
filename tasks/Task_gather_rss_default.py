@@ -6,7 +6,6 @@ from tasks.Task import Task
 from tasks.Task_gather_rss import GatherRss
 from utils.functions import get_class, get_name, rgetattr
 
-
 # from utils.easyOcr import Reader
 
 
@@ -93,7 +92,7 @@ class GatherRssDefault(GatherRss):
             return
 
         if node_type is None:
-            result = rgetattr(self.context_task, node_place.lower() + '_node').type
+            result = rgetattr(self.context_task, node_place.lower() + "_node").type
             if result == "nothing":
                 return
             elif result == "random":
@@ -112,15 +111,13 @@ class GatherRssDefault(GatherRss):
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            target_level = rgetattr(self.context_task, node_place.lower() + '_node').level
+            target_level = rgetattr(self.context_task, node_place.lower() + "_node").level
             if target_level - level_decrease <= 0:
                 node_place = self.next_place(node_place)
                 self.print(f"Cannot decrease the current level.. Too low ! next choice : {node_place}")
                 return self.run(node_place, None, resolved, 0)
 
-            self.set_search_level(
-                target_level - level_decrease
-            )
+            self.set_search_level(target_level - level_decrease)
             self.better_sleep((1.925, 2.795))
             self.click_search_by_node_type(node_type)
             self.better_sleep((5, 8))

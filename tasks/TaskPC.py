@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import json
 import os
-import random
 import re
 import shutil
 import sys

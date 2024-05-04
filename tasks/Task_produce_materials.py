@@ -29,10 +29,10 @@ class ProduceMaterials(Task):
         ]
 
         keys = {
-            1 :"first_choice",
-            2 :"second_choice",
-            3 :"third_choice",
-            4 :"fourth_choice",
+            1: "first_choice",
+            2: "second_choice",
+            3: "third_choice",
+            4: "fourth_choice",
             5: "fifth_choice",
         }
 
@@ -68,7 +68,6 @@ class ProduceMaterials(Task):
                         "ebony": (uniform(922, 972), uniform(208, 255)),
                         "bones": (uniform(1018, 1064), uniform(208, 255)),
                     }
-
 
                     type = rgetattr(self.context_task, keys[i]).type
                     self.print(f"Producing {type}")

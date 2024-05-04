@@ -4,9 +4,8 @@ from random import randint
 from time import time
 from typing import Literal
 
-from Task import Task
-from Task_runner import TaskRunner
-
+from tasks.Task import Task
+from tasks.Task_runner import TaskRunner
 from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_name, string_to_co, string_to_co_slide
 from utils.schemas.application_schemas import TileSlaveSchema, TileWorkerSchema
 from utils.singletons import EmulatorSingleton

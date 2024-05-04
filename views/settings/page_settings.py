@@ -1,8 +1,8 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from singletons import SettingsSingleton
 
 from utils.functions import FileSingleton
+from utils.singletons import SettingsSingleton
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 from utils.singletons import ss

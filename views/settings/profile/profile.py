@@ -1,10 +1,10 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from functions import rgetattr, rsetattr
-from settings.profile.page_logback_from_device_switch import PageLogbackFromDeviceSwitch
-from settings.profile.page_logback_from_error import PageLogbackFromError
+from views.settings.profile.page_logback_from_device_switch import PageLogbackFromDeviceSwitch
+from views.settings.profile.page_logback_from_error import PageLogbackFromError
 
 from utils.flet_translations import translate
+from utils.functions import rgetattr, rsetattr
 from utils.singletons import EmulatorSingleton, ss
 from views.settings.page_settings import PageSettings
 from views.settings.profile.page_academy_research import PageAcademyResearch

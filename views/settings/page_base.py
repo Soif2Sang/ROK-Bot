@@ -1,10 +1,10 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from schemas.emulator_schemas import ProfileSchema, TaskLibrarySchema
-from utils.singletons import ss
+from utils.schemas.emulator_schemas import ProfileSchema, TaskLibrarySchema
 
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, rgetattr, rsetattr
+from utils.singletons import ss
 
 
 class BasePage:
@@ -56,7 +56,7 @@ class BasePage:
                         label=translate(text),
                         value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] else False,
                         on_change=self.submit_with_context,
-                        data=data
+                        data=data,
                     ),
                     ft.OutlinedButton(
                         text=translate("Settings"),

@@ -187,7 +187,6 @@ class TaskAllianceFortSchema(TaskSchema):
     searching_radius: int = 30
 
 
-
 @dataclass_json
 @dataclass
 class TroopPresetSelectionSchema:
@@ -213,10 +212,12 @@ class TaskExploreFogSchema(TaskSchema):
     duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=5, max=30))
     scout_camp_position: CordsSchema = field(default_factory=CordsSchema)
 
+
 @dataclass_json
 @dataclass
 class TaskHelpAllianceBuilding(TaskSchema):
     pass
+
 
 @dataclass_json
 @dataclass
@@ -294,6 +295,7 @@ class TaskLibrarySchema:
     troop_healing: TaskTroopHealingSchema = field(default_factory=TaskTroopHealingSchema)
     resources_transfer: TaskResourcesTransferSchema = field(default_factory=TaskResourcesTransferSchema)
     marauders: TaskMaraudersSchema = field(default_factory=TaskMaraudersSchema)
+
 
 @dataclass_json
 @dataclass

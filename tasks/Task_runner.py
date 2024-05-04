@@ -5,6 +5,7 @@ from random import choice, randint, shuffle, uniform
 from time import sleep, time
 
 import flet as ft
+
 try:
     import win32api
     import win32con
@@ -233,14 +234,12 @@ class TaskRunner(Task):
             ("alliance_donation", AllianceDonation),
             ("alliance_pit", AlliancePit),
             ("alliance_fort", BarbFort),
-
             ("produce_materials", ProduceMaterials),
             ("troop_training", TroopTraining),
             ("claim_daily_vip_chest", DailyVip),
             ("claim_daily_chest", DailyChest),
             ("claim_daily_quest", DailyQuests),
             ("claim_daily_expedition_rewards", ClaimCampaign),
-
             ("kill_barbarian", HuntBarbarians),
             ("explore_fog", ClearFog),
             ("upgrade_city", UpgradeCity),
@@ -1072,14 +1071,15 @@ class TaskRunner(Task):
 
         interactions = [
             self.open_chat_and_leave,
-            self.enter_profile,
-            self.open_any_rankings,
+
             open_menu_and_go_canyon,
             open_inventory_and_go_in_any_tab,
             open_commander_list_and_click_on_heros,
         ]
 
         if zoomed_in:
+            interactions.append(self.enter_profile)
+            interactions.append(self.open_any_rankings)
             interactions.append(self.open_random_rss_type)
 
             if any(isinstance(task, AllianceDonation) for task in tasks):

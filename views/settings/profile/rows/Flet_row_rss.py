@@ -1,6 +1,6 @@
 import flet as ft
+from utils.schemas.emulator_schemas import TaskGatherRssSchema
 
-from schemas.emulator_schemas import TaskGatherRssSchema
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, rsetattr
 from utils.singletons import ss

@@ -4,8 +4,6 @@ from time import time
 
 import cv2
 from numpy import where
-from Task_gather_gem_map import GatherGemMap
-from Task_gather_gem_spiral import GatherGemSpiral
 
 # from tasks.Task_title import Title
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
@@ -22,6 +20,7 @@ from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_daily_chest2 import DailyChest2
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_gather_gem_default import GatherGem
+from tasks.Task_gather_gem_map import GatherGemMap
 from tasks.Task_gather_gem_spiral import GatherGemSpiral
 from tasks.Task_gather_rss_default import GatherRss, GatherRssDefault
 from tasks.Task_hunt_barbarians import HuntBarbarians

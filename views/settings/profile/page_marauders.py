@@ -1,5 +1,5 @@
 import flet as ft
-from schemas.emulator_schemas import TaskKillBarbarianSchema, TaskMaraudersSchema
+from utils.schemas.emulator_schemas import TaskKillBarbarianSchema, TaskMaraudersSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate

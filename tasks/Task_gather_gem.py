@@ -414,9 +414,9 @@ class GatherGem(Task):
         #     for first_string in ["up", "mid", "down"]:
         #         icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
 
-        # if random() > 0.93:
-        #
-        #     self.random_interaction(zoomed_in=False)
+        if random() > 0.93:
+
+            self.random_interaction(zoomed_in=False)
 
         for i in range(14):
             icons.append(f"GemDeposit{i}")
@@ -426,7 +426,7 @@ class GatherGem(Task):
             # if co is None:
             #     co = self.validate_co(
             #         self.find_img(source=screen, target=icon[1], confidence=0.77))
-            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.795))
+            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.805))
             if (co is not None) and ((co[0], co[1]) not in already_verified):
                 if self.already_mining(co[0], co[1], screen):
                     self.print(f"Node is occupied - x: {co[0]} y:{co[1]}")
@@ -564,9 +564,10 @@ class GatherGem(Task):
 
                     if self.context_profile.tasks.alliance_help.enabled:
                         AllianceHelp(self).run()
-                #
-                # if random() > 0.8:
-                #     self.random_interaction(zoomed_in=True)
+
+                if random() > 0.8:
+                    self.random_interaction(zoomed_in=True)
+                    self.close_windows()
 
             # self.better_sleep((1, 1.895))
             self.close_windows()
