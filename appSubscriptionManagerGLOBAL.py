@@ -18,6 +18,7 @@ keyauthapp = selfApi(name=global_name, ownerid="7oofxdj8uH", secret=global_secre
 # keyauthapp = selfApi(name=VERSION_TYPE_name, ownerid="7oofxdj8uH", secret=VERSION_TYPE_secret, version="2.0", hash_to_check=getchecksum())
 #
 
+
 class CreateUser(ft.Column):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

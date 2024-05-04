@@ -1,9 +1,9 @@
-from datetime import datetime
 import io
 import shutil
 import subprocess
 import threading
 import traceback
+from datetime import datetime
 from os.path import exists
 from time import sleep, time
 
@@ -13,9 +13,10 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import FileSingleton, current_time, get_dic_instances, get_name, colorize_name, colorize_output
+from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_dic_instances, get_name
 from utils.resources import ImageSingleton
 from utils.singletons import ss
+
 bridge = None
 
 

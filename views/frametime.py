@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from random import randint
 
 import flet as ft
-from schemas.emulator_schemas import AllowedTimeSlotsSchema, ProfileSchema
+from utils.schemas.emulator_schemas import AllowedTimeSlotsSchema, ProfileSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate

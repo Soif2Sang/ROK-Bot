@@ -67,7 +67,7 @@ class GatherRssZoom(GatherRss):
         self.restart_if_game_crashed()
         screen = self.adb.get_cv2_img()
 
-        node_type = rgetattr(self.context_task, self.node_place.lower() + '_node').type
+        node_type = rgetattr(self.context_task, self.node_place.lower() + "_node").type
         if node_type == "random":
             node_types = ["food", "wood", "stone", "gold"]
         else:
@@ -218,7 +218,7 @@ class GatherRssZoom(GatherRss):
 
             for y in range(i):
                 if (
-                    rgetattr(self.context_task, node_place.lower() + '_node').type == "nothing"
+                    rgetattr(self.context_task, node_place.lower() + "_node").type == "nothing"
                     or self.node_place == "Done"
                     or (not self.free_troop_commander_list())
                 ):

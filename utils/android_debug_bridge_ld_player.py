@@ -4,6 +4,7 @@ from time import time
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
 from utils.functions import accurate_sleep, get_dic_instances_ld, get_name
 from utils.singletons import ss
+
 bridge = None
 
 

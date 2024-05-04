@@ -1,11 +1,10 @@
-import copy
 import platform
 import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
-from schemas.emulator_schemas import EmulatorSettingsSchema
-from schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
+from utils.schemas.emulator_schemas import EmulatorSettingsSchema
+from utils.schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
 
 from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
@@ -141,7 +140,7 @@ class TileHandlerWorker(ft.ListView):
         self.tiles[number].set_text(phrase)
 
     def refresh(self):
-        data = self.FileSingleton.get_data()
+        self.FileSingleton.get_data()
 
         emulator = EmulatorSingleton().getEmulatorType()
 
@@ -159,7 +158,7 @@ class TileHandlerWorker(ft.ListView):
         ss = SettingsSingleton()
 
         worker_settings = ss.worker_settings
-        emulator_settings = ss.emulator_settings
+        ss.emulator_settings
 
         # default_dic["emulator"] = emulator
 

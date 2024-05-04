@@ -1,9 +1,9 @@
 import flet as ft
-from functions import rsetattr
-from singletons import SettingsSingleton
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
+from utils.functions import rsetattr
+from utils.singletons import SettingsSingleton
 from views.settings.page_base import BasePage
 
 ss = SettingsSingleton()

@@ -59,10 +59,7 @@ class ClaimCampaign(Task):
                 self.print("Claiming the daily rewards from the expedition.")
                 self.click(co[0] + uniform(0, 149), co[1] + uniform(0, 20))
                 self.better_sleep((1.3, 2.2))
-                if (
-                    self.context_task.enable_buy_items
-                    or self.context_task.enable_buy_heads
-                ):
+                if self.context_task.enable_buy_items or self.context_task.enable_buy_heads:
                     self.click(160, 100)
                     self.better_sleep((1.3, 2.2))
 

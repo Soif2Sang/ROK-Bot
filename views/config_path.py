@@ -1,8 +1,8 @@
 import json
 
-from utils.functions import FileSingleton, find_file_in_all_drives
-
 import flet as ft
+
+from utils.functions import FileSingleton, find_file_in_all_drives
 
 
 class RowFinder(ft.Row):

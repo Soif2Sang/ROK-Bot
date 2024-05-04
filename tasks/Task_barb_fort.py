@@ -288,7 +288,7 @@ class BarbFort(Task):
                                     fivemins = (uniform(800, 925), uniform(188, 213))
                                     tenmins = (uniform(960, 1088), uniform(188, 213))
                                     thirtymins = (uniform(800, 925), uniform(238, 260))
-                                                                        
+
                                     if self.rally_time == 5:
                                         self.click(fivemins[0], fivemins[1])
                                     if self.rally_time == 10:
@@ -336,17 +336,12 @@ class BarbFort(Task):
                                     self.better_sleep((2, 3))
                                     self.go_city()
                                     self.better_sleep((2, 3))
-                                    self.print(
-                                        f"You selected {self.rally_time} minutes"
-                                    )
+                                    self.print(f"You selected {self.rally_time} minutes")
                                     self.print(f"Rally leader marching time is {datetime.strptime(string, '%H:%M:%S').strftime('%S')}")
                                     self.print("Bot is now paused until the rally leader come back..")
-                                    time_to_wait1 = int(
-                                        self.rally_time
-                                    ) * 60 + int(datetime.strptime(string, "%H:%M:%S").strftime("%S"))
+                                    time_to_wait1 = int(self.rally_time) * 60 + int(datetime.strptime(string, "%H:%M:%S").strftime("%S"))
                                     time_to_wait2 = (
-                                        int(self.rally_time) * 60
-                                        + int(datetime.strptime(string, "%H:%M:%S").strftime("%S")) * 2
+                                        int(self.rally_time) * 60 + int(datetime.strptime(string, "%H:%M:%S").strftime("%S")) * 2
                                     )
                                     self.print(
                                         f"Bot will wait around {time_to_wait2 / 60} minutes to complete the task, the bot will now sleep for this time"
@@ -430,9 +425,7 @@ class BarbFort(Task):
                                 self.print("Skipping the commander back")
                                 return True
                             self.print("Bot is now paused until the rally leader come back..")
-                            self.print(
-                                f'You selected {self.rally_time} minutes'
-                            )
+                            self.print(f"You selected {self.rally_time} minutes")
                             self.click(1180, 173)
                             self.better_sleep((1.3, 1.8))
                             default_image = self.adb.get_cv2_img()
@@ -564,4 +557,3 @@ class BarbFort(Task):
         while time_to_beat > time():
             if self.swipe_scan(self.scan_fort, self.go_random_area):
                 return
-

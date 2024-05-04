@@ -5,6 +5,7 @@ from random import randint, shuffle, uniform
 from time import sleep, time
 
 import flet as ft
+
 try:
     import win32gui
 except:
@@ -578,7 +579,7 @@ class TaskRunner(Task):
         starting_time = time()
 
         for i in range(loop_task):
-            loop_time = time()
+            time()
             self.set_status("Starting..")
             self.print("Script is starting ! ".center(20, "-"), "green")
             self.data = self.update_data()

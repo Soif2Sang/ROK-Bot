@@ -22,11 +22,9 @@ class ClearFog(Task):
         if starting_time is None:
             starting_time = time()
 
-        generated_time = (
-            randint(
-                self.context_task.duration.min * 60,
-                self.context_task.duration.max * 60,
-            )
+        generated_time = randint(
+            self.context_task.duration.min * 60,
+            self.context_task.duration.max * 60,
         )
 
         time_to_beat = starting_time + generated_time

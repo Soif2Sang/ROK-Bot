@@ -25,6 +25,7 @@ class others:
                 return hwid
         elif platform.system() == "Windows":
             import win32security
+
             winuser = os.getlogin()
             sid = win32security.LookupAccountName(None, winuser)[
                 0

@@ -1,5 +1,5 @@
 import flet as ft
-from schemas.emulator_schemas import LogBackFromErrorSchema
+from utils.schemas.emulator_schemas import LogBackFromErrorSchema
 
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage

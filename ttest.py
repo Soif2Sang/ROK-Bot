@@ -1,5 +1,6 @@
 import flet as ft
 
+
 def main(page):
     page.add(
         ft.Rive(
@@ -9,5 +10,6 @@ def main(page):
             height=200,
         )
     )
+
 
 ft.app(target=main)

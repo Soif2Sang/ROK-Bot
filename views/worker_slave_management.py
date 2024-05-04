@@ -1,7 +1,7 @@
 from typing import List
 
 import flet as ft
-from schemas.worker_schemas import InstanceSchema
+from utils.schemas.worker_schemas import InstanceSchema
 
 from utils.flet_translations import translate
 from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton
@@ -52,7 +52,7 @@ class Worker(ft.Container):
         )
         self.instance = instance
 
-        data = fs.getCachedData()
+        fs.getCachedData()
 
         self.emulator_settings = ss.emulator_settings
         self.worker_settings = ss.worker_settings

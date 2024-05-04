@@ -1,5 +1,4 @@
 import flet as ft
-from flet_translations import translate
 
 
 def main(page):

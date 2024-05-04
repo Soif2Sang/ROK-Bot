@@ -208,7 +208,9 @@ def emulator_choice(page: ft.Page, params, basket):
         if "bluestacks" in e.control.data:
             EmulatorSingleton().setEmulator("bluestacks")
 
-            if not os.path.exists(ss.application_settings.paths.bluestacks.config) or not os.path.exists(ss.application_settings.paths.bluestacks.player):
+            if not os.path.exists(ss.application_settings.paths.bluestacks.config) or not os.path.exists(
+                ss.application_settings.paths.bluestacks.player
+            ):
                 page.go("/emulator-loading")
                 page.update()
 

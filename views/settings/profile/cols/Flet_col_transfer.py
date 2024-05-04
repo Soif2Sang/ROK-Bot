@@ -1,5 +1,5 @@
 import flet as ft
-from schemas.emulator_schemas import TaskResourcesTransferSchema
+from utils.schemas.emulator_schemas import TaskResourcesTransferSchema
 
 from utils.flet_translations import translate
 from utils.functions import FileSingleton, rsetattr

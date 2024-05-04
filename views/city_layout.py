@@ -1,12 +1,11 @@
 import base64
-import io
 import traceback
 
 import cv2
 import flet as ft
 import flet_route
 from PIL import Image
-from schemas.emulator_schemas import CordsSchema
+from utils.schemas.emulator_schemas import CordsSchema
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd

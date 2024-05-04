@@ -1,5 +1,4 @@
 import copy
-import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder

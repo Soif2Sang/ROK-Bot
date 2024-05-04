@@ -7,7 +7,6 @@ from PIL import Image
 from tasks.Task import Task
 from utils.functions import get_class, get_name, rgetattr
 
-
 # from utils.easyOcr import Reader
 
 
@@ -26,7 +25,7 @@ class GatherRss(Task):
             "food": ((400, 472), (603, 663)),
             "wood": ((598, 670), (603, 663)),
             "stone": ((786, 870), (603, 663)),
-            "gold": ((977, 1050), (603, 663))
+            "gold": ((977, 1050), (603, 663)),
         }
 
         resource_type = rgetattr(self.context_task, place.lower() + "_node").type
@@ -40,7 +39,7 @@ class GatherRss(Task):
 
     @get_name
     def click_search_by_node_type(self, place: str) -> None:
-        type = rgetattr(self.context_task, place.lower() + '_node').type
+        type = rgetattr(self.context_task, place.lower() + "_node").type
         self.print(f"Looking for the {place.lower()} node which is: {type}")
 
         if type == "random":
@@ -50,7 +49,7 @@ class GatherRss(Task):
             "food": (uniform(400, 472), uniform(463, 512)),
             "wood": (uniform(598, 670), uniform(463, 512)),
             "stone": (uniform(786, 870), uniform(463, 512)),
-            "gold": (uniform(977, 1050), uniform(463, 512))
+            "gold": (uniform(977, 1050), uniform(463, 512)),
         }
 
         x, y = coordinates[type]
@@ -241,7 +240,7 @@ class GatherRss(Task):
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            target_level = rgetattr(self.context_task, node_place.lower() + '_node').level
+            target_level = rgetattr(self.context_task, node_place.lower() + "_node").level
 
             if target_level - level_decrease <= 0:
                 node_place = self.next_place(node_place)
@@ -249,9 +248,7 @@ class GatherRss(Task):
                 return self.run(node_place, resolved, level_decrease)
 
             if level_verified is False:
-                self.set_search_level(
-                    target_level - level_decrease
-                )
+                self.set_search_level(target_level - level_decrease)
                 self.better_sleep((0.925, 2.795))
                 level_verified = True
             print(f"{node_place =}")
@@ -330,7 +327,7 @@ class GatherRss(Task):
             self.click(uniform(600, 700), (uniform(250, 400)))
             self.better_sleep((2, 4))
             return
-        if rgetattr(self.context_task, node_place.lower() + '_node').type == "nothing":
+        if rgetattr(self.context_task, node_place.lower() + "_node").type == "nothing":
             return
         self.leave_city_simple()
         # self.better_sleep((2, 4))
@@ -344,16 +341,14 @@ class GatherRss(Task):
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            target_level = rgetattr(self.context_task, node_place.lower() + '_node').level
+            target_level = rgetattr(self.context_task, node_place.lower() + "_node").level
 
             if target_level - level_decrease <= 0:
                 node_place = self.next_place(node_place)
                 self.print(f"Cannot decrease the current level.. Too low ! next type : {node_place}")
                 return self.run(node_place, resolved, 0)
 
-            self.set_search_level(
-                target_level - level_decrease
-            )
+            self.set_search_level(target_level - level_decrease)
             self.better_sleep((0.925, 2.795))
             self.click_search_by_node_type(node_place)
             self.better_sleep((5, 9))

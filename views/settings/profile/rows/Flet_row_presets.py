@@ -1,5 +1,5 @@
 import flet as ft
-from schemas.emulator_schemas import TaskKillBarbarianSchema, TaskMaraudersSchema
+from utils.schemas.emulator_schemas import TaskKillBarbarianSchema, TaskMaraudersSchema
 
 from utils.functions import FileSingleton, rgetattr, rsetattr
 from utils.singletons import ss
