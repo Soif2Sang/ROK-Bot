@@ -7,6 +7,7 @@ import traceback
 import requests
 import stripe
 from flask import Flask, Response, jsonify, request
+from gotrue import AuthResponse
 
 from utils.supabase_auth import SupabaseClient
 
@@ -129,6 +130,32 @@ def sellix_webhook():
         return Response(response=str(e), status=400, mimetype="application/json")
     return Response(response="Success", status=200, mimetype="application/json")
 
+
+@application.route("/api/signup", methods=["POST"])
+def create_user():
+    # Get the data from the request
+    data = request.get_json()
+
+    # Check if the necessary data is provided
+    if not data or ('email' not in data) or ('password' not in data )or ('user_id' not in data):
+        return jsonify({'error': 'Missing email or password'}), 400
+
+    if data['user_id'] != '60adf32c-dfc1-4fd6-b024-1a85ae1f3972':
+        return jsonify({'error': 'Missing email or password'}), 400
+
+    s = SupabaseClient()
+
+
+    try:
+        s.client.auth.sign_up({'email': data['email'], 'password': data['password']})
+
+        s = SupabaseClient()
+        s.client.table("users").update({'version_type': 'brazilian'}).eq('email', data['email']).execute()
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Could not create a new Supabase client'}), 500
+
+    return jsonify() ,200
 
 @application.route("/")
 def home():
