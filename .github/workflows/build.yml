@@ -48,10 +48,11 @@ jobs:
           clang: true
           mingw64: true
           follow-imports: true
+#          windows-icon-from-ico: ".\Item_Gem.ico"
           output-filename: Bot
           windows-company-name: Unknown
           windows-product-version: 1.0
-          onefile-tempdir-spec: "C:\Users\Default\AppData\Local\Temp\bot_unknown"
+#          onefile-tempdir-spec: "C:\Users\Default\AppData\Local\Temp\bot_unknown"
 
           # macos-create-app-bundle: ${{ runner.os == 'macOS' }}
 
