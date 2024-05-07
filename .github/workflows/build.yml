@@ -51,8 +51,6 @@ jobs:
           output-filename: Bot
           windows-company-name: Unknown
           windows-product-version: 1.0
-#          onefile-tempdir-spec: "C:\Users\Default\AppData\Local\Temp\bot_unknown"
-#          windows-icon-from-ico: ".\Item_Gem.ico"
 
           # macos-create-app-bundle: ${{ runner.os == 'macOS' }}
 
