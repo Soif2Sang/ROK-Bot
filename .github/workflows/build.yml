@@ -48,7 +48,6 @@ jobs:
           clang: true
           mingw64: true
           follow-imports: true
-          windows-icon-from-ico: ".\Item_Gem.ico"
           output-filename: Bot
           windows-company-name: Unknown
           windows-product-version: 1.0
