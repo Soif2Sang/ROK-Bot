@@ -17,11 +17,9 @@ class WorkerRunner:
     tile_worker: TileWorkerSchema
     emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
 
-    def update_data(self):
-        self.data = self.FileSingleton.get_data()
-        return self.data
-
     def run(self, tiles: [TileSlaveSchema]):
+        self.emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
+
         loop_task = 1 if not ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task else 9999999
         for i in range(loop_task):
             cycle_started_at = time()
