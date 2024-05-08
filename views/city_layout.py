@@ -125,7 +125,8 @@ class CityPlacement(ft.Container):
                     image_src_base64=image64,
                     height=720 / 2,
                     width=1280 / 2,
-                    on_click=self.on_tap_update,
+                    on_tap_down=self.on_tap_update,
+                    on_click=lambda _: 1,
                 )
             ]
         )
@@ -169,7 +170,7 @@ class CityPlacement(ft.Container):
         self.buttons.controls[index].color = "red"
         self.buttons.page.update()
 
-    def on_tap_update(self, e: ft.TapEvent):
+    def on_tap_update(self, e: ft.ContainerTapEvent):
         if self.current_attribute is None:
             return
         left, top = e.local_x, e.local_y
@@ -232,15 +233,15 @@ class MapContainer(ft.Container):
                     height=146 * 2,
                     width=208 * 2,
                     image_fit=ft.ImageFit.FILL,
-                    on_click=self.on_tap_update,
+                    on_tap_down=self.on_tap_update,
+                    on_click=lambda _: 1,
                 )
             ]
         )
 
         self.content = ft.Row(controls=[self.main_container])
 
-    def on_tap_update(self, e: ft.TapEvent):
-
+    def on_tap_update(self, e: ft.ContainerTapEvent):
         left, top = e.local_x, e.local_y
 
         try:
