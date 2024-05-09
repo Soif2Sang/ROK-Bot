@@ -64,7 +64,7 @@ class NodeChoiceSchema:
 @dataclass_json
 @dataclass
 class TaskGatherRssSchema(TaskSchema):
-    search_method: Literal["default", "spiral"] = "spiral"
+    search_method: Literal["default", "zoom"] = "zoom"
     use_custom_preset: bool = False
     first_node: NodeChoiceSchema = field(default_factory=NodeChoiceSchema)
     second_node: NodeChoiceSchema = field(default_factory=NodeChoiceSchema)

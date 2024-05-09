@@ -48,7 +48,7 @@ from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid, rgetattr, \
     get_class
-from utils.singletons import EmulatorSingleton, ss
+from utils.singletons import EmulatorSingleton, ss, FileSingleton
 from views.frametime import is_slot_runnable, random_time_in_frametime
 
 
@@ -57,6 +57,7 @@ class TaskRunner(Task):
         super().__init__(MainTask.tile)
         self.has_started_once = False
         self.herite(MainTask)
+        self.FileSingleton = FileSingleton()
 
     def task_name(self):
         return "runner"
