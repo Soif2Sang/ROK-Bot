@@ -14,8 +14,8 @@ ss = SettingsSingleton()
 
 
 class AllSettings(PageSettings):
-    def __init__(self, page, instance_index):
-        super().__init__(page, instance_index, 1)
+    def __init__(self, instance_index):
+        super().__init__(instance_index, 1)
         self.content.height = None
 
     def clean(self):
@@ -24,7 +24,7 @@ class AllSettings(PageSettings):
     def reset(self):
         self.clean()
         self.init()
-        self.initial_page.update()
+        ss.page.update()
 
     def add(self, *controls):
         for control in controls:
@@ -33,33 +33,32 @@ class AllSettings(PageSettings):
     def init(self):
         self.application_settings = ss.application_settings
 
-        if self.initial_page.UPGRADE:
-            self.add(
-                ft.Container(
-                    content=ft.Text(
-                        spans=[
-                            ft.TextSpan(
-                                text=translate("Emulator Workers"),
-                                style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
-                            ),
-                        ]
-                    ),
-                    bgcolor=ft.colors.SURFACE_VARIANT,
-                    padding=ft.padding.all(10),
-                    margin=ft.margin.only(top=5, bottom=3),
+        self.add(
+            ft.Container(
+                content=ft.Text(
+                    spans=[
+                        ft.TextSpan(
+                            text=translate("Emulator Workers"),
+                            style=ft.TextStyle(size=15, weight=ft.FontWeight.BOLD),
+                        ),
+                    ]
                 ),
-                ft.OutlinedButton(
-                    text=translate("Configure Workers"),
-                    icon=ft.icons.SETTINGS,
-                    on_click=lambda _: self.initial_page.go("/configure-workers"),
-                    style=ButtonStyle(
-                        shape={
-                            ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
-                        }
-                    ),
+                bgcolor=ft.colors.SURFACE_VARIANT,
+                padding=ft.padding.all(10),
+                margin=ft.margin.only(top=5, bottom=3),
+            ),
+            ft.OutlinedButton(
+                text=translate("Configure Workers"),
+                icon=ft.icons.SETTINGS,
+                on_click=lambda _: ss.page.go("/configure-workers"),
+                style=ButtonStyle(
+                    shape={
+                        ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
+                    }
                 ),
-                ft.Divider(),
-            )
+            ),
+            ft.Divider(),
+        )
 
         self.add(
             ft.Container(

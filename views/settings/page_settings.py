@@ -1,17 +1,12 @@
 import flet as ft
-from flet_core import ButtonStyle, RoundedRectangleBorder
-
-from utils.functions import FileSingleton
-from utils.singletons import SettingsSingleton
+from utils.singletons import ss
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
-from utils.singletons import ss
 
 
 class PageSettings(ft.Container):
-    def __init__(self, page, instance_index: str, profile_index: int):
+    def __init__(self, instance_index: str, profile_index: int):
         super().__init__()
-        self.initial_page = page
         self.instance_index = instance_index
         self.profile_index = profile_index
 
@@ -33,7 +28,7 @@ class PageSettings(ft.Container):
         self.content.controls = []
         # self.data = self.FileSingleton.get_data()
         self.init()
-        self.initial_page.update()
+        ss.page.update()
 
     def init(self):
         pass

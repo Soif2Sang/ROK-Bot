@@ -9,15 +9,14 @@ from utils.schemas.worker_schemas import InstanceSchema, WorkerListSchema, Worke
 from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
-from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton
+from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton, ss
 from views.login.login import ClickableLink, links, sellix_icon, stripe_icon, tiers
 from views.tiles.tile_worker import TileWorker
 
 
 class NavigationBar(ft.Row):
-    def __init__(self, page, tile_manager, **kwargs):
+    def __init__(self, tile_manager, **kwargs):
         super().__init__(**kwargs)
-        self.initial_page = page
         self.tileManager = tile_manager
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
@@ -53,7 +52,7 @@ class NavigationBar(ft.Row):
         )
 
         pattern = r"(\d+) Days left"
-        match = re.search(pattern, page.title)
+        match = re.search(pattern, ss.page.title)
         days_left_str = match.group(1)
 
         days_left_int = int(days_left_str)
@@ -80,9 +79,9 @@ class NavigationBar(ft.Row):
         refresh_pay = ft.Row(controls=[self.button_refresh])
 
         def open_dlg(e):
-            page.dialog = diag
+            ss.page.dialog = diag
             diag.open = True
-            page.update()
+            ss.page.update()
 
         if VERSION_TYPE == "global":
             refresh_pay.controls.append(
@@ -97,36 +96,35 @@ class NavigationBar(ft.Row):
         self.controls.append(
             ft.IconButton(
                 icon=ft.icons.MENU,
-                on_click=lambda _: self.initial_page.go("/settings"),
+                on_click=lambda _: ss.page.go("/settings"),
             ),
         )
 
 
 class TileHandlerWorker(ft.ListView):
-    def __init__(self, page: ft.Page, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.initial_page = page
         self.height = 300
         self.expand = 0
         self.spacing = 1
         self.FileSingleton = FileSingleton()
         self.tiles: dict[str, TileWorker] = {}
-        self.navigation_bar: NavigationBar = NavigationBar(self.initial_page, self)
+        self.navigation_bar: NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
 
     def add_tile(self, number: str):
         if number not in self.tiles:
-            self.tiles[number] = TileWorker(self.initial_page, number)
+            self.tiles[number] = TileWorker(number)
         else:
             self.tiles[number].refresh_tile()
 
         self.controls.append(self.tiles[number])
-        self.initial_page.update()
+        ss.page.update()
 
     def delete_tile(self, number: str):
         self.controls.remove(self.tiles[number])
         self.tiles.pop(number)
-        self.initial_page.update()
+        ss.page.update()
 
     def unselect_all(self):
         for tile in self.controls[1:]:
@@ -134,7 +132,7 @@ class TileHandlerWorker(ft.ListView):
                 # tile.button_select.selected = False
                 for control in tile.controls:
                     control.bgcolor = ft.colors.SURFACE
-        self.initial_page.update()
+        ss.page.update()
 
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
@@ -158,7 +156,6 @@ class TileHandlerWorker(ft.ListView):
         ss = SettingsSingleton()
 
         worker_settings = ss.worker_settings
-        ss.emulator_settings
 
         # default_dic["emulator"] = emulator
 
@@ -210,7 +207,6 @@ class TileHandlerWorker(ft.ListView):
                 ss.emulator_settings.emulators[instance].name = instances[instance]["name"]
                 ss.emulator_settings.emulators[instance].port = int(instances[instance]["port"])
 
-        # self.FileSingleton.write_data(data)
         ss.write_emulator_settings(ss.emulator_settings)
         ss.write_worker_settings(worker_settings)
 
@@ -222,7 +218,7 @@ class TileHandlerWorker(ft.ListView):
                 if worker_settings.worker_type[emulator].workers[worker].instances:
                     self.add_tile(worker)
 
-        return self.initial_page.update()
+        return ss.page.update()
 
         if instances:
             for instance in instances:

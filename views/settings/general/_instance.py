@@ -13,8 +13,8 @@ color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
 class GeneralSettings(PageSettings):
-    def __init__(self, page, instance_index):
-        super().__init__(page, instance_index, 1)
+    def __init__(self, instance_index):
+        super().__init__(instance_index, 1)
 
     def clean(self):
         self.content.controls = []
@@ -22,7 +22,7 @@ class GeneralSettings(PageSettings):
     def reset(self):
         self.clean()
         self.init()
-        self.initial_page.update()
+        ss.page.update()
 
     def add(self, *controls):
         for control in controls:

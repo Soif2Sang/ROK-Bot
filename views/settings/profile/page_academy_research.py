@@ -1,4 +1,6 @@
 import flet as ft
+
+from utils.singletons import ss
 from utils.Components.card import GenerateCard
 
 from utils.flet_translations import translate
@@ -18,6 +20,6 @@ class PageAcademyResearch(BasePage):
             ft.OutlinedButton(
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set Academy Research"),
-                on_click=lambda _: self.initial_page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
+                on_click=lambda _: ss.page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
             ),
         )

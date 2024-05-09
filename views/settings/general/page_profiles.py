@@ -24,7 +24,7 @@ class PageProfiles(BasePage):
                         text=translate("Settings"),
                         icon_color="#3b8ed0",
                         icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/1/settings"),
+                        on_click=lambda _: ss.page.go(f"/profile/{self.instance_index}/1/settings"),
                         style=ButtonStyle(
                             shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
@@ -47,7 +47,7 @@ class PageProfiles(BasePage):
                         text=translate("Settings"),
                         icon_color="#ba4543",
                         icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/2/settings"),
+                        on_click=lambda _: ss.page.go(f"/profile/{self.instance_index}/2/settings"),
                         style=ButtonStyle(
                             shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
@@ -70,7 +70,7 @@ class PageProfiles(BasePage):
                         text=translate("Settings"),
                         icon_color="#dec433",
                         icon=ft.icons.SETTINGS,
-                        on_click=lambda _: self.initial_page.go(f"/profile/{self.instance_index}/3/settings"),
+                        on_click=lambda _: ss.page.go(f"/profile/{self.instance_index}/3/settings"),
                         style=ButtonStyle(
                             shape={
                                 ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
@@ -81,7 +81,7 @@ class PageProfiles(BasePage):
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             ),
         )
-        self.profile.initial_page.update()
+        ss.page.update()
 
     def submit_with_context(self, e):
         ss.emulator_settings.emulators[self.instance_index].schedules[e.control.data].enabled = e.control.value

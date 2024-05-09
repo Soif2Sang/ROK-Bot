@@ -34,7 +34,6 @@ class Worker(ft.Container):
         self.height = 300
         self.width = 150
         self.padding = ft.padding.all(5)
-        self.initial_page = manager.initial_page
         self.manager = manager
         self.border_radius = 3
         self.name = ft.Text(value=translate(f"Worker") + f" {instance}")
@@ -185,7 +184,7 @@ class Worker(ft.Container):
             ),
         )
 
-        self.initial_page.update()
+        ss.page.update()
 
     def drag_will_accept(self, e):
         e.control.content.border = ft.border.all(2, ft.colors.BLACK45 if e.data == "true" else ft.colors.RED)
@@ -193,7 +192,7 @@ class Worker(ft.Container):
 
     def on_accept(self, e):
         emulator_settings = ss.emulator_settings
-        src = self.initial_page.get_control(e.src_id)
+        src = ss.page.get_control(e.src_id)
 
         instance = src.content.data
 
@@ -218,7 +217,7 @@ class Worker(ft.Container):
         ss.write_worker_settings(self.worker_settings)
 
         self.add_dragtarget()
-        self.initial_page.update()
+        ss.page.update()
 
     def on_delete(self, e):
         emulator_settings = ss.emulator_settings
@@ -229,7 +228,7 @@ class Worker(ft.Container):
         self.worker_settings.worker_type[self.emulator_type].workers[self.instance].instances = self.get_all()
         ss.write_worker_settings(self.worker_settings)
 
-        self.initial_page.update()
+        ss.page.update()
 
     def get_all(self):
         order: List[InstanceSchema] = []
@@ -244,9 +243,8 @@ class Worker(ft.Container):
 
 
 class WorkerSlaveManagement(ft.ListView):
-    def __init__(self, page, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.initial_page = page
         self.expand = 1
 
         self.slaves = ft.Row(wrap=True)
@@ -276,7 +274,7 @@ class WorkerSlaveManagement(ft.ListView):
 
 def main(page: ft.Page):
     EmulatorSingleton().setEmulator("ld")
-    page.add(WorkerSlaveManagement(page))
+    page.add(WorkerSlaveManagement())
 
 
 if __name__ == "__main__":

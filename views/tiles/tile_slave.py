@@ -9,12 +9,10 @@ from views.tiles.handler.config_handler import InstanceTabs
 
 # from views.tiles.handler.config_handler import Frame
 
-
 class ConfigOverrider(ft.PopupMenuButton):
-    def __init__(self, page, index, *args, **kwargs):
+    def __init__(self, index, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.index = index
-        self.initial_page = page
         self.icon = ft.icons.FILE_UPLOAD_OUTLINED
         self.init()
 
@@ -22,7 +20,7 @@ class ConfigOverrider(ft.PopupMenuButton):
         self.items.append(ft.PopupMenuItem(text="Export Config"))
         self.items.append(ft.PopupMenuItem())
 
-        vms = self.initial_page.tile_manager.fetched_instances
+        vms = ss.page.tile_manager.fetched_instances
 
         for vm in vms:
             if str(vm) != self.index:
@@ -31,7 +29,7 @@ class ConfigOverrider(ft.PopupMenuButton):
     def refresh(self):
         self.items = []
         self.init()
-        self.initial_page.update()
+        ss.page.update()
 
     def override_settings(self, e):
         instance = ss.emulator_settings.emulators[str(e.control.data)].instance
@@ -48,19 +46,18 @@ class ConfigOverrider(ft.PopupMenuButton):
 
         ss.write_emulator_settings(ss.emulator_settings)
 
-        if str(e.control.data) in self.initial_page.frames:
-            for tab in self.initial_page.frames[str(e.control.data)].settings.tabs:
+        if str(e.control.data) in ss.page.frames:
+            for tab in ss.page.frames[str(e.control.data)].settings.tabs:
                 tab.content.content.controls = []
                 tab.content.init()
 
-        self.initial_page.update()
+        ss.page.update()
 
 
 class TileSlave(ft.Container):
-    def __init__(self, page, number, **kwargs):
+    def __init__(self, number, **kwargs):
         super().__init__(**kwargs)
         self.number = number
-        self.initial_page = page
         self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[str(self.number)]
 
         self.padding = ft.padding.only(left=10)
@@ -69,7 +66,7 @@ class TileSlave(ft.Container):
         self.text_name = ft.Text(value=self.context.name, width=80)
         self.text_status = ft.Text(value="")
 
-        self.config_overrider = ConfigOverrider(self.initial_page, number)
+        self.config_overrider = ConfigOverrider(number)
 
         self.border_radius = 3
         self.bgcolor = ft.colors.SURFACE
@@ -93,39 +90,39 @@ class TileSlave(ft.Container):
     def hover(self, e):
         e.control.bgcolor = (
             ft.colors.SURFACE_VARIANT
-            if (e.data == "true" or self.initial_page.body.controls[-1] == self.initial_page.frames.get(self.number, False))
+            if (e.data == "true" or ss.page.body.controls[-1] == ss.page.frames.get(self.number, False))
             else ft.colors.SURFACE
         )
-        self.initial_page.update()
+        ss.page.update()
 
     def select(self, e):
-        self.initial_page.tile_manager.unselect_all()
+        ss.page.tile_manager.unselect_all()
 
-        if len(self.initial_page.body.controls) > 2:
-            self.initial_page.body.controls.pop()
+        if len(ss.page.body.controls) > 2:
+            ss.page.body.controls.pop()
 
-        if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
+        if self.number not in ss.page.frames:
+            ss.page.frames[self.number] = InstanceTabs(self.number)
 
-        self.initial_page.body.controls.append(self.initial_page.frames[self.number])
+        ss.page.body.controls.append(ss.page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
-        self.initial_page.update()
+        ss.page.update()
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        self.initial_page.update()
+        ss.page.update()
 
     def get_text(self):
         return self.text_status.value
 
     def add_text(self, phrase: str, color=None):
-        if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
+        if self.number not in ss.page.frames:
+            ss.page.frames[self.number] = InstanceTabs(self.number)
 
-        self.initial_page.frames[self.number].add_text(phrase, color)
+        ss.page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
-        if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
+        if self.number not in ss.page.frames:
+            ss.page.frames[self.number] = InstanceTabs(self.number)
 
-        self.initial_page.frames[self.number].add_divider()
+        ss.page.frames[self.number].add_divider()

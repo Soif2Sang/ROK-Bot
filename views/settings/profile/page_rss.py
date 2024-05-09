@@ -25,7 +25,7 @@ class PageRss(BasePage):
             content=ft.Column(
                 [
                     ft.Radio(value="default", label=translate("Search with default loop method")),
-                    ft.Radio(value="spiral", label=translate("Search with zooming method")),
+                    ft.Radio(value="zoom", label=translate("Search with zooming method")),
                 ]
             ),
             on_change=self.toggle_search_method,

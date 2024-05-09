@@ -4,6 +4,7 @@ from utils.schemas.emulator_schemas import TaskAllianceFortSchema
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
+from utils.singletons import ss
 
 
 class PageRally(BasePage):
@@ -22,7 +23,7 @@ class PageRally(BasePage):
             ft.Divider(),
             ft.OutlinedButton(
                 text=translate("Set area location"),
-                on_click=lambda _: self.initial_page.go(f"/set-center/alliance_fort/{self.instance_index}/{self.profile_index}"),
+                on_click=lambda _: ss.page.go(f"/set-center/alliance_fort/{self.instance_index}/{self.profile_index}"),
                 # disabled=self.context.search_method != "map",
             ),
             ft.TextField(

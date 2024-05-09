@@ -10,7 +10,6 @@ from utils.singletons import ss
 class BasePage:
     def __init__(self, profile):
         super().__init__()
-        self.initial_page = profile.initial_page
         self.instance_index = profile.instance_index
         self.profile_index = profile.profile_index
         self.profile = profile
@@ -37,8 +36,7 @@ class BasePage:
         )
 
         self.profile.content.scroll_to(delta=-1000, duration=1)
-
-        self.initial_page.update()
+        ss.page.update()
 
     def add_control(self, *control):
         for ctrl in control:

@@ -5,12 +5,13 @@ import cv2
 
 from tasks.Task import Task
 from utils.functions import get_class, get_name
-
+from utils.singletons import ss
 
 class RssTransfer(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.resources_transfer
 
     def task_name(self):
         return "RssTransfert"
@@ -64,8 +65,8 @@ class RssTransfer(Task):
         if deadstop == 3:
             raise ValueError()
 
-        city = self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"city_transfer"]
-        self.click(city[0] + uniform(-10, 10), city[1] + uniform(-10, 10))
+        city = self.context_task.transfer_position
+        self.click(city.x + uniform(-10, 10), city.y + uniform(-10, 10))
         self.better_sleep((1, 2))
         co = self.find_img(target="assist_button")
         if co is None:
@@ -82,15 +83,15 @@ class RssTransfer(Task):
         super().check_captcha(chest=chest, DefaultApiKey=False)
 
     @get_name
-    def send_rss(self, type):
+    def send_rss(self, resource_type):
         types = {
             "food": uniform(210, 230),
             "wood": uniform(300, 320),
             "stone": uniform(390, 410),
             "gold": uniform(470, 490),
         }
-        start = (uniform(589, 597), types[type])
-        end = (uniform(1045, 1100), types[type] + uniform(-10, 10))
+        start = (uniform(589, 597), types[resource_type])
+        end = (uniform(1045, 1100), types[resource_type] + uniform(-10, 10))
         self.swipe(start[0], start[1], end[0], end[1])
         self.better_sleep((0.1, 1.4))
         self.click(uniform(700, 850), uniform(570, 600))
@@ -98,10 +99,10 @@ class RssTransfer(Task):
 
     @get_name
     def better_sleep(self, limits: tuple[float, float]):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("fast_rss_transfer", False):
+        if self.context_task.fast_transfer:
             a = limits[0]
-            if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
-                a *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
+            if self.context_profile.sleep_factor.enabled:
+                a *= self.context_profile.sleep_factor.factor
 
             interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
             num_intervals = int(a / interval_duration)
@@ -113,38 +114,38 @@ class RssTransfer(Task):
         return super().better_sleep(limits)
 
     @get_class
-    def run(self, type=None, quantity=None):
-        if self.data["API_KEY"] == "":
+    def run(self, resource_type=None, quantity=None):
+        if ss.application_settings.captcha.api_key == "":
             self.generate_toast(
                 "Warning",
                 "This feature require a custom ApiKey.",
             )
-            return self.print("This feature require a custom ApiKey")
+            return self.print("This feature require a custom ApiKey", color="red")
+        
         self.check_captcha()
-
         self.setup_ui()
         self.better_sleep((0.7, 1.4))
         transportation_capacity = self.get_capacity()
 
         print(f"{transportation_capacity = }")
         to_send = []
-        for type in ["food", "wood", "stone", "gold"]:
-            transfert_wanted = self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"transfer_{type}"] * 1_000_000
-            loop = int(transfert_wanted / transportation_capacity)
-            if transportation_capacity * loop < transfert_wanted:
+        for resource_type in ["food", "wood", "stone", "gold"]:
+            wanted_amount = getattr(self.context_task, f"{resource_type}_amount") * 1_000_000
+            loop = int(wanted_amount / transportation_capacity)
+            if transportation_capacity * loop < wanted_amount:
                 loop += 1
-            print(f"{transfert_wanted = }")
+            print(f"{wanted_amount = }")
             for i in range(loop):
-                to_send.append(type)
+                to_send.append(resource_type)
 
         shuffle(to_send)
         total_sent = {"food": 0, "wood": 0, "stone": 0, "gold": 0}
-        for type in to_send:
-            total_sent[type] += transportation_capacity
-            self.send_rss(type)
-            print(f"{type} amount sent : {total_sent[type]}")
+        for resource_type in to_send:
+            total_sent[resource_type] += transportation_capacity
+            self.send_rss(resource_type)
+            print(f"{resource_type} amount sent : {total_sent[resource_type]}")
 
-            if self.data[str(self.sel)]["schedules"][self.current_profile].get("fast_rss_transfer", False):
+            if self.context_task.fast_transfer:
                 self.check_captcha(chest=False)
             else:
                 self.check_captcha(chest=True)
