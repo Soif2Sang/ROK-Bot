@@ -7,6 +7,7 @@ from utils.functions import filter_coordinate, get_class
 class CollectResource(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
+
         self.herite(MainTask)
 
     def task_name(self):

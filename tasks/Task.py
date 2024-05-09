@@ -54,21 +54,17 @@ class Task:
         self.tile = tile
         self.sel: str = tile.number
         self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
+        self.context_profile: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
+        self.FileSingleton = FileSingleton()
 
         emulator = EmulatorSingleton().getEmulatorType()
 
-        if self.tile.__class__.__name__ != "TileWorker":
-            if emulator == "bluestacks":
-                self.adb = AdbBluestacks(self.sel, task_reference=self)
-            else:
-                self.adb = AdbLd(self.sel, task_reference=self)
-
-            self.name: str = self.adb.name
-
+        if emulator == "bluestacks":
+            self.adb = AdbBluestacks(self.sel, task_reference=self)
         else:
-            self.adb = None
-            self.name = ""
+            self.adb = AdbLd(self.sel, task_reference=self)
 
+        self.name: str = self.context.name
         self.language: str | None = None
         self.DEV = False
 
@@ -81,8 +77,8 @@ class Task:
         self.language = MainTask.language
         self.name = MainTask.name
         self.DEV = MainTask.DEV
+        self.FileSingleton = MainTask.FileSingleton
         # self.data = MainTask.data
-        # self.FileSingleton = MainTask.FileSingleton
 
     def debug(self, arg):
         timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
@@ -292,7 +288,7 @@ class Task:
             return False
 
     def generate_toast(self, title, description, icon=ft.icons.INFO, bgcolor_title="RED"):
-        self.tile.initial_page.generate_toast(title, description, icon=icon, bgcolor_title=bgcolor_title)
+        ss.page.generate_toast(title, description, icon=icon, bgcolor_title=bgcolor_title)
 
     @get_name
     def open_menu(self):
@@ -841,10 +837,6 @@ class Task:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_str = "".join(traceback_list)
-            try:
-                self.tile.initial_page.keyauthapp.log(traceback_str)
-            except:
-                pass
 
     def save_captcha(self):
         cv_image = self.adb.get_cv2_img()
@@ -1190,10 +1182,6 @@ class Task:
             traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_str = "".join(traceback_list)
             self.print("An error occurred with 2captcha.com, waiting for few seconds before retrying")
-            try:
-                self.tile.initial_page.keyauthapp.log(traceback_str)
-            except:
-                pass
             self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
             if self.refresh_captcha():
                 if compteur < 5:
@@ -1205,10 +1193,6 @@ class Task:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_str = "".join(traceback_list)
-            try:
-                self.tile.initial_page.keyauthapp.log(traceback_str)
-            except:
-                pass
             if self.refresh_captcha():
                 if compteur < 5:
                     return self.solve_captcha(compteur + 1)
