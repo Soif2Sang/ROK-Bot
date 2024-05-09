@@ -7,29 +7,27 @@ from utils.singletons import EmulatorSingleton
 
 # from views.tiles.handler.tile_handler_worker import TileHandlerWorker
 from utils.supabase_auth import SupabaseClient
-from views.tiles.handler.tile_handler_pc import TileHandlerPC
 from views.tiles.handler.tile_handler_worker import TileHandlerWorker
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
 def Main(page: ft.Page, days=950):
-    # page.clean()
     theme = ft.Theme()
     theme.page_transitions.windows = ft.PageTransitionTheme.CUPERTINO
+    theme.page_transitions.macos = ft.PageTransitionTheme.CUPERTINO
+
     page.vertical_alignment = None
     page.horizontal_alignment = None
     page.frames = {}
     page.window_resizable = True
+    page.update()
+
     page.window_width = 500
     page.window_height = 800
     page.theme = theme
 
-    # if page.UPGRADE:
-    if EmulatorSingleton().getEmulatorType() != "pc":
-        page.tile_manager = TileHandlerWorker(page)
-    else:
-        page.tile_manager = TileHandlerPC(page)
+    page.tile_manager = TileHandlerWorker()
 
     page.body = ft.Column(controls=[page.tile_manager, ft.Divider(height=0)])
 

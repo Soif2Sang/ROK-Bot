@@ -4,6 +4,7 @@ from utils.schemas.emulator_schemas import TaskExploreFogSchema
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
+from utils.singletons import ss
 
 
 class PageFog(BasePage):
@@ -53,6 +54,6 @@ class PageFog(BasePage):
             ft.OutlinedButton(
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set Scout camp position"),
-                on_click=lambda _: self.initial_page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
+                on_click=lambda _: ss.page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
             ),
         )

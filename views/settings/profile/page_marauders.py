@@ -5,6 +5,7 @@ from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 from views.settings.profile.rows.Flet_row_presets import FletRowPresets
+from utils.singletons import ss
 
 
 class PageMarauders(BasePage):
@@ -26,7 +27,7 @@ class PageMarauders(BasePage):
             ft.Divider(),
             ft.OutlinedButton(
                 text=translate("Set area location"),
-                on_click=lambda _: self.initial_page.go(f"/set-center/marauders/{self.instance_index}/{self.profile_index}"),
+                on_click=lambda _: ss.page.go(f"/set-center/marauders/{self.instance_index}/{self.profile_index}"),
                 # disabled=self.context.search_method != "map",
             ),
             ft.TextField(

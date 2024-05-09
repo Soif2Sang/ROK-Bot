@@ -47,9 +47,8 @@ textField = {
 
 
 class LoginScreen(ft.ResponsiveRow):
-    def __init__(self, page, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.initial_page = page
 
         button_style = ft.ButtonStyle(
             shape={ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=5)},
@@ -133,9 +132,9 @@ class LoginScreen(ft.ResponsiveRow):
         if email == "" or password == "":
             return
 
-        self.initial_page.splash = ft.ProgressBar()
+        ss.page.splash = ft.ProgressBar()
         self.button_login.disabled = True
-        self.initial_page.update()
+        ss.page.update()
 
         try:
             client = SupabaseClient()
@@ -154,36 +153,36 @@ class LoginScreen(ft.ResponsiveRow):
             update_user_info(email, password)
             captcha_key = client.getApiKey("2captcha")
 
-            self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(email, password))
-            self.initial_page.subscription_checker.start()
+            ss.page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(email, password))
+            ss.page.subscription_checker.start()
 
             ApiSingleton().setApiKey(captcha_key["value"])
 
             current_date = datetime.now(timezone.utc).astimezone()
             days = (target_date - current_date).days
 
-            self.initial_page.title = f"{BOT_NAME} - {days} Days left"
-            self.initial_page.update()
-            self.initial_page.go("/emulator-choice")
+            ss.page.title = f"{BOT_NAME} - {days} Days left"
+            ss.page.update()
+            ss.page.go("/emulator-choice")
 
         except HwidAlreadyLinked:
-            if hasattr(self.initial_page, "generate_toast"):
-                self.initial_page.generate_toast(f"Cannot login to {BOT_NAME}.", "This account is already linked to another computer.")
+            if hasattr(ss.page, "generate_toast"):
+                ss.page.generate_toast(f"Cannot login to {BOT_NAME}.", "This account is already linked to another computer.")
             sleep(5)
         except gotrue.errors.AuthApiError as e:
             sleep(5)
         except NoSubscriptionFound:
-            if hasattr(self.initial_page, "generate_toast"):
-                self.initial_page.generate_toast("Subscription error", "You don't have a active subscription yet!")
+            if hasattr(ss.page, "generate_toast"):
+                ss.page.generate_toast("Subscription error", "You don't have a active subscription yet!")
             sleep(5)
         except Exception as e:
-            self.initial_page.window_close()
+            ss.page.window_close()
             os.system("taskkill /f /im flet.exe >nul 2>&1")
             sys.exit()
         finally:
-            self.initial_page.splash = None
+            ss.page.splash = None
             self.button_login.disabled = False
-            self.initial_page.update()
+            ss.page.update()
 
     def verify_subscription(self, email, password):
         try:
@@ -203,12 +202,12 @@ class LoginScreen(ft.ResponsiveRow):
             current_date = datetime.now(timezone.utc).astimezone()
             days = (target_date - current_date).days
 
-            self.initial_page.title = f"{BOT_NAME} - {days} Days left"
-            self.initial_page.update()
+            ss.page.title = f"{BOT_NAME} - {days} Days left"
+            ss.page.update()
             sleep(6 * 3600)
             return self.verify_subscription(email, password)
         except Exception as e:
-            self.initial_page.window_close()
+            ss.page.window_close()
             os.system("taskkill /f /im flet.exe >nul 2>&1")
             sys.exit()
 
@@ -246,7 +245,7 @@ class ClickableLink(ft.Container):
 
 
 def main(page: ft.Page):
-    page.add(LoginScreen(page))
+    page.add(LoginScreen())
 
 
 if __name__ == "__main__":

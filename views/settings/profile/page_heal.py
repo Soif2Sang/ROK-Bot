@@ -3,6 +3,7 @@ from utils.schemas.emulator_schemas import TaskTroopHealingSchema
 
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
+from utils.singletons import ss
 
 
 class PageHeal(BasePage):
@@ -23,6 +24,6 @@ class PageHeal(BasePage):
             ft.OutlinedButton(
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set Hospital position"),
-                on_click=lambda _: self.initial_page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
+                on_click=lambda _: ss.page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
             ),
         )

@@ -26,8 +26,8 @@ color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
 class SettingContainer(PageSettings):
-    def __init__(self, page, instance_index: str, profile_index: int):
-        super().__init__(page, instance_index, profile_index)
+    def __init__(self, instance_index: str, profile_index: int):
+        super().__init__(instance_index, profile_index)
 
     def clean(self):
         self.content.controls = []
@@ -35,7 +35,7 @@ class SettingContainer(PageSettings):
     def reset(self):
         self.clean()
         self.init()
-        self.initial_page.update()
+        ss.page.update()
 
     def init(self):
         self.create_advanced_switch("tasks.gather_gem.enabled", "Gem Gathering", PageGem)
@@ -120,58 +120,7 @@ class SettingContainer(PageSettings):
                 data={"path": "enable_switch_character_restart_during_game_load", "type": bool},
             )
         )
-        self.initial_page.update()
-
-    def page_logback(self):
-        self.data = self.FileSingleton.get_data()
-        self.clean()
-        self.content = ft.ListView(
-            height=500,
-            expand=0,
-            padding=ft.padding.only(right=20),
-        )
-        self.content.controls.extend(
-            [
-                ft.Row(
-                    controls=[
-                        ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=lambda _: self.reset()),
-                        ft.Text("Settings", size=20),
-                    ],
-                ),
-                ft.Divider(),
-                ft.Text(
-                    spans=[
-                        ft.TextSpan(
-                            "Time to wait before the bot log  back from your connection(minutes):",
-                            style=ft.TextStyle(size=15),
-                        )
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        ft.TextField(
-                            label="Minimum",
-                            width=80,
-                            value=self.context.log_back_on_device_switch_duration.min,
-                            on_change=self.submit_with_context,
-                            data={"path": "log_back_on_device_switch_duration.min", "type": int},
-                            input_filter=ft.NumbersOnlyInputFilter(),
-                        ),
-                        ft.Text("~"),
-                        ft.TextField(
-                            label="Maximum",
-                            width=90,
-                            input_filter=ft.NumbersOnlyInputFilter(),
-                            value=self.context.log_back_on_device_switch_duration.max,
-                            on_change=self.submit_with_context,
-                            data={"path": "log_back_on_device_switch_duration.max", "type": int},
-                        ),
-                    ]
-                ),
-            ]
-        )
-
-        self.initial_page.update()
+        ss.page.update()
 
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
@@ -188,7 +137,7 @@ class SettingContainer(PageSettings):
 
     def handleSettings(self, function):
         function(self)
-        self.initial_page.update()
+        ss.page.update()
 
     def submit_with_context(self, e):
         rsetattr(

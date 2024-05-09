@@ -99,7 +99,6 @@ class TileSlaveSchema:
 @dataclass
 class TileWorkerSchema:
     number: str
-    initial_page: ft.Page
     paused: bool
     stopped: bool
 

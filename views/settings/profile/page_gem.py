@@ -5,8 +5,7 @@ from utils.flet_translations import translate
 from utils.functions import rsetattr
 from utils.singletons import SettingsSingleton
 from views.settings.page_base import BasePage
-
-ss = SettingsSingleton()
+from utils.singletons import ss
 
 
 class PageGem(BasePage):
@@ -65,7 +64,7 @@ class PageGem(BasePage):
         # Button Controls
         self.set_area_location_button = ft.OutlinedButton(
             text=translate("Set area location"),
-            on_click=lambda _: self.initial_page.go(f"/set-center/gather_gem/{self.instance_index}/{self.profile_index}"),
+            on_click=lambda _: ss.page.go(f"/set-center/gather_gem/{self.instance_index}/{self.profile_index}"),
             # disabled=self.context.search_method != "map",
         )
 

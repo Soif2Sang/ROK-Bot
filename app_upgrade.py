@@ -22,11 +22,10 @@ try:
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
-    from utils.functions import FileSingleton, get_dic_instances, get_dic_instances_ld, getchecksum
+    from utils.functions import FileSingleton, get_dic_instances, get_dic_instances_ld, getchecksum, find_file_in_all_drives
     from utils.singletons import ApiSingleton, EmulatorSingleton, SettingsSingleton, ss
     from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout, viewSetCenterMap
-    from views.config_path import find_file_in_all_drives
     from views.login.login import LoginScreen
     from views.main import Main
     from views.profile_settings import viewProfileSettings
@@ -50,14 +49,12 @@ except Exception as e:
 
 
 def main(page: ft.Page):
+    ss.set_page(page)
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.window_width = 450
     page.window_height = 400
-    page.FileSingleton = FileSingleton()
-
-    page.loginUI = LoginScreen(page)
-    page.UPGRADE = True
+    page.loginUI = LoginScreen()
     page.body = ft.Column()
     page.padding = ft.padding.all(0)
 
@@ -110,6 +107,7 @@ def main(page: ft.Page):
 
     supabaseClient = SupabaseClient()
     updates = supabaseClient.getUpdates()
+
     force = False
 
     for update in updates:
@@ -290,7 +288,7 @@ def settings(page: ft.Page, params, basket):
             ]
         ),
         ft.Divider(height=1),
-        AllSettings(page, "0"),
+        AllSettings("0"),
     ]
 
     return ft.View(route="/settings", controls=controls)
@@ -329,7 +327,7 @@ def configure_workers(page: ft.Page, params, basket):
         )
     )
     inside.append(ft.Divider())
-    inside.append(WorkerSlaveManagement(page))
+    inside.append(WorkerSlaveManagement())
 
     controls.append(ft.ListView(controls=inside, expand=1))
 
