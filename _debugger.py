@@ -20,6 +20,7 @@ from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_daily_chest2 import DailyChest2
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_gather_gem_default import GatherGem
+from tasks.Task_gather_gem_map import GatherGemMap
 from tasks.Task_gather_gem_spiral import GatherGemSpiral
 from tasks.Task_gather_rss_default import GatherRss, GatherRssDefault
 from tasks.Task_hunt_barbarians import HuntBarbarians
@@ -80,7 +81,7 @@ class Bot:
         self.main_task = Task(Frame(adb.instance))  # tasksGEM / tasks
         self.main_task.adb = adb
         # self.task = Tasks(self.adb)
-        self.main_task.set_sel(str(adb.instance))
+        self.main_task.set_instance_id(str(adb.instance))
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.merchant = BuyMerchant(self.main_task)
@@ -109,7 +110,7 @@ class Bot:
         # self.code_training = COD_Task_training.TroopTraining(self.main_task)
         # self.cod_scout = COD_Task_clear_fog.ClearFog(self.main_task)
         self.maraudeurs = Marauders(self.main_task)
-        self.gem = GatherGemSpiral(self.main_task)
+        self.gem = GatherGemMap(self.main_task)
         # self.title = Title(self.main_task)
         # self.rkp = Rkp(self.adb)
         # self.rkp.set_sel('4')
@@ -256,8 +257,9 @@ from cv2 import (
 )
 
 if __name__ == "__main__":
+    sel = "4"
 
-    bo = get_bot("4")
+    bo = get_bot(sel)
     default_image = bo.adb.get_cv2_img()
     for i in range(7):  # change if you have 6-7 troops
         default_color = default_image[260 + i * 50, 1097]

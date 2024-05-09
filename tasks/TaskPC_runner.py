@@ -5,6 +5,7 @@ from random import randint, shuffle, uniform
 from time import sleep, time
 
 import flet as ft
+
 try:
     import win32gui
 except:
@@ -44,7 +45,7 @@ from utils.android_debug_bridge_ld_player import AdbLd
 from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid
 from utils.pc_bridge import PcBridge
 from utils.singletons import EmulatorSingleton
-from views.frametime import is_in_frametime, random_time_in_frametime
+from views.frametime import is_slot_runnable, random_time_in_frametime
 
 
 class TaskRunner(Task):
@@ -534,7 +535,7 @@ class TaskRunner(Task):
 
         self.FileSingleton.get_path()
         data = self.FileSingleton.get_data()
-        emulator_choice = EmulatorSingleton().getEmulator()
+        emulator_choice = EmulatorSingleton().getEmulatorType()
 
         if not win32gui.FindWindow(None, self.name):
             print(f"Bot will wait until the device is properly booted.")
@@ -578,7 +579,7 @@ class TaskRunner(Task):
         starting_time = time()
 
         for i in range(loop_task):
-            loop_time = time()
+            time()
             self.set_status("Starting..")
             self.print("Script is starting ! ".center(20, "-"), "green")
             self.data = self.update_data()
@@ -609,7 +610,7 @@ class TaskRunner(Task):
                         when_go = 0
                         print(f"Profile {profile} enabled")
                         for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                            if is_in_frametime(t[0], t[1]):
+                            if is_slot_runnable(t[0], t[1]):
                                 can_go = True
                                 when_go = random_time_in_frametime(t[0], t[1])
                                 print(f"{when_go=}")
@@ -697,7 +698,7 @@ class TaskRunner(Task):
             self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
             return
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
 
         self.set_sel(tiles[0].number)
         self.data = self.update_data()
@@ -721,7 +722,7 @@ class TaskRunner(Task):
                 if self.data[self.sel]["schedules"]["1"]["enable_timing"]:
                     can_go = False
                     for t in self.data[self.sel]["schedules"]["1"]["timing"]:
-                        if is_in_frametime(t[0], t[1]):
+                        if is_slot_runnable(t[0], t[1]):
                             self.print(f"Profile 1 able to run")
                             can_go = True
                             break
@@ -821,7 +822,7 @@ class TaskRunner(Task):
             self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
             return
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
         self.data = self.update_data()
         loop_task = 1 if not self.data["workers"][emulator][self.worker.number]["loop_task"] else 9999999
 
@@ -846,7 +847,7 @@ class TaskRunner(Task):
                     else:
                         if self.data[self.sel]["schedules"][profile]["enable_timing"]:
                             for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                                if is_in_frametime(t[0], t[1]):
+                                if is_slot_runnable(t[0], t[1]):
                                     self.print(f"Profile 1 able to run")
                                     can_go = True
                                     break
@@ -952,7 +953,7 @@ class TaskRunner(Task):
                         can_go = False
                         when_go = 0
                         for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                            if is_in_frametime(t[0], t[1]):
+                            if is_slot_runnable(t[0], t[1]):
                                 can_go = True
                                 when_go = random_time_in_frametime(t[0], t[1])
                                 print(f"{when_go=}")

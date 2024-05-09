@@ -2,10 +2,12 @@ from datetime import datetime, timedelta
 from random import randint
 
 import flet as ft
+from utils.schemas.emulator_schemas import AllowedTimeSlotsSchema, ProfileSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rsetattr
+from utils.singletons import ss
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
@@ -22,7 +24,7 @@ def is_valid_time(time_str):
         return False
 
 
-def is_in_frametime(first, second):
+def is_slot_runnable(first, second):
     current_time = datetime.now().time()
     start_time = datetime.strptime(first, "%H:%M").time()
     end_time = datetime.strptime(second, "%H:%M").time()
@@ -61,44 +63,49 @@ def random_time_in_frametime(first, second):
     return "Invalid Time"
 
 
+def is_valid_time_format(time_str):
+    try:
+        datetime.strptime(time_str, "%H:%M")
+        return True
+    except ValueError:
+        return False
+
+
+def is_time1_less_than_time2(time1, time2):
+    if is_valid_time_format(time1) and is_valid_time_format(time2):
+        return datetime.strptime(time1, "%H:%M") > datetime.strptime(time2, "%H:%M")
+    else:
+        return False
+
+
 class RowTimezone(ft.Row):
     def __init__(
         self,
-        instance,
-        profile,
-        parent,
         start="00:00",
         end="00:00",
-        default=True,
+        delete_callback=None,
+        update_callback=None,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
-        if start == "00:00" and end == "00:00" and default:
-            self.data[str(instance)]["schedules"][str(profile)]["timing"].append(["00:00", "00:00"])
-        self.instance = str(instance)
-        self.profile = str(profile)
-        self.parent = parent
+        self.update_callback = update_callback
+
         self.start = start
         self.stop = end
-        self.field_start = ft.TextField(
-            label="Start",
-            value=start,
-            on_submit=lambda _: self.sub(),
-            height=50,
-            width=100,
-        )
-        self.field_stop = ft.TextField(label="End", value=end, on_submit=lambda _: self.sub(), height=50, width=100)
+
+        self.field_start = ft.TextField(label="Start", value=start, on_submit=self.on_edit, height=50, width=100, data="start")
+
+        self.field_stop = ft.TextField(label="End", value=end, on_submit=self.on_edit, height=50, width=100, data="end")
+
         self.delete = ft.IconButton(
             icon=ft.icons.DELETE_FOREVER_ROUNDED,
             icon_color="pink600",
             icon_size=40,
             tooltip="Delete",
-            on_click=lambda _: self.parent.delete(self),
+            on_click=delete_callback,
         )
+
         self.controls.extend([self.field_start, self.field_stop, self.delete])
-        self.FileSingleton.write_data(self.data)
 
     def close_banner(self, e):
         self.page.banner.open = False
@@ -106,7 +113,6 @@ class RowTimezone(ft.Row):
 
     def pop_banner(self, text):
         self.page.banner = ft.Banner(
-            bgcolor=ft.colors.AMBER_100,
             leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
             content=ft.Text(value=text),
             actions=[
@@ -117,38 +123,32 @@ class RowTimezone(ft.Row):
 
         self.page.update()
 
-    def sub(self):
-        self.data = self.FileSingleton.get_data()
-        i = self.data[self.instance]["schedules"][self.profile]["timing"].index([self.start, self.stop])
+    def on_edit(self, e):
+        if not is_valid_time_format(e.control.value):
+            return self.pop_banner("Wrong time format, please fix")
+        if is_time1_less_than_time2(self.field_start.value, self.field_stop.value):
+            return self.pop_banner("Start time should be less than end time")
 
-        self.data[self.instance]["schedules"][self.profile]["timing"][i] = [
-            self.field_start.value,
-            self.field_stop.value,
-        ]
-        if not is_valid_time(self.field_start.value) or not is_valid_time(self.field_stop.value):
-            self.pop_banner("Wrong format, please fix")
-        else:
-            self.start, self.stop = self.field_start.value, self.field_stop.value
-            self.FileSingleton.write_data(self.data)
+        self.start = self.field_start.value
+        self.stop = self.field_stop.value
+
+        return self.update_callback(e)
 
 
 class ManagerTimezone(ft.ListView):
     def __init__(self, instance, profile, **kwargs):
         super().__init__(**kwargs)
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
         self.instance = str(instance)
         self.profile = str(profile)
         self.spacing = 10
         self.expand = True
-        # self.controls.append(ft.Text(value="Welcome to Profile Activation Settings!\n"
-        #                                    "You have the flexibility to set multiple activation frametimes for your profile.\n"
-        #                                    "When entering the time, please use the 'hours:minutes' format, following a 24-hour clock notation.\nFor example, 02:00 pm should be entered as 14:00, aligning with your computer's 24-hour clock time.\n"
-        #                                    "It's essential to adjust your re-do task timings carefully to avoid unintentionally running the profile twice during the same frametime.\n\n"
-        #                                    "Enjoy the power of customizing your profile activation schedule!"))
+
         val = translate(
             "The time format should be 'hh:mm' and work on a 24-hour clock and on your computer clock.\nexemple:\n     - start : 02:00 / end : 04:00 means the script will start exclusively between 02:00 and 04:00."
         )
+
+        self.context: ProfileSchema = ss.emulator_settings.emulators[self.instance].schedules[self.profile]
+
         self.controls.append(GenerateCard(subtitle=val, level="notice", height=None))
         self.controls.append(
             ft.Row(
@@ -156,12 +156,13 @@ class ManagerTimezone(ft.ListView):
                     ft.Switch(
                         label=translate("Enable profile frametime"),
                         active_track_color=color_bank[int(self.profile)],
-                        value=True if self.data[str(self.instance)]["schedules"][str(self.profile)]["enable_timing"] else False,
-                        on_change=lambda _: self.reverse_keyword("enable_timing"),
+                        value=self.context.time_slot.enabled,
+                        on_change=self.submit_with_context,
+                        data={"path": "time_slot.enabled", "type": bool},
                     ),
                     ft.ElevatedButton(
                         text=translate("Add new rule"),
-                        on_click=lambda _: self.add_tile(),
+                        on_click=self.add_tile,
                         icon=ft.icons.ADD,
                     ),
                 ],
@@ -170,44 +171,41 @@ class ManagerTimezone(ft.ListView):
         )
         self.init()
 
-    def reverse_keyword(self, keyword: str, index=None):
-        if index is None:
-            index = self.profile
-        self.data[str(self.instance)]["schedules"][str(index)][keyword] = not self.data[str(self.instance)]["schedules"][str(index)][
-            keyword
-        ]
-        self.FileSingleton.write_data(self.data)
-
     def init(self):
-        for tup in self.data[self.instance]["schedules"][self.profile]["timing"]:
+        for slot in self.context.time_slot.allowed_time_slots:
             self.controls.append(
                 RowTimezone(
-                    self.instance,
-                    self.profile,
-                    self,
-                    start=tup[0],
-                    end=tup[1],
-                    default=False,
+                    start=slot.start,
+                    end=slot.end,
+                    delete_callback=self.delete_callback,
+                    update_callback=self.trigger_update,
                 )
             )
 
-    def add_tile(self, refresh=True):
-        self.data = self.FileSingleton.get_data()
-        self.controls.append(RowTimezone(self.instance, self.profile, self))
+    def add_tile(self, e):
+        self.controls.append(RowTimezone(delete_callback=self.delete_callback, update_callback=self.trigger_update))
         self.update()
 
-    def delete(self, tile):
-        self.data = self.FileSingleton.get_data()
-        self.data[self.instance]["schedules"][self.profile]["timing"].pop(
-            self.data[self.instance]["schedules"][self.profile]["timing"].index([tile.start, tile.stop])
-        )
+    def submit_with_context(self, e):
+        rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)
 
-        for i in range(len(self.controls)):
-            if self.controls[i] == tile:
-                self.controls.pop(i)
+    def delete_callback(self, e):
+        for control in self.controls[2:]:
+            if control.delete == e.control:
+                self.controls.remove(control)
                 break
-        self.FileSingleton.write_data(self.data)
-        self.update()
+
+        self.page.update()
+        self.trigger_update(e)
+
+    def trigger_update(self, e):
+        slots = []
+        for control in self.controls[2:]:
+            slots.append(AllowedTimeSlotsSchema(start=control.start, end=control.stop))
+
+        ss.emulator_settings.emulators[self.instance].schedules[self.profile].time_slot.allowed_time_slots = slots
+        ss.write_emulator_settings(ss.emulator_settings)
 
 
 global sel, profile

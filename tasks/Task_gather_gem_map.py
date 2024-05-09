@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import choice, randint, uniform
+from random import randint, uniform
 from time import time
 
 from tasks.Task import Task
@@ -18,19 +18,21 @@ class GatherGemMap(GatherGem):
         self.end_time = None
         self.block = False
         self.nodes_gathered = 0
+        self.context_task = self.context_profile.tasks.gather_gem
 
     def task_name(self):
         return "GatherGem"
 
     def recenter(self, deadstop=0):
-        return super().recenter(deadstop)
+        return super().recenter(deadstop, "gather_gem.searching_radius")
 
     def go_back_to_city(self, deadstop=0):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("recenter_feature", False):
-            return super().go_back_to_city(deadstop)
+        # if self.data[str(self.sel)]["schedules"][self.current_profile].get("recenter_feature", False):
+        return super().go_back_to_city(deadstop)
 
     @get_name
     def go_city(self, x, y, last=None) -> int:
+        raise NotImplementedError("This method should not be called")
         """
         Define starting path
         :param: x -> int x map location
@@ -51,7 +53,7 @@ class GatherGemMap(GatherGem):
                 self.adb.shell(string)
                 self.script_pause()
                 self.better_sleep((0.3, 0.5))
-                self.adb.shell(f"input text {self.data[str(self.sel)]['schedules'][self.current_profile].get('kingdom')}")
+                self.adb.shell(f"input text {self.context_profile.tasks.gather_gem}")
                 self.better_sleep((0.3, 0.5))
                 self.script_pause()
         self.better_sleep((0.3, 0.5))
@@ -78,12 +80,12 @@ class GatherGemMap(GatherGem):
 
     @get_name
     def go_random_area(self):
-        pos = self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_center_pos")
+        position = self.context_task.map_center_pos
 
         raison = self.max_distance
 
-        x = uniform(-raison, raison) + pos[0]
-        y = uniform(-raison, raison) + pos[1] - 10
+        x = uniform(-raison, raison) + position.x
+        y = uniform(-raison, raison) + position.y - 10
 
         self.click(x, y)
         self.better_sleep((1, 2))
@@ -95,7 +97,7 @@ class GatherGemMap(GatherGem):
         """
         self.end_time = end_time
 
-        if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
+        if EmulatorSingleton().getEmulatorType() == "bluestacks" and not self.random_macro():
             return
 
         self.run_game()
@@ -108,33 +110,22 @@ class GatherGemMap(GatherGem):
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
 
-        enable_gem_node_limit = self.data[self.sel]["schedules"][self.current_profile]["gather_gem_enable_node_limit"]
-        gem_node_limit = self.data[self.sel]["schedules"][self.current_profile]["gather_gem_note_limit"]
+        enable_gem_node_limit = self.context_task.node_limit.enabled
+        gem_node_limit = self.context_task.node_limit.fixed_node_limit
 
         starting_time = time()
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration1") > self.data[str(self.sel)]["schedules"][
-            self.current_profile
-        ].get("gather_gem_duration2"):
-            (
-                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration1"],
-                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration2"],
-            ) = (
-                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration2"],
-                self.data[self.sel]["schedules"][self.current_profile]["gather_gem_duration1"],
-            )
 
         if self.end_time is None:
             self.end_time = starting_time + (
                 randint(
-                    self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration1"),
-                    self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_duration2"),
+                    self.context_task.duration.min * 60,
+                    self.context_task.duration.max * 60,
                 )
-                * 60
             )
 
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
-        self.max_distance = self.data[str(self.sel)]["schedules"][self.current_profile].get("radius") / 6
 
+        self.max_distance = self.context_task.searching_radius
         self.go_back_to_city()
 
         while self.end_time > time() and (

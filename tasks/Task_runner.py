@@ -5,6 +5,7 @@ from random import choice, randint, shuffle, uniform
 from time import sleep, time
 
 import flet as ft
+
 try:
     import win32api
     import win32con
@@ -45,9 +46,10 @@ from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge import DeviceNotFoundException
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid
-from utils.singletons import EmulatorSingleton
-from views.frametime import is_in_frametime, random_time_in_frametime
+from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid, rgetattr, \
+    get_class
+from utils.singletons import EmulatorSingleton, ss, FileSingleton
+from views.frametime import is_slot_runnable, random_time_in_frametime
 
 
 class TaskRunner(Task):
@@ -55,6 +57,7 @@ class TaskRunner(Task):
         super().__init__(MainTask.tile)
         self.has_started_once = False
         self.herite(MainTask)
+        self.FileSingleton = FileSingleton()
 
     def task_name(self):
         return "runner"
@@ -154,7 +157,7 @@ class TaskRunner(Task):
             self.set_current_task(func.task_name())
 
             # self.set_status()
-            if self.data[self.sel]["schedules"][profile].get("alliance_help", False):
+            if self.context_profile.tasks.alliance_help.enabled:
                 AllianceHelp(self).run()
 
             if func.task_name() in [
@@ -203,11 +206,14 @@ class TaskRunner(Task):
         self.check_captcha()
 
     def get_available_task(self, profile: str = None):
-        # self.data = self.update_data()
-        if profile is None:
-            profile = self.data.get(self.sel)
-        else:
-            profile = self.data.get(self.sel).get("schedules").get(profile)
+        # # self.data = self.update_data()
+        # if profile is None:
+        #     profile = self.data.get(self.sel)
+        # else:
+        #     profile = self.data.get(self.sel).get("schedules").get(profile)
+        #
+        profile = self.context.schedules[profile]
+
         # print(profile)
         lib_tasks = []
 
@@ -216,52 +222,42 @@ class TaskRunner(Task):
         rss_task = {"default": GatherRssDefault, "zoom": GatherRssZoom}
 
         tasks = [
-            ("claim_campaign", ClaimCampaign),
-            ("collect_ressource", CollectResource),
-            ("buy_merchant", BuyMerchant),
             (
                 "gather_rss",
-                rss_task[profile.get("gather_rss_method")],
+                rss_task[profile.tasks.gather_rss.search_method],
             ),
-            ("use_enhanced_buff", UseEnhancedBuff),
-            ("check_donation", AllianceDonation),
-            ("defeat_barbarians", HuntBarbarians),
             (
                 "gather_gem",
-                gem_task[profile.get("gather_gem_method")],
+                gem_task[profile.tasks.gather_gem.search_method],
             ),
-            ("scout_fog", ClearFog),
-            ("claim_daily_vip", DailyVip),
-            ("start_fort", BarbFort),
-            ("heal_troop", HealTroop),
-            ("material_production", ProduceMaterials),
+            ("collect_city_resources", CollectResource),
+            ("apply_buff", UseEnhancedBuff),
+            ("buy_mysterious_merchant", BuyMerchant),
+            ("alliance_donation", AllianceDonation),
+            ("alliance_pit", AlliancePit),
+            ("alliance_fort", BarbFort),
+            ("produce_materials", ProduceMaterials),
+            ("troop_training", TroopTraining),
+            ("claim_daily_vip_chest", DailyVip),
             ("claim_daily_chest", DailyChest),
-            ("claim_daily_quests", DailyQuests),
-            ("auto_upgrade", UpgradeCity),
-            ("train_troops", TroopTraining),
-            ("transfer_enable", RssTransfer),
-            ("kill_marauders", Marauders),
-            ("gather_alliance_pit", AlliancePit),
+            ("claim_daily_quest", DailyQuests),
+            ("claim_daily_expedition_rewards", ClaimCampaign),
+            ("kill_barbarian", HuntBarbarians),
+            ("explore_fog", ClearFog),
+            ("upgrade_city", UpgradeCity),
             ("academic_research", AcademyResearch),
+            ("troop_healing", HealTroop),
+            ("resources_transfer", RssTransfer),
+            ("marauders", Marauders),
         ]
 
         for task_key, task_class in tasks:
-            if profile.get(task_key, False):
-                if task_key == "gather_rss":
-                    if profile["gather_rss_availability"] == "all":
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_rss_availability"] == "only_first" and self.character_index == 1:
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_rss_availability"] == "all_except_first" and self.character_index != 1:
-                        lib_tasks.append(task_class(self))
-                elif task_key == "gather_gem":
-                    if profile["gather_gem_availability"] == "all":
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_gem_availability"] == "only_first" and self.character_index == 1:
-                        lib_tasks.append(task_class(self))
-                    elif profile["gather_gem_availability"] == "all_except_first" and self.character_index != 1:
-                        lib_tasks.append(task_class(self))
-                else:
+            if rgetattr(profile.tasks, task_key).enabled:
+                if rgetattr(profile.tasks, task_key).availability == "all":
+                    lib_tasks.append(task_class(self))
+                elif rgetattr(profile.tasks, task_key).availability == "only_first" and self.character_index == 1:
+                    lib_tasks.append(task_class(self))
+                elif rgetattr(profile.tasks, task_key).availability == "all_except_first" and self.character_index != 1:
                     lib_tasks.append(task_class(self))
 
         shuffle(lib_tasks)
@@ -294,13 +290,13 @@ class TaskRunner(Task):
                     lib_tasks[hunt_index],
                 )
 
-        if profile.get("upgrade_city", False):
+        if profile.tasks.upgrade_city.enabled:
             lib_tasks.append(UpgradeCity(self))
 
-        if profile.get("claim_mails", False):
+        if profile.tasks.claim_mail.enabled:
             lib_tasks.append(ClaimMail(self))
 
-        if profile.get("help_alliance_building", False):
+        if profile.tasks.help_alliance_building.enabled:
             lib_tasks.insert(0, AllianceBuilding(self))
 
         return lib_tasks
@@ -567,9 +563,7 @@ class TaskRunner(Task):
             while True:
                 self.better_sleep((1, 1))
 
-        self.FileSingleton.get_path()
-        data = self.FileSingleton.get_data()
-        emulator_choice = EmulatorSingleton().getEmulator()
+        emulator_choice = EmulatorSingleton().getEmulatorType()
 
         if not win32gui.FindWindow(None, self.name):
             print(f"Bot will wait until the device is properly booted.")
@@ -597,385 +591,36 @@ class TaskRunner(Task):
             instances = get_dic_instances()
 
         for instance in instances:
-            data[str(instance)]["instance"] = instances[str(instance)]["instance"]
-            data[str(instance)]["name"] = instances[str(instance)]["name"]
-            data[str(instance)]["port"] = int(instances[str(instance)]["port"])
+            ss.emulator_settings.emulators[instance].instance = instances[instance]["instance"]
+            ss.emulator_settings.emulators[instance].name = instances[instance]["name"]
+            ss.emulator_settings.emulators[instance].port = int(instances[instance]["port"])
 
-        self.data = data
-        self.FileSingleton.write_data(data)
-        # self.worker.main_task.adb.connect_to_device()
-        # self.worker.runner.adb.connect_to_device()
-
-    @get_name
-    def run(self):
-        self.data = self.update_data()
-        loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
-        starting_time = time()
-        print(self.sel)
-        print(self.data[self.sel]["name"])
-        for i in range(loop_task):
-            loop_time = time()
-            self.set_status("Starting..")
-            self.print("Script is starting ! ".center(20, "-"), "green")
-            self.data = self.update_data()
-
-            can_go = None
-            when_go = None
-            if not (
-                self.data[self.sel]["schedules"]["1"]["enabled"]
-                or self.data[self.sel]["schedules"]["2"]["enabled"]
-                or self.data[self.sel]["schedules"]["3"]["enabled"]
-            ):
-                self.print(
-                    "No active profiles found! Navigate to the profile settings and enable at least one option.",
-                    ft.colors.RED,
-                )
-                self.generate_toast(
-                    "Warning ",
-                    "No active profiles found! Navigate to the profile settings and enable at least one option.",
-                    ft.icons.INFO,
-                    ft.colors.YELLOW_800,
-                )
-
-            for profile in self.data[self.sel]["schedules"]:
-                if self.data[self.sel]["schedules"][profile]["enabled"]:
-                    print(f"Profile {profile} enabled")
-                    if self.data[self.sel]["schedules"][profile]["enable_timing"]:
-                        can_go = False
-                        when_go = 0
-                        print(f"Profile {profile} enabled")
-                        for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                            if is_in_frametime(t[0], t[1]):
-                                can_go = True
-                                when_go = random_time_in_frametime(t[0], t[1])
-                                print(f"{when_go=}")
-                                self.print(f"Profile {profile} able to run")
-                                break
-                        if not can_go:
-                            print(f"The current time does not match the rules you set")
-                            sleep(5)
-                            continue
-                        if when_go:
-                            self.print("In order to mimic a player, the bot will wait a random time")
-                            self.set_timer(randint(0, 60 * 10))
-                            self.set_status("Starting..")
-                    else:
-                        print(f"Profile {profile} no rules set")
-                    self.current_profile = profile
-                    self.print(f"Profile n°{profile} enabled ! ", "blue")
-
-                    if self.get_config().get("switch_character"):
-                        self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
-                    # First character
-                    self.execute_tasks(self.get_available_task(profile), profile)
-
-                    if self.get_config().get("switch_character", False):
-                        self.check_captcha()
-                        co_first = self.switch_character()
-                        self.wait_until_connected()
-                        # Characters remaining
-                        boolean = True
-                        self.character_index = 2
-                        while co_first and boolean:
-                            self.print(f"Character n°{self.character_index}", ft.colors.CYAN_ACCENT_700)
-                            self.character_index += 1
-                            self.execute_tasks(self.get_available_task(profile), profile)
-                            self.better_sleep((1.2, 4))
-
-                            self.check_captcha()
-                            boolean = self.switch_character(co_first, self.character_index, 0)
-                            self.wait_until_connected()
-                    if not self.data[self.sel]["scheduler"]:
-                        break
-
-            if self.data.get(self.sel).get("loop_task"):
-                ttw1 = self.data.get(self.sel).get("time_to_wait_loop1", 60)
-                ttw2 = self.data.get(self.sel).get("time_to_wait_loop2", 90)
-
-                self.print(f"Run nb°{i} took {timedelta(seconds=int(time() - loop_time))} to complete.")
-                if ttw1 > ttw2:
-                    ttw1, ttw2 = ttw2, ttw1
-                time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                self.print(
-                    f"Script is paused for {timedelta(seconds=int(time_before_redo_tasks))}",
-                    "#f5b400",
-                )
-
-                if self.data.get(self.sel).get("leave_game_loop", False):
-                    if time_before_redo_tasks < 600:
-                        self.leave_game(force=True)
-                    else:
-                        self.leave_game(force=False)
-
-                self.set_timer(time_before_redo_tasks)
-
-        self.print(
-            f"The bot took {timedelta(seconds=int(time() - starting_time))} to complete all the tasks, bot is waiting for your instructions.",
-            "green",
-        )
-        self.set_divider()
-        return
-
-    @get_name
-    def run_groups(self):
-        pass
-        #     thread.start()
-        #
-        # for thread in threads:
-        #     thread.join()
-
-    @get_name
-    def run3(self, tiles=None):
-        if tiles is None:
-            tiles = self.tile.get_enabled_sel_object()
-
-        if not tiles:
-            self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
-            return
-
-        emulator = EmulatorSingleton().getEmulator()
-
-        self.set_sel(tiles[0].number)
-        self.data = self.update_data()
-        loop_task = 1 if not self.data.get(self.sel).get("loop_task") else 9999999999999
-        loop_time = time()
-
-        for i in range(loop_task):
-            loop_time = time()
-            first = tiles[0].number
-            nb_tile = 0
-            for enabled_tile in tiles:
-                enabled_tile.set_text(f"In queue ({nb_tile})")
-                nb_tile += 1
-
-            for enabled_tile in tiles:
-                starting_time = time()
-
-                self.tile = enabled_tile
-                self.set_sel(self.tile.number)
-
-                if self.data[self.sel]["schedules"]["1"]["enable_timing"]:
-                    can_go = False
-                    for t in self.data[self.sel]["schedules"]["1"]["timing"]:
-                        if is_in_frametime(t[0], t[1]):
-                            self.print(f"Profile 1 able to run")
-                            can_go = True
-                            break
-                    if not can_go:
-                        print(f"The current time does not match the rules you set")
-                        continue
-
-                if emulator == "bluestacks":
-                    self.adb = AdbBluestacks(self.tile.number)
-                else:
-                    self.adb = AdbLd(self.tile.number)
-
-                self.start_emulator(self.tile.number)
-                self.tile.runner = self
-                self.set_status("Starting..")
-                self.print("Changing adb..")
-                self.print(f"{self.adb.number = } {self.adb.port =}")
-
-                self.adb.__repr__()
-                self.print("Connecting to the emulator..")
-                self.adb.connect_to_device()
-
-                # First character
-                self.current_profile = "1"
-                self.print("Reminder : only the first profile is available")
-                if self.get_config().get("switch_character"):
-                    self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
-                # First character
-                self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
-
-                if self.get_config().get("switch_character", False):
-                    self.check_captcha()
-                    co_first = self.switch_character()
-                    self.wait_until_connected()
-                    # Characters remaining
-                    boolean = True
-                    self.character_index = 2
-                    while co_first and boolean:
-                        self.print(f"Character n°{self.character_index}", ft.colors.CYAN_ACCENT_700)
-                        self.character_index += 1
-                        self.execute_tasks(
-                            self.get_available_task(self.current_profile),
-                            self.current_profile,
-                        )
-                        self.better_sleep((2.2, 4))
-
-                        self.check_captcha()
-                        boolean = self.switch_character(co_first, self.character_index, 0)
-                        self.wait_until_connected()
-
-                self.set_status("")
-                self.leave_game()
-                self.kill_instance()
-                self.print("Shutdown the emulator, waiting for 15seconds")
-                self.set_timer(15)
-
-                self.print(
-                    f"The bot took {timedelta(seconds=int(time() - starting_time))} to complete all the tasks on this emulator.",
-                    "green",
-                )
-
-            if self.data.get(first).get("loop_task"):
-                # ttw1, ttw2 = self.data.get(first).get("time_to_wait_loop1", 60), self.data.get(first).get(
-                #     "time_to_wait_loop2", 90)
-                ttw1 = self.data.get(first).get("time_to_wait_loop1", 60)
-                ttw2 = self.data.get(first).get("time_to_wait_loop2", 90)
-                # self.print("")
-                self.print(f"Run nb°{i} took {(time() - loop_time) / 60:0.1f} minutes to complete.")
-                if ttw1 > ttw2:
-                    ttw1, ttw2 = ttw2, ttw1
-                time_before_redo_tasks = int(randint(ttw1, ttw2) * 60) + randint(0, 60)
-                # self.print("")
-                self.tile = tiles[0]
-
-                self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
-                # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
-                nb_tile = 0
-                for enabled_tile in tiles:
-                    enabled_tile.set_text(f"In queue ({nb_tile})")
-                    nb_tile += 1
-
-                self.set_timer(time_before_redo_tasks)
-                # if self.data.get(first).get("leave_game_loop", False):
-                #     if time_before_redo_tasks < 600:
-                #         self.leave_game(force=True)
-                #     else:
-                #         self.leave_game(force=False)
+        ss.write_emulator_settings(ss.emulator_settings)
 
     def set_status(self, text):
         super().set_status(text)
+
         if hasattr(self, "worker"):
             self.worker.set_text(text)
 
-    @get_name
-    def run4(self, tiles=None):
-        if not tiles:
-            self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
-            return
-
-        emulator = EmulatorSingleton().getEmulator()
-        self.data = self.update_data()
-        loop_task = 1 if not self.data["workers"][emulator][self.worker.number]["loop_task"] else 9999999
-
-        for i in range(loop_task):
-            cycle_started_at = time()
-            nb_tile = 0
-            for enabled_tile in tiles:
-                enabled_tile.set_text(f"In queue ({nb_tile})")
-                nb_tile += 1
-
-            for enabled_tile in tiles:
-                emulator_started_at = time()
-
-                self.tile = enabled_tile
-                self.character_index = 1
-                self.set_sel(self.tile.number)
-                can_go = True
-                for profile in self.data[self.sel]["schedules"]:
-                    can_go = False
-
-                    if not self.data[self.sel]["schedules"][profile]["enabled"]:
-                        continue
-                    else:
-                        if self.data[self.sel]["schedules"][profile]["enable_timing"]:
-                            for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                                if is_in_frametime(t[0], t[1]):
-                                    self.print(f"Profile 1 able to run")
-                                    can_go = True
-                                    break
-                            if not can_go:
-                                print(f"The current time does not match the rules you set")
-                                continue
-
-                    if emulator == "bluestacks":
-                        self.adb = AdbBluestacks(self.tile.number, task_reference=self)
-                    else:
-                        self.adb = AdbLd(self.tile.number, task_reference=self)
-
-                    self.start_emulator(self.tile.number)
-                    self.tile.runner = self
-                    self.set_status("Starting..")
-
-                    # First character
-                    self.current_profile = profile
-
-                    if self.get_config().get("switch_character"):
-                        self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
-                    # First character
-                    self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
-
-                    if self.get_config().get("switch_character", False):
-                        self.check_captcha()
-                        co_first = self.switch_character()
-                        self.wait_until_connected()
-                        # Characters remaining
-                        boolean = True
-                        self.character_index = 2
-                        while co_first and boolean:
-                            self.print(f"Character n°{self.character_index}", ft.colors.CYAN_ACCENT_700)
-                            self.character_index += 1
-                            self.execute_tasks(
-                                self.get_available_task(self.current_profile),
-                                self.current_profile,
-                            )
-                            self.better_sleep((2.2, 4))
-
-                            self.check_captcha()
-                            boolean = self.switch_character(co_first, self.character_index, 0)
-                            self.wait_until_connected()
-
-                self.set_status("")
-
-                if not can_go:
-                    self.leave_game()
-
-                if self.data["workers"][emulator][self.worker.number]["close_emulator"]:
-                    self.kill_instance()
-                    self.print("Shutdown the emulator, waiting for 5 seconds")
-                    self.better_sleep((5, 5))
-
-                self.print(
-                    f"The bot took {timedelta(seconds=int(time() - emulator_started_at))} to complete all the tasks on this emulator.",
-                    "green",
-                )
-
-            if self.data["workers"][emulator][self.worker.number]["loop_task"]:
-                waiting_cooldown = self.data["workers"][emulator][self.worker.number]["waiting_cooldown"]
-                waiting_cooldown.sort()
-                t1, t2 = waiting_cooldown
-                time_before_redo_tasks = int(randint(t1, t2) * 60) + randint(0, 60)
-                # self.print("")
-
-                # self.print(f"Script is paused for {time_before_redo_tasks / 60:0.1f} minutes")
-
-                for i, enabled_tile in enumerate(tiles):
-                    enabled_tile.add_text(f"Run nb°{i} took {(time() - cycle_started_at) / 60:0.1f} minutes to complete.")
-                    enabled_tile.set_text(f"In queue ({i})")
-
-                self.tile = self.worker
-                self.set_timer(time_before_redo_tasks)
-
+    @get_class
     def run(self):
         self.set_sel(self.tile.number)
         self.character_index = 1
         self.has_started_once = False
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
         can_go = True
 
-        for profile in self.data[self.sel]["schedules"]:
+        for profile in self.context.schedules:
             can_go = False
 
-            if not self.data[self.sel]["schedules"][profile]["enabled"]:
+            if not self.context.schedules[profile]:
                 continue
             else:
-                if self.data[self.sel]["schedules"][profile]["enable_timing"]:
-                    for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                        if is_in_frametime(t[0], t[1]):
-                            self.print(f"Profile 1 able to run")
+                if self.context.schedules[profile].time_slot.enabled:
+                    for slot in self.context.schedules[profile].time_slot.allowed_time_slots:
+                        if is_slot_runnable(slot.start, slot.end):
+                            self.print(f"Profile {profile} able to run")
                             can_go = True
                             break
                     if not can_go:
@@ -983,6 +628,7 @@ class TaskRunner(Task):
                         continue
 
             self.has_started_once = True
+
             if emulator == "bluestacks":
                 self.adb = AdbBluestacks(self.tile.number, task_reference=self)
             else:
@@ -995,12 +641,12 @@ class TaskRunner(Task):
             # First character
             self.current_profile = profile
 
-            if self.get_config().get("switch_character"):
+            if self.context.schedules[profile].switch_character.enabled:
                 self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
             # First character
             self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
 
-            if self.get_config().get("switch_character", False):
+            if self.context.schedules[profile].switch_character.enabled:
                 self.check_captcha()
                 co_first = self.switch_character()
                 self.wait_until_connected()
@@ -1082,14 +728,15 @@ class TaskRunner(Task):
 
         interactions = [
             self.open_chat_and_leave,
-            self.enter_profile,
-            self.open_any_rankings,
+
             open_menu_and_go_canyon,
             open_inventory_and_go_in_any_tab,
             open_commander_list_and_click_on_heros,
         ]
 
         if zoomed_in:
+            interactions.append(self.enter_profile)
+            interactions.append(self.open_any_rankings)
             interactions.append(self.open_random_rss_type)
 
             if any(isinstance(task, AllianceDonation) for task in tasks):
@@ -1125,7 +772,7 @@ class TaskRunner(Task):
                         can_go = False
                         when_go = 0
                         for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                            if is_in_frametime(t[0], t[1]):
+                            if is_slot_runnable(t[0], t[1]):
                                 can_go = True
                                 when_go = random_time_in_frametime(t[0], t[1])
                                 print(f"{when_go=}")

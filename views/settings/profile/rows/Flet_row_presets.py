@@ -1,28 +1,25 @@
 import flet as ft
+from utils.schemas.emulator_schemas import TaskKillBarbarianSchema, TaskMaraudersSchema
 
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rgetattr, rsetattr
+from utils.singletons import ss
 
 
 class FletRowPresets(ft.Row):
-    def __init__(self, instance_index, profile_index, preset_index):
+    def __init__(self, key, context: TaskMaraudersSchema | TaskKillBarbarianSchema):
         super().__init__()
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
-        self.instance_index = instance_index
-        self.profile_index = profile_index
-        self.preset_index = preset_index
         self.content_padding = ft.padding.all(10)
+        self.context = context
+
         self.controls = [
             ft.Checkbox(
-                label=f"Preset {preset_index}",
-                on_change=lambda e: self.submit(e),
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["barbarians_preset"][preset_index],
+                label=f"{key.capitalize()} preset",
+                value=rgetattr(self.context, f"presets_selection.{key}"),
+                on_change=self.submit_with_context,
+                data={"path": f"presets_selection.{key}", "type": bool},
             )
         ]
 
-    def submit(self, e):
-        self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["barbarians_preset"][self.preset_index] = bool(
-            e.control.value
-        )
-        self.FileSingleton.write_data(self.data)
+    def submit_with_context(self, e):
+        rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)

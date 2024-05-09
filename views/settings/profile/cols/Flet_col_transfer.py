@@ -1,51 +1,51 @@
 import flet as ft
+from utils.schemas.emulator_schemas import TaskResourcesTransferSchema
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rsetattr
+from utils.singletons import ss
 
 
 class FletColumnRss(ft.Column):
-    def __init__(self, instance_index, profile_index):
+    def __init__(self, context: TaskResourcesTransferSchema):
         super().__init__()
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
-        self.instance_index = instance_index
-        self.profile_index = profile_index
+        self.context = context
+
         self.controls = [
             ft.TextField(
                 label=translate("Million of Food to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_food"],
-                on_change=lambda e: self.submit(e, f"transfer_food", int),
+                value=str(context.food_amount),
+                on_change=self.submit_with_context,
+                data={"path": "food_amount", "type": int},
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
             ),
             ft.TextField(
                 label=translate("Million of Wood to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_wood"],
-                on_change=lambda e: self.submit(e, f"transfer_wood", int),
+                value=str(context.wood_amount),
+                on_change=self.submit_with_context,
+                data={"path": "wood_amount", "type": int},
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
             ),
             ft.TextField(
                 label=translate("Million of Stone to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_stone"],
-                on_change=lambda e: self.submit(e, f"transfer_stone", int),
+                value=str(context.stone_amount),
+                on_change=self.submit_with_context,
+                data={"path": "stone_amount", "type": int},
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
             ),
             ft.TextField(
                 label=translate("Million of Gold to transfer :"),
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["transfer_gold"],
-                on_change=lambda e: self.submit(e, f"transfer_gold", int),
+                value=str(context.gold_amount),
+                on_change=self.submit_with_context,
+                data={"path": "gold_amount", "type": int},
                 content_padding=ft.padding.all(10),
                 input_filter=ft.NumbersOnlyInputFilter(),
             ),
         ]
 
-    def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
-
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = (
-            method(e.control.value) if e.control.value != "" else 0
-        )
-        self.FileSingleton.write_data(self.data)
+    def submit_with_context(self, e):
+        rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)

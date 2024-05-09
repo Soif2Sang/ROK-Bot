@@ -1,4 +1,5 @@
 import flet as ft
+from utils.schemas.emulator_schemas import TaskKillBarbarianSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
@@ -9,6 +10,8 @@ from views.settings.profile.rows.Flet_row_presets import FletRowPresets
 class PageBarbs(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
+
+        self.context: TaskKillBarbarianSchema = self.tasks.kill_barbarian
 
         self.add_control(
             GenerateCard(
@@ -27,8 +30,9 @@ class PageBarbs(BasePage):
                         height=50,
                         content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
                         options=[ft.dropdown.Option(str(i)) for i in range(1, 56)],
-                        on_change=lambda e: self.submit(e, "barbarians_level", str),
-                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["barbarians_level"],
+                        value=str(self.context.target_level),
+                        on_change=self.submit_with_context,
+                        data={"path": "target_level", "type": int},
                     ),
                 ],
                 width=300,
@@ -36,7 +40,10 @@ class PageBarbs(BasePage):
             ft.Divider(),
             ft.Text(value=translate("Peacekeeper presets")),
             ft.Column(
-                controls=[FletRowPresets(self.instance_index, self.profile_index, str(preset_index)) for preset_index in range(1, 8)],
+                controls=[
+                    FletRowPresets(preset_index, self.context)
+                    for preset_index in ["first", "second", "third", "fourth", "fifth", "sixth", "seventh"]
+                ],
                 wrap=True,
                 spacing=10,
                 run_spacing=10,

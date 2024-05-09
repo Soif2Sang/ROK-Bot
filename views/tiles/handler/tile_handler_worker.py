@@ -1,22 +1,22 @@
-import copy
 import platform
 import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+from utils.schemas.emulator_schemas import EmulatorSettingsSchema
+from utils.schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
 
 from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
-from utils.singletons import EmulatorSingleton, FileSingleton
+from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton, ss
 from views.login.login import ClickableLink, links, sellix_icon, stripe_icon, tiers
 from views.tiles.tile_worker import TileWorker
 
 
 class NavigationBar(ft.Row):
-    def __init__(self, page, tile_manager, **kwargs):
+    def __init__(self, tile_manager, **kwargs):
         super().__init__(**kwargs)
-        self.initial_page = page
         self.tileManager = tile_manager
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
 
@@ -52,7 +52,7 @@ class NavigationBar(ft.Row):
         )
 
         pattern = r"(\d+) Days left"
-        match = re.search(pattern, page.title)
+        match = re.search(pattern, ss.page.title)
         days_left_str = match.group(1)
 
         days_left_int = int(days_left_str)
@@ -79,9 +79,9 @@ class NavigationBar(ft.Row):
         refresh_pay = ft.Row(controls=[self.button_refresh])
 
         def open_dlg(e):
-            page.dialog = diag
+            ss.page.dialog = diag
             diag.open = True
-            page.update()
+            ss.page.update()
 
         if VERSION_TYPE == "global":
             refresh_pay.controls.append(
@@ -96,36 +96,35 @@ class NavigationBar(ft.Row):
         self.controls.append(
             ft.IconButton(
                 icon=ft.icons.MENU,
-                on_click=lambda _: self.initial_page.go("/settings"),
+                on_click=lambda _: ss.page.go("/settings"),
             ),
         )
 
 
 class TileHandlerWorker(ft.ListView):
-    def __init__(self, page: ft.Page, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.initial_page = page
         self.height = 300
         self.expand = 0
         self.spacing = 1
         self.FileSingleton = FileSingleton()
         self.tiles: dict[str, TileWorker] = {}
-        self.navigation_bar: NavigationBar = NavigationBar(self.initial_page, self)
+        self.navigation_bar: NavigationBar = NavigationBar(self)
         self.controls.append(self.navigation_bar)
 
     def add_tile(self, number: str):
         if number not in self.tiles:
-            self.tiles[number] = TileWorker(self.initial_page, number)
+            self.tiles[number] = TileWorker(number)
         else:
             self.tiles[number].refresh_tile()
 
         self.controls.append(self.tiles[number])
-        self.initial_page.update()
+        ss.page.update()
 
     def delete_tile(self, number: str):
         self.controls.remove(self.tiles[number])
         self.tiles.pop(number)
-        self.initial_page.update()
+        ss.page.update()
 
     def unselect_all(self):
         for tile in self.controls[1:]:
@@ -133,18 +132,18 @@ class TileHandlerWorker(ft.ListView):
                 # tile.button_select.selected = False
                 for control in tile.controls:
                     control.bgcolor = ft.colors.SURFACE
-        self.initial_page.update()
+        ss.page.update()
 
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
 
     def refresh(self):
-        data = self.FileSingleton.get_data()
+        self.FileSingleton.get_data()
 
-        emulator = EmulatorSingleton().getEmulator()
+        emulator = EmulatorSingleton().getEmulatorType()
 
         if platform.system() == "Darwin":
-            instances = {"pc": {'name': 'pc', 'instance': 'pc', 'port': -1}}
+            instances = {"0": {"name": "LD-Player", "instance": "ld", "port": 5554}}
         elif emulator == "bluestacks":
             instances = get_dic_instances()
         elif emulator == "ld":
@@ -154,46 +153,73 @@ class TileHandlerWorker(ft.ListView):
 
         self.fetched_instances = instances
 
-        default_dic["emulator"] = emulator
+        ss = SettingsSingleton()
 
-        for i in range(1, 4):
-            default_dic["schedules"][i] = copy.deepcopy(default_profile)
-        default_dic["schedules"][1]["enabled"] = True
+        worker_settings = ss.worker_settings
+
+        # default_dic["emulator"] = emulator
+
+        # for i in range(1, 4):
+        #     default_dic["schedules"][i] = copy.deepcopy(default_profile)
+        # default_dic["schedules"][1]["enabled"] = True
+        # for i, instance in enumerate(instances):
+        #     if str(i) not in data["workers"][emulator]:
+        #         data["workers"][emulator][str(i)] = {**default_worker_settings, "instances": [{"instance": instance}]}
+        #     else:
+        #         data["workers"][emulator][str(i)] = {**default_worker_settings, **data["workers"][emulator][str(i)]}
+        #
+        #     if instance not in data:
+        #         data[instance] = copy.deepcopy(default_dic)
+        #     else:
+        #         for key in default_dic:
+        #             if key not in data[instance]:
+        #                 data[instance][key] = copy.deepcopy(default_dic[key])
+        #
+        #         for key in default_profile:
+        #             for i in range(1, 4):
+        #                 if key not in data[instance]["schedules"][str(i)]:
+        #                     data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
+        #
+        #     data[instance].update({
+        #         "instance": instances[instance]["instance"],
+        #         "name": instances[instance]["name"],
+        #         "port": int(instances[instance]["port"])
+        #     })
 
         for i, instance in enumerate(instances):
-            if str(i) not in data["workers"][emulator]:
-                data["workers"][emulator][str(i)] = {**default_worker_settings, "instances": [{"instance": instance}]}
+            if emulator not in worker_settings.worker_type:
+                worker_settings.worker_type[emulator] = WorkerListSchema()
+
+            if str(i) not in worker_settings.worker_type[emulator].workers:
+                worker_settings.worker_type[emulator].workers[str(i)] = WorkerSettingsSchema(instances=[InstanceSchema(instance=instance)])
+
+            if instance not in ss.emulator_settings.emulators:
+                ss.emulator_settings.emulators[instance] = EmulatorSettingsSchema(
+                    emulator=emulator,
+                    instance=instances[instance]["instance"],
+                    name=instances[instance]["name"],
+                    port=int(instances[instance]["port"]),
+                )
+
+                ss.emulator_settings.emulators[instance].schedules["1"].enabled = True
             else:
-                data["workers"][emulator][str(i)] = {**default_worker_settings, **data["workers"][emulator][str(i)]}
+                ss.emulator_settings.emulators[instance].instance = instances[instance]["instance"]
+                ss.emulator_settings.emulators[instance].name = instances[instance]["name"]
+                ss.emulator_settings.emulators[instance].port = int(instances[instance]["port"])
 
-            if instance not in data:
-                data[instance] = copy.deepcopy(default_dic)
-            else:
-                for key in default_dic:
-                    if key not in data[instance]:
-                        data[instance][key] = copy.deepcopy(default_dic[key])
-
-                for key in default_profile:
-                    for i in range(1, 4):
-                        if key not in data[instance]["schedules"][str(i)]:
-                            data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
-
-            data[instance].update(
-                {"instance": instances[instance]["instance"], "name": instances[instance]["name"], "port": int(instances[instance]["port"])}
-            )
-
-        self.FileSingleton.write_data(data)
+        ss.write_emulator_settings(ss.emulator_settings)
+        ss.write_worker_settings(worker_settings)
 
         for i in range(len(self.controls) - 1):
             self.controls.pop()
 
         if instances:
-            for worker in data["workers"][emulator]:
-                if data["workers"][emulator][worker]["instances"]:
+            for worker in worker_settings.worker_type[emulator].workers:
+                if worker_settings.worker_type[emulator].workers[worker].instances:
                     self.add_tile(worker)
 
-        self.initial_page.update()
-        return
+        return ss.page.update()
+
         if instances:
             for instance in instances:
                 if str(instance[0]) in self.tiles:

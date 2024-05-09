@@ -1,4 +1,5 @@
 import hashlib
+import os
 import re
 import shutil
 import subprocess
@@ -12,7 +13,8 @@ import pyautogui
 import requests
 
 try:
-    import win32gui, win32api
+    import win32api
+    import win32gui
     import win32process
 except:
     pass
@@ -22,6 +24,24 @@ from utils.constants import DEBUG
 from utils.singletons import ApiSingleton, FileSingleton
 
 dir = "./"
+
+import functools
+
+
+def rsetattr(obj, attr, val):
+    pre, _, post = attr.rpartition(".")
+    return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+
+# using wonder's beautiful simplification: https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects/31174427?noredirect=1#comment86638618_31174427
+
+
+def rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+
+    return functools.reduce(_getattr, [obj] + attr.split("."))
+
 
 def find_file(root_folder, rex):
     for root, dirs, files in os.walk(root_folder):
@@ -38,6 +58,7 @@ def find_file_in_all_drives(file_name):
     for drive in win32api.GetLogicalDriveStrings().split("\000")[:-1]:
         if result := find_file(drive, rex):
             return result
+
 
 def word_to_color(word):
     hash_object = hashlib.sha256()

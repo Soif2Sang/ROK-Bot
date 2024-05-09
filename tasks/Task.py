@@ -12,6 +12,7 @@ from random import choice, randint, uniform
 from time import sleep
 
 import cv2
+import deprecation
 import flet as ft
 
 try:
@@ -23,12 +24,22 @@ except:
 from numpy import array, ndarray
 from PIL import Image, ImageFile
 from pytesseract import pytesseract
+from utils.schemas.emulator_schemas import EmulatorSettingsSchema, ProfileSchema
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.discord_utils import send_discord_message
-from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_name, string_to_co, string_to_co_slide
-from utils.singletons import ApiSingleton, EmulatorSingleton
+from utils.functions import (
+    FileSingleton,
+    colorize_name,
+    colorize_output,
+    current_time,
+    get_name,
+    rgetattr,
+    string_to_co,
+    string_to_co_slide,
+)
+from utils.singletons import ApiSingleton, EmulatorSingleton, ss
 from utils.supabase_auth import SupabaseClient
 from utils.twocaptcha import TimeoutException, TwoCaptcha
 from utils.twocaptcha.api import ApiException, NetworkException
@@ -39,30 +50,26 @@ pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 class Task:
     def __init__(self, tile):
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.getCachedData()
         self.current_profile: str = "1"
         self.tile = tile
         self.sel: str = tile.number
-        emulator = EmulatorSingleton().getEmulator()
+        self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
+        self.context_profile: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
+        self.FileSingleton = FileSingleton()
 
-        if self.tile.__class__.__name__ != "TileWorker":
-            if emulator == "bluestacks":
-                self.adb = AdbBluestacks(self.sel, task_reference=self)
-            else:
-                self.adb = AdbLd(self.sel, task_reference=self)
+        emulator = EmulatorSingleton().getEmulatorType()
 
-            self.name: str = self.adb.name
-
+        if emulator == "bluestacks":
+            self.adb = AdbBluestacks(self.sel, task_reference=self)
         else:
-            self.adb = None
-            self.name = ""
+            self.adb = AdbLd(self.sel, task_reference=self)
 
+        self.name: str = self.context.name
         self.language: str | None = None
         self.DEV = False
 
     def herite(self, MainTask):
-        self.data = MainTask.data
+        self.context = MainTask.context
         self.current_profile = MainTask.current_profile
         self.tile = MainTask.tile
         self.sel = MainTask.sel
@@ -71,6 +78,7 @@ class Task:
         self.name = MainTask.name
         self.DEV = MainTask.DEV
         self.FileSingleton = MainTask.FileSingleton
+        # self.data = MainTask.data
 
     def debug(self, arg):
         timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
@@ -120,14 +128,18 @@ class Task:
             self.better_sleep((1, 1), reduce_speed=False)
         self.set_status("")
 
+    @deprecation.deprecated(details="Use better_sleep instead")
     def update_data(self):
         self.data = self.FileSingleton.get_data()
         return self.data
 
     def set_sel(self, sel) -> None:
-        self.data = self.update_data()
-        self.sel = sel
-        self.name = self.data.get(self.sel).get("name", "Name not found")
+        # self.data = self.update_data()
+        # self.name = self.data.get(self.sel).get("name", "Name not found")
+        self.sel: str = sel
+        self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
+        self.context_profile: ProfileSchema = self.context.schedules[self.current_profile]
+        self.name: str = self.context.name
 
     @get_name
     def get_city_position(self):
@@ -159,8 +171,7 @@ class Task:
 
     @get_name
     def send_discord_message(self, message, image=True):
-        if self.data["discord"]["user_id"] and self.data["discord"]["enabled"]:
-            # loop = asyncio.get_event_loop()
+        if ss.application_settings.discord.user_id and ss.application_settings.discord.enabled:
             if image:
                 self.adb.save_screen(f"{self.name}_error")
                 asyncio.run(send_discord_message(self.name, message, f"{self.name}_error.png"))
@@ -223,7 +234,6 @@ class Task:
     @get_name
     def random_macro(self) -> bool:
         try:
-            path_json = self.FileSingleton.get_path()
             for name in [
                 "com.lilithgame.roc.gp.cfg",
                 "com.rok.gp.vn.cfg",
@@ -231,7 +241,7 @@ class Task:
                 "com.lilithgames.rok.gp.jp.cfg",
                 "com.lilithgames.rok.gpkr.cfg",
             ]:
-                path = path_json["bluestacks"][:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
+                path = ss.application_settings.paths.bluestacks.config[:-15] + "Engine\\UserData\\InputMapper\\UserFiles\\" + name
                 if os.path.isfile(path):
                     break
 
@@ -278,7 +288,7 @@ class Task:
             return False
 
     def generate_toast(self, title, description, icon=ft.icons.INFO, bgcolor_title="RED"):
-        self.tile.initial_page.generate_toast(title, description, icon=icon, bgcolor_title=bgcolor_title)
+        ss.page.generate_toast(title, description, icon=icon, bgcolor_title=bgcolor_title)
 
     @get_name
     def open_menu(self):
@@ -669,9 +679,9 @@ class Task:
         b = limits[1]
 
         if reduce_speed:
-            if self.data[str(self.sel)]["schedules"][self.current_profile]["slow_mode"]:
-                a *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
-                b *= self.data[str(self.sel)]["schedules"][self.current_profile]["sleep_multiplicator"]
+            if self.context_profile.sleep_factor.enabled:
+                a *= self.context_profile.sleep_factor.factor
+                b *= self.context_profile.sleep_factor.factor
 
         sleep_duration = uniform(a, b)
         interval_duration = 0.01  # Durée de chaque intervalle (en secondes)
@@ -687,7 +697,7 @@ class Task:
 
         subscription_tier = ApiSingleton().getTier()
 
-        if self.data["API_KEY"]:
+        if ss.application_settings.captcha.api_key:
             return
 
         if subscription_tier == "tier4":
@@ -805,8 +815,8 @@ class Task:
         if file is None:
             file = f"captcha{self.sel}.jpg"
 
-        if self.data["API_KEY"]:
-            api_key = self.data["API_KEY"]
+        if ss.application_settings.captcha.api_key:
+            api_key = ss.application_settings.captcha.api_key
         else:
             api_key = ApiSingleton().getApiKey()
 
@@ -827,10 +837,6 @@ class Task:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_str = "".join(traceback_list)
-            try:
-                self.tile.initial_page.keyauthapp.log(traceback_str)
-            except:
-                pass
 
     def save_captcha(self):
         cv_image = self.adb.get_cv2_img()
@@ -869,22 +875,13 @@ class Task:
         if co is not None:
             co = self.find_img(source=cv_image[720 // 2 :, 1280 // 3 : 1280 // 2], target="reconnect", confidence=0.9)
         if co is not None:
-            if self.data.get(self.sel).get("schedules").get(self.current_profile).get("auto_log_back", False):
-                if self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back1") > self.data.get(self.sel).get(
-                    "schedules"
-                ).get(self.current_profile).get("log_back2"):
-                    (
-                        self.data[self.sel]["schedules"][self.current_profile]["log_back1"],
-                        self.data[self.sel]["schedules"][self.current_profile]["log_back2"],
-                    ) = (
-                        self.data[self.sel]["schedules"][self.current_profile]["log_back2"],
-                        self.data[self.sel]["schedules"][self.current_profile]["log_back1"],
-                    )
 
+            if self.context_profile.log_back_from_device_switch.enabled:
                 value = randint(
-                    self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back1"),
-                    self.data.get(self.sel).get("schedules").get(self.current_profile).get("log_back2"),
+                    self.context_profile.log_back_from_device_switch.duration.min,
+                    self.context_profile.log_back_from_device_switch.duration.max,
                 ) * 60 + randint(0, 59)
+
                 self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
                 self.better_sleep((value, value))
                 self.click(1280 // 3 + co[0] + uniform(0, 50), 720 // 2 + co[1] + uniform(-10, 20))
@@ -935,17 +932,24 @@ class Task:
         co = self.find_img(source=cv_image[: 720 // 2, :], target="network_disconnected", confidence=0.85)
 
         if co:
-            if self.data.get(self.sel).get("schedules").get(self.current_profile).get("auto_reconnect", False):
-                print(f"[ {current_time()} ] [ {self.name} ] You just got disconnected")
-                print(co)
+            print(f"Disconnect detected.. ({co})")
+            if self.context_profile.log_back_from_error.enabled:
+                value = randint(
+                    self.context_profile.log_back_from_device_switch.duration.min,
+                    self.context_profile.log_back_from_device_switch.duration.max,
+                ) * 60 + randint(0, 59)
 
                 self.print("You just got disconnected", ft.colors.AMBER)
-                co = self.find_img(target="reconnect", confidence=0.85)
+                self.print(f"Waiting for the timer to end.. {value / 60:0.1f} minutes")
+                self.better_sleep((value, value))
 
+                co = self.find_img(target="reconnect", confidence=0.85)
                 a = (co[0] + uniform(0, 100), co[1] + uniform(0, 20))
-                print(a)
+                print(f"Reconnect detected.. ({co})")
+
                 self.click(a[0], a[1])
-                self.better_sleep((10, 10))
+                self.print("Reconnection..")
+                self.better_sleep((5, 10))
                 self.wait_until_connected()
                 return self.adb.get_cv2_img()
             else:
@@ -1031,26 +1035,6 @@ class Task:
 
             return self.pil_to_array(image)
 
-    #
-    # @get_name
-    # def start_emulator(self) -> None:
-    #     with open('path.json', encoding='utf-8') as config_file:
-    #         path = json.load(config_file)
-    #     self.data = self.update_data()
-    #     cmd = f'{path["HD-Player"]} --instance {self.data.get(self.sel).get("instance")}'
-    #     self.print("cmd")
-    #     subprocess.Popen(cmd)
-    #     # print(f'[ {current_time()} ] [ {self.data.get(self.sel).get("name","Name not found")} ] {cmd}')
-    #     # os.system(cmd)
-    #
-    # @get_name
-    # def kill_emulator(self) -> None:
-    #     self.data = self.update_data()
-    #     print(self.adb.name)
-    #     self.pid = get_window_pid(self.adb.name)
-    #     cmd = f"taskkill /PID {self.pid} /F"
-    #     subprocess.Popen(cmd)
-
     @get_name
     def check_chest(self):
         for _ in range(2):
@@ -1068,7 +1052,7 @@ class Task:
                 if chest is not None:
                     break
             if chest is not None:
-                if self.data[self.sel]["schedules"][self.current_profile]["auto_captcha"]:
+                if self.context_profile.captcha_solver.enabled:
                     # print(co)
                     self.click(400 + chest[0] + uniform(0, 10), 20 + chest[1] + uniform(0, 10))
                     self.better_sleep((3, 4))
@@ -1088,7 +1072,7 @@ class Task:
         """
         Check and resolve verification
         """
-        if not self.data[self.sel]["schedules"][self.current_profile]["auto_captcha"]:
+        if not self.context_profile.captcha_solver.enabled:
             return True
 
         if chest:
@@ -1111,7 +1095,7 @@ class Task:
         previous_text = self.get_text()
 
         while self.find_img(target="close_refresh_ok", confidence=0.75) is not None:
-            if not self.data["API_KEY"]:
+            if not ss.application_settings.captcha.api_key:
                 self.handle_captcha_limit()
 
             self.solve_captcha(i, DefaultApiKey)
@@ -1135,12 +1119,12 @@ class Task:
             if DefaultApiKey:
                 api_key = ApiSingleton().getApiKey()
             else:
-                api_key = self.data["API_KEY"]
+                api_key = ss.application_settings.captcha.api_key
                 if api_key == "":
                     return self.print("This feature require a custom ApiKey")
 
-            if self.data["API_KEY"] != "":
-                api_key = self.data["API_KEY"]
+            if ss.application_settings.captcha.api_key != "":
+                api_key = ss.application_settings.captcha.api_key
 
             self.print("Trying to resolve the captcha")
 
@@ -1198,10 +1182,6 @@ class Task:
             traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_str = "".join(traceback_list)
             self.print("An error occurred with 2captcha.com, waiting for few seconds before retrying")
-            try:
-                self.tile.initial_page.keyauthapp.log(traceback_str)
-            except:
-                pass
             self.better_sleep((10 * max(1, compteur + 1), 15 * max(1, compteur + 1)))
             if self.refresh_captcha():
                 if compteur < 5:
@@ -1213,10 +1193,6 @@ class Task:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback_list = traceback.format_exception(exc_type, exc_value, exc_traceback)
             traceback_str = "".join(traceback_list)
-            try:
-                self.tile.initial_page.keyauthapp.log(traceback_str)
-            except:
-                pass
             if self.refresh_captcha():
                 if compteur < 5:
                     return self.solve_captcha(compteur + 1)
@@ -1292,7 +1268,7 @@ class Task:
         )
 
     def get_config(self):
-        return self.data.get(self.sel).get("schedules").get(self.current_profile)
+        return self.context_profile
 
     @get_name
     def close_windows(self, screen=None):
@@ -1365,7 +1341,7 @@ class Task:
         return image[min_y:max_y, min_x:max_x]
 
     @get_name
-    def recenter(self, deadstop=0):
+    def recenter(self, deadstop=0, path="marauders.searching_radius"):
         image = self.adb.get_cv2_img()
 
         if co := self.find_img(source=image, target="green_home_button"):
@@ -1399,10 +1375,7 @@ class Task:
                 self.debug(word)
                 # print(distances)
                 # if distances:
-                if (
-                    word.split("KM")[0].isnumeric()
-                    and int(word.split("KM")[0]) > int(self.data[str(self.sel)]["schedules"][self.current_profile].get("radius", 40)) + 15
-                ):
+                if word.split("KM")[0].isnumeric() and int(word.split("KM")[0]) > rgetattr(self.context_profile.tasks, path) + 15:
                     if co[0] < 500 and co[1] < 220:
                         self.swipe(co[0] + 90, co[1] + 90, 640, 360)
                         # self.swipe(330, 160, 760, 530)
@@ -1431,7 +1404,7 @@ class Task:
                         self.swipe(co[0], co[1] + 90, 640, 360)
 
                     self.better_sleep((1, 2))
-                    return self.recenter(deadstop=deadstop + 1)
+                    return self.recenter(deadstop=deadstop + 1, path=path)
 
     @get_name
     def go_back_to_city(self, deadstop=0):

@@ -1,13 +1,17 @@
 import flet as ft
+from utils.schemas.emulator_schemas import TaskAllianceFortSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
+from utils.singletons import ss
 
 
 class PageRally(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
+
+        self.context: TaskAllianceFortSchema = self.tasks.alliance_fort
 
         self.add_control(
             GenerateCard(
@@ -15,15 +19,33 @@ class PageRally(BasePage):
                 title=translate("*REQUIREMENT*"),
                 subtitle=translate("Pre-configure the first red slot from the commanders presets with a rally leader!"),
             ),
+            ft.Text("Search Methods", weight=ft.FontWeight.BOLD),
+            ft.Divider(),
+            ft.OutlinedButton(
+                text=translate("Set area location"),
+                on_click=lambda _: ss.page.go(f"/set-center/alliance_fort/{self.instance_index}/{self.profile_index}"),
+                # disabled=self.context.search_method != "map",
+            ),
+            ft.TextField(
+                label=translate("Scanning radius (km) :"),
+                value=str(self.context.searching_radius),
+                content_padding=ft.padding.all(10),
+                on_change=self.submit_with_context,
+                input_filter=ft.NumbersOnlyInputFilter(),
+                data={"path": "searching_radius", "type": int},
+            ),
+            ft.Divider(),
             ft.Switch(
                 label=translate("Look for Marauders forts (only pre-kvk)"),
-                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["mauraudeurs_forts"] else False,
-                on_change=lambda _: self.reverse_keyword("mauraudeurs_forts"),
+                value=self.context.marauders_mode,
+                on_change=self.submit_with_context,
+                data={"path": "marauders_mode", "type": bool},
             ),
             ft.Switch(
                 label=translate("Don't wait for the rally leader to come back."),
-                value=True if self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rally_skip_back"] else False,
-                on_change=lambda _: self.reverse_keyword("rally_skip_back"),
+                value=self.context.skip_leader_back,
+                on_change=self.submit_with_context,
+                data={"path": "skip_leader_back", "type": bool},
             ),
             ft.Container(
                 content=ft.Row(
@@ -43,8 +65,9 @@ class PageRally(BasePage):
                                 ft.dropdown.Option("10"),
                                 ft.dropdown.Option("30"),
                             ],
-                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rally_time"],
-                            on_change=lambda e: self.submit(e, "rally_time", int),
+                            value=str(self.context.mobilisation_time),
+                            on_change=self.submit_with_context,
+                            data={"path": "mobilisation_time", "type": int},
                         ),
                     ],
                 ),
@@ -68,8 +91,9 @@ class PageRally(BasePage):
                                 ft.dropdown.Option("inf"),
                                 ft.dropdown.Option("archers"),
                             ],
-                            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["rally_type"],
-                            on_change=lambda e: self.submit(e, "rally_type", str),
+                            value=self.context.rally_type,
+                            on_change=self.submit_with_context,
+                            data={"path": "rally_type", "type": str},
                         ),
                     ]
                 ),

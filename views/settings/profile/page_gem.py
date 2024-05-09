@@ -2,171 +2,182 @@ import flet as ft
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
+from utils.functions import rsetattr
+from utils.singletons import SettingsSingleton
 from views.settings.page_base import BasePage
+from utils.singletons import ss
 
 
 class PageGem(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
 
-        # Troop Scan Controls
-        self.troop_scan_min_text_field = ft.TextField(
-            label=translate("Minimum"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gem_check1"],
-            content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "gem_check1", int),
-            disabled=not self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_swipe_check"],
-            input_filter=ft.NumbersOnlyInputFilter(),
-        )
+        self.context = self.tasks.gather_gem
 
-        self.troop_scan_max_text_field = ft.TextField(
-            label=translate("Maximum"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gem_check2"],
-            content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "gem_check2", int),
-            disabled=not self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_swipe_check"],
-            input_filter=ft.NumbersOnlyInputFilter(),
-        )
+        # Troop Scan Controls
+        # self.troop_scan_min_text_field = ft.TextField(
+        #     label=translate("Minimum"),
+        #     value=str(self.context.duration.min),
+        #     # value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gem_check1"],
+        #     content_padding=ft.padding.all(10),
+        #     on_change=self.submit_with_context,
+        #     disabled=not self.context,
+        #     input_filter=ft.NumbersOnlyInputFilter(),
+        #     data={"path":"duration.min", "type": int}
+        # )
+
+        # self.troop_scan_max_text_field = ft.TextField(
+        #     label=translate("Maximum"),
+        #     value=str(self.context.duration.max),
+        #     content_padding=ft.padding.all(10),
+        #     on_change=self.submit_with_context,
+        #     # disabled=not self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_swipe_check"],
+        #     input_filter=ft.NumbersOnlyInputFilter(),
+        #     data={"path":"duration.max", "type": int}
+        # )
 
         # Area Location Controls
-        self.kingdom_text_field = ft.TextField(
-            label=translate("Your kingdom :"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kingdom"],
-            content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "kingdom", str),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != "default",
-        )
-
-        self.city_x_text_field = ft.TextField(
-            label=translate("Area location X coordinates :"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_x"],
-            content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "city_x", int),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != "default",
-        )
-
-        self.city_y_text_field = ft.TextField(
-            label=translate("Area location Y coordinates :"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_y"],
-            content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "city_y", int),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != "default",
-        )
-
-        # Number of Nodes Controls
-        self.node_limit_text_field = ft.TextField(
-            label=translate("Fixed number of nodes to gather :"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_note_limit"],
-            content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "gather_gem_note_limit", int),
-            disabled=not self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_enable_node_limit"],
-            input_filter=ft.NumbersOnlyInputFilter(),
-        )
+        # self.kingdom_text_field = ft.TextField(
+        #     label=translate("Your kingdom :"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["kingdom"],
+        #     content_padding=ft.padding.all(10),
+        #     on_change=lambda e: self.submit(e, "kingdom", str),
+        #     disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != 'default',
+        # )
+        #
+        # self.city_x_text_field = ft.TextField(
+        #     label=translate("Area location X coordinates :"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_x"],
+        #     content_padding=ft.padding.all(10),
+        #     on_change=lambda e: self.submit(e, "city_x", int),
+        #     disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != 'default',
+        # )
+        #
+        # self.city_y_text_field = ft.TextField(
+        #     label=translate("Area location Y coordinates :"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["city_y"],
+        #     content_padding=ft.padding.all(10),
+        #     on_change=lambda e: self.submit(e, "city_y", int),
+        #     disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != 'default',
+        # )
 
         # Button Controls
         self.set_area_location_button = ft.OutlinedButton(
             text=translate("Set area location"),
-            on_click=lambda _: self.initial_page.go(f"/gather-gems/{self.instance_index}/{self.profile_index}"),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] != "map",
+            on_click=lambda _: ss.page.go(f"/set-center/gather_gem/{self.instance_index}/{self.profile_index}"),
+            # disabled=self.context.search_method != "map",
         )
 
         # Other Controls
         min_duration_text_field = ft.TextField(
             label=translate("Minimum running duration (mins)"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_duration1"],
+            value=str(self.context.duration.min),
             content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "gather_gem_duration1", int),
+            on_change=self.submit_with_context,
             input_filter=ft.NumbersOnlyInputFilter(),
+            data={"path": "duration.min", "type": int},
         )
 
         max_duration_text_field = ft.TextField(
             label=translate("Maximum running duration (mins)"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_duration2"],
+            value=str(self.context.duration.min),
             content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "gather_gem_duration2", int),
+            on_change=self.submit_with_context,
             input_filter=ft.NumbersOnlyInputFilter(),
+            data={"path": "duration.max", "type": int},
         )
 
         scanning_radius_text_field = ft.TextField(
             label=translate("Scanning radius (km) :"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["radius"],
+            value=str(self.context.searching_radius),
             content_padding=ft.padding.all(10),
-            on_change=lambda e: self.submit(e, "radius", int),
+            on_change=self.submit_with_context,
             input_filter=ft.NumbersOnlyInputFilter(),
+            data={"path": "searching_radius", "type": int},
         )
 
-        self.normal_switch = ft.Switch(
-            label=translate("Normal path method (will use cords)"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] == "default",
-            on_change=self.toggle_search_method,
-            data="default",
-        )
+        # self.normal_switch = ft.Switch(
+        #     label=translate("Normal path method (will use cords)"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] == "default",
+        #     on_change=self.toggle_search_method,
+        #     data="default",
+        # )
 
-        spiral_switch = ft.Switch(
-            label=translate("Spiral path method (only around your city)"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] == "spiral",
-            on_change=self.toggle_search_method,
-            data="spiral",
-        )
+        # spiral_switch = ft.Switch(
+        #     label=translate("Spiral path method (only around your city)"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] == "spiral",
+        #     on_change=self.toggle_search_method,
+        #     data="spiral",
+        # )
 
-        map_switch = ft.Switch(
-            label=translate("Map method (Will use your selected area) /!SAFEST!/"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] == "map",
-            on_change=self.toggle_search_method,
-            data="map",
-        )
+        # map_switch = ft.Switch(
+        #     label=translate("Map method (Will use your selected area) /!SAFEST!/"),
+        #     value=self.context.search_method == "map",
+        #     on_change=self.toggle_search_method,
+        #     data="map",
+        # )
 
-        self.detect_free_marches_switch = ft.Switch(
-            label=translate("Detect free marches without clicking on the node"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_swipe_check"],
-            on_change=lambda _: self.reverse_keyword("gather_gem_swipe_check"),
-        )
+        # self.detect_free_marches_switch = ft.Switch(
+        #     label=translate("Detect free marches without clicking on the node"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_swipe_check"],
+        #     on_change=lambda _: self.reverse_keyword("gather_gem_swipe_check"),
+        # )
 
         self.max_nodes_switch = ft.Switch(
             label=translate("Set the maximum of nodes to gather"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_enable_node_limit"],
-            on_change=lambda _: self.reverse_keyword("gather_gem_enable_node_limit"),
+            value=self.context.node_limit.enabled,
+            on_change=self.submit_with_context,
+            data={"path": "node_limit.enabled", "type": bool},
         )
 
-        recenter_view_switch = ft.Switch(
-            label=translate("Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["recenter_feature"],
-            on_change=lambda _: self.reverse_keyword("recenter_feature"),
+        self.node_limit_text_field = ft.TextField(
+            label=translate("Fixed number of nodes to gather :"),
+            value=str(self.context.node_limit.fixed_node_limit),
+            content_padding=ft.padding.all(10),
+            # disabled=not self.context.node_limit.enabled,
+            input_filter=ft.NumbersOnlyInputFilter(),
+            on_change=self.submit_with_context,
+            data={"path": "node_limit.fixed_node_limit", "type": int},
         )
+
+        # recenter_view_switch = ft.Switch(
+        #     label=translate("Recenter the view based on city location\n(turn off if the cords are NOT your city's cords)"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["recenter_feature"],
+        #     on_change=lambda _: self.reverse_keyword("recenter_feature"),
+        # )
 
         compare_march_speed_switch = ft.Switch(
             label=translate("Compare march speed (Increase gem gathering\nbut increase number of actions)"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_compare_march_duration"],
-            on_change=lambda _: self.reverse_keyword("gather_gem_compare_march_duration"),
+            value=self.context.compare_march_duration,
+            on_change=self.submit_with_context,
+            data={"path": "compare_march_duration", "type": bool},
         )
 
-        restart_game_switch = ft.Switch(
-            label=translate("Restart the game randomly"),
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["restart_game"],
-            on_change=lambda _: self.reverse_keyword("restart_game"),
-        )
-        self.search_methods_radio_group = ft.RadioGroup(
-            content=ft.Column(
-                [
-                    ft.Radio(value="default", label=translate("Normal path method (will use cords)")),
-                    ft.Container(
-                        content=ft.Column(
-                            controls=[
-                                self.kingdom_text_field,
-                                self.city_x_text_field,
-                                self.city_y_text_field,
-                            ],
-                        ),
-                        margin=ft.margin.only(left=50),
-                    ),
-                    ft.Radio(value="map", label=translate("Map method (Will use your selected area)")),
-                    ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
-                    ft.Radio(value="spiral", label=translate("Spiral path method (only around your city)")),
-                ]
-            ),
-            on_change=self.toggle_search_method,
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"],
-        )
+        # restart_game_switch = ft.Switch(
+        #     label=translate("Restart the game randomly"),
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["restart_game"],
+        #     on_change=lambda _: self.reverse_keyword("restart_game"),
+        # )
+        # self.search_methods_radio_group = ft.RadioGroup(
+        #     content=ft.Column([
+        #         ft.Radio(value="default", label=translate("Normal path method (will use cords)")),
+        #         ft.Container(
+        #             content=ft.Column(
+        #                 controls=[
+        #                     self.kingdom_text_field,
+        #                     self.city_x_text_field,
+        #                     self.city_y_text_field,
+        #                 ],
+        #             ),
+        #             margin=ft.margin.only(left=50),
+        #         ),
+        #         ft.Radio(value="map", label=translate("Map method (Will use your selected area)")),
+        #         ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
+        #         ft.Radio(value="spiral", label=translate("Spiral path method (only around your city)")),
+        #     ]),
+        #     on_change=self.toggle_search_method,
+        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"]
+        # )
 
         self.availability_dropdown = ft.Dropdown(
             width=100,
@@ -175,8 +186,9 @@ class PageGem(BasePage):
                 ft.dropdown.Option(text="Only first character", key="only_first"),
                 ft.dropdown.Option(text="On all characters except the first", key="all_except_first"),
             ],
-            on_change=self.update_availability,
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_availability"],
+            value=self.context.availability,
+            on_change=self.submit_with_context,
+            data={"path": "availability", "type": str},
         )
 
         # Adding controls
@@ -219,20 +231,22 @@ class PageGem(BasePage):
             # map_switch,
             # ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
             # spiral_switch,
-            self.search_methods_radio_group,
+            # self.search_methods_radio_group,
+            self.set_area_location_button,
             ft.Divider(),
             ft.Text("Other Settings", weight=ft.FontWeight.BOLD),
             ft.Divider(),
-            self.detect_free_marches_switch,
-            ft.Container(
-                content=ft.Column(
-                    controls=[
-                        self.troop_scan_min_text_field,
-                        self.troop_scan_max_text_field,
-                    ],
-                ),
-                margin=ft.margin.only(left=50),
-            ),
+            # self.detect_free_marches_switch,
+            #
+            # ft.Container(
+            #     content=ft.Column(
+            #         controls=[
+            #             self.troop_scan_min_text_field,
+            #             self.troop_scan_max_text_field,
+            #         ],
+            #     ),
+            #     margin=ft.margin.only(left=50),
+            # ),
             self.max_nodes_switch,
             ft.Container(
                 content=ft.Column(
@@ -242,14 +256,14 @@ class PageGem(BasePage):
                 ),
                 margin=ft.margin.only(left=50),
             ),
-            recenter_view_switch,
             compare_march_speed_switch,
-            restart_game_switch,
+            # recenter_view_switch,
+            # restart_game_switch,
         )
 
         # Assigning switches for later reference
-        self.spiral_switch = spiral_switch
-        self.map_switch = map_switch
+        # self.spiral_switch = spiral_switch
+        # self.map_switch = map_switch
 
     def toggle_default(self, value):
         self.kingdom_text_field.disabled = value
@@ -297,3 +311,7 @@ class PageGem(BasePage):
             self.node_limit_text_field.disabled = not is_enabled
 
         self.profile.initial_page.update()
+
+    # def submit_with_context(self, e):
+    #     rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+    #     ss.write_emulator_settings(ss.emulator_settings)

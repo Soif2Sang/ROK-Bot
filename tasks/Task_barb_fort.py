@@ -15,6 +15,9 @@ class BarbFort(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.alliance_fort
+        self.rally_time = self.context_task.mobilisation_time
+        self.rally_type = self.context_task.rally_type
 
     def task_name(self):
         return "BarbarianFort"
@@ -239,7 +242,7 @@ class BarbFort(Task):
         screen = self.pil_to_array(screen)
         screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
 
-        if not self.data[self.sel]["schedules"][self.current_profile]["mauraudeurs_forts"]:
+        if not self.context_task.marauders_mode:
             for second_string in ["left", "mid", "right"]:
                 for first_string in ["up", "mid", "down"]:
                     # f"{screen}fort_icon_day_{first_string}_{second_string}"
@@ -285,11 +288,12 @@ class BarbFort(Task):
                                     fivemins = (uniform(800, 925), uniform(188, 213))
                                     tenmins = (uniform(960, 1088), uniform(188, 213))
                                     thirtymins = (uniform(800, 925), uniform(238, 260))
-                                    if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time") == 5:
+
+                                    if self.rally_time == 5:
                                         self.click(fivemins[0], fivemins[1])
-                                    if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time") == 10:
+                                    if self.rally_time == 10:
                                         self.click(tenmins[0], tenmins[1])
-                                    if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time") == 30:
+                                    if self.rally_time == 30:
                                         self.click(thirtymins[0], thirtymins[1])
                                     self.better_sleep((0.7, 1.2))
                                     self.click(co[0] + uniform(0, 147), co[1] + uniform(0, 54))
@@ -332,17 +336,12 @@ class BarbFort(Task):
                                     self.better_sleep((2, 3))
                                     self.go_city()
                                     self.better_sleep((2, 3))
-                                    self.print(
-                                        f"You selected {self.data[str(self.sel)]['schedules'][self.current_profile].get('rally_time')} minutes"
-                                    )
+                                    self.print(f"You selected {self.rally_time} minutes")
                                     self.print(f"Rally leader marching time is {datetime.strptime(string, '%H:%M:%S').strftime('%S')}")
                                     self.print("Bot is now paused until the rally leader come back..")
-                                    time_to_wait1 = int(
-                                        self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time")
-                                    ) * 60 + int(datetime.strptime(string, "%H:%M:%S").strftime("%S"))
+                                    time_to_wait1 = int(self.rally_time) * 60 + int(datetime.strptime(string, "%H:%M:%S").strftime("%S"))
                                     time_to_wait2 = (
-                                        int(self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time")) * 60
-                                        + int(datetime.strptime(string, "%H:%M:%S").strftime("%S")) * 2
+                                        int(self.rally_time) * 60 + int(datetime.strptime(string, "%H:%M:%S").strftime("%S")) * 2
                                     )
                                     self.print(
                                         f"Bot will wait around {time_to_wait2 / 60} minutes to complete the task, the bot will now sleep for this time"
@@ -383,28 +382,28 @@ class BarbFort(Task):
                             fivemins = (uniform(800, 925), uniform(188, 213))
                             tenmins = (uniform(960, 1088), uniform(188, 213))
                             thirtymins = (uniform(800, 925), uniform(238, 260))
-                            if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time") == 5:
+                            if self.rally_time == 5:
                                 self.click(fivemins[0], fivemins[1])
-                            if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time") == 10:
+                            if self.rally_time == 10:
                                 self.click(tenmins[0], tenmins[1])
-                            if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time") == 30:
+                            if self.rally_time == 30:
                                 self.click(thirtymins[0], thirtymins[1])
                             self.better_sleep((0.7, 1.2))
                             self.click(co[0] + uniform(0, 147), co[1] + uniform(0, 54))
                             self.better_sleep((1.1, 1.5))
                             self.select_lineup_color(color="red")
                             self.better_sleep((0.7, 1.2))
-                            if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_type") == "inf":
+                            if self.rally_type == "inf":
                                 # self.click(uniform(982,998),uniform(280,298))
                                 # self.better_sleep((0.7, 1.2))
                                 self.click(uniform(657, 680), uniform(96, 117))
                                 self.better_sleep((0.7, 1.2))
-                            if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_type") == "cav":
+                            if self.rally_type == "cav":
                                 # self.click(uniform(982,998),uniform(390,405))
                                 # self.better_sleep((0.7, 1.2))
                                 self.click(uniform(770, 795), uniform(96, 117))
                                 self.better_sleep((0.7, 1.2))
-                            if self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_type") == "archers":
+                            if self.rally_type == "archers":
                                 # self.click(uniform(982,998),uniform(330,350))
                                 # self.better_sleep((0.7, 1.2))
                                 self.click(uniform(886, 906), uniform(96, 117))
@@ -422,13 +421,11 @@ class BarbFort(Task):
                             self.better_sleep((0.5, 1))
                             self.go_city()
                             self.better_sleep((0.5, 1))
-                            if self.data[str(self.sel)]["schedules"][self.current_profile]["rally_skip_back"]:
+                            if self.context_task.skip_leader_back:
                                 self.print("Skipping the commander back")
                                 return True
                             self.print("Bot is now paused until the rally leader come back..")
-                            self.print(
-                                f'You selected {self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_time")} minutes'
-                            )
+                            self.print(f"You selected {self.rally_time} minutes")
                             self.click(1180, 173)
                             self.better_sleep((1.3, 1.8))
                             default_image = self.adb.get_cv2_img()
@@ -455,7 +452,7 @@ class BarbFort(Task):
         :param: y -> int y map location
         :return: starting location between 0,1,2,3
         """
-        radius = self.data[str(self.sel)]["schedules"][self.current_profile].get("radius")
+        radius = self.context_task.searching_radius
         randomization = randint(0, 3)
 
         while randomization == last or None:
@@ -518,188 +515,45 @@ class BarbFort(Task):
         self.better_sleep((1, 2))
         return randomization
 
+    @get_name
+    def go_random_area(self):
+        position = self.context_task.map_center_pos
+
+        raison = self.max_distance
+
+        x = uniform(-raison, raison) + position.x
+        y = uniform(-raison, raison) + position.y - 10
+
+        self.click(x, y)
+        self.better_sleep((1, 2))
+
     @get_class
     def run(self):
-        if EmulatorSingleton().getEmulator() == "bluestacks":
+        if EmulatorSingleton().getEmulatorType() == "bluestacks":
             self.random_macro()
+
         # if not self.enough_action_points():
         #     self.print("Bot detected you are low in action point, bot prefers to not start a rally !")
         #     return
+
         self.run_game()
         self.check_captcha()
+        self.check_reconnect()
+        self.check_log_back()
+        self.leave_kd_buff()
+
         self.leave_city()
-        # print("premier leave city")
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
-        self.better_sleep((1.5, 2))
+
         if self.scan_fort():
             return
-        randomization = self.go_to(
-            self.data[str(self.sel)]["schedules"][self.current_profile].get("city_x", 500),
-            self.data[str(self.sel)]["schedules"][self.current_profile].get("city_y", 500),
-        )
 
-        radius = self.data[str(self.sel)]["schedules"][self.current_profile].get("rally_radius", 50) // 10
-        width = radius + 1
-        height = radius + 1
         starting_time = time()
         time_to_beat = starting_time + (60 * 60)
-        # print(f'starting_time : {datetime.fromtimestamp(starting_time).strftime("%H:%M:%S")} , time to beat : {datetime.fromtimestamp(time_to_beat).strftime("%H:%M:%S")} , {starting_time>time_to_beat = }')
+        self.max_distance = self.context_task.searching_radius
+
         self.print(f"Bot will search a fort until : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}")
         while time_to_beat > time():
-            self.run_game()
-            self.print(
-                f"time to beat : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}\nCurrent time : {current_time()}\nTime to beat > current time : {time_to_beat > time()}"
-            )
-            pil_image = self.adb.get_curr_device_screen_img()
-            cv_image = self.pil_to_array(pil_image)
-            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-            cropped_image = cv_image[0:100, :800]
-            if self.find_img(target="block_icon", source=cropped_image, confidence=0.90) is not None:
+            if self.swipe_scan(self.scan_fort, self.go_random_area):
                 return
-
-            if self.scan_fort():
-                return
-            self.check_reconnect(cv_image)
-            self.check_log_back()
-            self.check_captcha(False)
-
-            if randomization == 0:
-                for y in range(width - 1):
-                    for _ in range(width):
-                        if time_to_beat < time():
-                            return
-                        if self.swipe_scan(self.scan_fort, self.swipe_right) == True:
-                            return
-                        # self.better_sleep((0.125, 0.195))
-
-                    if self.swipe_scan(self.scan_fort, self.swipe_down):
-                        return
-                    # self.better_sleep((0.525, 0.795))
-                    if time_to_beat < time():
-                        return
-                    self.check_captcha(False)
-
-                    for _ in range(width):
-                        if time_to_beat < time():
-                            return
-                        if self.swipe_scan(self.scan_fort, self.swipe_left):
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    self.check_captcha(False)
-                    if time_to_beat < time():
-                        return
-
-                    if y != (width - 2):
-                        if self.swipe_scan(self.scan_fort, self.swipe_down):
-                            return
-                    # self.better_sleep((0.125, 0.195))
-
-            if randomization == 2:
-                for y in range(width - 1):
-                    if time_to_beat < time():
-                        return
-
-                    for _ in range(width):
-                        if time_to_beat < time():
-                            return
-                        if self.swipe_scan(self.scan_fort, self.swipe_left):
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    if self.swipe_scan(self.scan_fort, self.swipe_up):
-                        return
-                    # self.better_sleep((0.125, 0.195))
-                    if time_to_beat < time():
-                        return
-                    self.check_captcha(False)
-
-                    for _ in range(width):
-                        if time_to_beat < time():
-                            return
-                        if self.swipe_scan(self.scan_fort, self.swipe_right):
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    self.check_captcha(False)
-                    if y != (width - 2):
-                        if self.swipe_scan(self.scan_fort, self.swipe_up):
-                            return
-
-            if randomization == 1:
-                for y in range(height - 1):
-                    if time_to_beat < time():
-                        return
-
-                    for _ in range(height):
-                        if time_to_beat < time():
-                            return
-
-                        if self.swipe_scan(self.scan_fort, self.swipe_down):
-                            return
-
-                    self.check_captcha(False)
-
-                    if time_to_beat < time():
-                        return
-
-                    if self.swipe_scan(self.scan_fort, self.swipe_left):
-                        return
-                    # self.better_sleep((0.525, 0.795))
-
-                    for _ in range(height):
-                        if time_to_beat < time():
-                            return
-                        if self.swipe_scan(self.scan_fort, self.swipe_up):
-                            return
-                        # self.better_sleep((0.125, 0.195))
-
-                    self.check_captcha(False)
-
-                    if y != (height - 2):
-                        if self.swipe_scan(self.scan_fort, self.swipe_left):
-                            return
-                    # self.better_sleep((0.125, 0.195))
-
-            if randomization == 3:
-                for y in range(height - 1):
-                    if time_to_beat < time():
-                        return
-
-                    for _ in range(height):
-                        if time_to_beat < time():
-                            return
-                        if self.swipe_scan(self.scan_fort, self.swipe_up):
-                            return
-                        # self.better_sleep((0.125, 0.195))
-
-                    if self.swipe_scan(self.scan_fort, self.swipe_right):
-                        return
-                    # self.better_sleep((0.125, 0.195))
-                    if time_to_beat < time():
-                        return
-
-                    self.check_captcha(False)
-
-                    for _ in range(height):
-                        if time_to_beat < time():
-                            return
-                        if self.swipe_scan(self.scan_fort, self.swipe_down):
-                            return
-                        # self.better_sleep((0.125, 0.195))
-                    self.check_captcha(False)
-                    if y != (height - 2):
-                        if self.swipe_scan(self.scan_fort, self.swipe_right):
-                            return
-                    # self.better_sleep((0.125, 0.195))
-
-            self.better_sleep((1.525, 2.795))
-            # self.leave_city()
-            # print("second leave cit")
-            randomization = self.go_to(
-                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_x", 500),
-                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_y", 500),
-                randomization,
-            )
-            self.print(f"Current path n°{randomization}")
-            self.better_sleep((0.525, 0.795))
-            self.zoom_out_city()
-            # self.better_sleep((0.525, 0.795))

@@ -1,43 +1,14 @@
 import flet as ft
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rsetattr
+from utils.singletons import ss
 from views.settings.general._instance import GeneralSettings
 
 
 class InterfaceSettings(ft.Tab):
-    def __init__(self, page, instance, **kwargs):
+    def __init__(self, instance, **kwargs):
         super().__init__(**kwargs)
-        self.initial_page = page
+        self.instance = instance
         self.text = translate("Instance Settings")
-        self.FileSingleton = FileSingleton()
-        data = self.FileSingleton.get_data()
-
-        if "interface" not in data:
-            data["interface"] = {"auto_scroll": True, "auto_refresh": True}
-            self.FileSingleton.write_data(data)
-
-        if "discord" not in data:
-            data["discord"] = {"user_id": 0, "enabled": False}
-            self.FileSingleton.write_data(data)
-
-        self.content = GeneralSettings(page, instance)
-
-    def reverse_keyword(self, keyword: str):
-        if keyword == "auto_scroll" or keyword == "limit_logs":
-            data = self.FileSingleton.get_data()
-            data["interface"][keyword] = not data["interface"].get(keyword, False)
-            self.FileSingleton.write_data(data)
-            if keyword == "auto_scroll":
-                for frame in self.page.frames:
-                    self.page.frames[frame].logger.auto_scroll = data["interface"][keyword]
-                self.initial_page.update()
-        if keyword == "enabled":
-            data = self.FileSingleton.get_data()
-            data["discord"]["enabled"] = not data["discord"].get(keyword, False)
-            self.FileSingleton.write_data(data)
-
-    def submit(self, e):
-        data = self.FileSingleton.get_data()
-        data["discord"]["user_id"] = e.control.value
-        self.FileSingleton.write_data(data)
+        self.content = GeneralSettings(instance)

@@ -3,6 +3,7 @@ from time import time
 
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
 from utils.functions import accurate_sleep, get_dic_instances_ld, get_name
+from utils.singletons import ss
 
 bridge = None
 
@@ -82,7 +83,7 @@ class AdbLd(Adb):
     #         return self.get_device()
     @get_name
     def get_device(self, host="emulator", max_attempts=10, timeout=2):
-        self.port = str(self.data[str(self.instance)]["port"])
+        self.port = ss.emulator_settings.emulators[str(self.instance)].port
 
         for attempt in range(max_attempts):
             device = self.client.device(f"{host}-{self.port}")
@@ -93,8 +94,7 @@ class AdbLd(Adb):
             self.print(f"Device Not Found")
             self.update_port()
 
-            path = self.FileSingleton.get_path()
-            cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
+            cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
             subprocess.run(cmd)
             accurate_sleep(timeout)
 
@@ -102,14 +102,12 @@ class AdbLd(Adb):
 
     @get_name
     def stop_server(self):
-        path = self.FileSingleton.get_path()
-        cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} kill-server"
+        cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} kill-server"
         subprocess.run(cmd)
 
     @get_name
     def start_server(self):
-        path = self.FileSingleton.get_path()
-        cmd = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
+        cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} start-server"
         subprocess.run(cmd)
 
     def is_game_alive(self):

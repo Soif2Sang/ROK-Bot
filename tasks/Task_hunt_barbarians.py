@@ -4,13 +4,14 @@ from time import sleep
 from PIL import Image
 
 from tasks.Task import Task
-from utils.functions import current_time, get_class, get_name
+from utils.functions import current_time, get_class, get_name, rgetattr
 
 
 class HuntBarbarians(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.kill_barbarian
 
     def task_name(self):
         return "HuntBarbarians"
@@ -56,14 +57,15 @@ class HuntBarbarians(Task):
             self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
             self.better_sleep((1.825, 2.495))
             self.select_lineup_color(color="red")
+
             presets = {
-                "1": 270,
-                "2": 320,
-                "3": 370,
-                "4": 430,
-                "5": 480,
-                "6": 530,
-                "7": 680,
+                "first": 270,
+                "second": 320,
+                "third": 370,
+                "fourth": 430,
+                "fifth": 480,
+                "sixth": 530,
+                "seventh": 680,
             }
             self.click(uniform(1096, 1118), presets[preset])
             self.better_sleep((0.5, 1))
@@ -91,8 +93,10 @@ class HuntBarbarians(Task):
         full_area = [(i, y) for i in range(420, 840, 5) for y in range(200, 530, 5) if not (795 > i > 490 and 210 < y < 490)]
         hunters = 0
         breakloop = False
-        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"]:
-            if not self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"][preset]:
+
+        preset_indexes = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh"]
+        for preset in preset_indexes:
+            if not rgetattr(self.context_task.presets_selection, preset):
                 continue
             sent = False
             if breakloop:
@@ -165,12 +169,13 @@ class HuntBarbarians(Task):
         self.click(1100, 640)
         self.better_sleep((1.525, 1.995))
 
-        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"]:
-            if self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"][preset]:
+        preset_indexes = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7}
+        for preset, value in preset_indexes.items():
+            if not rgetattr(self.context_task.presets_selection, preset):
                 hunters += 1
                 continue
             else:
-                self.click(1000, 205 + int(preset) * 55)
+                self.click(1000, 205 + value * 55)
                 self.better_sleep((1.325, 1.795))
 
         self.click(930, 630)
@@ -249,12 +254,20 @@ class HuntBarbarians(Task):
 
     @get_class
     def run(self):
-        preset_selected = list(self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"].values()).count(True)
+        preset_selected = 0
+
+        preset_indexes = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh"]
+        for preset in preset_indexes:
+            if rgetattr(self.context_task.presets_selection, preset):
+                preset_selected += 1
+
         if preset_selected == 0:
             return self.print("No presets selected, canceling the function", "red")
+
         if not self.enough_action_points():
             return self.print("It looks like you are low in AP, cancelling the function", "red")
-        wanted_level = int(self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_level"])
+
+        wanted_level = self.context_task.target_level
         hunter_selection = False
         self.leave_city()
         self.better_sleep((1, 1.3))

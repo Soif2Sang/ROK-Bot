@@ -1,16 +1,19 @@
 import flet as ft
+from utils.schemas.emulator_schemas import TaskGatherRssSchema
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
+from utils.functions import FileSingleton, rsetattr
+from utils.singletons import ss
 
 
 class FletRowRss(ft.ResponsiveRow):
-    def __init__(self, key, instance_index, profile_index):
+    def __init__(self, key, instance_index, profile_index, context):
         super().__init__()
         self.FileSingleton = FileSingleton()
         self.data = self.FileSingleton.get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
+        self.context: TaskGatherRssSchema = context
 
         self.node_level_dropdown = ft.Dropdown(
             content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
@@ -26,9 +29,11 @@ class FletRowRss(ft.ResponsiveRow):
                 ft.dropdown.Option("8"),
                 ft.dropdown.Option("9"),
             ],
-            value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
-            on_change=lambda e: self.submit(e, f"{key}_level", int),
-            disabled=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_method"],
+            # value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
+            value=getattr(self.context, f"{key.lower()}_node").level,
+            on_change=self.submit_with_context,
+            disabled=self.context.search_method == "spiral",
+            data={"path": f"{key.lower()}_node.level", "type": int},
         )
 
         self.controls = [
@@ -55,8 +60,9 @@ class FletRowRss(ft.ResponsiveRow):
                             ft.dropdown.Option("random"),
                             ft.dropdown.Option("nothing"),
                         ],
-                        value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}"],
-                        on_change=lambda e: self.submit(e, f"{key}", str),
+                        value=getattr(self.context, f"{key.lower()}_node").type,
+                        on_change=self.submit_with_context,
+                        data={"path": f"{key.lower()}_node.type", "type": str},
                     )
                 ],
                 col=4,
@@ -82,3 +88,7 @@ class FletRowRss(ft.ResponsiveRow):
                 e.control.value.replace("x", "").replace("level ", "")
             )
         self.FileSingleton.write_data(self.data)
+
+    def submit_with_context(self, e):
+        rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))
+        ss.write_emulator_settings(ss.emulator_settings)

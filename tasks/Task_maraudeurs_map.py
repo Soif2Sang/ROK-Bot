@@ -5,10 +5,10 @@ from time import sleep, time
 
 import cv2
 from PIL import Image
-from singletons import EmulatorSingleton
 
 from tasks.Task import Task
-from utils.functions import current_time, get_class, get_name
+from utils.functions import current_time, get_class, get_name, rgetattr
+from utils.singletons import EmulatorSingleton
 
 # from utils.easyOcr import Reader
 
@@ -21,6 +21,7 @@ class Marauders(Task):
         self.block = False
         self.nb_hunter = 0
         self.hunter_selection = False
+        self.context_task = self.context_profile.tasks.marauders
 
     def task_name(self):
         return "Maraudeurs"
@@ -499,7 +500,7 @@ class Marauders(Task):
         entered = False
         while not entered:
             co = choice(full_area)
-            self.print(f"Choice {co}")
+            # self.print(f"Choice {co}")
             for i in range(-65, 80, 5):
                 for y in range(-65, 70, 5):
                     if (co[0] + i, co[1] + y) in full_area:
@@ -526,12 +527,13 @@ class Marauders(Task):
         self.click(1100, 640)
         self.better_sleep((1.525, 1.995))
 
-        for preset in self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"]:
-            if self.data[str(self.sel)]["schedules"][str(self.current_profile)]["barbarians_preset"][preset]:
+        preset_indexes = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7}
+        for preset, value in preset_indexes.items():
+            if not rgetattr(self.context_task.presets_selection, preset):
                 hunters += 1
                 continue
             else:
-                self.click(1000, 205 + int(preset) * 55)
+                self.click(1000, 205 + value * 55)
                 self.better_sleep((1.325, 1.795))
 
         self.click(930, 630)
@@ -564,12 +566,12 @@ class Marauders(Task):
 
     @get_name
     def go_random_area(self):
-        pos = self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_center_pos")
+        pos = self.context_task.map_center_pos
 
         raison = self.max_distance
 
-        x = uniform(-raison, raison) + pos[0]
-        y = uniform(-raison, raison) + pos[1] - 10
+        x = uniform(-raison, raison) + pos.x
+        y = uniform(-raison, raison) + pos.y - 10
 
         self.click(x, y)
         self.better_sleep((1, 2))
@@ -581,7 +583,7 @@ class Marauders(Task):
         """
         self.end_time = end_time
 
-        if EmulatorSingleton().getEmulator() == "bluestacks" and not self.random_macro():
+        if EmulatorSingleton().getEmulatorType() == "bluestacks" and not self.random_macro():
             return
 
         self.run_game()
@@ -605,19 +607,15 @@ class Marauders(Task):
 
         starting_time = time()
         if self.end_time is None:
-            duration = self.data[str(self.sel)]["schedules"][self.current_profile].get("kill_marauders_duration")
-            duration.sort()
-
             self.end_time = starting_time + (
                 randint(
-                    duration[0],
-                    duration[1],
+                    self.context_task.duration.min * 60,
+                    self.context_task.duration.max * 60,
                 )
-                * 60
             )
 
         self.print(f"Killing marauders till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
-        self.max_distance = self.data[str(self.sel)]["schedules"][self.current_profile].get("radius") / 6
+        self.max_distance = self.context_task.searching_radius / 6
 
         self.go_back_to_city()
 
