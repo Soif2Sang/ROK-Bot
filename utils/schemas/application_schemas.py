@@ -29,10 +29,39 @@ class CaptchaSettingsSchema:
 
 @dataclass_json
 @dataclass
+class BluestacksPathSchema:
+    config: str = ""
+    player: str = ""
+
+
+@dataclass_json
+@dataclass
+class LdplayerPathSchema:
+    ldconsole: str = ""
+
+
+@dataclass_json
+@dataclass
+class PathSchema:
+    bluestacks: BluestacksPathSchema = field(default_factory=BluestacksPathSchema)
+    ldplayer: LdplayerPathSchema = field(default_factory=LdplayerPathSchema)
+
+
+@dataclass_json
+@dataclass
+class UserSchema:
+    email: str = ""
+    password: str = ""
+
+
+@dataclass_json
+@dataclass
 class ApplicationSettingsSchema:
     discord: DiscordSettingsSchema = field(default_factory=DiscordSettingsSchema)
     interface: InterfaceSettingsSchema = field(default_factory=InterfaceSettingsSchema)
     captcha: CaptchaSettingsSchema = field(default_factory=CaptchaSettingsSchema)
+    paths: PathSchema = field(default_factory=PathSchema)
+    user: UserSchema = field(default_factory=UserSchema)
 
 
 @dataclass_json
@@ -70,7 +99,6 @@ class TileSlaveSchema:
 @dataclass
 class TileWorkerSchema:
     number: str
-    initial_page: ft.Page
     paused: bool
     stopped: bool
 

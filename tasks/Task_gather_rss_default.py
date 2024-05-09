@@ -4,7 +4,7 @@ from PIL import Image
 
 from tasks.Task import Task
 from tasks.Task_gather_rss import GatherRss
-from utils.functions import get_class, get_name
+from utils.functions import get_class, get_name, rgetattr
 
 # from utils.easyOcr import Reader
 
@@ -13,6 +13,7 @@ class GatherRssDefault(GatherRss):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.gather_rss
 
     def task_name(self):
         return "GatherRss"
@@ -91,22 +92,13 @@ class GatherRssDefault(GatherRss):
             return
 
         if node_type is None:
-            result = self.data[str(self.sel)]["schedules"][self.current_profile][node_place]
+            result = rgetattr(self.context_task, node_place.lower() + "_node").type
             if result == "nothing":
                 return
             elif result == "random":
                 result = choice(["food", "wood", "stone", "gold"])
             # else:
             node_type = result
-
-        # if self.data[str(self.sel)]["schedules"][self.current_profile][node_place] == "nothing":
-        #     return
-        #
-        # if self.data[str(self.sel)]["schedules"][self.current_profile][node_place] == "random":
-        #     if node_type is None:
-        #         node_type = choice(["food", "wood", "stone", "gold"])
-        # else:
-        #     node_type = self.data[str(self.sel)]["schedules"][self.current_profile][node_place]
 
         self.leave_city_simple()
 
@@ -119,14 +111,13 @@ class GatherRssDefault(GatherRss):
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            if self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_place}_level") - level_decrease <= 0:
+            target_level = rgetattr(self.context_task, node_place.lower() + "_node").level
+            if target_level - level_decrease <= 0:
                 node_place = self.next_place(node_place)
                 self.print(f"Cannot decrease the current level.. Too low ! next choice : {node_place}")
                 return self.run(node_place, None, resolved, 0)
 
-            self.set_search_level(
-                self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_place}_level") - level_decrease
-            )
+            self.set_search_level(target_level - level_decrease)
             self.better_sleep((1.925, 2.795))
             self.click_search_by_node_type(node_type)
             self.better_sleep((5, 8))

@@ -5,7 +5,7 @@ from time import sleep
 from PIL import Image
 
 from tasks.Task import Task
-from utils.functions import get_class, get_name
+from utils.functions import get_class, get_name, rgetattr
 
 # from utils.easyOcr import Reader
 
@@ -14,52 +14,46 @@ class GatherRss(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.gather_rss
 
     def task_name(self):
         return "GatherRss"
 
     @get_name
     def select_resource_type(self, place: str) -> tuple[float, float]:
-        food_icon = ((400, 472), (603, 663))
-        wood_icon = ((598, 670), (603, 663))
-        stone_icon = ((786, 870), (603, 663))
-        gold_icon = ((977, 1050), (603, 663))
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "food":
-            x, y = uniform(food_icon[0][0], food_icon[0][1]), uniform(food_icon[1][0], food_icon[1][1])
-        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "wood":
-            x, y = uniform(wood_icon[0][0], wood_icon[0][1]), uniform(wood_icon[1][0], wood_icon[1][1])
-        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "stone":
-            x, y = uniform(stone_icon[0][0], stone_icon[0][1]), uniform(stone_icon[1][0], stone_icon[1][1])
-        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "gold":
-            x, y = uniform(gold_icon[0][0], gold_icon[0][1]), uniform(gold_icon[1][0], gold_icon[1][1])
-        elif self.data[str(self.sel)]["schedules"][self.current_profile].get(place) == "random":
-            random_choice = choice([food_icon, wood_icon, stone_icon, gold_icon])
+        resource_icons = {
+            "food": ((400, 472), (603, 663)),
+            "wood": ((598, 670), (603, 663)),
+            "stone": ((786, 870), (603, 663)),
+            "gold": ((977, 1050), (603, 663)),
+        }
+
+        resource_type = rgetattr(self.context_task, place.lower() + "_node").type
+        if resource_type in resource_icons:
+            icon = resource_icons[resource_type]
+            x, y = uniform(icon[0][0], icon[0][1]), uniform(icon[1][0], icon[1][1])
+        elif resource_type == "random":
+            random_choice = choice(list(resource_icons.values()))
             x, y = uniform(random_choice[0][0], random_choice[0][1]), uniform(random_choice[1][0], random_choice[1][1])
         return x, y
 
     @get_name
     def click_search_by_node_type(self, place: str) -> None:
-        self.print(f"Looking for : {self.data[str(self.sel)]['schedules'][self.current_profile].get(place)} {place}")
+        type = rgetattr(self.context_task, place.lower() + "_node").type
+        self.print(f"Looking for the {place.lower()} node which is: {type}")
 
-        type = self.data[str(self.sel)]["schedules"][self.current_profile].get(place)
         if type == "random":
             type = choice(["food", "wood", "stone", "gold"])
-        if type == "food":
-            x = uniform(400, 472)
-            y = uniform(463, 512)
-            self.click(x, y)
-        elif type == "wood":
-            x = uniform(598, 670)
-            y = uniform(463, 512)
-            self.click(x, y)
-        elif type == "stone":
-            x = uniform(786, 870)
-            y = uniform(463, 512)
-            self.click(x, y)
-        elif type == "gold":
-            x = uniform(977, 1050)
-            y = uniform(463, 512)
-            self.click(x, y)
+
+        coordinates = {
+            "food": (uniform(400, 472), uniform(463, 512)),
+            "wood": (uniform(598, 670), uniform(463, 512)),
+            "stone": (uniform(786, 870), uniform(463, 512)),
+            "gold": (uniform(977, 1050), uniform(463, 512)),
+        }
+
+        x, y = coordinates[type]
+        self.click(x, y)
 
     @get_name
     def minable(self) -> bool:
@@ -179,7 +173,7 @@ class GatherRss(Task):
     def send_troop(self) -> bool:
         self.better_sleep((1.8, 3))
         self.print("Trying to send a new troop..")
-        if self.data[str(self.sel)]["schedules"][self.current_profile]["rss_custom_preset"]:
+        if self.context_task.use_custom_preset:
             self.send_new_troop()
             self.better_sleep((0.7, 1.1))
         else:
@@ -246,15 +240,15 @@ class GatherRss(Task):
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            if self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_place}_level") - level_decrease <= 0:
+            target_level = rgetattr(self.context_task, node_place.lower() + "_node").level
+
+            if target_level - level_decrease <= 0:
                 node_place = self.next_place(node_place)
                 print(f"{level_decrease = }, {node_place = }")
                 return self.run(node_place, resolved, level_decrease)
 
             if level_verified is False:
-                self.set_search_level(
-                    self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_place}_level") - level_decrease
-                )
+                self.set_search_level(target_level - level_decrease)
                 self.better_sleep((0.925, 2.795))
                 level_verified = True
             print(f"{node_place =}")
@@ -333,7 +327,7 @@ class GatherRss(Task):
             self.click(uniform(600, 700), (uniform(250, 400)))
             self.better_sleep((2, 4))
             return
-        if self.data[str(self.sel)]["schedules"][self.current_profile][node_place] == "nothing":
+        if rgetattr(self.context_task, node_place.lower() + "_node").type == "nothing":
             return
         self.leave_city_simple()
         # self.better_sleep((2, 4))
@@ -347,14 +341,14 @@ class GatherRss(Task):
             self.click(x, y)
             self.better_sleep((1.325, 3.795))
 
-            if self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_place}_level") - level_decrease <= 0:
+            target_level = rgetattr(self.context_task, node_place.lower() + "_node").level
+
+            if target_level - level_decrease <= 0:
                 node_place = self.next_place(node_place)
                 self.print(f"Cannot decrease the current level.. Too low ! next type : {node_place}")
                 return self.run(node_place, resolved, 0)
 
-            self.set_search_level(
-                self.data.get(self.sel).get("schedules").get(self.current_profile).get(f"{node_place}_level") - level_decrease
-            )
+            self.set_search_level(target_level - level_decrease)
             self.better_sleep((0.925, 2.795))
             self.click_search_by_node_type(node_place)
             self.better_sleep((5, 9))

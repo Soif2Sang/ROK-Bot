@@ -44,3 +44,8 @@ logs/*
 /utils/models/craft_mlt_25k.pth
 /utils/models/english_g2.pth
 /logs
+/.idea
+/.fleet
+/.vscode
+appSubscriptionManagerGLOBAL.py
+appSubscriptionManagerSupabase.py

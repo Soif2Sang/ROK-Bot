@@ -1,36 +1,25 @@
-import os
-
 import flet as ft
-from supabase import Client, create_client
-from supabase_auth import SupabaseClient
-
-from views.login.login2 import LoginScreen
-
-url: str = "https://rytpbbadrdnfozckfjde.supabase.co"
-key: str = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dHBiYmFkcmRuZm96Y2tmamRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDUxNDU2ODAsImV4cCI6MjAyMDcyMTY4MH0.K3da9dT4qw9e3osKrQakBEPVjeLWMDo0dEdytVLLqfY"
-)
-# supabase: Client = create_client(url, key)
-
-# print(supabase.auth.sign_in_with_password({'email': "maxou@gmail.com", "password": "maxou@gmail.com"}))
-
-# print(supabase.table("keys").select("*").eq('name', '2captcha').execute())
-
-# print(supabase.table("subscriptions").select("*").execute())
-
-# from utils.supabase_auth import SupabaseClient
-# from ttest import test
-#
-# s = SupabaseClient()
-# s.login("maxou@gmail.com", "maxou@gmail.com")
-#
-# print(s.getApiKey('2captcha'))
-
-# s.client.auth.sign_out()
 
 
-s = SupabaseClient()
-s.login("maxou@gmail.com", "maxou@gmail.com")
-messages = s.getMessages()
-for message in messages:
-    print(message)
+def main(page):
+    def radiogroup_changed(e):
+        t.value = f"Your favorite color is:  {e.control.value}"
+        page.update()
+
+    t = ft.Text()
+    cg = ft.RadioGroup(
+        content=ft.Column(
+            [
+                ft.Radio(value="red", label="Red"),
+                ft.Container(margin=ft.margin.only(left=50), content=ft.TextField(label="test")),
+                ft.Radio(value="green", label="Green"),
+                ft.Radio(value="blue", label="Blue"),
+            ]
+        ),
+        on_change=radiogroup_changed,
+    )
+
+    page.add(ft.Text("Select your favorite color:"), cg, t)
+
+
+ft.app(target=main)

@@ -1,16 +1,16 @@
 import os
 import sys
 import threading
-import traceback
 from datetime import datetime, timezone
 from time import sleep
 
 import flet as ft
 import gotrue
+from utils.schemas.application_schemas import UserSchema
 
 from utils.constants import BOT_NAME, VERSION_TYPE
 from utils.flet_translations import translate
-from utils.singletons import ApiSingleton, FileSingleton
+from utils.singletons import ApiSingleton, FileSingleton, ss
 from utils.supabase_auth import HwidAlreadyLinked, NoSubscriptionFound, SupabaseClient
 
 links = {
@@ -34,10 +34,9 @@ sellix_icon = "https://play-lh.googleusercontent.com/k_QwUjQQ7ZLilxE4at86Pn6Bpme
 stripe_icon = "https://play-lh.googleusercontent.com/2PS6w7uBztfuMys5fgodNkTwTOE6bLVB2cJYbu5GHlARAK36FzO5bUfMDP9cEJk__cE"
 
 
-def update_user_info(password, username):
-    data = FileSingleton().get_data()
-    data["user"] = {"username": username, "password": password}
-    FileSingleton().write_data(data)
+def update_user_info(email, password):
+    ss.application_settings.user = UserSchema(email=email, password=password)
+    ss.write_application_settings(ss.application_settings)
 
 
 textField = {
@@ -48,11 +47,8 @@ textField = {
 
 
 class LoginScreen(ft.ResponsiveRow):
-    def __init__(self, page, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.initial_page = page
-        self.fileSingleton = FileSingleton()
-        self.data = self.fileSingleton.get_data()
 
         button_style = ft.ButtonStyle(
             shape={ft.MaterialState.DEFAULT: ft.RoundedRectangleBorder(radius=5)},
@@ -60,12 +56,8 @@ class LoginScreen(ft.ResponsiveRow):
             bgcolor=ft.colors.BLACK,
         )
 
-        self.textfield_username = ft.TextField(
-            label=translate("Username"), **textField, value=self.data.get("user", {}).get("username", "")
-        )
-        self.textfield_password = ft.TextField(
-            label=translate("Password"), **textField, value=self.data.get("user", {}).get("password", "")
-        )
+        self.textfield_username = ft.TextField(label=translate("Email"), value=ss.application_settings.user.email, **textField)
+        self.textfield_password = ft.TextField(label=translate("Password"), value=ss.application_settings.user.password, **textField)
         self.button_login = ft.OutlinedButton(text=translate("Submit"), style=button_style, col=12, on_click=self.login)
 
         auth_col = ft.Column(
@@ -134,19 +126,19 @@ class LoginScreen(ft.ResponsiveRow):
         self.spacing = 0
 
     def login(self, e):
-        username = self.textfield_username.value.strip()
+        email = self.textfield_username.value.strip()
         password = self.textfield_password.value.strip()
 
-        if username == "" or password == "":
+        if email == "" or password == "":
             return
 
-        self.initial_page.splash = ft.ProgressBar()
+        ss.page.splash = ft.ProgressBar()
         self.button_login.disabled = True
-        self.initial_page.update()
+        ss.page.update()
 
         try:
             client = SupabaseClient()
-            client.login(username, password)
+            client.login(email, password)
             client.check_hwid()
 
             subscriptions = client.getSubscriptions()
@@ -158,44 +150,44 @@ class LoginScreen(ft.ResponsiveRow):
                 ApiSingleton().setTier(tier=subscription["tier"])
                 target_date = datetime.fromisoformat(subscription["end_at"]).astimezone()
 
-            update_user_info(password, username)
+            update_user_info(email, password)
             captcha_key = client.getApiKey("2captcha")
 
-            self.initial_page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(username, password))
-            self.initial_page.subscription_checker.start()
+            ss.page.subscription_checker = threading.Thread(target=self.verify_subscription, args=(email, password))
+            ss.page.subscription_checker.start()
 
             ApiSingleton().setApiKey(captcha_key["value"])
 
             current_date = datetime.now(timezone.utc).astimezone()
             days = (target_date - current_date).days
 
-            self.initial_page.title = f"{BOT_NAME} - {days} Days left"
-            self.initial_page.update()
-            self.initial_page.go("/emulator-choice")
+            ss.page.title = f"{BOT_NAME} - {days} Days left"
+            ss.page.update()
+            ss.page.go("/emulator-choice")
 
         except HwidAlreadyLinked:
-            if hasattr(self.initial_page, "generate_toast"):
-                self.initial_page.generate_toast(f"Cannot login to {BOT_NAME}.", "This account is already linked to another computer.")
+            if hasattr(ss.page, "generate_toast"):
+                ss.page.generate_toast(f"Cannot login to {BOT_NAME}.", "This account is already linked to another computer.")
             sleep(5)
         except gotrue.errors.AuthApiError as e:
             sleep(5)
         except NoSubscriptionFound:
-            if hasattr(self.initial_page, "generate_toast"):
-                self.initial_page.generate_toast("Subscription error", "You don't have a active subscription yet!")
+            if hasattr(ss.page, "generate_toast"):
+                ss.page.generate_toast("Subscription error", "You don't have a active subscription yet!")
             sleep(5)
         except Exception as e:
-            self.initial_page.window_close()
+            ss.page.window_close()
             os.system("taskkill /f /im flet.exe >nul 2>&1")
             sys.exit()
         finally:
-            self.initial_page.splash = None
+            ss.page.splash = None
             self.button_login.disabled = False
-            self.initial_page.update()
+            ss.page.update()
 
-    def verify_subscription(self, username, password):
+    def verify_subscription(self, email, password):
         try:
             client = SupabaseClient()
-            client.login(username, password)
+            client.login(email, password)
             client.check_hwid()
 
             subscriptions = client.getSubscriptions()
@@ -210,12 +202,12 @@ class LoginScreen(ft.ResponsiveRow):
             current_date = datetime.now(timezone.utc).astimezone()
             days = (target_date - current_date).days
 
-            self.initial_page.title = f"{BOT_NAME} - {days} Days left"
-            self.initial_page.update()
+            ss.page.title = f"{BOT_NAME} - {days} Days left"
+            ss.page.update()
             sleep(6 * 3600)
-            return self.verify_subscription(username, password)
+            return self.verify_subscription(email, password)
         except Exception as e:
-            self.initial_page.window_close()
+            ss.page.window_close()
             os.system("taskkill /f /im flet.exe >nul 2>&1")
             sys.exit()
 
@@ -253,7 +245,7 @@ class ClickableLink(ft.Container):
 
 
 def main(page: ft.Page):
-    page.add(LoginScreen(page))
+    page.add(LoginScreen())
 
 
 if __name__ == "__main__":

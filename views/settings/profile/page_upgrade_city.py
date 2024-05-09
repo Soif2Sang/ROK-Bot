@@ -2,12 +2,15 @@ import flet as ft
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
+from utils.singletons import ss
 from views.settings.page_base import BasePage
 
 
 class PageUpgradeCity(BasePage):
     def __init__(self, profile):
         super().__init__(profile)
+
+        self.context = self.tasks.upgrade_city
 
         self.add_control(
             GenerateCard(
@@ -21,9 +24,9 @@ class PageUpgradeCity(BasePage):
                 label=translate(
                     "Use normal way to upgrade the city \n(if unchecked the bot is unable to upgrade the wall but \nit is a safer way to upgrade the city)"
                 ),
-                on_change=self.submit_upgrade_mode,
-                value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["upgrade_city_method"] == "normal",
                 width=300,
+                on_change=self.submit_upgrade_mode,
+                value=self.context.method == "normal",
             ),
         )
 
@@ -31,13 +34,13 @@ class PageUpgradeCity(BasePage):
             ft.OutlinedButton(
                 icon=ft.icons.GPS_FIXED_SHARP,
                 text=translate("Set City Hall Position"),
-                on_click=lambda _: self.initial_page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
+                on_click=lambda _: ss.page.go(f"/city-layout/{self.instance_index}/{self.profile_index}"),
             )
         )
 
     def submit_upgrade_mode(self, e):
-        self.data = self.FileSingleton.get_data()
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["upgrade_city_method"] = (
-            "normal" if e.control.value else "safest"
-        )
-        self.FileSingleton.write_data(self.data)
+        data = e.control.value
+
+        self.context.method = data
+
+        ss.write_emulator_settings(ss.emulator_settings)

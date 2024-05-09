@@ -1,30 +1,28 @@
 import threading
 
 import flet as ft
-from Worker_runner import WorkerRunner
 
+from utils.schemas.application_schemas import TileWorkerSchema
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
 from tasks.TaskPC import Task as TaskPC
 from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
+from tasks.Worker_runner import WorkerRunner
 from utils.flet_translations import translate
 from utils.functions import FileSingleton
-from utils.singletons import EmulatorSingleton
+from utils.singletons import EmulatorSingleton, ss
 from views.tiles.handler.config_handler import InstanceTabs
 from views.tiles.tile_slave import TileSlave
 
 
 class TileWorker(ft.ExpansionTile):
-    def __init__(self, page: ft.Page, number: str, **kwargs):
+    def __init__(self, number: str, **kwargs):
         super().__init__(**kwargs)
-        self.FileSingleton = FileSingleton()
         self.number = number
-        self.initial_page = page
-
         self.paused = False
         self.stopped = False
 
-        # if EmulatorSingleton().getEmulator() == "pc":
+        # if EmulatorSingleton().getEmulatorType() == "pc":
         #     self.main_task = TaskPC(self)
         #     self.runner = TaskPCRunner(self.main_task, self)
         # else:
@@ -69,6 +67,7 @@ class TileWorker(ft.ExpansionTile):
         self.slaves = {}
         self.refresh_tile()
 
+
     def start(self, e):
         self.button_start.icon = ft.icons.PAUSE
         self.button_stop.disabled = False
@@ -105,8 +104,8 @@ class TileWorker(ft.ExpansionTile):
         self.paused = False
 
         self.button_start.icon = ft.icons.PAUSE
-        self.initial_page.update()
         self.button_start.on_click = self.pause
+        ss.page.update()
 
     def pause(self, e):
         for slaves_tiles in self.controls:
@@ -115,18 +114,19 @@ class TileWorker(ft.ExpansionTile):
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_start.on_click = self.resume
-        self.initial_page.update()
+        ss.page.update()
 
     def stop(self, e):
         for slaves_tiles in self.controls:
             slaves_tiles.paused = False
             slaves_tiles.stopped = True
+
         self.paused = False
         self.stopped = True
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
-        self.initial_page.update()
+        ss.page.update()
 
     def start_tasks(self):
         if not self.tasks_process.is_alive():
@@ -134,52 +134,60 @@ class TileWorker(ft.ExpansionTile):
             self.tasks_process.start()
         else:
             self.add_text("Task is frozen, you may need to restart the bot.")
-            self.initial_page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
+            ss.page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
 
     def select(self, e):
-        self.initial_page.tile_manager.unselect_all()
+        ss.page.tile_manager.unselect_all()
         self.button_select.selected = True
 
-        if len(self.initial_page.body.controls) > 2:
-            self.initial_page.body.controls.pop()
+        if len(ss.page.body.controls) > 2:
+            ss.page.body.controls.pop()
 
-        if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
+        if self.number not in ss.page.frames:
+            ss.page.frames[self.number] = InstanceTabs(self.number)
 
-        self.initial_page.body.controls.append(self.initial_page.frames[self.number])
+        ss.page.body.controls.append(ss.page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
-        self.initial_page.update()
+        ss.page.update()
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        self.initial_page.update()
+        ss.page.update()
 
     def get_text(self):
         return self.text_status.value
 
     def add_text(self, phrase: str, color=None):
-        if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
+        if self.number not in ss.page.frames:
+            ss.page.frames[self.number] = InstanceTabs(self.number)
 
-        self.initial_page.frames[self.number].add_text(phrase, color)
+        ss.page.frames[self.number].add_text(phrase, color)
 
     def add_divider(self):
-        if self.number not in self.initial_page.frames:
-            self.initial_page.frames[self.number] = InstanceTabs(self.initial_page, self.number)
+        if self.number not in ss.page.frames:
+            ss.page.frames[self.number] = InstanceTabs(self.number)
 
-        self.initial_page.frames[self.number].add_divider()
+        ss.page.frames[self.number].add_divider()
 
     def add_tile(self, number):
-        self.controls.append(TileSlave(self.initial_page, number))
+        self.controls.append(TileSlave(number))
 
     def refresh_tile(self):
         self.controls = []
-        data = self.FileSingleton.getCachedData()
-        emulator = EmulatorSingleton().getEmulator()
+        # data = self.FileSingleton.getCachedData()
+        emulator_type = EmulatorSingleton().getEmulatorType()
 
-        for instance in data["workers"][emulator][self.number]["instances"]:
-            if instance["instance"] not in self.slaves:
-                self.slaves[instance["instance"]] = TileSlave(self.initial_page, instance["instance"])
-            self.controls.append(self.slaves[instance["instance"]])
+        worker_settings = ss.open_worker_settings()
 
-        self.initial_page.update()
+        # for instance in data["workers"][emulator_type][self.number]["instances"]:
+        #     if instance["instance"] not in self.slaves:
+        #         self.slaves[instance["instance"]] = TileSlave(ss.page, instance["instance"])
+        #     self.controls.append(self.slaves[instance["instance"]])
+
+        for instanceSchema in worker_settings.worker_type[emulator_type].workers[self.number].instances:
+            instance = instanceSchema.instance
+            if instance not in self.slaves:
+                self.slaves[instance] = TileSlave(instance)
+            self.controls.append(self.slaves[instance])
+
+        ss.page.update()

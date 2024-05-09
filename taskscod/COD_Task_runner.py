@@ -21,7 +21,7 @@ from taskscod.COD_Task_gather_rss import GatherRss
 from taskscod.COD_Task_training import TroopTraining
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.functions import current_time, get_name, get_window_pid
-from views.frametime import is_in_frametime, random_time_in_frametime
+from views.frametime import is_slot_runnable, random_time_in_frametime
 
 pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
@@ -550,7 +550,7 @@ class TaskRunner(Task):
                         when_go = 0
                         print(f"Profile {profile} enabled")
                         for t in self.data[self.sel]["schedules"][profile]["timing"]:
-                            if is_in_frametime(t[0], t[1]):
+                            if is_slot_runnable(t[0], t[1]):
                                 can_go = True
                                 when_go = random_time_in_frametime(t[0], t[1])
                                 self.print(f"Profile {profile} able to run")

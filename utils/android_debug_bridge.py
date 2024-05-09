@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import threading
 import traceback
-from datetime import date
+from datetime import datetime
 from os.path import exists
 from time import sleep, time
 
@@ -13,8 +13,9 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import FileSingleton, current_time, get_dic_instances, get_name
+from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_dic_instances, get_name
 from utils.resources import ImageSingleton
+from utils.singletons import ss
 
 bridge = None
 
@@ -55,14 +56,12 @@ class Adb:
     last_restart_time = 0
 
     def __init__(self, instance: str, host="127.0.0.1", port=5037, task_reference=None):
-        self.FileSingleton = FileSingleton()
         self.images = ImageSingleton()
         self.client = PPADBClient(host, port)
         self.host: str = host
         self.port: int = port
         self.instance: str = instance
-        self.data: dict[str, dict] = self.FileSingleton.getCachedData()
-        self.name: str = self.data[self.instance]["name"]
+        self.name: str = ss.emulator_settings.emulators[self.instance].name
         self.is_ld = False
         self.task_reference = task_reference
 
@@ -83,19 +82,11 @@ class Adb:
             raise UnknownDeviceException(f"{self.host}/{self.port}")
 
         if self.port != int(instances[self.instance]["port"]):
-            self.data = self.FileSingleton.get_data()
+            ss.emulator_settings.emulators[self.instance].port = int(instances[self.instance]["port"])
+            ss.emulator_settings.emulators[self.instance].name = instances[self.instance]["name"]
+            ss.emulator_settings.emulators[self.instance].instance = instances[self.instance]["instance"]
 
-            self.data[self.instance].update(
-                {
-                    "instance": instances[self.instance]["instance"],
-                    "name": instances[self.instance]["name"],
-                    "port": int(instances[self.instance]["port"]),
-                }
-            )
-
-            self.port = self.data[self.instance]["port"]
-
-            self.FileSingleton.write_data(self.data)
+            ss.write_emulator_settings(ss.emulator_settings)
 
     def stop_server(self):
         raise NotImplementedError("Method 'stop_server' is not implemented in the base class.")
@@ -124,14 +115,13 @@ class Adb:
 
     @get_name
     def connect_to_device(self, host="127.0.0.1"):
-        path = self.FileSingleton.get_path()
         self.update_port()
 
         if host == "127.0.0.1":
-            adb_path = f"{path['HD-Player'].replace('Player', 'Adb')}"
+            adb_path = f"{ss.application_settings.paths.bluestacks.player.replace('Player', 'Adb')}"
             cmd = f"{adb_path} connect {host}:{self.port}"
         else:
-            adb_path = f"{path['LD-Console'].replace('ldconsole', 'adb')} start-server"
+            adb_path = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} start-server"
             cmd = f"{adb_path} connect {host}-{self.port}"
 
         subprocess.Popen(cmd)
@@ -142,9 +132,10 @@ class Adb:
 
     @get_name
     def print(self, *args: str):
-        data = self.FileSingleton.getCachedData()
-        print(f"[ {date.today()} {current_time()} ] [ {data[self.instance]['name']} ] {' '.join(map(str, args))}")
-        self.FileSingleton.write(self.name, " ".join(map(str, args)))
+        timestamp = f"[ \033[1;32m{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\033[0m ]"
+        message = f"[ {colorize_name(self.name)} ] {colorize_output(' '.join(map(str, args)))}"
+
+        print(f"{timestamp} {message}")
 
     @get_name
     def get_curr_device_screen_img_byte_array(self):

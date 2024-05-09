@@ -22,6 +22,7 @@ class GatherGem(Task):
         self.end_time = None
         self.block = False
         self.nodes_gathered = 0
+        self.context_task = self.context_profile.tasks.gather_gem
 
     def task_name(self):
         return "GatherGem"
@@ -113,10 +114,10 @@ class GatherGem(Task):
             self.better_sleep((1.5, 2))
             self.scan_gem()
             self.better_sleep((0.125, 0.195))
-            self.go_city(
-                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_x", 500),
-                self.data[str(self.sel)]["schedules"][self.current_profile].get("city_y", 500),
-            )
+            # self.go_city(
+            #     self.context_task.map_center_pos.x,
+            #     self.context_task.map_center_pos.y,
+            # )
 
     @get_name
     def send_new_troop(self, deadstop: int = 0, color: str = "yellow") -> bool:
@@ -208,21 +209,21 @@ class GatherGem(Task):
             if not points:
                 return False
 
-            if not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_compare_march_duration"):
-                self.click(points[0][0] + uniform(-20, 0), points[0][1] + uniform(-20, 0))
-                self.better_sleep((1, 1.7))
-                co = self.find_img(target="march_bar", confidence=0.8)
-                if co:
-                    self.click(co[0] + uniform(0, 30), co[1] + uniform(-5, +10))
-                    self.better_sleep((1, 1.7))
-                if self.find_img(target="troops_march_button") is not None:
-                    self.click(x=uniform(1110, 1127), y=uniform(30, 55))
-                    self.better_sleep((0.9, 1.3))
-                    return self.send_new_troop()
-                self.print("Troop sent to the node.", "green")
-
-                self.nodes_gathered += 1
-                return True
+            # if not self.context_task.:
+            #     self.click(points[0][0] + uniform(-20, 0), points[0][1] + uniform(-20, 0))
+            #     self.better_sleep((1, 1.7))
+            #     co = self.find_img(target="march_bar", confidence=0.8)
+            #     if co:
+            #         self.click(co[0] + uniform(0, 30), co[1] + uniform(-5, +10))
+            #         self.better_sleep((1, 1.7))
+            #     if self.find_img(target="troops_march_button") is not None:
+            #         self.click(x=uniform(1110, 1127), y=uniform(30, 55))
+            #         self.better_sleep((0.9, 1.3))
+            #         return self.send_new_troop()
+            #     self.print("Troop sent to the node.", "green")
+            #
+            #     self.nodes_gathered += 1
+            #     return True
 
             timer = []
             for i in range(len(points)):
@@ -413,9 +414,9 @@ class GatherGem(Task):
         #     for first_string in ["up", "mid", "down"]:
         #         icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
 
-        # if random() > 0.93:
-        #
-        #     self.random_interaction(zoomed_in=False)
+        if random() > 0.93:
+
+            self.random_interaction(zoomed_in=False)
 
         for i in range(14):
             icons.append(f"GemDeposit{i}")
@@ -425,7 +426,7 @@ class GatherGem(Task):
             # if co is None:
             #     co = self.validate_co(
             #         self.find_img(source=screen, target=icon[1], confidence=0.77))
-            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.795))
+            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.805))
             if (co is not None) and ((co[0], co[1]) not in already_verified):
                 if self.already_mining(co[0], co[1], screen):
                     self.print(f"Node is occupied - x: {co[0]} y:{co[1]}")
@@ -465,7 +466,8 @@ class GatherGem(Task):
                 if self.find_cross(notify=False):
                     break
 
-                if not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_swipe_check"):
+                # DeprecationWarning
+                if not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_swipe_check") and 0:
                     if not self.click_on_node():
                         break
                     if self.send_troop_to_node():
@@ -560,11 +562,12 @@ class GatherGem(Task):
                     if self.check_if_interrupt():
                         return self.run(self.end_time)
 
-                    if self.data[str(self.sel)]["schedules"][self.current_profile].get("alliance_help"):
+                    if self.context_profile.tasks.alliance_help.enabled:
                         AllianceHelp(self).run()
-                #
-                # if random() > 0.8:
-                #     self.random_interaction(zoomed_in=True)
+
+                if random() > 0.8:
+                    self.random_interaction(zoomed_in=True)
+                    self.close_windows()
 
             # self.better_sleep((1, 1.895))
             self.close_windows()
@@ -573,6 +576,7 @@ class GatherGem(Task):
 
     @get_name
     def go_to(self, x, y, last=None) -> int:
+        raise DeprecationWarning("This function is deprecated.")
         """
         Define starting path
         :param: x -> int x map location

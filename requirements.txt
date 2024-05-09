@@ -16,4 +16,5 @@ hikari==2.0.0.dev120
 flet
 nuitka
 supabase
+dataclasses_json
 git+https://github.com/MrYassinox/flet-components.git

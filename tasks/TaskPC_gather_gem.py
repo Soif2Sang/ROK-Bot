@@ -5,7 +5,6 @@ import traceback
 from collections.abc import Callable
 from datetime import datetime
 from random import randint, random, uniform
-from time import sleep
 
 import cv2
 from PIL import Image
@@ -424,7 +423,6 @@ class GatherGem(Task):
             y_click = co[1]
             self.better_sleep((2, 2.5))
 
-            default = True
             blocked = False
 
             counter = 0

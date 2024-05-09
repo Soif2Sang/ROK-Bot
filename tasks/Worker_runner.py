@@ -4,30 +4,23 @@ from random import randint
 from time import time
 from typing import Literal
 
-from Task import Task
-from Task_runner import TaskRunner
-
+from tasks.Task import Task
+from tasks.Task_runner import TaskRunner
 from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_name, string_to_co, string_to_co_slide
 from utils.schemas.application_schemas import TileSlaveSchema, TileWorkerSchema
-from utils.singletons import EmulatorSingleton
+from utils.singletons import EmulatorSingleton, ss
 
 
 @dataclasses.dataclass
 class WorkerRunner:
     instance_id: str
     tile_worker: TileWorkerSchema
-    emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulator()
-    FileSingleton = FileSingleton()
-
-    def update_data(self):
-        self.data = self.FileSingleton.get_data()
-        return self.data
+    emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
 
     def run(self, tiles: [TileSlaveSchema]):
-        self.data = self.update_data()
+        self.emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
 
-        loop_task = 1 if not self.data["workers"][self.emulator_type][self.instance_id]["loop_task"] else 9999999
-
+        loop_task = 1 if not ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task else 9999999
         for i in range(loop_task):
             cycle_started_at = time()
             nb_tile = 0
@@ -42,7 +35,7 @@ class WorkerRunner:
                 runner.run()
 
                 if runner.has_started_once:
-                    if self.data["workers"][self.emulator_type][self.instance_id]["close_emulator"]:
+                    if ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].close_emulator:
                         runner.kill_instance()
                         runner.print("Shutdown the emulator, waiting for 5 seconds")
                         runner.better_sleep((5, 5))
@@ -53,10 +46,10 @@ class WorkerRunner:
                     )
 
             # Check if loop_task is enabled
-            if self.data["workers"][self.emulator_type][self.instance_id]["loop_task"]:
+            if ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task:
 
                 # Retrieve and sort the waiting cooldown times
-                waiting_cooldown = self.data["workers"][self.emulator_type][self.instance_id]["waiting_cooldown"]
+                waiting_cooldown = ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].waiting_cooldown
                 waiting_cooldown.sort()
 
                 # Extract the minimum and maximum waiting cooldown times
