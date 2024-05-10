@@ -467,7 +467,7 @@ class GatherGem(Task):
                     break
 
                 # DeprecationWarning
-                if not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_swipe_check") and 0:
+                if 0 and not self.data[str(self.sel)]["schedules"][self.current_profile].get("gather_gem_swipe_check"):
                     if not self.click_on_node():
                         break
                     if self.send_troop_to_node():

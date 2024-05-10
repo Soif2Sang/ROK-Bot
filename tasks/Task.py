@@ -78,6 +78,7 @@ class Task:
         self.name = MainTask.name
         self.DEV = MainTask.DEV
         self.FileSingleton = MainTask.FileSingleton
+        self.context_profile = MainTask.context_profile
         # self.data = MainTask.data
 
     def debug(self, arg):
