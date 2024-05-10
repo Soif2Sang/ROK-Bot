@@ -78,7 +78,6 @@ class DecoratedPageSchema(ft.Page):
 @dataclass
 class TileSlaveSchema:
     number: str
-    initial_page: ft.Page
     text_name: ft.Text
     text_status: ft.Text
 
