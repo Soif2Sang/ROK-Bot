@@ -712,16 +712,19 @@ class TaskRunner(Task):
         tasks = self.get_available_task(self.current_profile)
 
         def open_menu_and_go_canyon():
+            print("open_menu_and_go_canyon")
             self.open_menu()
             self.open_campaign()
             self.open_sunset_canyon()
 
         def open_inventory_and_go_in_any_tab():
+            print("open_inventory_and_go_in_any_tab")
             self.open_menu()
             self.open_inventory()
             self.open_any_inventory_tab()
 
         def open_commander_list_and_click_on_heros():
+            print("open_commander_list_and_click_on_heros")
             self.open_menu()
             self.open_commander_tab()
             self.click_any_commander_in_list()
@@ -748,6 +751,7 @@ class TaskRunner(Task):
         func = choice(interactions)
 
         func()
+        print(f"Random interaction {func.__name__} executed")
         self.better_sleep((1.2, 2.7))
         self.close_windows()
 
