@@ -296,7 +296,7 @@ class PageGem(BasePage):
         self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] = data
 
         self.FileSingleton.write_data(self.data)
-        self.profile.initial_page.update()
+        ss.page.update()
 
     def reverse_keyword(self, keyword: str):
         super().reverse_keyword(keyword)
@@ -310,7 +310,7 @@ class PageGem(BasePage):
             is_enabled = self.max_nodes_switch.value
             self.node_limit_text_field.disabled = not is_enabled
 
-        self.profile.initial_page.update()
+        ss.page.update()
 
     # def submit_with_context(self, e):
     #     rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))

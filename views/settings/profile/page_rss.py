@@ -95,4 +95,4 @@ class PageRss(BasePage):
         self.context.search_method = data
 
         ss.write_emulator_settings(ss.emulator_settings)
-        self.profile.initial_page.update()
+        ss.page.update()
