@@ -288,7 +288,7 @@ def settings(page: ft.Page, params, basket):
             ]
         ),
         ft.Divider(height=1),
-        AllSettings("0"),
+        AllSettings(),
     ]
 
     return ft.View(route="/settings", controls=controls)

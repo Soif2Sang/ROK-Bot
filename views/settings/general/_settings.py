@@ -13,10 +13,15 @@ fs = FileSingleton()
 ss = SettingsSingleton()
 
 
-class AllSettings(PageSettings):
-    def __init__(self, instance_index):
-        super().__init__(instance_index, "1")
-        self.content.height = None
+class AllSettings(ft.Container):
+    def __init__(self):
+        super().__init__()
+
+        self.padding = ft.padding.only(top=5, left=0, bottom=0)
+        self.content: ft.ListView = ft.ListView(height=400, expand=1, padding=1, spacing=0)
+
+        self.init()
+
 
     def clean(self):
         self.content.controls = []
