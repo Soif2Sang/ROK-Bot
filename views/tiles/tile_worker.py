@@ -9,8 +9,7 @@ from tasks.TaskPC import Task as TaskPC
 from tasks.TaskPC_runner import TaskRunner as TaskPCRunner
 from tasks.Worker_runner import WorkerRunner
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
-from utils.singletons import EmulatorSingleton, ss
+from utils.singletons import EmulatorSingleton, ss, FileSingleton
 from views.tiles.handler.config_handler import InstanceTabs
 from views.tiles.tile_slave import TileSlave
 

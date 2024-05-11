@@ -1,6 +1,6 @@
 import flet as ft
 
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 
 
 class FletRowRss(ft.Row):

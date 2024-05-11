@@ -8,7 +8,7 @@ from PIL import Image
 from ppadb.client import Client as PPADBClient
 
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
-from utils.functions import FileSingleton, accurate_sleep, current_time, get_dic_instances, get_name
+from utils.functions import accurate_sleep, current_time, get_dic_instances, get_name
 from utils.resources import ImageSingleton
 from utils.singletons import ss
 

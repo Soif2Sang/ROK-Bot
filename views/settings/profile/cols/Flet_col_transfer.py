@@ -2,8 +2,8 @@ import flet as ft
 from utils.schemas.emulator_schemas import TaskResourcesTransferSchema
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton, rsetattr
-from utils.singletons import ss
+from utils.functions import rsetattr
+from utils.singletons import ss, FileSingleton
 
 
 class FletColumnRss(ft.Column):

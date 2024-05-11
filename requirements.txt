@@ -17,4 +17,5 @@ flet
 nuitka
 supabase
 dataclasses_json
+packaging
 git+https://github.com/MrYassinox/flet-components.git

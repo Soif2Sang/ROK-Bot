@@ -81,7 +81,7 @@ class Bot:
         self.main_task = Task(Frame(adb.instance))  # tasksGEM / tasks
         self.main_task.adb = adb
         # self.task = Tasks(self.adb)
-        self.main_task.set_instance_id(str(adb.instance))
+        self.main_task.set_sel(str(adb.instance))
         self.task = TaskRunner(self.main_task, self.main_task.tile)
         self.upgrade = UpgradeCity(self.main_task)
         self.merchant = BuyMerchant(self.main_task)
@@ -260,19 +260,7 @@ if __name__ == "__main__":
     sel = "4"
 
     bo = get_bot(sel)
-    default_image = bo.adb.get_cv2_img()
-    for i in range(7):  # change if you have 6-7 troops
-        default_color = default_image[260 + i * 50, 1097]
-        x_click, y_click = uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50)
-        bo.task.click(x_click, y_click)
-        bo.task.better_sleep((1, 2))
-        new_image = bo.task.adb.get_cv2_img()
-        if (default_color != new_image[260 + i * 50, 1097]).all():
-            print(f"Troop {i + 1} is selected")
-        else:
-            print(f"Troop {i + 1} is not selected")
-    # bo.hunt.select_lineup_color(color="red")
-    # bo.gem.run()
+    print(bo.task.find_cross())
     exit()
 
     screen = imread("./screen_city_hall.png")

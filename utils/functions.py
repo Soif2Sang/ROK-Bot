@@ -18,14 +18,14 @@ try:
     import win32process
 except:
     pass
-from decohints import decohints
 
+from decohints import decohints
 from utils.constants import DEBUG
-from utils.singletons import ApiSingleton, FileSingleton
+from utils.singletons import ApiSingleton, ss
+import functools
 
 dir = "./"
 
-import functools
 
 
 def rsetattr(obj, attr, val):
@@ -232,14 +232,14 @@ def getchecksum():
 
 def get_dic_instances():
     try:
-        fileSingleton = FileSingleton()
-        path = fileSingleton.get_path()
-        string = path["bluestacks"][:-5] + ".txt"
-        if exists(rf'{path["bluestacks"]}'):
-            string = path["bluestacks"][:-5] + ".txt"
-            shutil.copy(rf'{path["bluestacks"]}', rf"{string}")
-        with open(rf"{string}", "r", encoding="utf-8") as file:
+        path = ss.application_settings.paths.bluestacks.config[:-5] + ".txt"
+
+        if exists(rf'{ss.application_settings.paths.bluestacks.config}'):
+            shutil.copy(rf'{ss.application_settings.paths.bluestacks.config}', rf"{path}")
+
+        with open(rf"{path}", "r", encoding="utf-8") as file:
             data_instance = file.read().split("\n")
+
     except Exception as e:
         print(e)
         raise OSError(
@@ -305,11 +305,8 @@ def get_all_vms_running():
 
 
 def get_dic_instances_ld():
-    fileSingleton = FileSingleton()
-    path = fileSingleton.get_path()
-
     argument = "list2"
-    command = [path["LD-Console"], argument]
+    command = [ss.application_settings.paths.ldplayer.ldconsole, argument]
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
     emulators = result.stdout.split("\n")
@@ -338,11 +335,8 @@ def get_dic_instances_ld():
 
 
 def get_current_instances_ld(data: dict):
-    fileSingleton = FileSingleton()
-    path = fileSingleton.get_path()
-
     argument = "runninglist"
-    command = [path["LD-Console"], argument]
+    command = [ss.application_settings.paths.ldplayer.ldconsole, argument]
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
 
     emulators = result.stdout.split("\n")
