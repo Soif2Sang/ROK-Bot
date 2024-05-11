@@ -2,7 +2,7 @@ import traceback
 
 import flet as ft
 
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 
 global sel, profile
 

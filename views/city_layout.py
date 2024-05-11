@@ -9,8 +9,8 @@ from utils.schemas.emulator_schemas import CordsSchema
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import FileSingleton, rgetattr, rsetattr, get_window_pid, is_window_open
-from utils.singletons import EmulatorSingleton, SettingsSingleton
+from utils.functions import rgetattr, rsetattr, get_window_pid, is_window_open
+from utils.singletons import EmulatorSingleton, SettingsSingleton, FileSingleton
 
 ss = SettingsSingleton()
 

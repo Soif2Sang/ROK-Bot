@@ -29,9 +29,9 @@ from pytesseract import pytesseract
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.discord_utils import send_discord_message
-from utils.functions import FileSingleton, colorize_name, colorize_output, current_time, get_name, string_to_co, string_to_co_slide
+from utils.functions import colorize_name, colorize_output, current_time, get_name, string_to_co, string_to_co_slide
 from utils.pc_bridge import PcBridge
-from utils.singletons import ApiSingleton, EmulatorSingleton
+from utils.singletons import ApiSingleton, EmulatorSingleton, FileSingleton
 from utils.supabase_auth import SupabaseClient
 from utils.twocaptcha import TimeoutException, TwoCaptcha
 from utils.twocaptcha.api import ApiException, NetworkException

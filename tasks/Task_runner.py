@@ -747,7 +747,6 @@ class TaskRunner(Task):
         func = choice(interactions)
 
         func()
-        print(f"Random interaction {func.__name__} executed")
         self.better_sleep((1.2, 2.7))
         self.close_windows()
 

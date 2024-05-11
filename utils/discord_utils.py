@@ -1,6 +1,6 @@
 import discord
 
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 
 token = "MTEwMDM2MTgyNTQ0MDIzOTY3Ng.GJkXHM.ZoG-FJI5RcnaLYnvFnQUiUgIVU5EcPwi81l-go"
 

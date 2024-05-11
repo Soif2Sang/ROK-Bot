@@ -3,6 +3,7 @@ import os
 import platform
 import subprocess
 
+from packaging.version import Version
 from supabase import create_client
 
 from utils.constants import SUPABASE_KEY, SUPABASE_URL, VERSION_NUMBER, VERSION_TYPE
@@ -103,11 +104,10 @@ class SupabaseClient:
         data, count = (
             self.client.table("updates")
             .select("*")
-            .gte("version", VERSION_NUMBER)
             .eq("version_type", VERSION_TYPE)
-            .order("version", desc=True)
             .execute()
         )
+
         return data[1]
 
     def increamentCaptchaCount(self):

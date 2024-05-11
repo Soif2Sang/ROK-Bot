@@ -2,8 +2,8 @@ import flet as ft
 from utils.schemas.emulator_schemas import TaskTroopTraining
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton, rgetattr, rsetattr
-from utils.singletons import ss
+from utils.functions import rgetattr, rsetattr
+from utils.singletons import ss, FileSingleton
 
 
 class FletRowTraining(ft.ResponsiveRow):

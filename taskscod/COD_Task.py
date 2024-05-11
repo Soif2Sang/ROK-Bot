@@ -7,7 +7,7 @@ from time import sleep
 from numpy import array, ndarray
 from PIL import ImageFile
 
-from utils.functions import FileSingleton, current_time, get_name, get_window_pid
+from utils.singletons import FileSingleton, current_time, get_name, get_window_pid
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 

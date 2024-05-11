@@ -30,7 +30,6 @@ from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.discord_utils import send_discord_message
 from utils.functions import (
-    FileSingleton,
     colorize_name,
     colorize_output,
     current_time,
@@ -39,7 +38,8 @@ from utils.functions import (
     string_to_co,
     string_to_co_slide,
 )
-from utils.singletons import ApiSingleton, EmulatorSingleton, ss
+
+from utils.singletons import ApiSingleton, EmulatorSingleton, ss, FileSingleton
 from utils.supabase_auth import SupabaseClient
 from utils.twocaptcha import TimeoutException, TwoCaptcha
 from utils.twocaptcha.api import ApiException, NetworkException
@@ -1573,7 +1573,12 @@ class Task:
             (3, 146, 198),
             (3, 145, 197),
             (3, 146, 198),
-            (4, 143, 195)
+            (4, 143, 195),
+            (1, 117, 178),
+            (2, 145, 197),
+            (2, 144, 195),
+            (1, 118, 176),
+            (1, 117, 177)
         ]
         occupied_colors = [
             (233, 233, 233),
@@ -1632,7 +1637,7 @@ class Task:
                         and ((pixel[0] != 2) and (pixel[1] != 4) and (pixel[2] != 183))
                     )
                     or ((pixel[0] < 2) and (116 < pixel[1] < 119) and (175 < pixel[2] < 179))
-                    or ((pixel[0] < 5) and (142 < pixel[1] < 150) and (190 < pixel[2] < 200) and (pixel[2] != 193) and (pixel[2] != 192))
+                    # or ((pixel[0] < 5) and (142 < pixel[1] < 150) and (190 < pixel[2] < 200) and (pixel[2] != 193) and (pixel[2] != 192))
                     or ((pixel[0] < 10) and (pixel[1] > 187) and (pixel[2] < 10))
                     or (pixel in occupied_colors)
                 ) and (pixel not in whitelist):

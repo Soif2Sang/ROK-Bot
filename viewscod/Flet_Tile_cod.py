@@ -4,7 +4,7 @@ import flet as ft
 
 from taskscod.COD_Task import Task
 from taskscod.COD_Task_runner import TaskRunner
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 from viewscod.Flet_Frame_cod import Frame
 
 

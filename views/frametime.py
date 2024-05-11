@@ -6,8 +6,8 @@ from utils.schemas.emulator_schemas import AllowedTimeSlotsSchema, ProfileSchema
 
 from utils.Components.card import GenerateCard
 from utils.flet_translations import translate
-from utils.functions import FileSingleton, rsetattr
-from utils.singletons import ss
+from utils.functions import rsetattr
+from utils.singletons import ss, FileSingleton
 
 color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 

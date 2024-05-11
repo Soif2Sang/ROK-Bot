@@ -16,8 +16,7 @@ from Crypto.Util.Padding import pad, unpad
 
 from utils.Components.PaymentMethods import payment_methods
 from utils.constants import VERSION_TYPE
-from utils.functions import FileSingleton
-from utils.singletons import EmulatorSingleton
+from utils.singletons import EmulatorSingleton, FileSingleton
 
 fileSingleton = FileSingleton()
 

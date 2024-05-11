@@ -7,7 +7,7 @@ import flet as ft
 import pyautogui
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 from viewscod.Flet_Tile_cod import Tile
 
 

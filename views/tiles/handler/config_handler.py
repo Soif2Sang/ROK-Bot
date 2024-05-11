@@ -2,8 +2,7 @@ import flet as ft
 from utils.schemas.emulator_schemas import EmulatorSettingsSchema
 
 from utils.flet_translations import translate
-from utils.functions import FileSingleton
-from utils.singletons import ss
+from utils.singletons import ss, FileSingleton
 from views.settings.general.general_tab import InterfaceSettings
 from views.settings.profile.profile import SettingContainer
 from views.tiles.handler.logging_handler import Logger

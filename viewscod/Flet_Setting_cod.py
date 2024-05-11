@@ -3,7 +3,7 @@ import multiprocessing
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 from views import frametime
 from views.settings.profile.cols.Flet_col_transfer import FletColumnRss
 from views.settings.profile.rows.Flet_row_material import FletRowMaterial

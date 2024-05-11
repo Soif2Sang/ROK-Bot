@@ -11,6 +11,7 @@ from time import sleep
 
 import flet as ft
 from flet_route import Routing, path
+from packaging.version import Version
 
 try:
     from utils.Components.AnimatedCard import AnimatedCard
@@ -22,8 +23,8 @@ try:
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
-    from utils.functions import FileSingleton, get_dic_instances, get_dic_instances_ld, getchecksum, find_file_in_all_drives
-    from utils.singletons import ApiSingleton, EmulatorSingleton, SettingsSingleton, ss
+    from utils.functions import get_dic_instances, get_dic_instances_ld, getchecksum, find_file_in_all_drives
+    from utils.singletons import ApiSingleton, EmulatorSingleton, SettingsSingleton, ss, FileSingleton
     from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout, viewSetCenterMap
     from views.login.login import LoginScreen
@@ -114,9 +115,10 @@ def main(page: ft.Page):
         if update["force"]:
             force = True
 
+    updates = [update for update in updates if Version(update['version']) > Version(VERSION_NUMBER)]
+    updates.sort(key=lambda x: Version(x['version']), reverse=True)
+
     for update in updates:
-        if update["version"] == VERSION_NUMBER:
-            continue
         if force:
             page.launch_url(update["download_link"])
             sleep(1)

@@ -1,7 +1,7 @@
 import flet as ft
 from utils.schemas.application_schemas import ApplicationSettingsSchema
 
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 from utils.singletons import ss
 
 fileSingleton = FileSingleton()

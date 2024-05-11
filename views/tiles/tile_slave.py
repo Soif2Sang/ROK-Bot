@@ -3,7 +3,7 @@ import copy
 import flet as ft
 from utils.schemas.emulator_schemas import EmulatorSettingsSchema
 
-from utils.functions import FileSingleton
+from utils.singletons import FileSingleton
 from utils.singletons import ss
 from views.tiles.handler.config_handler import InstanceTabs
 
