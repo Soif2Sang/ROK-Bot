@@ -712,32 +712,28 @@ class TaskRunner(Task):
         tasks = self.get_available_task(self.current_profile)
 
         def open_menu_and_go_canyon():
-            print("open_menu_and_go_canyon")
             self.open_menu()
             self.open_campaign()
             self.open_sunset_canyon()
 
         def open_inventory_and_go_in_any_tab():
-            print("open_inventory_and_go_in_any_tab")
             self.open_menu()
             self.open_inventory()
             self.open_any_inventory_tab()
 
         def open_commander_list_and_click_on_heros():
-            print("open_commander_list_and_click_on_heros")
             self.open_menu()
             self.open_commander_tab()
             self.click_any_commander_in_list()
 
         interactions = [
             self.open_chat_and_leave,
-
-            open_menu_and_go_canyon,
-            open_inventory_and_go_in_any_tab,
-            open_commander_list_and_click_on_heros,
         ]
 
         if zoomed_in:
+            interactions.append(open_menu_and_go_canyon)
+            interactions.append(open_inventory_and_go_in_any_tab)
+            interactions.append(open_commander_list_and_click_on_heros)
             interactions.append(self.enter_profile)
             interactions.append(self.open_any_rankings)
             interactions.append(self.open_random_rss_type)

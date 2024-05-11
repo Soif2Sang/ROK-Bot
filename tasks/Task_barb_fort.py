@@ -551,7 +551,7 @@ class BarbFort(Task):
 
         starting_time = time()
         time_to_beat = starting_time + (60 * 60)
-        self.max_distance = self.context_task.searching_radius
+        self.max_distance = self.context_task.searching_radius / 6
 
         self.print(f"Bot will search a fort until : {datetime.fromtimestamp(time_to_beat).strftime('%H:%M:%S')}")
         while time_to_beat > time():

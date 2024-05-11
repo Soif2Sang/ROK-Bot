@@ -26,7 +26,7 @@ color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
 
 
 class SettingContainer(PageSettings):
-    def __init__(self, instance_index: str, profile_index: int):
+    def __init__(self, instance_index: str, profile_index: str):
         super().__init__(instance_index, profile_index)
 
     def clean(self):

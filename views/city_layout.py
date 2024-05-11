@@ -9,7 +9,7 @@ from utils.schemas.emulator_schemas import CordsSchema
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import FileSingleton, rgetattr, rsetattr
+from utils.functions import FileSingleton, rgetattr, rsetattr, get_window_pid, is_window_open
 from utils.singletons import EmulatorSingleton, SettingsSingleton
 
 ss = SettingsSingleton()
@@ -28,6 +28,10 @@ def image_to_base64(image_byte):
 
 
 def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Basket) -> ft.View:
+    if not is_window_open(ss.emulator_settings.emulators[str(params.instance_index)].name):
+        page.generate_toast("Error", "Emulator not started")
+        return page.go('/')
+
     page.window_width = 900
     page.window_height = 500
     emulator_choice = EmulatorSingleton().getEmulatorType()
@@ -63,6 +67,10 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
 
 
 def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.View:
+    if not is_window_open(ss.emulator_settings.emulators[str(params.instance_index)].name):
+        page.generate_toast("Error", "Emulator not started")
+        return page.go('/')
+
     page.window_width = 900
     page.window_height = 500
     emulator_choice = EmulatorSingleton().getEmulatorType()
@@ -102,10 +110,10 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
 
 class CityPlacement(ft.Container):
     button = {
-        "troop_training.infantry_camp": "Inf",
-        "troop_training.cavalry_camp": "Cav",
-        "troop_training.archery_camp": "Arch",
-        "troop_training.siege_camp": "Siege",
+        "troop_training.infantry.location": "Inf",
+        "troop_training.cavalry.location": "Cav",
+        "troop_training.archery.location": "Arch",
+        "troop_training.siege.location": "Siege",
         "troop_healing.hospital_position": "Hosp",
         "explore_fog.scout_camp_position": "Scout",
         "resources_transfer.transfer_position": "Transfer",
@@ -243,7 +251,8 @@ class MapContainer(ft.Container):
 
     def on_tap_update(self, e: ft.ContainerTapEvent):
         left, top = e.local_x, e.local_y
-
+        print(left, top)
+        print(left / 2 + 1072, top / 2)
         try:
             rsetattr(
                 ss.emulator_settings.emulators[str(self.instance)].schedules[str(self.profile)].tasks,

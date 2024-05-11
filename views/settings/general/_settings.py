@@ -15,7 +15,7 @@ ss = SettingsSingleton()
 
 class AllSettings(PageSettings):
     def __init__(self, instance_index):
-        super().__init__(instance_index, 1)
+        super().__init__(instance_index, "1")
         self.content.height = None
 
     def clean(self):

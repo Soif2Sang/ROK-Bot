@@ -281,6 +281,11 @@ def get_index_and_names(data):
         names.append((key, data[key]["name"]))
     return names
 
+def is_window_open(title):
+    for win in pyautogui.getAllWindows():
+        if win.title == title:
+            return True
+    return False
 
 def get_current_instances(data):
     names = get_index_and_names(data)
