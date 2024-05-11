@@ -125,7 +125,7 @@ class TaskProduceMaterialsSchema(TaskSchema):
 @dataclass
 class TroopTrainingSchema:
     enabled: bool = False
-    tier: Literal["t1", "t2", "t3", "t4", "t5"] = "t1"
+    tier: Literal["t1", "t2", "t3", "t4", "t5", "highest"] = "t1"
     location: CordsSchema = field(default_factory=CordsSchema)
 
 

@@ -125,7 +125,7 @@ class GatherGemMap(GatherGem):
 
         self.print(f"Gathering gems till around : {datetime.fromtimestamp(self.end_time).strftime('%H:%M:%S')}")
 
-        self.max_distance = self.context_task.searching_radius
+        self.max_distance = self.context_task.searching_radius / 6
         self.go_back_to_city()
 
         while self.end_time > time() and (

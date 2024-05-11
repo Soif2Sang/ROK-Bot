@@ -7,6 +7,7 @@ class TroopTraining(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.troop_training
 
     def task_name(self):
         return "TroopTraining"
@@ -59,13 +60,13 @@ class TroopTraining(Task):
         shuffle(names)
 
         for name in names:
-            if self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_enable"]:
-                position = self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_camp"]
-                if position is None or len(list(position)) < 2:
+            if getattr(self.context_task, name).enabled:
+                position = getattr(self.context_task, name).location
+                if not (position.x and position.y):
                     continue
 
                 for i in range(2):
-                    self.click(position[0] + uniform(-8, 8), position[1] + uniform(-8, 8))
+                    self.click(position.x + uniform(-8, 8), position.y + uniform(-8, 8))
                     self.better_sleep((1.2, 2))
 
                 image = self.adb.get_cv2_img()
@@ -75,7 +76,7 @@ class TroopTraining(Task):
                     self.better_sleep((1.3, 2.8))
 
                     for i in range(2):
-                        self.click(position[0] + uniform(-8, 8), position[1] + uniform(-8, 8))
+                        self.click(position.x + uniform(-8, 8), position.y + uniform(-8, 8))
                         self.better_sleep((1.2, 2))
 
                     image = self.adb.get_cv2_img()
@@ -91,7 +92,7 @@ class TroopTraining(Task):
                 self.click(co[0] + uniform(-8, 8), co[1] + uniform(-8, 8))
                 self.better_sleep((1.2, 2.3))
 
-                if self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_tier"] == "highest":
+                if getattr(self.context_task, name).tier == "highest":
                     for elem in list(pos.items())[::-1]:
                         x, y = elem[1]
                         self.click(x + uniform(-15, 15), y + uniform(-15, 15))
@@ -100,7 +101,7 @@ class TroopTraining(Task):
                         if not self.find_img("upgrade_go"):
                             break
                 else:
-                    co = pos[self.data[str(self.sel)]["schedules"][str(self.current_profile)][f"{name}_tier"]]
+                    co = pos[getattr(self.context_task, name).tier]
                     self.click(co[0] + uniform(-15, 15), co[1] + uniform(-15, 15))
                     self.better_sleep((1.2, 2.3))
 

@@ -1,11 +1,11 @@
 import flet as ft
 from utils.singletons import ss
 
-color_bank = {1: "#3b8ed0", 2: "#ba4543", 3: "#dec433"}
+color_bank = {"1": "#3b8ed0", "2": "#ba4543", "3": "#dec433"}
 
 
 class PageSettings(ft.Container):
-    def __init__(self, instance_index: str, profile_index: int):
+    def __init__(self, instance_index: str, profile_index: str):
         super().__init__()
         self.instance_index = instance_index
         self.profile_index = profile_index

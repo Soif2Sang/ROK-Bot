@@ -414,7 +414,7 @@ class GatherGem(Task):
         #     for first_string in ["up", "mid", "down"]:
         #         icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
 
-        if random() > 0.93:
+        if random() > 0.94:
 
             self.random_interaction(zoomed_in=False)
 
