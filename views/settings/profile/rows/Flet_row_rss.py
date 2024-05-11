@@ -32,7 +32,7 @@ class FletRowRss(ft.ResponsiveRow):
             # value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][f"{key}_level"],
             value=getattr(self.context, f"{key.lower()}_node").level,
             on_change=self.submit_with_context,
-            disabled=self.context.search_method == "spiral",
+            disabled=self.context.search_method == "zoom",
             data={"path": f"{key.lower()}_node.level", "type": int},
         )
 
