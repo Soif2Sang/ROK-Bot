@@ -34,7 +34,7 @@ class WorkerRunner:
                 runner_started_at = time()
 
                 runner = TaskRunner(Task(enabled_tile), self.tile_worker)
-                # runner.run()
+                runner.run()
 
                 if runner.has_started_once:
                     if ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].close_emulator:
