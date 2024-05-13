@@ -218,9 +218,9 @@ class GatherRssZoom(GatherRss):
 
             for y in range(i):
                 if (
-                    rgetattr(self.context_task, self.node_place.lower() + "_node").type == "nothing"
-                    or self.node_place == "Done"
+                    self.node_place == "Done"
                     or (not self.free_troop_commander_list())
+                    or (self.node_place != "Done" and rgetattr(self.context_task, self.node_place.lower() + "_node").type == "nothing")
                 ):
                     return self.click(500, 400)
 
