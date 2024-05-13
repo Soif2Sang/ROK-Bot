@@ -20,6 +20,9 @@ class WorkerRunner:
         self.emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
 
         loop_task = 1 if not ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task else 9999999
+
+        print(loop_task)
+
         for i in range(loop_task):
             cycle_started_at = time()
             nb_tile = 0
@@ -31,7 +34,7 @@ class WorkerRunner:
                 runner_started_at = time()
 
                 runner = TaskRunner(Task(enabled_tile), self.tile_worker)
-                runner.run()
+                # runner.run()
 
                 if runner.has_started_once:
                     if ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].close_emulator:
@@ -52,7 +55,7 @@ class WorkerRunner:
                 waiting_cooldown.sort()
 
                 # Extract the minimum and maximum waiting cooldown times
-                min_cooldown, max_cooldown = waiting_cooldown
+                min_cooldown, max_cooldown = waiting_cooldown.min, waiting_cooldown.max
 
                 # Calculate a random time before redoing tasks, within the range of min_cooldown and max_cooldown
                 time_before_redo_tasks = int(randint(min_cooldown, max_cooldown) * 60) + randint(0, 60)
