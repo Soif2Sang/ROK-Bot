@@ -52,10 +52,11 @@ jobs:
           windows-company-name: Unknown
           windows-product-version: 1.0
 
-          # macos-create-app-bundle: ${{ runner.os == 'macOS' }}
+              # macos-create-app-bundle: ${{ runner.os == 'macOS' }}
       - name: Zip resources directory
+        shell: powershell
         run: |
-          zip -r resources.zip resources
+          Compress-Archive -Path resources -DestinationPath resources.zip -Force
 
       # Uploads artifacts
       - name: "Upload Artifacts"
