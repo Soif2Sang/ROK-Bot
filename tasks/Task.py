@@ -54,7 +54,7 @@ class Task:
         self.tile = tile
         self.sel: str = tile.number
         self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
-        self.context_profile: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
+        self.context_profile: ProfileSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
         self.FileSingleton = FileSingleton()
 
         emulator = EmulatorSingleton().getEmulatorType()

@@ -30,6 +30,10 @@ class MinMaxSchema:
     min: int = 0
     max: int = 0
 
+    def sort(self):
+        if self.min > self.max:
+            self.min, self.max = self.max, self.min
+
 
 @dataclass_json
 @dataclass
