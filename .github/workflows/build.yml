@@ -53,6 +53,9 @@ jobs:
           windows-product-version: 1.0
 
           # macos-create-app-bundle: ${{ runner.os == 'macOS' }}
+      - name: Zip resources directory
+        run: |
+          zip -r resources.zip resources
 
       # Uploads artifacts
       - name: "Upload Artifacts"
@@ -60,7 +63,7 @@ jobs:
         with:
           name: ${{ runner.os }} Build
           path: |
-            resources/**
+            resources.zip
             build/*.exe
             build/*.bin
             build/*.app/**/*
