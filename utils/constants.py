@@ -2,7 +2,7 @@ from typing import Literal
 
 DEBUG = False
 VERSION_TYPE: Literal["global", "brazilian"] = "global"
-VERSION_NUMBER = "3.4.0"
+VERSION_NUMBER = "3.4.1"
 TOAST_HISTORY = {}
 
 names = {"global": "RokNet", "brazilian": "ROKBOT"}
