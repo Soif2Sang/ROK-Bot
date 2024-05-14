@@ -17,6 +17,7 @@ class UpgradeCity(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.tile)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.upgrade_city
 
     def task_name(self):
         return "UpgradeCity"
@@ -153,11 +154,11 @@ class UpgradeCity(Task):
 
     @get_class
     def run1(self):
-        ch_position = self.data[str(self.sel)]["schedules"][self.current_profile].get("city_hall_position", [])
-        if not ch_position:
+        ch_position = self.context_task.city_hall_position
+        if not (ch_position.x and ch_position.y):
             return
 
-        x, y = ch_position
+        x, y = ch_position.x, ch_position.y
 
         already_upgrading = self.adb.find_multiple_img("already_upgrading", confidence=0.7)
 
@@ -184,7 +185,7 @@ class UpgradeCity(Task):
 
     @get_class
     def run(self):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("upgrade_city_method", "normal"):
+        if self.context_task.method == "normal":
             self.run1()
         self.setup_view()
         for i in range(2):

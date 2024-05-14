@@ -63,6 +63,11 @@ class RssTransfer(Task):
     @get_name
     def setup_ui(self, deadstop=0):
         if deadstop == 3:
+            self.generate_toast(
+                "Error",
+                f"Bot struggles to find the city you target. Please check the city position.",
+            )
+            self.print("Bot struggles to find the city you target. Please check the city position.", color="red")
             raise ValueError()
 
         city = self.context_task.transfer_position

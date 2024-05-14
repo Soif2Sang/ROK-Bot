@@ -57,7 +57,7 @@ class SettingContainer(PageSettings):
             self.create_advanced_switch("tasks.claim_daily_expedition_rewards.enabled", "Claim Expedition Rewards", PageExpedition)
             self.create_normal_switch("tasks.claim_mail.enabled", "Claim Mails")
             self.create_normal_switch("tasks.alliance_help.enabled", "Help Alliance")
-            self.create_normal_switch("tasks.help_alliance_building", "Help Alliance Buildings")
+            self.create_normal_switch("tasks.help_alliance_building.enabled", "Help Alliance Buildings")
             #
             self.create_advanced_switch("tasks.kill_barbarian.enabled", "Hunt Barbarians", PageBarbs)
             self.create_advanced_switch("tasks.alliance_fort.enabled", "Start Fort Rally", PageRally)
