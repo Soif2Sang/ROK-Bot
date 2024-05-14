@@ -529,7 +529,7 @@ class Marauders(Task):
 
         preset_indexes = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6, "seventh": 7}
         for preset, value in preset_indexes.items():
-            if not rgetattr(self.context_task.presets_selection, preset):
+            if rgetattr(self.context_task.presets_selection, preset):
                 hunters += 1
                 continue
             else:
