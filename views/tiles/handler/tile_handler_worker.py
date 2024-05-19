@@ -6,7 +6,7 @@ from flet_core import ButtonStyle, RoundedRectangleBorder
 from utils.schemas.emulator_schemas import EmulatorSettingsSchema
 from utils.schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
 
-from utils.constants import VERSION_TYPE, default_dic, default_profile, default_worker_settings
+from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
 from utils.functions import get_dic_instances, get_dic_instances_ld
 from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton, ss
