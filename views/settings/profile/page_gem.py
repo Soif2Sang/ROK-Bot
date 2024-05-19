@@ -80,7 +80,7 @@ class PageGem(BasePage):
 
         max_duration_text_field = ft.TextField(
             label=translate("Maximum running duration (mins)"),
-            value=str(self.context.duration.min),
+            value=str(self.context.duration.max),
             content_padding=ft.padding.all(10),
             on_change=self.submit_with_context,
             input_filter=ft.NumbersOnlyInputFilter(),
