@@ -77,6 +77,8 @@ class LoginScreen(ft.ResponsiveRow):
         for tier in links["sellix"]:
             sellix_col.controls.append(ClickableLink("Crypto Paywall", links["sellix"][tier], sellix_icon))
 
+        tier_col = ft.Column()
+
         if VERSION_TYPE == "global":
             tier_col = ft.Column(
                 controls=[
@@ -86,7 +88,7 @@ class LoginScreen(ft.ResponsiveRow):
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             )
-        else:
+        elif VERSION_TYPE == "brazilian":
             tier_col = ft.Column(
                 controls=[
                     ClickableLink(
@@ -105,6 +107,7 @@ class LoginScreen(ft.ResponsiveRow):
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             )
+
         self.controls = [
             ft.Container(
                 bgcolor=ft.colors.GREY_100,
