@@ -1,11 +1,11 @@
 from typing import Literal
 
 DEBUG = False
-VERSION_TYPE: Literal["global", "brazilian"] = "brazilian"
-VERSION_NUMBER = "3.4.1"
+VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "brazilian"
+VERSION_NUMBER = "3.4.2"
 TOAST_HISTORY = {}
 
-names: dict[Literal["global", "brazilian"], Literal["RokNet", "ROKBOT"]] = {"global": "RokNet", "brazilian": "ROKBOT"}
+names: dict[Literal["global", "brazilian", "arabic"], Literal["RokNet", "ROKBOT"]] = {"global": "RokNet","arabic": "RokNet", "brazilian": "ROKBOT"}
 
 BOT_NAME: Literal["RokNet", "ROKBOT"] = names[VERSION_TYPE]
 
