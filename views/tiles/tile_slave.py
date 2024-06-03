@@ -48,8 +48,7 @@ class ConfigOverrider(ft.PopupMenuButton):
 
         if str(e.control.data) in ss.page.frames:
             for tab in ss.page.frames[str(e.control.data)].settings.tabs:
-                tab.content.content.controls = []
-                tab.content.init()
+                tab.content.reset()
 
         ss.page.update()
 

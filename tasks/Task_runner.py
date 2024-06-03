@@ -355,6 +355,24 @@ class TaskRunner(Task):
         self.better_sleep((1.925, 2.795))
         trigger_stop = 0
 
+        screen = self.adb.get_cv2_img()
+
+        is_character_list_header_visible = self.find_img(
+            target="star_characters",
+            source=screen,
+            confidence=0.8,
+        )
+
+        if is_character_list_header_visible:
+            is_character_list_expended = self.find_img(
+                target="is_alliance_pit_expended",
+                source=screen[:200, 1050:1100],
+                confidence=0.75,
+            )
+            if not is_character_list_expended:
+                self.click(is_character_list_header_visible[0], is_character_list_header_visible[1])
+                self.better_sleep((1, 2))
+
         while self.find_img(target="logged_icon", confidence=0.7) is None:
             self.check_captcha()
             self.check_captcha_slider()
@@ -491,6 +509,24 @@ class TaskRunner(Task):
 
         self.better_sleep((1.925, 2.795))
         trigger_stop = 0
+
+        screen = self.adb.get_cv2_img()
+
+        is_character_list_header_visible = self.find_img(
+            target="star_characters",
+            source=screen,
+            confidence=0.8,
+        )
+
+        if is_character_list_header_visible:
+            is_character_list_expended = self.find_img(
+                target="is_alliance_pit_expended",
+                source=screen[:200, 1050:1100],
+                confidence=0.75,
+            )
+            if not is_character_list_expended:
+                self.click(is_character_list_header_visible[0], is_character_list_header_visible[1])
+                self.better_sleep((1, 2))
 
         while self.find_img(target="logged_icon", confidence=0.7) is None:
             self.check_captcha()

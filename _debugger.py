@@ -257,10 +257,28 @@ from cv2 import (
 )
 
 if __name__ == "__main__":
-    sel = "4"
+    sel = "0"
 
-    bo = get_bot(sel)
-    print(bo.task.find_cross())
+    bot = get_bot(sel)
+
+    screen = bot.task.adb.get_cv2_img()
+
+    is_character_list_header_visible = bot.task.find_img(
+        target="star_characters",
+        source=screen,
+        confidence=0.8,
+    )
+
+    if is_character_list_header_visible:
+        is_character_list_expended = bot.task.find_img(
+            target="is_alliance_pit_expended",
+            source=screen[:200, 1050:1100],
+            confidence=0.75,
+        )
+        if not is_character_list_expended:
+            bot.task.click(is_character_list_header_visible[0], is_character_list_header_visible[1])
+            bot.task.better_sleep((1, 2))
+
     exit()
 
     screen = imread("./screen_city_hall.png")

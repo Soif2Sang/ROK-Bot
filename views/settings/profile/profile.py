@@ -33,6 +33,10 @@ class SettingContainer(PageSettings):
         self.content.controls = []
 
     def reset(self):
+        self.tasks = ss.emulator_settings.emulators[str(self.instance_index)].schedules[str(self.profile_index)].tasks
+        self.context = ss.emulator_settings.emulators[str(self.instance_index)].schedules[str(self.profile_index)]
+        self.instance_context = ss.emulator_settings.emulators[str(self.instance_index)]
+
         self.clean()
         self.init()
         ss.page.update()
