@@ -16,7 +16,7 @@ class FletRowRss(ft.ResponsiveRow):
         self.context: TaskGatherRssSchema = context
 
         self.node_level_dropdown = ft.Dropdown(
-            content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
+            content_padding=ft.padding.all(1),  # modify to your likings
             label=translate("Node Level"),
             options=[
                 ft.dropdown.Option("1"),
@@ -34,6 +34,7 @@ class FletRowRss(ft.ResponsiveRow):
             on_change=self.submit_with_context,
             disabled=self.context.search_method == "zoom",
             data={"path": f"{key.lower()}_node.level", "type": int},
+            width=100
         )
 
         self.controls = [
@@ -50,7 +51,7 @@ class FletRowRss(ft.ResponsiveRow):
             ft.Column(
                 controls=[
                     ft.Dropdown(
-                        content_padding=ft.Padding(left=5, top=3, right=5, bottom=3),  # modify to your likings
+                        content_padding=ft.padding.all(1),  # modify to your likings
                         label=translate("Node Type"),
                         options=[
                             ft.dropdown.Option("food"),

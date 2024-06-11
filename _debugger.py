@@ -257,7 +257,7 @@ from cv2 import (
 )
 
 if __name__ == "__main__":
-    sel = "4"
+    sel = "2"
 
     bo = get_bot(sel)
     print(bo.task.find_cross())

@@ -41,6 +41,7 @@ class PageRss(BasePage):
             ],
             value=self.context.availability,
             on_change=self.submit_with_context,
+            content_padding=ft.padding.all(10),
             data={"path": "availability", "type": str},
         )
 

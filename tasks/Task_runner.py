@@ -331,10 +331,6 @@ class TaskRunner(Task):
         self.enter_characters()
         self.better_sleep((0.925, 1.795))
 
-        if self.find_img("star") is None:
-            self.click(uniform(600, 900), uniform(170, 177))
-            self.better_sleep((1.925, 2.795))
-
         stop = 0
         while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color:
             self.better_sleep((2, 3))
@@ -354,6 +350,10 @@ class TaskRunner(Task):
 
         self.better_sleep((1.925, 2.795))
         trigger_stop = 0
+
+        if self.find_img("star") is None:
+            self.click(uniform(600, 900), uniform(170, 177))
+            self.better_sleep((1.925, 2.795))
 
         while self.find_img(target="logged_icon", confidence=0.7) is None:
             self.check_captcha()

@@ -1,7 +1,7 @@
 from typing import Literal
 
-DEBUG = False
-VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "brazilian"
+DEBUG = True
+VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "global"
 VERSION_NUMBER = "3.4.2"
 TOAST_HISTORY = {}
 
