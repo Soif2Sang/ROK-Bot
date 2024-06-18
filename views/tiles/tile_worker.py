@@ -104,7 +104,9 @@ class TileWorker(ft.ExpansionTile):
 
         self.button_start.icon = ft.icons.PAUSE
         self.button_start.on_click = self.pause
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def pause(self, e):
         for slaves_tiles in self.controls:
@@ -113,7 +115,9 @@ class TileWorker(ft.ExpansionTile):
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_start.on_click = self.resume
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def stop(self, e):
         for slaves_tiles in self.controls:
@@ -125,7 +129,9 @@ class TileWorker(ft.ExpansionTile):
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def start_tasks(self):
         if not self.tasks_process.is_alive():
@@ -147,11 +153,13 @@ class TileWorker(ft.ExpansionTile):
 
         ss.page.body.controls.append(ss.page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
-        ss.page.update()
+
+        if ss.page.body.__getattribute__("page"):
+            ss.page.body.update()
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        ss.page.update()
+        self.update()
 
     def get_text(self):
         return self.text_status.value
@@ -189,4 +197,5 @@ class TileWorker(ft.ExpansionTile):
                 self.slaves[instance] = TileSlave(instance)
             self.controls.append(self.slaves[instance])
 
-        ss.page.update()
+        if self.__getattribute__("page"):
+            self.update()

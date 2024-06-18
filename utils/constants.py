@@ -1,8 +1,8 @@
 from typing import Literal
 
-DEBUG = True
+DEBUG = False
 VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "global"
-VERSION_NUMBER = "3.4.2"
+VERSION_NUMBER = "3.4.3"
 TOAST_HISTORY = {}
 
 names: dict[Literal["global", "brazilian", "arabic"], Literal["RokNet", "ROKBOT"]] = {"global": "RokNet","arabic": "RokNet", "brazilian": "ROKBOT"}

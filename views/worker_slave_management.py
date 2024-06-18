@@ -184,7 +184,8 @@ class Worker(ft.Container):
             ),
         )
 
-        ss.page.update()
+        if self.slaves.__getattribute__("page"):
+            self.slaves.update()
 
     def drag_will_accept(self, e):
         e.control.content.border = ft.border.all(2, ft.colors.BLACK45 if e.data == "true" else ft.colors.RED)
@@ -217,7 +218,8 @@ class Worker(ft.Container):
         ss.write_worker_settings(self.worker_settings)
 
         self.add_dragtarget()
-        ss.page.update()
+        if self.__getattribute__("page"):
+            self.update()
 
     def on_delete(self, e):
         emulator_settings = ss.emulator_settings
@@ -228,7 +230,8 @@ class Worker(ft.Container):
         self.worker_settings.worker_type[self.emulator_type].workers[self.instance].instances = self.get_all()
         ss.write_worker_settings(self.worker_settings)
 
-        ss.page.update()
+        if self.__getattribute__("page"):
+            self.update()
 
     def get_all(self):
         order: List[InstanceSchema] = []

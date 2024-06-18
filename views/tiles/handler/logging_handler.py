@@ -22,10 +22,14 @@ class Logger(ft.ListView):
         if self.limit_logs and len(self.controls) > 140:
             self.controls.pop(0)
         self.controls.append(text)
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def add_divider(self):
         if self.limit_logs and len(self.controls) > 140:
             self.controls.pop(0)
         self.controls.append(ft.Divider())
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
