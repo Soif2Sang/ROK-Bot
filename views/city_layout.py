@@ -176,7 +176,9 @@ class CityPlacement(ft.Container):
                 index = i
 
         self.buttons.controls[index].color = "red"
-        self.buttons.page.update()
+
+        if self.buttons.__getattribute__("page"):
+            self.update()
 
     def on_tap_update(self, e: ft.ContainerTapEvent):
         if self.current_attribute is None:
