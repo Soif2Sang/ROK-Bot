@@ -22,7 +22,9 @@ class GeneralSettings(PageSettings):
     def reset(self):
         self.clean()
         self.init()
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def add(self, *controls):
         for control in controls:
