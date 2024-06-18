@@ -83,7 +83,11 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
     image = adb.get_cv2_img()
     image = image[:146, 1072:]
 
-    cv2.imwrite("assets/map.png", image)
+    # Encode the image to a PNG or JPEG format
+    _, buffer = cv2.imencode('.png', image)
+
+    # Convert the buffer to a Base64 string
+    encoded_string = base64.b64encode(buffer).decode('utf-8')
 
     def returnHome():
         page.window_width = 450
@@ -103,7 +107,7 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
                 ),
             ),
             ft.Text(value="Click anywhere on the map to set the center of the searching area."),
-            MapContainer(image, params.task, params.instance_index, params.profile_index),
+            MapContainer(encoded_string, params.task, params.instance_index, params.profile_index),
         ],
     )
 
@@ -239,7 +243,7 @@ class MapContainer(ft.Container):
         self.main_container = ft.Stack(
             controls=[
                 ft.Container(
-                    image_src="map.png",
+                    image_src_base64=image64,
                     height=146 * 2,
                     width=208 * 2,
                     image_fit=ft.ImageFit.FILL,
