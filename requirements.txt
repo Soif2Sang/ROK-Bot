@@ -13,7 +13,7 @@ PyAutoGUI==0.9.54
 pytesseract==0.3.10
 pywin32==305
 hikari==2.0.0.dev120
-flet
+flet==0.22.0
 nuitka
 supabase
 dataclasses_json
