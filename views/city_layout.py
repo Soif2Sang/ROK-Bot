@@ -222,11 +222,11 @@ class CityPlacement(ft.Container):
                 opacity=0.7,
             )
         )
-        self.page.update()
+        self.update()
 
     def remove_self(self, e):
         self.main_container.controls.remove(e.control)
-        self.page.update()
+        self.main_container.update()
 
         rsetattr(ss.emulator_settings.emulators[str(self.instance)].schedules[str(self.profile)].tasks, e.control.key, CordsSchema())
         ss.write_emulator_settings(ss.emulator_settings)

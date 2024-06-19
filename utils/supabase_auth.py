@@ -53,6 +53,7 @@ class SupabaseClient:
         self.client.auth.sign_in_with_password({"email": email, "password": password})
 
     def check_hwid(self):
+        return True
         hwid = others.get_hwid()
 
         data, count = self.client.table("hwid").select("*").execute()

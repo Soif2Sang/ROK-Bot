@@ -36,7 +36,9 @@ class BasePage:
         )
 
         self.profile.content.scroll_to(delta=-1000, duration=1)
-        ss.page.update()
+
+        if self.profile.__getattribute__("page"):
+            self.profile.update()
 
     def add_control(self, *control):
         for ctrl in control:

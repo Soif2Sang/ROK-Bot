@@ -81,7 +81,9 @@ class PageProfiles(BasePage):
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             ),
         )
-        ss.page.update()
+
+        if self.profile.__getattribute__("page"):
+            self.profile.update()
 
     def submit_with_context(self, e):
         ss.emulator_settings.emulators[self.instance_index].schedules[e.control.data].enabled = e.control.value

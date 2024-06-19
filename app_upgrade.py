@@ -78,10 +78,10 @@ def main(page: ft.Page):
     )
 
     page.app_routes = [
-        path(url="/", clear=False, view=index),
-        path(url="/login", clear=False, view=login),
-        path(url=f"/emulator-choice", clear=False, view=emulator_choice),
-        path(url=f"/emulator-loading", clear=False, view=loading_files),
+        path(url="/", clear=True, view=index),
+        path(url="/login", clear=True, view=login),
+        path(url=f"/emulator-choice", clear=True, view=emulator_choice),
+        path(url=f"/emulator-loading", clear=True, view=loading_files),
         path(
             url=f"/city-layout/:instance_index/:profile_index",
             clear=False,
@@ -97,8 +97,8 @@ def main(page: ft.Page):
             clear=False,
             view=viewProfileSettings,
         ),
-        path(url="/configure-workers", clear=False, view=configure_workers),
-        path(url="/settings", clear=False, view=settings),
+        path(url="/configure-workers", clear=True, view=configure_workers),
+        path(url="/settings", clear=True, view=settings),
     ]
 
     page.routing = Routing(

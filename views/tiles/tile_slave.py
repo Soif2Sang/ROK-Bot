@@ -29,7 +29,9 @@ class ConfigOverrider(ft.PopupMenuButton):
     def refresh(self):
         self.items = []
         self.init()
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def override_settings(self, e):
         instance = ss.emulator_settings.emulators[str(e.control.data)].instance
@@ -51,7 +53,8 @@ class ConfigOverrider(ft.PopupMenuButton):
                 tab.content.content.controls = []
                 tab.content.init()
 
-        ss.page.update()
+        if self.__getattribute__("page"):
+            self.update()
 
 
 class TileSlave(ft.Container):
@@ -93,7 +96,9 @@ class TileSlave(ft.Container):
             if (e.data == "true" or ss.page.body.controls[-1] == ss.page.frames.get(self.number, False))
             else ft.colors.SURFACE
         )
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def select(self, e):
         ss.page.tile_manager.unselect_all()
@@ -106,11 +111,19 @@ class TileSlave(ft.Container):
 
         ss.page.body.controls.append(ss.page.frames[self.number])
         self.bgcolor = ft.colors.SURFACE_VARIANT
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
+
+        for view in ss.page.views:
+            if view.route == '/' and view.__getattribute__("page"):
+                view.update()
 
     def set_text(self, phrase: str):
         self.text_status.value = phrase
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def get_text(self):
         return self.text_status.value
