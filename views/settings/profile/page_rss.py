@@ -96,4 +96,6 @@ class PageRss(BasePage):
         self.context.search_method = data
 
         ss.write_emulator_settings(ss.emulator_settings)
-        ss.page.update()
+
+        if self.profile.__getattribute__("page"):
+            self.profile.update()

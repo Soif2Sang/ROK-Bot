@@ -28,7 +28,9 @@ class PageSettings(ft.Container):
         self.content.controls = []
         # self.data = self.FileSingleton.get_data()
         self.init()
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def init(self):
         pass
