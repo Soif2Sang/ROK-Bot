@@ -50,4 +50,6 @@ class PageRedo(BasePage):
                 margin=ft.margin.only(left=50, top=5),
             ),
         )
-        self.profile.initial_page.update()
+
+        if self.profile.__getattribute__("page"):
+            self.profile.update()

@@ -119,12 +119,16 @@ class TileHandlerWorker(ft.ListView):
             self.tiles[number].refresh_tile()
 
         self.controls.append(self.tiles[number])
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def delete_tile(self, number: str):
         self.controls.remove(self.tiles[number])
         self.tiles.pop(number)
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def unselect_all(self):
         for tile in self.controls[1:]:
@@ -132,7 +136,9 @@ class TileHandlerWorker(ft.ListView):
                 # tile.button_select.selected = False
                 for control in tile.controls:
                     control.bgcolor = ft.colors.SURFACE
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def set_status(self, number: str, phrase: str):
         self.tiles[number].set_text(phrase)
@@ -218,8 +224,10 @@ class TileHandlerWorker(ft.ListView):
                 if worker_settings.worker_type[emulator].workers[worker].instances:
                     self.add_tile(worker)
 
-        return ss.page.update()
+        if self.__getattribute__("page"):
+            self.update()
 
+        return
         if instances:
             for instance in instances:
                 if str(instance[0]) in self.tiles:

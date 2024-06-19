@@ -35,7 +35,9 @@ class SettingContainer(PageSettings):
     def reset(self):
         self.clean()
         self.init()
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def init(self):
         self.create_advanced_switch("tasks.gather_gem.enabled", "Gem Gathering", PageGem)
@@ -120,7 +122,9 @@ class SettingContainer(PageSettings):
                 data={"path": "enable_switch_character_restart_during_game_load", "type": bool},
             )
         )
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def reverse_keyword(self, keyword: str, index=None):
         if index is None:
@@ -137,7 +141,9 @@ class SettingContainer(PageSettings):
 
     def handleSettings(self, function):
         function(self)
-        ss.page.update()
+
+        if self.__getattribute__("page"):
+            self.update()
 
     def submit_with_context(self, e):
         rsetattr(
