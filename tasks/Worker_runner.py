@@ -21,8 +21,6 @@ class WorkerRunner:
 
         loop_task = 1 if not ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task else 9999999
 
-        print(loop_task)
-
         for i in range(loop_task):
             cycle_started_at = time()
             nb_tile = 0

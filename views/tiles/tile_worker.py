@@ -2,6 +2,7 @@ import threading
 
 import flet as ft
 
+from utils.context import contextManager
 from utils.schemas.application_schemas import TileWorkerSchema
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
@@ -18,8 +19,6 @@ class TileWorker(ft.ExpansionTile):
     def __init__(self, number: str, **kwargs):
         super().__init__(**kwargs)
         self.number = number
-        self.paused = False
-        self.stopped = False
 
         # if EmulatorSingleton().getEmulatorType() == "pc":
         #     self.main_task = TaskPC(self)
@@ -68,28 +67,15 @@ class TileWorker(ft.ExpansionTile):
 
 
     def start(self, e):
+        contextManager.start(self.runner, self.controls)
+
         self.button_start.icon = ft.icons.PAUSE
         self.button_stop.disabled = False
-
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-            slaves_tiles.stopped = False
-
-        self.paused = False
-        self.stopped = False
-
-        self.start_tasks()
         self.button_start.on_click = self.pause
+
         self.tasks_process.join()
 
         self.button_start.on_click = self.start
-
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-            slaves_tiles.stopped = False
-        self.paused = False
-        self.stopped = False
-
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
 
@@ -98,9 +84,7 @@ class TileWorker(ft.ExpansionTile):
             tiles.set_text("")
 
     def resume(self, e):
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-        self.paused = False
+        contextManager.resume(self.runner)
 
         self.button_start.icon = ft.icons.PAUSE
         self.button_start.on_click = self.pause
@@ -109,9 +93,7 @@ class TileWorker(ft.ExpansionTile):
             self.update()
 
     def pause(self, e):
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = True
-        self.paused = True
+        contextManager.pause(self.runner)
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_start.on_click = self.resume
@@ -120,26 +102,13 @@ class TileWorker(ft.ExpansionTile):
             self.update()
 
     def stop(self, e):
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-            slaves_tiles.stopped = True
-
-        self.paused = False
-        self.stopped = True
+        contextManager.stop(self.runner)
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
 
         if self.__getattribute__("page"):
             self.update()
-
-    def start_tasks(self):
-        if not self.tasks_process.is_alive():
-            self.tasks_process = threading.Thread(target=self.runner.run, args=(self.controls,))
-            self.tasks_process.start()
-        else:
-            self.add_text("Task is frozen, you may need to restart the bot.")
-            ss.page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
 
     def select(self, e):
         ss.page.tile_manager.unselect_all()

@@ -15,6 +15,8 @@ import cv2
 import deprecation
 import flet as ft
 
+from context import contextManager
+
 try:
     import win32api
     import win32con
@@ -79,6 +81,7 @@ class Task:
         self.DEV = MainTask.DEV
         self.FileSingleton = MainTask.FileSingleton
         self.context_profile = MainTask.context_profile
+        self.runner_number = MainTask.runner_number
         # self.data = MainTask.data
 
     def debug(self, arg):
@@ -90,14 +93,14 @@ class Task:
     def script_pause(self):
         said = False
 
-        while self.tile.paused:
+        while contextManager.runners.get(self.runner_number).status == "paused":
             if not said:
                 self.set_text(f"[{current_time()}] Script is paused.", "orange")
                 self.debug("Script is paused.")
                 said = True
             sleep(0.001)
 
-        if self.tile.stopped:
+        if contextManager.runners.get(self.runner_number).status == "stopped":
             self.set_text(f"[{current_time()}] You stopped the bot", "Red")
             self.set_divider()
             self.set_status("")
