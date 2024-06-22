@@ -49,3 +49,4 @@ logs/*
 /.vscode
 appSubscriptionManagerGLOBAL.py
 appSubscriptionManagerSupabase.py
+.env

@@ -10,7 +10,7 @@ from utils.functions import get_class
 
 class ClaimCampaign(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.claim_daily_expedition_rewards
 

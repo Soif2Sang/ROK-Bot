@@ -31,7 +31,7 @@ class Task:
         return self.tile.add_text(text, color)
 
     def set_status(self, text):
-        return self.tile.set_text(text)
+        return self.tile.set_status(text)
 
     def set_timer(self, seconds: int):
         condition = True
@@ -282,7 +282,7 @@ class Task:
                 self.run_game()
                 return True
             else:
-                self.set_text("Auto Log-back off", "red")
+                self.set_status("Auto Log-back off", "red")
                 self.send_discord_message("The game got disconnected, Log-back off.")
                 while True:
                     self.script_pause()

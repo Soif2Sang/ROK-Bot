@@ -3,6 +3,8 @@ import re
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+
+from utils.context import contextManager
 from utils.schemas.emulator_schemas import EmulatorSettingsSchema
 from utils.schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
 
@@ -102,23 +104,36 @@ class NavigationBar(ft.Row):
 
 
 class TileHandlerWorker(ft.ListView):
+    _instance = None
+    initialized = False
+
+    def __new__(cls, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(TileHandlerWorker, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.height = 300
-        self.expand = 0
-        self.spacing = 1
-        self.FileSingleton = FileSingleton()
-        self.tiles: dict[str, TileWorker] = {}
-        self.navigation_bar: NavigationBar = NavigationBar(self)
-        self.controls.append(self.navigation_bar)
+        # Check if the instance is already initialized
+        if not hasattr(self, 'initialized') or not self.initialized:
+            super().__init__(**kwargs)
+            self.height = 300
+            self.expand = 0
+            self.spacing = 1
+            self.FileSingleton = FileSingleton()
+            self.tiles: dict[str, TileWorker] = {}
+            self.navigation_bar: NavigationBar = NavigationBar(self)
+            self.controls.append(self.navigation_bar)
+            self.initialized = True
 
     def add_tile(self, number: str):
         if number not in self.tiles:
             self.tiles[number] = TileWorker(number)
+            contextManager.add_worker(number, self.tiles[number])
         else:
             self.tiles[number].refresh_tile()
 
         self.controls.append(self.tiles[number])
+
         ss.page.update()
 
     def delete_tile(self, number: str):

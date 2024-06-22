@@ -1,37 +1,41 @@
+from __future__ import annotations
+
 import dataclasses
 from datetime import timedelta
 from random import randint
 from time import time
 from typing import Literal
+from utils.context import contextManager
 
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
-from utils.schemas.application_schemas import TileSlaveSchema, TileWorkerSchema
 from utils.singletons import EmulatorSingleton, ss
+from utils.schemas.application_schemas import TileSlaveSchema, TileWorkerSchema
 
 
 @dataclasses.dataclass
 class WorkerRunner:
     instance_id: str
-    tile_worker: TileWorkerSchema
     emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
 
-    def run(self, tiles: [TileSlaveSchema]):
+    def run(self):
         self.emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
+        self.slaves = ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].instances
 
         loop_task = 1 if not ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task else 9999999
 
         for i in range(loop_task):
+            contextManager.tasks.get(self.instance_id).status = "running"
             cycle_started_at = time()
             nb_tile = 0
-            for enabled_tile in tiles:
-                enabled_tile.set_text(f"In queue ({nb_tile})")
+
+            for slave in self.slaves:
+                contextManager.get_slave(slave.instance).set_status(f"In queue ({nb_tile})")
                 nb_tile += 1
 
-            for enabled_tile in tiles:
+            for slave in self.slaves:
                 runner_started_at = time()
-
-                runner = TaskRunner(Task(enabled_tile), self.tile_worker)
+                runner = TaskRunner(Task(slave.instance))
                 runner.run()
 
                 if runner.has_started_once:
@@ -58,14 +62,23 @@ class WorkerRunner:
                 # Calculate a random time before redoing tasks, within the range of min_cooldown and max_cooldown
                 time_before_redo_tasks = int(randint(min_cooldown, max_cooldown) * 60) + randint(0, 60)
 
-                # Iterate over the tiles
-                for i, enabled_tile in enumerate(tiles):
+                for slave in self.slaves:
                     # Add text to the tile indicating the time taken for the run
                     time_taken = (time() - cycle_started_at) / 60
-                    enabled_tile.add_text(f"Run nb°{i} took {time_taken:0.1f} minutes to complete.")
+                    contextManager.get_slave(slave.instance).add_text(f"Run nb°{i} took {time_taken:0.1f} minutes to complete.")
 
                     # Update the tile's text to show its position in the queue
-                    enabled_tile.set_text(f"In queue ({i})")
+                    contextManager.get_slave(slave.instance).set_status(f"In queue ({i})")
 
                 # Set a timer for the first tile in the list
-                Task(tiles[0]).set_timer(time_before_redo_tasks)
+                Task(self.slaves[0].instance).set_timer(time_before_redo_tasks)
+
+            contextManager.tasks.get(self.instance_id).status = "idle"
+
+    def get_screen(self):
+        self.emulator_type = "ld"
+        self.slaves = ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].instances
+
+        for slave in self.slaves:
+            runner = TaskRunner(Task(slave.instance))
+            return runner.adb.get_cv2_img()

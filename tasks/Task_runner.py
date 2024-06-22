@@ -6,6 +6,8 @@ from time import sleep, time
 
 import flet as ft
 
+from utils.context import contextManager
+
 try:
     import win32api
     import win32con
@@ -53,12 +55,11 @@ from views.frametime import is_slot_runnable, random_time_in_frametime
 
 
 class TaskRunner(Task):
-    def __init__(self, MainTask: Task, tile):
-        super().__init__(MainTask.tile)
+    def __init__(self, MainTask: Task):
+        super().__init__(MainTask.sel)
         self.has_started_once = False
         self.herite(MainTask)
         self.FileSingleton = FileSingleton()
-        self.runner_number = tile.number
 
     def task_name(self):
         return "runner"
@@ -569,6 +570,8 @@ class TaskRunner(Task):
         if not win32gui.FindWindow(None, self.name):
             print(f"Bot will wait until the device is properly booted.")
             self.set_status("Booting")
+            self.print("Booting...", "green")
+
             EmulatorSingleton().startEmulator(emulator)
             try:
                 self.adb.wait_boot_complete(timeout=120, timedelta=10)
@@ -601,12 +604,12 @@ class TaskRunner(Task):
     def set_status(self, text):
         super().set_status(text)
 
-        if hasattr(self, "worker"):
-            self.worker.set_text(text)
+        contextManager.get_worker(self.runner_number).set_status(text)
 
     @get_class
     def run(self):
-        self.set_sel(self.tile.number)
+        print(self.sel)
+
         self.character_index = 1
         self.has_started_once = False
         emulator = EmulatorSingleton().getEmulatorType()
@@ -638,7 +641,7 @@ class TaskRunner(Task):
             self.start_emulator(self.tile.number)
             self.tile.runner = self
             self.set_status("Starting..")
-
+            self.print("Starting...", "green")
             # First character
             self.current_profile = profile
 

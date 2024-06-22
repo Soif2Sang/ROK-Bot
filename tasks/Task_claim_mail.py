@@ -9,7 +9,7 @@ from utils.functions import get_class
 
 class ClaimMail(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel)
         self.herite(MainTask)
 
     def task_name(self):
