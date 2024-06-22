@@ -50,7 +50,7 @@ from views.frametime import is_slot_runnable, random_time_in_frametime
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel)
         self.herite(MainTask)
 
     def task_name(self):
@@ -710,7 +710,7 @@ class TaskRunner(Task):
             first = tiles[0].number
             nb_tile = 0
             for enabled_tile in tiles:
-                enabled_tile.set_text(f"In queue ({nb_tile})")
+                enabled_tile.set_status(f"In queue ({nb_tile})")
                 nb_tile += 1
 
             for enabled_tile in tiles:
@@ -801,7 +801,7 @@ class TaskRunner(Task):
                 # self.set_status((datetime.fromtimestamp(time_before_redo_tasks) - timedelta(hours=1)).strftime("%H:%M:%S"))
                 nb_tile = 0
                 for enabled_tile in tiles:
-                    enabled_tile.set_text(f"In queue ({nb_tile})")
+                    enabled_tile.set_status(f"In queue ({nb_tile})")
                     nb_tile += 1
 
                 self.set_timer(time_before_redo_tasks)
@@ -814,7 +814,7 @@ class TaskRunner(Task):
     def set_status(self, text):
         super().set_status(text)
         if hasattr(self, "worker"):
-            self.worker.set_text(text)
+            self.worker.set_status(text)
 
     @get_name
     def run4(self, tiles=None):
@@ -830,7 +830,7 @@ class TaskRunner(Task):
             cycle_started_at = time()
             nb_tile = 0
             for enabled_tile in tiles:
-                enabled_tile.set_text(f"In queue ({nb_tile})")
+                enabled_tile.set_status(f"In queue ({nb_tile})")
                 nb_tile += 1
 
             for enabled_tile in tiles:
@@ -921,7 +921,7 @@ class TaskRunner(Task):
 
                 for i, enabled_tile in enumerate(tiles):
                     enabled_tile.add_text(f"Run nb°{i} took {(time() - cycle_started_at) / 60:0.1f} minutes to complete.")
-                    enabled_tile.set_text(f"In queue ({i})")
+                    enabled_tile.set_status(f"In queue ({i})")
 
                 self.tile = self.worker
                 self.set_timer(time_before_redo_tasks)

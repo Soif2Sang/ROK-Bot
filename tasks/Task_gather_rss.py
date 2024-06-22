@@ -12,7 +12,7 @@ from utils.functions import get_class, get_name, rgetattr
 
 class GatherRss(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.gather_rss
 
@@ -73,7 +73,7 @@ class GatherRss(Task):
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
-                self.set_text("Error in line-up selection")
+                self.set_status("Error in line-up selection")
                 self.send_discord_message("Error in line-up selection, human interaction required.")
                 while True:
                     self.script_pause()

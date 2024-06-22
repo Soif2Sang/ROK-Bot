@@ -1,14 +1,13 @@
 import discord
 
-from utils.singletons import FileSingleton
+from utils.singletons import ss
 
 token = "MTEwMDM2MTgyNTQ0MDIzOTY3Ng.GJkXHM.ZoG-FJI5RcnaLYnvFnQUiUgIVU5EcPwi81l-go"
 
 
 async def send_discord_message(name, message, path=None):
-    file_Manager = FileSingleton()
-    data = file_Manager.get_data()
-    user_id = data["discord"]["user_id"]
+    user_id = ss.application_settings.discord.user_id
+
     if not user_id:
         return
     intents = discord.Intents.default()

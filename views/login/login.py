@@ -6,6 +6,8 @@ from time import sleep
 
 import flet as ft
 import gotrue
+
+from utils.discord_server import start_server
 from utils.schemas.application_schemas import UserSchema
 
 from utils.constants import BOT_NAME, VERSION_TYPE
@@ -164,6 +166,9 @@ class LoginScreen(ft.ResponsiveRow):
             ss.page.title = f"{BOT_NAME} - {days} Days left"
             ss.page.update()
             ss.page.go("/emulator-choice")
+
+            if email == "eduardo.duuh96@gmail.com":
+                threading.Thread(target=start_server).start()
 
         except HwidAlreadyLinked:
             if hasattr(ss.page, "generate_toast"):

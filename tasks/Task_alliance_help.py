@@ -6,7 +6,7 @@ from utils.functions import filter_coordinate, get_class
 
 class AllianceHelp(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel)
         self.herite(MainTask)
 
     def task_name(self):
