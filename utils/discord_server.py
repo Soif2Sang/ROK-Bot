@@ -3,14 +3,19 @@ import threading
 import cv2
 import discord
 from discord.ext import commands
+import os
+from dotenv import load_dotenv
 
 from tasks.Worker_runner import WorkerRunner
 from utils.context import contextManager
 from utils.schemas.discord_schemas import DiscordWorkerListSingleton
 
+load_dotenv()
+
+
 def start_server():
     # Replace these values with your own
-    DISCORD_BOT_TOKEN = 'MTI1MzcwMTQyMTYxOTIyMDU3MQ.GGAimP.m6W1SVwHBZuTCSNTCG_FaySWeFpgbgYKDbJVio'
+    DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
     intents = discord.Intents.all()
     bot = commands.Bot(command_prefix='!', intents=intents)
@@ -73,4 +78,4 @@ def start_server():
 
 
     # Start the bot
-    bot.run(TOKEN)
+    bot.run(DISCORD_BOT_TOKEN)
