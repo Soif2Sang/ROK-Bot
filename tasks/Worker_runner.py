@@ -16,6 +16,7 @@ from utils.schemas.application_schemas import TileSlaveSchema, TileWorkerSchema
 @dataclasses.dataclass
 class WorkerRunner:
     instance_id: str
+    contextManager: None
     emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
 
     def run(self):
@@ -25,17 +26,17 @@ class WorkerRunner:
         loop_task = 1 if not ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task else 9999999
 
         for i in range(loop_task):
-            contextManager.tasks.get(self.instance_id).status = "running"
+            self.contextManager.tasks.get(self.instance_id).status = "running"
             cycle_started_at = time()
             nb_tile = 0
 
             for slave in self.slaves:
-                contextManager.get_slave(slave.instance).set_status(f"In queue ({nb_tile})")
+                self.contextManager.get_slave(slave.instance).set_status(f"In queue ({nb_tile})")
                 nb_tile += 1
 
             for slave in self.slaves:
                 runner_started_at = time()
-                runner = TaskRunner(Task(slave.instance))
+                runner = TaskRunner(Task(slave.instance, self.contextManager))
                 runner.run()
 
                 if runner.has_started_once:
@@ -65,20 +66,20 @@ class WorkerRunner:
                 for slave in self.slaves:
                     # Add text to the tile indicating the time taken for the run
                     time_taken = (time() - cycle_started_at) / 60
-                    contextManager.get_slave(slave.instance).add_text(f"Run nb°{i} took {time_taken:0.1f} minutes to complete.")
+                    self.contextManager.get_slave(slave.instance).add_text(f"Run nb°{i} took {time_taken:0.1f} minutes to complete.")
 
                     # Update the tile's text to show its position in the queue
-                    contextManager.get_slave(slave.instance).set_status(f"In queue ({i})")
+                    self.contextManager.get_slave(slave.instance).set_status(f"In queue ({i})")
 
                 # Set a timer for the first tile in the list
-                Task(self.slaves[0].instance).set_timer(time_before_redo_tasks)
+                Task(self.slaves[0].instance, self.contextManager).set_timer(time_before_redo_tasks)
 
-            contextManager.tasks.get(self.instance_id).status = "idle"
+            self.contextManager.tasks.get(self.instance_id).status = "idle"
 
     def get_screen(self):
         self.emulator_type = "ld"
         self.slaves = ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].instances
 
         for slave in self.slaves:
-            runner = TaskRunner(Task(slave.instance))
+            runner = TaskRunner(Task(slave.instance, self.contextManager))
             return runner.adb.get_cv2_img()
