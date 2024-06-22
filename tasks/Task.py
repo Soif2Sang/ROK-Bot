@@ -51,10 +51,11 @@ pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 
 class Task:
-    def __init__(self, tile):
+    def __init__(self, tile, contextManager):
         self.current_profile: str = "1"
         self.sel: str = tile
-        self.tile = contextManager.get_slave(self.sel)
+        self.contextManager = contextManager
+        self.tile = self.contextManager.get_slave(self.sel)
 
         self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
         self.context_profile: ProfileSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
@@ -88,6 +89,7 @@ class Task:
         self.FileSingleton = MainTask.FileSingleton
         self.context_profile = MainTask.context_profile
         self.runner_number = MainTask.runner_number
+        self.contextManager = MainTask.contextManager
         # self.data = MainTask.data
 
     def debug(self, arg):
@@ -99,14 +101,14 @@ class Task:
     def script_pause(self):
         said = False
 
-        while contextManager.tasks.get(self.runner_number).status == "paused":
+        while self.contextManager.tasks.get(self.runner_number).status == "paused":
             if not said:
                 self.add_log(f"[{current_time()}] Script is paused.", "orange")
                 self.debug("Script is paused.")
                 said = True
             sleep(0.001)
 
-        if contextManager.tasks.get(self.runner_number).status == "stopped":
+        if self.contextManager.tasks.get(self.runner_number).status == "stopped":
             self.add_log(f"[{current_time()}] You stopped the bot", "Red")
             self.set_divider()
             self.set_status("")
@@ -118,15 +120,15 @@ class Task:
             self.debug("You resumed the script.")
 
     def add_log(self, text, color=None):
-        return contextManager.get_slave(self.sel).add_text(text, color)
+        return self.contextManager.get_slave(self.sel).add_text(text, color)
 
 
     def set_divider(self):
-        return contextManager.get_slave(self.sel).add_divider()
+        return self.contextManager.get_slave(self.sel).add_divider()
 
     def set_status(self, text):
-        print(contextManager.get_slave(self.sel))
-        return contextManager.get_slave(self.sel).set_status(text)
+        print(self.contextManager.get_slave(self.sel))
+        return self.contextManager.get_slave(self.sel).set_status(text)
 
     @get_name
     def set_timer(self, seconds: int):

@@ -56,7 +56,7 @@ from views.frametime import is_slot_runnable, random_time_in_frametime
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.sel)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.has_started_once = False
         self.herite(MainTask)
         self.FileSingleton = FileSingleton()
@@ -604,7 +604,7 @@ class TaskRunner(Task):
     def set_status(self, text):
         super().set_status(text)
 
-        contextManager.get_worker(self.runner_number).set_status(text)
+        self.contextManager.get_worker(self.runner_number).set_status(text)
 
     @get_class
     def run(self):

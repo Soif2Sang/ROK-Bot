@@ -48,7 +48,7 @@ class TileWorker(ft.ExpansionTile):
 
 
     def start(self, e):
-        contextManager.start(self.number, WorkerRunner(self.number))
+        contextManager.start(self.number, WorkerRunner(self.number, contextManager))
 
         self.button_start.icon = ft.icons.PAUSE
         self.button_stop.disabled = False
