@@ -32,8 +32,9 @@ from tasks.Task_training import TroopTraining
 from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.resources import ImageSingleton
-from utils.singletons import FileSingleton
-
+from utils.singletons import FileSingleton, ss, EmulatorSingleton
+from utils.context import contextManager
+EmulatorSingleton().setEmulator("ld")
 # from utils.android_debug_bridge import *
 DEBUG = True
 
@@ -78,11 +79,12 @@ class Bot:
     def __init__(self, adb):
         self.adb: AdbLd = adb
         self.device = adb.get_device()
-        self.main_task = Task(Frame(adb.instance))  # tasksGEM / tasks
+        contextManager.add_slave(str(adb.instance), Frame(str(adb.instance)))
+        self.main_task = Task(adb.instance, contextManager=contextManager)  # tasksGEM / tasks
         self.main_task.adb = adb
         # self.task = Tasks(self.adb)
         self.main_task.set_sel(str(adb.instance))
-        self.task = TaskRunner(self.main_task, self.main_task.tile)
+        self.task = TaskRunner(self.main_task)
         self.upgrade = UpgradeCity(self.main_task)
         self.merchant = BuyMerchant(self.main_task)
         self.rss = GatherRssDefault(self.main_task)
@@ -103,7 +105,7 @@ class Bot:
         self.help = AllianceHelp(self.main_task)
         self.training = TroopTraining(self.main_task)
         self.hunt = HuntBarbarians(self.main_task)
-        self.runner = TaskRunner(self.main_task, self.main_task.tile)
+        self.runner = TaskRunner(self.main_task)
         # self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
         # self.cod_chest = DailyChest(self.main_task)
         # self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
@@ -257,12 +259,20 @@ from cv2 import (
 )
 
 if __name__ == "__main__":
-    sel = "2"
+    sel = "0"
 
     bo = get_bot(sel)
-    print(bo.task.find_cross())
-    exit()
+    screen = bo.adb.get_cv2_img()
+    info_screen = screen[470:, 0:115]
 
+    print(bo.task.find_img(
+        target="checkpoint_star",
+        source=bo.task.adb.get_cv2_img()[:60, 380:600],
+        confidence=0.97,
+    ))
+
+
+    exit()
     screen = imread("./screen_city_hall.png")
 
     x, y = data["0"]["schedules"]["1"].get("city_hall_position")

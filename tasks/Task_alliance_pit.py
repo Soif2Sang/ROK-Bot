@@ -7,7 +7,7 @@ from utils.functions import get_class, get_name
 
 class AlliancePit(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.sel)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
 
     def task_name(self):

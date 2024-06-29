@@ -17,7 +17,7 @@ from utils.functions import get_class, get_name
 
 class GatherGem(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.sel)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.end_time = None
         self.block = False
@@ -415,7 +415,7 @@ class GatherGem(Task):
         #         icons.append([f"gem_icon_day_{first_string}_{second_string}",f"gem_icon_night_{first_string}_{second_string}"])
 
         if random() > 0.94:
-
+            self.zoom_out_city()
             self.random_interaction(zoomed_in=False)
 
         for i in range(14):
@@ -566,6 +566,10 @@ class GatherGem(Task):
                         AllianceHelp(self).run()
 
                 if random() > 0.8:
+                    if self.in_city():
+                        self.click(uniform(24, 91), uniform(625, 680))
+                        self.better_sleep((1.5, 2))
+
                     self.random_interaction(zoomed_in=True)
                     self.close_windows()
 

@@ -17,7 +17,7 @@ from views.tiles.tile_slave import TileSlave
 
 class TileWorker(ft.ExpansionTile):
     def __init__(self, number: str, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, title="")
         self.tile_padding = ft.padding.all(0)
 
         self.number = number

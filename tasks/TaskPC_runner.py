@@ -50,7 +50,7 @@ from views.frametime import is_slot_runnable, random_time_in_frametime
 
 class TaskRunner(Task):
     def __init__(self, MainTask: Task, tile):
-        super().__init__(MainTask.sel)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
 
     def task_name(self):

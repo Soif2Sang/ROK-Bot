@@ -127,7 +127,6 @@ class Task:
         return self.contextManager.get_slave(self.sel).add_divider()
 
     def set_status(self, text):
-        print(self.contextManager.get_slave(self.sel))
         return self.contextManager.get_slave(self.sel).set_status(text)
 
     @get_name
@@ -231,7 +230,7 @@ class Task:
         :return: True if there's a empty queue
         :return: False if queues are occupied
         """
-        cropped_image = self.adb.get_cv2_img()[160:180, 1205:1247]
+        cropped_image = self.adb.get_cv2_img()[134:154, 1205:1247]
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2GRAY)
         native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
 
@@ -313,7 +312,7 @@ class Task:
 
     @get_name
     def open_inventory(self):
-        x, y = uniform(910, 950), uniform(650, 690)
+        x, y = uniform(830, 850), uniform(650, 690)
         self.click(x, y)
         self.better_sleep((1.725, 1.995))
 
@@ -328,7 +327,7 @@ class Task:
 
     @get_name
     def open_commander_tab(self):
-        self.click(1130 + uniform(-10, 10), 665 + uniform(-10, 10))
+        self.click(1030 + uniform(-10, 10), 665 + uniform(-10, 10))
         self.better_sleep((1.725, 1.995))
 
     @get_name
@@ -340,7 +339,7 @@ class Task:
         self.better_sleep((1.725, 1.995))
 
     def open_campaign(self):
-        self.click(830 + uniform(-10, 10), 676 + uniform(-10, 10))
+        self.click(730 + uniform(-10, 10), 676 + uniform(-10, 10))
         self.better_sleep((1.725, 1.995))
 
     def open_sunset_canyon(self):
@@ -352,11 +351,11 @@ class Task:
         """
         Leave the city by sending 'F5' key signal to the emulator
         """
-
+        has_zoomed_out = False
         self.script_pause()
         try:
-            self.print("Zooming out..")
             if self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
+                self.print("Zooming out..")
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
 
@@ -364,6 +363,7 @@ class Task:
                     hwnd = hwndChild
 
                 while self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
+                    has_zoomed_out = True
                     self.script_pause()
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
@@ -375,6 +375,15 @@ class Task:
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
                     self.better_sleep((0.17, 0.17))
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    self.better_sleep((1.4, 2))
+
+                if has_zoomed_out:
+                    self.script_pause()
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    self.better_sleep((0.45, 0.45))
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
                     self.better_sleep((1.4, 2))

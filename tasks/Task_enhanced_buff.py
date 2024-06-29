@@ -8,7 +8,7 @@ from utils.functions import get_class, get_name
 
 class UseEnhancedBuff(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.sel)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
 
     def task_name(self):
@@ -56,7 +56,7 @@ class UseEnhancedBuff(Task):
         self.print(f"Buffs : {buffs_to_do}")
         if buffs_to_do:
             self.open_menu()
-            x, y = uniform(910, 950), uniform(650, 690)
+            x, y = uniform(830, 850), uniform(650, 690)
             self.click(x, y)
             self.better_sleep((1.895, 2.3))
             x, y = uniform(490, 600), uniform(65, 100)
