@@ -13,7 +13,7 @@ from utils.singletons import EmulatorSingleton
 
 class BarbFort(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.sel)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.alliance_fort
         self.rally_time = self.context_task.mobilisation_time

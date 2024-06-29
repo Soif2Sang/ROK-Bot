@@ -12,19 +12,20 @@ ss = SettingsSingleton()
 
 class SlaveDraggable(ft.Draggable):
     def __init__(self, instance, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.group = "color"
-        self.content = ft.Container(
+        kwargs['content'] = ft.Container(
             width=110,
             height=50,
             content=ft.Text(instance),
-            data=self.data,
+            data=kwargs['data'],
             bgcolor=ft.colors.OUTLINE_VARIANT,
             alignment=ft.alignment.center,
             border_radius=5,
             border=ft.border.all(2, ft.colors.ON_SURFACE_VARIANT),
             padding=ft.padding.all(3),
         )
+        kwargs['group'] = "color"
+
+        super().__init__(*args, **kwargs)
 
 
 class Worker(ft.Container):

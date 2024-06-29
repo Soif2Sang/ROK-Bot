@@ -618,7 +618,7 @@ class TaskRunner(Task):
         for profile in self.context.schedules:
             can_go = False
 
-            if not self.context.schedules[profile]:
+            if not self.context.schedules[profile].enabled:
                 continue
             else:
                 if self.context.schedules[profile].time_slot.enabled:

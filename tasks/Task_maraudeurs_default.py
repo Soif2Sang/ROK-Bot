@@ -14,7 +14,7 @@ from utils.functions import current_time, get_class, get_name
 
 class Marauders(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.sel)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.end_time = None
         self.block = False
