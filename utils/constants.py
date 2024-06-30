@@ -1,6 +1,6 @@
 from typing import Literal
 
-DEBUG = True
+DEBUG = False
 VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "global"
 VERSION_NUMBER = "3.4.3"
 TOAST_HISTORY = {}

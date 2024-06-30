@@ -20,11 +20,11 @@ def Main(page: ft.Page, days=950):
     page.vertical_alignment = None
     page.horizontal_alignment = None
     page.frames = {}
-    page.window_resizable = True
+    page.window.resizable = True
     page.update()
 
-    page.window_width = 500
-    page.window_height = 800
+    page.window.width = 500
+    page.window.height = 800
     page.theme = theme
 
     page.tile_manager = TileHandlerWorker()

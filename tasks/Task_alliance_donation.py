@@ -32,15 +32,6 @@ class AllianceDonation(Task):
         self.better_sleep((1.0, 1.395))
 
     @get_name
-    def open_alliance_menu(self):
-        # Open du menu
-        self.open_menu()
-        # Open alliance menu
-        x, y = uniform(930, 950), uniform(650, 690)
-        self.click(x, y)
-        self.better_sleep((1.725, 2.295))
-
-    @get_name
     def donate_to_alliance(self):
         alliance_tech_logo = self.find_img(target="alliance_tech")
         if alliance_tech_logo is not None:

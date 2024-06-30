@@ -134,7 +134,7 @@ class LoginScreen(ft.ResponsiveRow):
         if email == "" or password == "":
             return
 
-        ss.page.splash = ft.ProgressBar()
+        # ss.page.splash = ft.ProgressBar()
         self.button_login.disabled = True
         ss.page.update()
 
@@ -185,7 +185,7 @@ class LoginScreen(ft.ResponsiveRow):
             os.system("taskkill /f /im flet.exe >nul 2>&1")
             sys.exit()
         finally:
-            ss.page.splash = None
+            # ss.page.splash = None
             self.button_login.disabled = False
             ss.page.update()
 

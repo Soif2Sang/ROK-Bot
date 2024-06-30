@@ -87,7 +87,7 @@ class Task:
         self.name = MainTask.name
         self.DEV = MainTask.DEV
         self.FileSingleton = MainTask.FileSingleton
-        self.context_profile = MainTask.context_profile
+        self.context_profile = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
         self.runner_number = MainTask.runner_number
         self.contextManager = MainTask.contextManager
         # self.data = MainTask.data
@@ -329,6 +329,15 @@ class Task:
     def open_commander_tab(self):
         self.click(1030 + uniform(-10, 10), 665 + uniform(-10, 10))
         self.better_sleep((1.725, 1.995))
+
+    @get_name
+    def open_alliance_menu(self):
+        # Open du menu
+        self.open_menu()
+        # Open alliance menu
+        x, y = uniform(930, 950), uniform(650, 690)
+        self.click(x, y)
+        self.better_sleep((1.725, 2.295))
 
     @get_name
     def click_any_commander_in_list(self):

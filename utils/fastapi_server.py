@@ -7,8 +7,8 @@ import uvicorn
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from Worker_runner import WorkerRunner
-from singletons import ss
+from tasks.Worker_runner import WorkerRunner
+from utils.singletons import ss
 from utils.context import contextManager
 
 load_dotenv()
