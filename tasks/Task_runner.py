@@ -214,6 +214,7 @@ class TaskRunner(Task):
         # else:
         #     profile = self.data.get(self.sel).get("schedules").get(profile)
         #
+        print(f"{profile=}")
         profile = self.context.schedules[profile]
 
         # print(profile)
