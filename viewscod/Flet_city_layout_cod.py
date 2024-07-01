@@ -10,8 +10,8 @@ global sel, profile
 def main(page: ft.Page):
     page.FileSingleton = FileSingleton()
     data = page.FileSingleton.get_data()
-    page.window_width = 830
-    page.window_height = 430
+    page.window.width = 830
+    page.window.height = 430
     page.current_build = None
 
     buttons = {

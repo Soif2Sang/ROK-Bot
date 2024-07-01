@@ -11,8 +11,8 @@ def empty(value):
 
 def main(page: ft.Page):
     page.title = "Subscription Manager 1999 Days left "
-    page.window_width = 340
-    page.window_height = 350
+    page.window.width = 340
+    page.window.height = 350
     page.UPGRADE = False
     page.add(TileHandler(page))
 

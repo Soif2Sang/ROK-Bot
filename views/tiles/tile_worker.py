@@ -2,6 +2,7 @@ import threading
 
 import flet as ft
 
+from utils.context import contextManager
 from utils.schemas.application_schemas import TileWorkerSchema
 from tasks.Task import Task
 from tasks.Task_runner import TaskRunner
@@ -16,41 +17,20 @@ from views.tiles.tile_slave import TileSlave
 
 class TileWorker(ft.ExpansionTile):
     def __init__(self, number: str, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, title="")
+        self.tile_padding = ft.padding.all(0)
+
         self.number = number
-        self.paused = False
-        self.stopped = False
-
-        # if EmulatorSingleton().getEmulatorType() == "pc":
-        #     self.main_task = TaskPC(self)
-        #     self.runner = TaskPCRunner(self.main_task, self)
-        # else:
-        #     self.main_task = Task(self)
-        #     self.runner = TaskRunner(self.main_task, self)
-        #
-        # self.runner.worker = self
-        # self.tasks_process = threading.Thread(target=self.runner.run4)
-
-        self.runner = WorkerRunner(self.number, self)
-        self.tasks_process = threading.Thread(target=self.runner.run, args=(self.controls,))
-
-        self.button_select = ft.IconButton(
-            icon=ft.icons.SETTINGS,
-            selected_icon=ft.icons.SETTINGS,
-            on_click=self.select,
-        )
 
         self.button_start = ft.IconButton(icon=ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED, on_click=self.start)
         self.button_stop = ft.IconButton(icon=ft.icons.HIGHLIGHT_REMOVE_ROUNDED, disabled=True, on_click=self.stop)
 
         self.text_name = ft.Text(value=translate(f"Worker") + f" n°{self.number}", width=120, size=16)
         self.text_status = ft.Text(value="")
-        self.tile_padding = ft.padding.all(0)
         self.title = ft.Row(
             [
                 ft.Row(
                     controls=[
-                        # self.button_select,
                         self.button_start,
                         self.button_stop,
                         self.text_name,
@@ -68,39 +48,24 @@ class TileWorker(ft.ExpansionTile):
 
 
     def start(self, e):
+        contextManager.start(self.number, WorkerRunner(self.number, contextManager))
+
         self.button_start.icon = ft.icons.PAUSE
         self.button_stop.disabled = False
-
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-            slaves_tiles.stopped = False
-
-        self.paused = False
-        self.stopped = False
-
-        self.start_tasks()
         self.button_start.on_click = self.pause
-        self.tasks_process.join()
+
+        contextManager.join(self.number)
 
         self.button_start.on_click = self.start
-
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-            slaves_tiles.stopped = False
-        self.paused = False
-        self.stopped = False
-
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
 
-        self.set_text("")
+        self.set_status("")
         for tiles in self.controls:
-            tiles.set_text("")
+            tiles.set_status("")
 
     def resume(self, e):
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-        self.paused = False
+        contextManager.resume(self.number)
 
         self.button_start.icon = ft.icons.PAUSE
         self.button_start.on_click = self.pause
@@ -109,9 +74,7 @@ class TileWorker(ft.ExpansionTile):
             self.update()
 
     def pause(self, e):
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = True
-        self.paused = True
+        contextManager.pause(self.number)
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_start.on_click = self.resume
@@ -120,12 +83,7 @@ class TileWorker(ft.ExpansionTile):
             self.update()
 
     def stop(self, e):
-        for slaves_tiles in self.controls:
-            slaves_tiles.paused = False
-            slaves_tiles.stopped = True
-
-        self.paused = False
-        self.stopped = True
+        contextManager.stop(self.number)
 
         self.button_start.icon = ft.icons.PLAY_CIRCLE_OUTLINE_ROUNDED
         self.button_stop.disabled = True
@@ -133,48 +91,12 @@ class TileWorker(ft.ExpansionTile):
         if self.__getattribute__("page"):
             self.update()
 
-    def start_tasks(self):
-        if not self.tasks_process.is_alive():
-            self.tasks_process = threading.Thread(target=self.runner.run, args=(self.controls,))
-            self.tasks_process.start()
-        else:
-            self.add_text("Task is frozen, you may need to restart the bot.")
-            ss.page.generate_toast("Warning", "Task is frozen, you may need to restart the bot.")
-
-    def select(self, e):
-        ss.page.tile_manager.unselect_all()
-        self.button_select.selected = True
-
-        if len(ss.page.body.controls) > 2:
-            ss.page.body.controls.pop()
-
-        if self.number not in ss.page.frames:
-            ss.page.frames[self.number] = InstanceTabs(self.number)
-
-        ss.page.body.controls.append(ss.page.frames[self.number])
-        self.bgcolor = ft.colors.SURFACE_VARIANT
-
-        if ss.page.body.__getattribute__("page"):
-            ss.page.body.update()
-
-    def set_text(self, phrase: str):
+    def set_status(self, phrase: str):
         self.text_status.value = phrase
         self.update()
 
-    def get_text(self):
+    def get_status(self):
         return self.text_status.value
-
-    def add_text(self, phrase: str, color=None):
-        if self.number not in ss.page.frames:
-            ss.page.frames[self.number] = InstanceTabs(self.number)
-
-        ss.page.frames[self.number].add_text(phrase, color)
-
-    def add_divider(self):
-        if self.number not in ss.page.frames:
-            ss.page.frames[self.number] = InstanceTabs(self.number)
-
-        ss.page.frames[self.number].add_divider()
 
     def add_tile(self, number):
         self.controls.append(TileSlave(number))
@@ -186,15 +108,11 @@ class TileWorker(ft.ExpansionTile):
 
         worker_settings = ss.open_worker_settings()
 
-        # for instance in data["workers"][emulator_type][self.number]["instances"]:
-        #     if instance["instance"] not in self.slaves:
-        #         self.slaves[instance["instance"]] = TileSlave(ss.page, instance["instance"])
-        #     self.controls.append(self.slaves[instance["instance"]])
-
         for instanceSchema in worker_settings.worker_type[emulator_type].workers[self.number].instances:
             instance = instanceSchema.instance
             if instance not in self.slaves:
                 self.slaves[instance] = TileSlave(instance)
+                contextManager.add_slave(instance, self.slaves[instance])
             self.controls.append(self.slaves[instance])
 
         if self.__getattribute__("page"):

@@ -15,7 +15,7 @@ from utils.singletons import EmulatorSingleton
 
 class Marauders(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.end_time = None
         self.block = False
@@ -375,7 +375,7 @@ class Marauders(Task):
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
-                self.set_text("Error in line-up selection")
+                self.set_status("Error in line-up selection")
                 self.send_discord_message("Error in line-up selection, please fix the game")
                 while True:
                     self.script_pause()

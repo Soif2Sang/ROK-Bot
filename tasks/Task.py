@@ -15,6 +15,8 @@ import cv2
 import deprecation
 import flet as ft
 
+from utils.context import contextManager
+
 try:
     import win32api
     import win32con
@@ -49,10 +51,12 @@ pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 
 class Task:
-    def __init__(self, tile):
+    def __init__(self, tile, contextManager):
         self.current_profile: str = "1"
-        self.tile = tile
-        self.sel: str = tile.number
+        self.sel: str = tile
+        self.contextManager = contextManager
+        self.tile = self.contextManager.get_slave(self.sel)
+
         self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
         self.context_profile: ProfileSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
         self.FileSingleton = FileSingleton()
@@ -68,6 +72,11 @@ class Task:
         self.language: str | None = None
         self.DEV = False
 
+        for workerId, worker in ss.worker_settings.worker_type[emulator].workers.items():
+            for instance in worker.instances:
+                if instance.instance == self.sel:
+                    self.runner_number = workerId
+
     def herite(self, MainTask):
         self.context = MainTask.context
         self.current_profile = MainTask.current_profile
@@ -78,7 +87,9 @@ class Task:
         self.name = MainTask.name
         self.DEV = MainTask.DEV
         self.FileSingleton = MainTask.FileSingleton
-        self.context_profile = MainTask.context_profile
+        self.context_profile = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
+        self.runner_number = MainTask.runner_number
+        self.contextManager = MainTask.contextManager
         # self.data = MainTask.data
 
     def debug(self, arg):
@@ -90,32 +101,33 @@ class Task:
     def script_pause(self):
         said = False
 
-        while self.tile.paused:
+        while self.contextManager.tasks.get(self.runner_number).status == "paused":
             if not said:
-                self.set_text(f"[{current_time()}] Script is paused.", "orange")
+                self.add_log(f"[{current_time()}] Script is paused.", "orange")
                 self.debug("Script is paused.")
                 said = True
             sleep(0.001)
 
-        if self.tile.stopped:
-            self.set_text(f"[{current_time()}] You stopped the bot", "Red")
+        if self.contextManager.tasks.get(self.runner_number).status == "stopped":
+            self.add_log(f"[{current_time()}] You stopped the bot", "Red")
             self.set_divider()
             self.set_status("")
             self.debug("You stopped the bot")
             sys.exit(1)
 
         if said:
-            self.set_text(f"[{current_time()}] You resumed the script.", "Green")
+            self.add_log(f"[{current_time()}] You resumed the script.", "Green")
             self.debug("You resumed the script.")
 
-    def set_text(self, text, color=None):
-        return self.tile.add_text(text, color)
+    def add_log(self, text, color=None):
+        return self.contextManager.get_slave(self.sel).add_text(text, color)
+
 
     def set_divider(self):
-        return self.tile.add_divider()
+        return self.contextManager.get_slave(self.sel).add_divider()
 
     def set_status(self, text):
-        return self.tile.set_text(text)
+        return self.contextManager.get_slave(self.sel).set_status(text)
 
     @get_name
     def set_timer(self, seconds: int):
@@ -166,9 +178,9 @@ class Task:
 
     def print(self, text: str, color=None) -> None:
         if text != "":
-            self.set_text(f"[{current_time()}] {text}", color)
+            self.add_log(f"[{current_time()}] {text}", color)
         else:
-            self.set_text("")
+            self.add_log("")
 
     @get_name
     def send_discord_message(self, message, image=True):
@@ -218,7 +230,7 @@ class Task:
         :return: True if there's a empty queue
         :return: False if queues are occupied
         """
-        cropped_image = self.adb.get_cv2_img()[160:180, 1205:1247]
+        cropped_image = self.adb.get_cv2_img()[134:154, 1205:1247]
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2GRAY)
         native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
 
@@ -300,7 +312,7 @@ class Task:
 
     @get_name
     def open_inventory(self):
-        x, y = uniform(910, 950), uniform(650, 690)
+        x, y = uniform(830, 850), uniform(650, 690)
         self.click(x, y)
         self.better_sleep((1.725, 1.995))
 
@@ -315,8 +327,17 @@ class Task:
 
     @get_name
     def open_commander_tab(self):
-        self.click(1130 + uniform(-10, 10), 665 + uniform(-10, 10))
+        self.click(1030 + uniform(-10, 10), 665 + uniform(-10, 10))
         self.better_sleep((1.725, 1.995))
+
+    @get_name
+    def open_alliance_menu(self):
+        # Open du menu
+        self.open_menu()
+        # Open alliance menu
+        x, y = uniform(930, 950), uniform(650, 690)
+        self.click(x, y)
+        self.better_sleep((1.725, 2.295))
 
     @get_name
     def click_any_commander_in_list(self):
@@ -327,7 +348,7 @@ class Task:
         self.better_sleep((1.725, 1.995))
 
     def open_campaign(self):
-        self.click(830 + uniform(-10, 10), 676 + uniform(-10, 10))
+        self.click(730 + uniform(-10, 10), 676 + uniform(-10, 10))
         self.better_sleep((1.725, 1.995))
 
     def open_sunset_canyon(self):
@@ -339,11 +360,11 @@ class Task:
         """
         Leave the city by sending 'F5' key signal to the emulator
         """
-
+        has_zoomed_out = False
         self.script_pause()
         try:
-            self.print("Zooming out..")
             if self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
+                self.print("Zooming out..")
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
 
@@ -351,6 +372,7 @@ class Task:
                     hwnd = hwndChild
 
                 while self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
+                    has_zoomed_out = True
                     self.script_pause()
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
@@ -362,6 +384,15 @@ class Task:
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
                     self.better_sleep((0.17, 0.17))
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                    self.better_sleep((1.4, 2))
+
+                if has_zoomed_out:
+                    self.script_pause()
+                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                    self.better_sleep((0.45, 0.45))
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
                     self.better_sleep((1.4, 2))
@@ -388,7 +419,7 @@ class Task:
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
             self.print(f"Cannot find the button_level")
-            # self.set_text(f"[{current_time()}] Cannot find the level button")
+            # self.add_log(f"[{current_time()}] Cannot find the level button")
             self.click_loop()
             self.better_sleep((1, 1.7))
         else:
@@ -408,7 +439,7 @@ class Task:
                 if string[1] == "1l":
                     string[1] = "1"
                 self.print(f"Current level : {string[1]}")
-                # self.set_text(f"[{current_time()}] Current level : {string[1]}")
+                # self.add_log(f"[{current_time()}] Current level : {string[1]}")
                 level_to_go = level - int(string[1].replace("l", "1"))
             except:
                 x, y = self.find_img(target="minus_button")
@@ -424,7 +455,7 @@ class Task:
                 x, y = self.find_img(target="minus_button")
 
             self.print(f"{word} the level by : {abs(level_to_go)}")
-            # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
+            # self.add_log(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
             for _ in range(abs(level_to_go)):
                 x2 = x + uniform(0, 30)
                 y2 = y + uniform(0, 27)
@@ -891,7 +922,7 @@ class Task:
                 self.run_game()
                 return True
             else:
-                self.set_text("Auto Log-back off", ft.colors.RED)
+                self.add_log("Auto Log-back off", ft.colors.RED)
                 self.send_discord_message("The game got disconnected, Log-back off.")
                 while True:
                     self.script_pause()
@@ -1059,7 +1090,7 @@ class Task:
                     self.better_sleep((3, 4))
                     return True
                 else:
-                    self.set_text(f"[{current_time()}] Captcha verification is Off")
+                    self.add_log(f"[{current_time()}] Captcha verification is Off")
                     self.set_status("Captcha is Off")
                     self.send_discord_message("Captcha detected, Captcha verification off.")
                     while True:

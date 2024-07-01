@@ -32,8 +32,8 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
         page.generate_toast("Error", "Emulator not started")
         return page.go('/')
 
-    page.window_width = 900
-    page.window_height = 500
+    page.window.width = 900
+    page.window.height = 500
     emulator_choice = EmulatorSingleton().getEmulatorType()
 
     if emulator_choice == "bluestacks":
@@ -44,8 +44,8 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
     image_byte = image_to_base64(adb.get_curr_device_screen_img_bytesIO())
 
     def returnHome():
-        page.window_width = 450
-        page.window_height = 700
+        page.window.width = 450
+        page.window.height = 700
         page.go("/")
 
     return ft.View(
@@ -71,8 +71,8 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
         page.generate_toast("Error", "Emulator not started")
         return page.go('/')
 
-    page.window_width = 900
-    page.window_height = 500
+    page.window.width = 900
+    page.window.height = 500
     emulator_choice = EmulatorSingleton().getEmulatorType()
 
     if emulator_choice == "bluestacks":
@@ -90,8 +90,8 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
     encoded_string = base64.b64encode(buffer).decode('utf-8')
 
     def returnHome():
-        page.window_width = 450
-        page.window_height = 700
+        page.window.width = 450
+        page.window.height = 700
         page.go("/")
 
     return ft.View(

@@ -212,8 +212,8 @@ global sel, profile
 
 
 def main(page: ft.Page):
-    page.window_width = 720
-    page.window_height = 430
+    page.window.width = 720
+    page.window.height = 430
 
     page.add(ManagerTimezone(sel, profile))
     page.title = f"Profile n°{profile} configuration"

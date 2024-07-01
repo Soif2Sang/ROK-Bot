@@ -53,8 +53,8 @@ def main(page: ft.Page):
     ss.set_page(page)
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.window_width = 450
-    page.window_height = 400
+    page.window.width = 450
+    page.window.height = 400
     page.loginUI = LoginScreen()
     page.body = ft.Column()
     page.padding = ft.padding.all(0)
@@ -78,27 +78,27 @@ def main(page: ft.Page):
     )
 
     page.app_routes = [
-        path(url="/", clear=False, view=index),
-        path(url="/login", clear=False, view=login),
-        path(url=f"/emulator-choice", clear=False, view=emulator_choice),
-        path(url=f"/emulator-loading", clear=False, view=loading_files),
+        path(url="/", clear=True, view=index),
+        path(url="/login", clear=True, view=login),
+        path(url=f"/emulator-choice", clear=True, view=emulator_choice),
+        path(url=f"/emulator-loading", clear=True, view=loading_files),
         path(
             url=f"/city-layout/:instance_index/:profile_index",
-            clear=False,
+            clear=True,
             view=viewCityLayout,
         ),
         path(
             url=f"/set-center/:task/:instance_index/:profile_index",
-            clear=False,
+            clear=True,
             view=viewSetCenterMap,
         ),
         path(
             url=f"/profile/:instance_index/:profile_index/settings",
-            clear=False,
+            clear=True,
             view=viewProfileSettings,
         ),
-        path(url="/configure-workers", clear=False, view=configure_workers),
-        path(url="/settings", clear=False, view=settings),
+        path(url="/configure-workers", clear=True, view=configure_workers),
+        path(url="/settings", clear=True, view=settings),
     ]
 
     page.routing = Routing(
@@ -177,8 +177,8 @@ def main(page: ft.Page):
 
 
 def index(page: ft.Page, params, basket):
-    page.window_width = 450
-    page.window_height = 750
+    page.window.width = 450
+    page.window.height = 750
 
     return ft.View(route="/", controls=page.body.controls)
 
@@ -196,8 +196,8 @@ def loading_files(page: ft.Page, params, basket):
 
 
 def emulator_choice(page: ft.Page, params, basket):
-    page.window_width = 1920 / 2
-    page.window_height = 1080 / 2
+    page.window.width = 1920 / 2
+    page.window.height = 1080 / 2
 
     def go_main(e):
         if platform.system() == "Darwin":
@@ -270,9 +270,9 @@ def emulator_choice(page: ft.Page, params, basket):
 
 
 def login(page: ft.Page, params, basket):
-    page.window_width = 1920 / 2
-    page.window_height = 1080 / 2
-    page.window_resizable = False
+    page.window.width = 1920 / 2
+    page.window.height = 1080 / 2
+    page.window.resizable = False
     page.title = BOT_NAME
 
     return ft.View(route="/login", controls=[LoginScreen(page)], padding=0)
@@ -297,8 +297,8 @@ def settings(page: ft.Page, params, basket):
 
 
 def configure_workers(page: ft.Page, params, basket):
-    page.window_width = 1920 / 2
-    page.window_height = 720
+    page.window.width = 1920 / 2
+    page.window.height = 720
 
     def go_back_and_refresh(e):
         page.go("/")

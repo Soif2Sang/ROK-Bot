@@ -9,7 +9,7 @@ from utils.functions import get_class
 
 class ClaimMail(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
 
     def task_name(self):
@@ -17,14 +17,22 @@ class ClaimMail(Task):
 
     @get_class
     def run(self):
+        cord_x, cord_y = 640, 1150
+
+        if ((co:=self.find_img("mail_button", confidence=0.8)) is None):
+            self.open_menu()
+
+        if co and co[0] > 1170:
+            cord_x, cord_y = 640, 1256
+
         screen = self.adb.get_cv2_img()
         lower_red = np.array([0, 0, 200])  # Adjust these values as needed
         upper_red = np.array([10, 10, 255])  # Adjust these values as needed
 
-        if not (np.all(screen[551, 1263] >= lower_red) and np.all(screen[551, 1263] <= upper_red)):
+        if not (np.all(screen[cord_x, cord_y] >= lower_red) and np.all(screen[cord_x, cord_y] <= upper_red)):
             return
 
-        self.click(1230, 570)
+        self.click(cord_x + random.uniform(-20, -10), 640 + random.uniform(0, 10))
         self.better_sleep((1, 2))
 
         pixel_list = [(150, 12), (310, 14), (468, 14), (618, 15)]

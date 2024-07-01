@@ -90,30 +90,30 @@ class Task:
 
         while self.tile.paused:
             if not said:
-                self.set_text(f"[{current_time()}] Script is paused.", "orange")
+                self.add_log(f"[{current_time()}] Script is paused.", "orange")
                 self.debug("Script is paused.")
                 said = True
             sleep(0.001)
 
         if self.tile.stopped:
-            self.set_text(f"[{current_time()}] You stopped the bot", "Red")
+            self.add_log(f"[{current_time()}] You stopped the bot", "Red")
             self.set_divider()
             self.set_status("")
             self.debug("You stopped the bot")
             sys.exit(1)
 
         if said:
-            self.set_text(f"[{current_time()}] You resumed the script.", "Green")
+            self.add_log(f"[{current_time()}] You resumed the script.", "Green")
             self.debug("You resumed the script.")
 
-    def set_text(self, text, color=None):
+    def add_log(self, text, color=None):
         return self.tile.add_text(text, color)
 
     def set_divider(self):
         return self.tile.add_divider()
 
     def set_status(self, text):
-        return self.tile.set_text(text)
+        return self.tile.set_status(text)
 
     @get_name
     def set_timer(self, seconds: int):
@@ -160,9 +160,9 @@ class Task:
 
     def print(self, text: str, color=None) -> None:
         if text != "":
-            self.set_text(f"[{current_time()}] {text}", color)
+            self.add_log(f"[{current_time()}] {text}", color)
         else:
-            self.set_text("")
+            self.add_log("")
 
     @get_name
     def send_discord_message(self, message, image=True):
@@ -338,7 +338,7 @@ class Task:
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
             self.print(f"Cannot find the button_level")
-            # self.set_text(f"[{current_time()}] Cannot find the level button")
+            # self.add_log(f"[{current_time()}] Cannot find the level button")
             self.click_loop()
             self.better_sleep((1, 1.7))
         else:
@@ -358,7 +358,7 @@ class Task:
                 if string[1] == "1l":
                     string[1] = "1"
                 self.print(f"Current level : {string[1]}")
-                # self.set_text(f"[{current_time()}] Current level : {string[1]}")
+                # self.add_log(f"[{current_time()}] Current level : {string[1]}")
                 level_to_go = level - int(string[1].replace("l", "1"))
             except:
                 x, y = self.find_img(target="minus_button")
@@ -374,7 +374,7 @@ class Task:
                 x, y = self.find_img(target="minus_button")
 
             self.print(f"{word} the level by : {abs(level_to_go)}")
-            # self.set_text(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
+            # self.add_log(f"[{current_time()}] {word} the level by : {abs(level_to_go)}")
             for _ in range(abs(level_to_go)):
                 x2 = x + uniform(0, 30)
                 y2 = y + uniform(0, 27)
@@ -847,7 +847,7 @@ class Task:
                 self.run_game()
                 return True
             else:
-                self.set_text("Auto Log-back off", ft.colors.RED)
+                self.add_log("Auto Log-back off", ft.colors.RED)
                 self.send_discord_message("The game got disconnected, Log-back off.")
                 while True:
                     self.script_pause()
@@ -1028,7 +1028,7 @@ class Task:
                     self.better_sleep((3, 4))
                     return True
                 else:
-                    self.set_text(f"[{current_time()}] Captcha verification is Off")
+                    self.add_log(f"[{current_time()}] Captcha verification is Off")
                     self.set_status("Captcha is Off")
                     self.send_discord_message("Captcha detected, Captcha verification off.")
                     while True:
