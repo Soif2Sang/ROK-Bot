@@ -75,8 +75,8 @@ def configuration(self):
     # self.window_top = 8
     self.window_center()
     ###################### SIZE
-    self.window_width = 640
-    self.window_height = 640
+    self.window.width = 640
+    self.window.height = 640
     self.padding = 0
     self.spacing = 0
     self.expand = True

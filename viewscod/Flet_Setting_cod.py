@@ -26,8 +26,8 @@ class SettingContainer(ft.Container):
         self.init()
 
     def nextView(self, page, params, basket):
-        self.page.window_width = 900
-        self.page.window_height = 500
+        self.page.window.width = 900
+        self.page.window.height = 500
         return ft.View(
             f"/city-layout/{self.instance_index}/{self.profile_index}",
             controls=[
@@ -49,8 +49,8 @@ class SettingContainer(ft.Container):
         )
 
     def returnHome(self):
-        self.page.window_width = 450
-        self.page.window_height = 700
+        self.page.window.width = 450
+        self.page.window.height = 700
         self.page.go("/")
 
     def init(self):

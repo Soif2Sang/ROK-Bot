@@ -108,7 +108,7 @@ class TileSlave(ft.Container):
         self.bgcolor = ft.colors.SURFACE_VARIANT
         ss.page.update()
 
-    def set_text(self, phrase: str):
+    def set_status(self, phrase: str):
         self.text_status.value = phrase
         ss.page.update()
 

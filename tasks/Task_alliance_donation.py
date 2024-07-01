@@ -7,7 +7,7 @@ from utils.functions import get_class, get_name
 
 class AllianceDonation(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
 
     def task_name(self):
@@ -30,15 +30,6 @@ class AllianceDonation(Task):
         x, y = uniform(1100, 1130), uniform(30, 58)
         self.click(x, y)
         self.better_sleep((1.0, 1.395))
-
-    @get_name
-    def open_alliance_menu(self):
-        # Open du menu
-        self.open_menu()
-        # Open alliance menu
-        x, y = uniform(1010, 1050), uniform(650, 690)
-        self.click(x, y)
-        self.better_sleep((1.725, 2.295))
 
     @get_name
     def donate_to_alliance(self):

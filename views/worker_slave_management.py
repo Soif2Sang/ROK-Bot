@@ -12,19 +12,20 @@ ss = SettingsSingleton()
 
 class SlaveDraggable(ft.Draggable):
     def __init__(self, instance, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.group = "color"
-        self.content = ft.Container(
+        kwargs['content'] = ft.Container(
             width=110,
             height=50,
             content=ft.Text(instance),
-            data=self.data,
+            data=kwargs['data'],
             bgcolor=ft.colors.OUTLINE_VARIANT,
             alignment=ft.alignment.center,
             border_radius=5,
             border=ft.border.all(2, ft.colors.ON_SURFACE_VARIANT),
             padding=ft.padding.all(3),
         )
+        kwargs['group'] = "color"
+
+        super().__init__(*args, **kwargs)
 
 
 class Worker(ft.Container):
@@ -184,8 +185,7 @@ class Worker(ft.Container):
             ),
         )
 
-        if self.slaves.__getattribute__("page"):
-            self.slaves.update()
+        ss.page.update()
 
     def drag_will_accept(self, e):
         e.control.content.border = ft.border.all(2, ft.colors.BLACK45 if e.data == "true" else ft.colors.RED)
@@ -218,8 +218,7 @@ class Worker(ft.Container):
         ss.write_worker_settings(self.worker_settings)
 
         self.add_dragtarget()
-        if self.__getattribute__("page"):
-            self.update()
+        ss.page.update()
 
     def on_delete(self, e):
         emulator_settings = ss.emulator_settings
@@ -230,8 +229,7 @@ class Worker(ft.Container):
         self.worker_settings.worker_type[self.emulator_type].workers[self.instance].instances = self.get_all()
         ss.write_worker_settings(self.worker_settings)
 
-        if self.__getattribute__("page"):
-            self.update()
+        ss.page.update()
 
     def get_all(self):
         order: List[InstanceSchema] = []

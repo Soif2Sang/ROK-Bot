@@ -7,7 +7,7 @@ from utils.functions import get_class, get_name
 
 class AllianceBuilding(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
 
     def task_name(self):
@@ -46,15 +46,6 @@ class AllianceBuilding(Task):
         self.click(available_to_gather[0], available_to_gather[1] - 20)
         self.better_sleep((5, 9))
         return True
-
-    @get_name
-    def open_alliance_menu(self):
-        # Open du menu
-        self.open_menu()
-        # Open alliance menu
-        x, y = uniform(1010, 1050), uniform(650, 690)
-        self.click(x, y)
-        self.better_sleep((1.725, 2.295))
 
     @get_name
     def donate_to_alliance(self):
@@ -148,7 +139,7 @@ class AllianceBuilding(Task):
                 self.click(uniform(700, 800), uniform(271, 300))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
-                self.set_text("Error in line-up selection")
+                self.set_status("Error in line-up selection")
                 self.send_discord_message("Error in line-up selection, human interaction required.")
                 while True:
                     self.script_pause()

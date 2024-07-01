@@ -8,7 +8,7 @@ from utils.functions import get_class
 
 class DailyVip(Task):
     def __init__(self, MainTask: Task):
-        super().__init__(MainTask.tile)
+        super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
 
     def task_name(self):

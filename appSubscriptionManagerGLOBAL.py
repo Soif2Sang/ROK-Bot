@@ -352,8 +352,8 @@ def main(page: ft.Page):
     keyauthapp.login("maxence", "fe")
     version = keyauthapp.var("version")
     message = keyauthapp.var("message")
-    page.window_height = 500
-    page.window_width = 500
+    page.window.height = 500
+    page.window.width = 500
     page.user = CreateUser(col=4)
     page.progressbar = ft.ProgressBar(visible=False)
     page.randomtext = ft.Text()
