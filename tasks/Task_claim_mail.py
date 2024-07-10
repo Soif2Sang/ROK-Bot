@@ -17,19 +17,19 @@ class ClaimMail(Task):
 
     @get_class
     def run(self):
-        cord_x, cord_y = 640, 1150
+        cord_x, cord_y = 1150, 640
 
         if ((co:=self.find_img("mail_button", confidence=0.8)) is None):
             self.open_menu()
 
         if co and co[0] > 1170:
-            cord_x, cord_y = 640, 1256
+            cord_x, cord_y = 1256, 640
 
         screen = self.adb.get_cv2_img()
         lower_red = np.array([0, 0, 200])  # Adjust these values as needed
         upper_red = np.array([10, 10, 255])  # Adjust these values as needed
 
-        if not (np.all(screen[cord_x, cord_y] >= lower_red) and np.all(screen[cord_x, cord_y] <= upper_red)):
+        if not (np.all(screen[cord_y, cord_x] >= lower_red) and np.all(screen[cord_y, cord_x] <= upper_red)):
             return
 
         self.click(cord_x + random.uniform(-20, -10), 640 + random.uniform(0, 10))

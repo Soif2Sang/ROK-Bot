@@ -230,7 +230,7 @@ class Task:
         :return: True if there's a empty queue
         :return: False if queues are occupied
         """
-        cropped_image = self.adb.get_cv2_img()[134:154, 1205:1247]
+        cropped_image = self.adb.get_cv2_img()[130:160, 1205:1247]
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2GRAY)
         native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
 
