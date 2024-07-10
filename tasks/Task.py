@@ -15,7 +15,7 @@ import cv2
 import deprecation
 import flet as ft
 
-from constants import INVENTORY_BUTTON, ALLIANCE_BUTTON, COMMANDER_BUTTON, CAMPAIGN_BUTTON
+from utils.constants import INVENTORY_BUTTON, ALLIANCE_BUTTON, COMMANDER_BUTTON, CAMPAIGN_BUTTON
 from utils.context import contextManager
 
 try:
