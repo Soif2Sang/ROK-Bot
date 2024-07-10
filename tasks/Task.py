@@ -15,6 +15,7 @@ import cv2
 import deprecation
 import flet as ft
 
+from constants import INVENTORY_BUTTON, ALLIANCE_BUTTON, COMMANDER_BUTTON, CAMPAIGN_BUTTON
 from utils.context import contextManager
 
 try:
@@ -312,8 +313,7 @@ class Task:
 
     @get_name
     def open_inventory(self):
-        x, y = uniform(830, 850), uniform(650, 690)
-        self.click(x, y)
+        self.click(INVENTORY_BUTTON[0] + uniform(-10, +10), INVENTORY_BUTTON[1] + uniform(-10, +10))
         self.better_sleep((1.725, 1.995))
 
     @get_name
@@ -327,7 +327,7 @@ class Task:
 
     @get_name
     def open_commander_tab(self):
-        self.click(1030 + uniform(-10, 10), 665 + uniform(-10, 10))
+        self.click(COMMANDER_BUTTON[0] + uniform(-10, +10), COMMANDER_BUTTON[1] + uniform(-10, +10))
         self.better_sleep((1.725, 1.995))
 
     @get_name
@@ -335,8 +335,7 @@ class Task:
         # Open du menu
         self.open_menu()
         # Open alliance menu
-        x, y = uniform(930, 950), uniform(650, 690)
-        self.click(x, y)
+        self.click(ALLIANCE_BUTTON[0] + uniform(-10, +10), ALLIANCE_BUTTON[1] + uniform(-10, +10))
         self.better_sleep((1.725, 2.295))
 
     @get_name
@@ -348,7 +347,7 @@ class Task:
         self.better_sleep((1.725, 1.995))
 
     def open_campaign(self):
-        self.click(730 + uniform(-10, 10), 676 + uniform(-10, 10))
+        self.click(CAMPAIGN_BUTTON[0] + uniform(-10, 10), CAMPAIGN_BUTTON[1] + uniform(-10, 10))
         self.better_sleep((1.725, 1.995))
 
     def open_sunset_canyon(self):
