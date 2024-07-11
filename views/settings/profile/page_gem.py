@@ -158,26 +158,16 @@ class PageGem(BasePage):
         #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["restart_game"],
         #     on_change=lambda _: self.reverse_keyword("restart_game"),
         # )
-        # self.search_methods_radio_group = ft.RadioGroup(
-        #     content=ft.Column([
-        #         ft.Radio(value="default", label=translate("Normal path method (will use cords)")),
-        #         ft.Container(
-        #             content=ft.Column(
-        #                 controls=[
-        #                     self.kingdom_text_field,
-        #                     self.city_x_text_field,
-        #                     self.city_y_text_field,
-        #                 ],
-        #             ),
-        #             margin=ft.margin.only(left=50),
-        #         ),
-        #         ft.Radio(value="map", label=translate("Map method (Will use your selected area)")),
-        #         ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
-        #         ft.Radio(value="spiral", label=translate("Spiral path method (only around your city)")),
-        #     ]),
-        #     on_change=self.toggle_search_method,
-        #     value=self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"]
-        # )
+        self.map_center_pos_method = ft.RadioGroup(
+            content=ft.Column([
+                ft.Radio(value="auto", label=translate("Bot will try to figure out yourcity position,\ncan be unaccurate")),
+                ft.Radio(value="manual",
+                         label=translate("You will need to place your city yourself using the\nbutton bellow")),
+            ]),
+            on_change=self.submit_with_context,
+            data={"path": "map_center_pos_method", "type": str},
+            value=self.context.map_center_pos_method
+        )
 
         self.availability_dropdown = ft.Dropdown(
             width=100,
@@ -232,7 +222,7 @@ class PageGem(BasePage):
             # map_switch,
             # ft.Container(content=self.set_area_location_button, margin=ft.margin.only(left=50)),
             # spiral_switch,
-            # self.search_methods_radio_group,
+            self.map_center_pos_method,
             self.set_area_location_button,
             ft.Divider(),
             ft.Text("Other Settings", weight=ft.FontWeight.BOLD),
