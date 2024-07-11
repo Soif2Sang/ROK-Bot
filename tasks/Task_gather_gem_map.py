@@ -2,6 +2,9 @@ from datetime import datetime
 from random import randint, uniform
 from time import time
 
+import numpy as np
+
+from utils.schemas.emulator_schemas import CordsSchema
 from tasks.Task import Task
 from tasks.Task_gather_gem import GatherGem
 from utils.functions import get_class, get_name
@@ -13,12 +16,15 @@ from utils.singletons import EmulatorSingleton
 class GatherGemMap(GatherGem):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask)
-        self.max_distance = 3
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.gather_gem
+
+        self.max_distance = 3
         self.end_time = None
         self.block = False
         self.nodes_gathered = 0
-        self.context_task = self.context_profile.tasks.gather_gem
+        self.position = self.context_task.map_center_pos
+
 
     def task_name(self):
         return "GatherGem"
@@ -80,15 +86,31 @@ class GatherGemMap(GatherGem):
 
     @get_name
     def go_random_area(self):
-        position = self.context_task.map_center_pos
-
         raison = self.max_distance
 
-        x = uniform(-raison, raison) + position.x
-        y = uniform(-raison, raison) + position.y - 10
+        x = uniform(-raison, raison) + self.position.x
+        y = uniform(-raison, raison) + self.position.y - 10
 
         self.click(x, y)
         self.better_sleep((1, 2))
+
+    @get_name
+    def find_city_position(self):
+        image = self.adb.get_cv2_img()
+        image = image[:146, 1072:]
+
+        lower_green = np.array([0, 230, 0])  # Adjust these values as needed
+        upper_green = np.array([20, 250, 20])  # Adjust these values as needed
+
+        for x in range(image.shape[1]):
+            for y in range(image.shape[0]):
+                if np.all(image[y, x] >= lower_green) and np.all(image[y, x] <= upper_green):
+                    self.position = self.context_task.map_center_pos = CordsSchema(x=1072 + x, y=y)
+                    self.print("Successfully found the city position")
+                    return True
+
+        self.print("Failed to find the city position", "red")
+        return False
 
     @get_class
     def run(self, end_time=None):
@@ -109,6 +131,10 @@ class GatherGemMap(GatherGem):
         self.leave_city()
         self.better_sleep((1.5, 2))
         self.zoom_out_city()
+
+        if self.context_task.map_center_pos_method == "auto":
+            if not self.find_city_position():
+               return
 
         enable_gem_node_limit = self.context_task.node_limit.enabled
         gem_node_limit = self.context_task.node_limit.fixed_node_limit
