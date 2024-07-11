@@ -33,6 +33,8 @@ class AllianceDonation(Task):
 
     @get_name
     def donate_to_alliance(self):
+        "donation_recommendation"
+
         alliance_tech_logo = self.find_img(target="alliance_tech")
         if alliance_tech_logo is not None:
             self.click(
@@ -43,23 +45,39 @@ class AllianceDonation(Task):
 
             source = self.adb.get_cv2_img()
 
-            techs = self.adb.find_multiple_img(target="tech", source=source, confidence=0.7)
-            cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
+            missing_steps = self.adb.find_multiple_img(target="tech", source=source, confidence=0.7)
+            bottom_corners = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
+            recommendation_badge = self.find_img(target="donation_recommendation", source=source, confidence=0.79)
 
-            duos = set()
-            for card in cards:
-                for tech in techs:
+            technologies_to_donate = set()
+            recommended_technology = None
+            
+            for card in bottom_corners:
+                for tech in missing_steps:
                     if (card[1] > tech[1] > card[1] - 50) and (card[0] + 50 > tech[0] > card[0] - 100):
-                        duos.add(card)
+                        if recommendation_badge:
+                            if (recommendation_badge[1] + 80 > tech[1] > recommendation_badge[1] +150) and (recommendation_badge[0] + 90 > tech[0] > recommendation_badge[0] - 300):
+                                recommended_technology = card
+                        technologies_to_donate.add(card)
+                        
 
+            print(f"{recommended_technology= }")
+            print(f"{technologies_to_donate= }")
+            if recommended_technology is not None:
+                technologies_to_donate.remove(recommended_technology)
+            
             nb_check = 0
-            for i in range(len(duos)):
+            technologies_to_donate = list(technologies_to_donate)
+            random.shuffle(technologies_to_donate)
+            technologies_to_donate.insert(0, recommended_technology)
+
+            for i in range(len(technologies_to_donate)):
                 if nb_check == 4:
                     break
 
                 nb_check += 1
-                donation_logo = random.choice(list(duos))
-                duos.remove(donation_logo)
+                donation_logo = random.choice(list(technologies_to_donate))
+                technologies_to_donate.remove(donation_logo)
 
                 self.click(donation_logo[0] + uniform(0, 10), donation_logo[1] + uniform(0, 10))
                 self.better_sleep((1, 2))

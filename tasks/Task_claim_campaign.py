@@ -20,7 +20,7 @@ class ClaimCampaign(Task):
     def has_notification(self):
         cv_image = self.adb.get_cv2_img()
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
-        cropped_image = cv_image[630:655, 841:870]
+        cropped_image = cv_image[630:655, 741:770]
 
         _, cropped_image = cv2.threshold(cropped_image, 128, 255, cv2.THRESH_BINARY_INV)
 
@@ -48,7 +48,7 @@ class ClaimCampaign(Task):
         # Open du menu
         self.open_menu()
         if self.has_notification():
-            self.click(uniform(808, 850), uniform(651, 692))
+            self.click(uniform(710, 730), uniform(651, 692))
             self.better_sleep((1.3, 2.2))
             self.click(uniform(150, 266), uniform(250, 390))
             self.better_sleep((1.3, 2.2))

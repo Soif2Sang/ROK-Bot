@@ -1,4 +1,5 @@
 import json
+import threading
 from random import uniform
 from time import time
 
@@ -33,7 +34,8 @@ from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.resources import ImageSingleton
 from utils.singletons import FileSingleton, ss, EmulatorSingleton
-from utils.context import contextManager
+from utils.context import contextManager, TaskWrapper
+
 EmulatorSingleton().setEmulator("ld")
 # from utils.android_debug_bridge import *
 DEBUG = True
@@ -60,6 +62,7 @@ class Frame:
         self.stopped = False
         self.paused = False
         self.number = sel
+        self.status = "running"
         self.initial_page = Page()
 
     def add_text(self, phrase, color="black"):
@@ -183,6 +186,8 @@ def get_bot(number):
 
     bot.task.tile = frame
     bot.task.tile.stopped = False
+
+    contextManager.tasks[number] = TaskWrapper(threading.Thread(target=bot.task.run))
     return bot
 
 
@@ -262,6 +267,8 @@ if __name__ == "__main__":
     sel = "0"
 
     bo = get_bot(sel)
+    print(bo.alliance.run())
+    exit()
     screen = bo.adb.get_cv2_img()
     info_screen = screen[470:, 0:115]
 
