@@ -52,6 +52,7 @@ class TaskGatherGemSchema(TaskSchema):
 
     search_method: Literal["default", "spiral", "map"] = "map"
     map_center_pos: CordsSchema = field(default_factory=CordsSchema)
+    map_center_pos_method: Literal["manual", "auto"] = "manual"
     # scan_frequency: MinMaxSchema = MinMaxSchema(min=0,max=0)
     # city_cords: CityCordsSchema = field(default_factory=CityCordsSchema)
     # detect_free_marches_without_clicking_on_node = True

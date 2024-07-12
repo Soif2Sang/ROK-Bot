@@ -59,6 +59,7 @@ class Frame:
         self.started = True
         self.stopped = False
         self.paused = False
+        self.status = "idle"
         self.number = sel
         self.initial_page = Page()
 
@@ -180,9 +181,12 @@ def get_bot(number):
     frame.paused = False
     frame.add_text = lambda x, _: print(x)
     frame.set_text = lambda x, _: print(x)
+    frame.status == "running"
 
     bot.task.tile = frame
     bot.task.tile.stopped = False
+
+    contextManager.tasks[str(number)] = frame
     return bot
 
 
@@ -262,16 +266,11 @@ if __name__ == "__main__":
     sel = "0"
 
     bo = get_bot(sel)
-    screen = bo.adb.get_cv2_img()
-    info_screen = screen[470:, 0:115]
-
-    print(bo.task.find_img(
-        target="checkpoint_star",
-        source=bo.task.adb.get_cv2_img()[:60, 380:600],
-        confidence=0.97,
-    ))
-
-
+    print(bo.gem.scan_gem())
+    # image = bo.adb.get_cv2_img()
+    # image = image[:146, 1072:]
+    #
+    # print(image[62, 93])
     exit()
     screen = imread("./screen_city_hall.png")
 
