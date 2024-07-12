@@ -99,13 +99,13 @@ class GatherGemMap(GatherGem):
         image = self.adb.get_cv2_img()
         image = image[:146, 1072:]
 
-        lower_green = np.array([0, 230, 0])  # Adjust these values as needed
-        upper_green = np.array([20, 250, 20])  # Adjust these values as needed
+        lower_green = np.array([0, 220, 0])  # Adjust these values as needed
+        upper_green = np.array([40, 250, 40])  # Adjust these values as needed
 
         for x in range(image.shape[1]):
             for y in range(image.shape[0]):
                 if np.all(image[y, x] >= lower_green) and np.all(image[y, x] <= upper_green):
-                    self.position = self.context_task.map_center_pos = CordsSchema(x=1072 + x, y=y)
+                    self.position = self.context_task.map_center_pos = CordsSchema(x=1072 + x, y=3 + y)
                     self.print("Successfully found the city position")
                     return True
 
