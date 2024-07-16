@@ -1306,21 +1306,21 @@ class Task:
         if screen is None:
             image = self.adb.get_cv2_img()
 
-        while cos := self.adb.find_multiple_img(target="close_window", source=image[: 720 // 2, 1280 // 2 :]):
+        while cos := self.adb.find_multiple_img(target="close_window", source=image[: 720 // 2, 1280 // 2 :], confidence=0.83):
             co = cos[-1]
-            self.adb.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
-            self.better_sleep((1.3, 2.8))
-            image = self.adb.get_cv2_img()
-
-        while cos := self.adb.find_multiple_img(target="close_window2", source=image[: 720 // 2, : 1280 // 4], confidence=0.83):
-            co = cos[-1]
-            self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
+            self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()
 
         while cos := self.adb.find_multiple_img(target="close_window3", source=image[: 720 // 2, 1280 // 2 :], confidence=0.83):
             co = cos[-1]
-            self.adb.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
+            self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
+            self.better_sleep((1.3, 2.8))
+            image = self.adb.get_cv2_img()
+
+        while cos := self.adb.find_multiple_img(target="close_window2", source=image[: 720 // 2, : 1280 // 4], confidence=0.83):
+            co = cos[-1]
+            self.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()
 
@@ -1328,7 +1328,7 @@ class Task:
             target="close_chat", source=image[720 // 4 : 720 - 720 // 4, : 1280 // 2 + 50], confidence=0.9
         ):
             co = cos[-1]
-            self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9) + 720 // 4)
+            self.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9) + 720 // 4)
             self.better_sleep((1.3, 2.8))
             image = self.adb.get_cv2_img()
 
@@ -1676,6 +1676,31 @@ class Task:
                     self.print(f"Node occupied, if you think it is a mistake, please report this: {pixel}")
                     return True
         return False
+
+    @get_name
+    def is_node_occupied(self, screen=None, notify=True):
+        if screen is None:
+            screen = self.adb.get_cv2_img()
+
+        image_for_occupation_icon = screen[230:480, 441:814]
+
+        possible_occupation_type = ["neutral", "ally", "enemy"]
+
+        for occupation_type in possible_occupation_type:
+            if self.find_img(target=f"node_{occupation_type}_icon", source=image_for_occupation_icon, confidence=0.9):
+                self.print(f"This node is occupied")
+                return True
+
+        image_for_arrow_icon = screen[190:480, 460:830]
+
+        center_coordinates = (640, 330)
+        radius = 70
+        color = (0, 0, 0)
+        thickness = -1
+        image_with_circle = image_for_arrow_icon.copy()
+        image_with_circle = cv2.circle(image_with_circle, center_coordinates, radius, color, thickness)
+
+        return self.find_cross(image_with_circle, notify)
 
     @get_name
     def enough_action_points(self) -> bool:

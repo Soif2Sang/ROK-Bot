@@ -8,7 +8,7 @@ from os.path import exists
 from time import sleep, time
 
 import pytesseract as tess
-from cv2 import COLOR_BGR2HSV, COLOR_BGR2RGB, TM_CCOEFF_NORMED, cvtColor, inRange, matchTemplate, minMaxLoc
+from cv2 import COLOR_BGR2HSV, COLOR_BGR2RGB,COLOR_BGR2GRAY, TM_CCOEFF_NORMED, cvtColor, inRange, matchTemplate, minMaxLoc
 from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
@@ -253,10 +253,16 @@ class Adb:
             source = cvtColor(cv_image, COLOR_BGR2RGB)
         cv_image = source
 
+
         img_to_find = self.images.get_file_name(target)
         if target == "back_icon":
             cv_image = cv_image[0:720, 1000:1280]
         # print(img_to_find)
+
+        if target == 'close_window3':
+            cv_image = cvtColor(cv_image, COLOR_BGR2GRAY)
+            img_to_find = cvtColor(img_to_find, COLOR_BGR2GRAY)
+
         result = matchTemplate(cv_image, img_to_find, TM_CCOEFF_NORMED)
         needle_w = img_to_find.shape[1]
         needle_h = img_to_find.shape[0]

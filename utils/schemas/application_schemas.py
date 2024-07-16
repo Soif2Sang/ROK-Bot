@@ -62,7 +62,7 @@ class ApplicationSettingsSchema:
     captcha: CaptchaSettingsSchema = field(default_factory=CaptchaSettingsSchema)
     paths: PathSchema = field(default_factory=PathSchema)
     user: UserSchema = field(default_factory=UserSchema)
-
+    version_language: Literal["en", "pt", "ar"] = "en"
 
 @dataclass_json
 @dataclass
