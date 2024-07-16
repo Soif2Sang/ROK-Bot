@@ -368,13 +368,15 @@ class GatherGem(Task):
         pass
 
     @get_name
-    def scan_gem(self):
+    def scan_gem(self, screen=None):
         """
         Scan device screenshot to find gem node,          not 100% working need improvement
         :return: None
         """
         self.restart_if_game_crashed()
-        screen = self.adb.get_cv2_img()
+
+        if screen is None:
+            screen = self.adb.get_cv2_img()
 
         # info_screen = screen[470:700, 0:115]
         # cropped_image = screen[420:540, 480:810]
@@ -426,7 +428,7 @@ class GatherGem(Task):
             # if co is None:
             #     co = self.validate_co(
             #         self.find_img(source=screen, target=icon[1], confidence=0.77))
-            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.815))
+            co = self.validate_co(self.find_img(source=screen, target=icon, confidence=0.77))
             if (co is not None) and ((co[0], co[1]) not in already_verified):
                 if self.already_mining(co[0], co[1], screen):
                     self.print(f"Node is occupied - x: {co[0]} y:{co[1]}")
@@ -440,7 +442,7 @@ class GatherGem(Task):
                 break
         if co:
             self.print(f"Node x:{co[0]}, y:{co[1]}")
-            self.click(co[0], co[1])
+            self.click(co[0] + 10, co[1] + 10)
             x_click = co[0]
             y_click = co[1]
             self.better_sleep((2, 2.5))
@@ -463,7 +465,7 @@ class GatherGem(Task):
                     self.block = True
                     return
 
-                if self.find_cross(notify=False):
+                if self.is_node_occupied(notify=False):
                     break
 
                 # DeprecationWarning
@@ -493,7 +495,7 @@ class GatherGem(Task):
                             cross_image = timer_image[240:490, 490:790]
                             back_image = timer_image[150:477, 1160:]
 
-                            if self.find_cross_source(cross_image, False):
+                            if self.is_node_occupied(cross_image, False):
                                 break
                             if (
                                 self.find_img(
@@ -732,13 +734,15 @@ class GatherGem(Task):
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
+            screen = self.adb.get_cv2_img()
 
         if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
             self.zoom_out_city()
             self.better_sleep((2, 3))
+            screen = self.adb.get_cv2_img()
 
         self.better_sleep((0.7, 0.9))
-        return scan()
+        return scan(screen)
 
     @get_class
     def run(self, end_time=None):

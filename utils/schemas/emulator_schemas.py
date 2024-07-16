@@ -378,7 +378,8 @@ class EmulatorSettingsSchema:
             "2": ProfileSchema(),
             "3": ProfileSchema(),
         }
-    )
+    ),
+    kvk_map_type: Literal["normal", "new"] = "normal"
 
 
 @dataclass_json

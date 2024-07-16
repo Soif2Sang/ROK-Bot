@@ -50,7 +50,7 @@ class SupabaseClient:
         return cls._instance
 
     def login(self, email, password):
-        self.client.auth.sign_in_with_password({"email": email, "password": password})
+        return self.client.auth.sign_in_with_password({"email": email, "password": password})
 
     def check_hwid(self):
         hwid = others.get_hwid()

@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import threading
@@ -12,7 +13,7 @@ from utils.schemas.application_schemas import UserSchema
 
 from utils.constants import BOT_NAME, VERSION_TYPE
 from utils.flet_translations import translate
-from utils.singletons import ApiSingleton, FileSingleton, ss
+from utils.singletons import ApiSingleton, FileSingleton, ss, SettingsSingleton
 from utils.supabase_auth import HwidAlreadyLinked, NoSubscriptionFound, SupabaseClient
 
 links = {
@@ -68,6 +69,22 @@ class LoginScreen(ft.ResponsiveRow):
                 self.textfield_username,
                 self.textfield_password,
                 ft.ResponsiveRow(controls=[self.button_login]),
+                ft.Text("Language:", color=ft.colors.BLACK, weight=ft.FontWeight.W_400),
+                ft.SegmentedButton(
+                    on_change=self.save_language,
+                    selected={"en"},
+                    allow_multiple_selection=False,
+                    segments=[
+                        ft.Segment(
+                            value="en",
+                            label=ft.Text("EN", color=ft.colors.BLACK),
+                        ),
+                        ft.Segment(
+                            value="br",
+                            label=ft.Text("BR", color=ft.colors.BLACK),
+                        ),
+                    ],
+                )
             ],
         )
 
@@ -126,6 +143,10 @@ class LoginScreen(ft.ResponsiveRow):
             ),
         ]
         self.spacing = 0
+
+    def save_language(self, e):
+        SettingsSingleton().application_settings.version_language = json.loads(e.data)[0]
+        SettingsSingleton().write_application_settings(SettingsSingleton().application_settings)
 
     def login(self, e):
         email = self.textfield_username.value.strip()

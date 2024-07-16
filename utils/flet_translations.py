@@ -1,4 +1,4 @@
-from utils.constants import VERSION_TYPE
+from utils.singletons import SettingsSingleton
 
 translations = {
     f"ROKBOT 30 Days left": "ROKBOT Brasil 30 Dias Restante",
@@ -219,6 +219,6 @@ translations = {
 
 
 def translate(message):
-    if VERSION_TYPE == "brazilian":
+    if SettingsSingleton().application_settings.version_language == "br":
         return translations.get(message, message)
     return message
