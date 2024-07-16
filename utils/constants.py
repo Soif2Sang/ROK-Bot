@@ -4,7 +4,7 @@ DEBUG = False
 
 VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "global"
 
-VERSION_NUMBER = "3.4.7"
+VERSION_NUMBER = "3.4.8"
 TOAST_HISTORY = {}
 
 names: dict[Literal["global", "brazilian", "arabic"], Literal["RokNet", "ROKBOT"]] = {"global": "RokNet","arabic": "RokNet", "brazilian": "ROKBOT"}

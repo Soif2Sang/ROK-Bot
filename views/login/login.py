@@ -72,7 +72,7 @@ class LoginScreen(ft.ResponsiveRow):
                 ft.Text("Language:", color=ft.colors.BLACK, weight=ft.FontWeight.W_400),
                 ft.SegmentedButton(
                     on_change=self.save_language,
-                    selected={"en"},
+                    selected={SettingsSingleton().application_settings.version_language},
                     allow_multiple_selection=False,
                     segments=[
                         ft.Segment(
@@ -145,6 +145,7 @@ class LoginScreen(ft.ResponsiveRow):
         self.spacing = 0
 
     def save_language(self, e):
+        print(e.data)
         SettingsSingleton().application_settings.version_language = json.loads(e.data)[0]
         SettingsSingleton().write_application_settings(SettingsSingleton().application_settings)
 
