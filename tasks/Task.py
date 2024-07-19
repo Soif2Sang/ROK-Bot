@@ -387,15 +387,6 @@ class Task:
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
                     self.better_sleep((1.4, 2))
 
-                if has_zoomed_out:
-                    self.script_pause()
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.3, 0.3))
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                    self.better_sleep((1.4, 2))
-
         except Exception as e:
             print(e)
 
