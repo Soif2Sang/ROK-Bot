@@ -8,6 +8,7 @@ from time import sleep
 import flet as ft
 import gotrue
 
+from functions import find_file_in_all_drives
 from utils.discord_server import start_server
 from utils.schemas.application_schemas import UserSchema
 
@@ -187,6 +188,24 @@ class LoginScreen(ft.ResponsiveRow):
 
             ss.page.title = f"{BOT_NAME} - {days} Days left"
             ss.page.update()
+
+            if (not ss.application_settings.paths.ldplayer.ldconsole and not ss.application_settings.paths.ldplayer.ldconsole) or (not os.path.exists(ss.application_settings.paths.ldplayer.ldconsole) and not os.path.exists(ss.application_settings.paths.ldplayer5.ldconsole)):
+                ss.page.go("/emulator-loading")
+                ss.page.update()
+
+                if ld9_path := find_file_in_all_drives(r"LDPlayer9\\ldconsole\.exe"):
+                    ss.application_settings.paths.ldplayer.ldconsole = ld9_path
+                    ss.write_application_settings(ss.application_settings)
+
+                if ld5_path := find_file_in_all_drives(r"LDPlayer64\\ldconsole\.exe"):
+                    ss.application_settings.paths.ldplayer5.ldconsole = ld5_path
+                    ss.write_application_settings(ss.application_settings)
+
+                if not (ld9_path and ld5_path):
+                    ss.page.generate_toast("LD Missing", "Unable to load LdPlayer9 and LdPlayer5 configurations")
+                    while 1:
+                        sleep(1)
+
             ss.page.go("/emulator-choice")
 
             if email == "eduardo.duuh96@gmail.com":

@@ -11,6 +11,7 @@ from time import perf_counter, sleep
 
 import pyautogui
 import requests
+from abc import ABC, abstractmethod
 
 try:
     import win32api
@@ -230,50 +231,127 @@ def getchecksum():
     return digest
 
 
-def get_dic_instances():
-    try:
-        path = ss.application_settings.paths.bluestacks.config[:-5] + ".txt"
+class ConfigParser(ABC):
+    @abstractmethod
+    def getConfig(self):
+        pass
 
-        if exists(rf'{ss.application_settings.paths.bluestacks.config}'):
-            shutil.copy(rf'{ss.application_settings.paths.bluestacks.config}', rf"{path}")
+class MacConfigParser(ConfigParser):
+    def getConfig(self):
+        return {"0": {"name": "LD-Player", "instance": "ld", "port": 5554}}
 
-        with open(rf"{path}", "r", encoding="utf-8") as file:
-            data_instance = file.read().split("\n")
+class PcConfigParser(ConfigParser):
+    def getConfig(self):
+        return {"pc": {"name": "pc", "instance": "pc", "port": -1}}
 
-    except Exception as e:
-        print(e)
-        raise OSError(
-            "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'"
-        )
 
-    pattern_status_adb = re.compile(r"bst\.instance\.Nougat64_?(\d*)\.status\.adb_port")
-    pattern_display_name = re.compile(r"bst\.instance\.Nougat64_?(\d*)\.display_name")
+class BluestacksConfigParser(ConfigParser):
+    def getConfig(self):
+        try:
+            path = ss.application_settings.paths.bluestacks.config[:-5] + ".txt"
 
-    pattern_for_nougat = re.compile(r"Nougat64_?(\d*)")
-    pattern_for_value = re.compile(r'="([^"]*)"')
+            if exists(rf'{ss.application_settings.paths.bluestacks.config}'):
+                shutil.copy(rf'{ss.application_settings.paths.bluestacks.config}', rf"{path}")
 
-    matched_lines = []
+            with open(rf"{path}", "r", encoding="utf-8") as file:
+                data_instance = file.read().split("\n")
 
-    for line in data_instance:
-        line = line.strip()
-        # Check for display_name pattern and nougat version
-        if pattern_display_name.search(line):
-            matched_lines.append(pattern_for_nougat.search(line).group())
-            matched_lines.append(pattern_for_value.search(line).group(1))
-        # Check for status and adb_port pattern
-        elif pattern_status_adb.search(line):
-            matched_lines.append(pattern_for_value.search(line).group(1))
+        except Exception as e:
+            print(e)
+            raise OSError(
+                "The path you provided is wrong ! We are looking for something like : \n r'C:\ProgramData\BlueStacks_nxt\\bluestacks.conf'"
+            )
 
-    bluestacks_instances = {}
-    for i in range(0, len(matched_lines), 3):
-        bluestacks_instances[str(matched_lines[i])] = {
-            "instance": str(matched_lines[i]),
-            "name": matched_lines[i + 1],
-            "port": int(matched_lines[i + 2]),
-        }
+        pattern_status_adb = re.compile(r"bst\.instance\.Nougat64_?(\d*)\.status\.adb_port")
+        pattern_display_name = re.compile(r"bst\.instance\.Nougat64_?(\d*)\.display_name")
 
-    return bluestacks_instances
+        pattern_for_nougat = re.compile(r"Nougat64_?(\d*)")
+        pattern_for_value = re.compile(r'="([^"]*)"')
 
+        matched_lines = []
+
+        for line in data_instance:
+            line = line.strip()
+            # Check for display_name pattern and nougat version
+            if pattern_display_name.search(line):
+                matched_lines.append(pattern_for_nougat.search(line).group())
+                matched_lines.append(pattern_for_value.search(line).group(1))
+            # Check for status and adb_port pattern
+            elif pattern_status_adb.search(line):
+                matched_lines.append(pattern_for_value.search(line).group(1))
+
+        bluestacks_instances = {}
+        for i in range(0, len(matched_lines), 3):
+            bluestacks_instances[str(matched_lines[i])] = {
+                "emulator": "bluestacks",
+                "instance": str(matched_lines[i]),
+                "name": matched_lines[i + 1],
+                "port": int(matched_lines[i + 2]),
+            }
+
+        return bluestacks_instances
+
+class LdplayerConfigParser(ConfigParser):
+    def getConfig(self):
+        argument = "list2"
+        command = [ss.application_settings.paths.ldplayer.ldconsole, argument]
+        result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+
+        emulators = result.stdout.split("\n")
+        if emulators[-1] == "":
+            emulators.pop()
+
+        if emulators and emulators[-1][0] == ",":
+            emulators.pop()
+
+        final = []
+        for emulator in emulators:
+            if emulator.split(",")[0] != "":
+                final.append(emulator)
+
+        liste = {}
+        for emulator in final:
+            emulator = emulator.split(",")
+
+            liste[emulator[0]] = {
+                "name": emulator[1],
+                "instance": emulator[0],
+                "port": 5554 + 2 * int(emulator[0]),
+                "emulator": "ld",
+            }
+
+        return liste
+
+class Ldplayer5ConfigParser(ConfigParser):
+    def getConfig(self):
+        argument = "list2"
+        command = [ss.application_settings.paths.ldplayer5.ldconsole, argument]
+        result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
+
+        emulators = result.stdout.split("\n")
+        if emulators[-1] == "":
+            emulators.pop()
+
+        if emulators and emulators[-1][0] == ",":
+            emulators.pop()
+
+        final = []
+        for emulator in emulators:
+            if emulator.split(",")[0] != "":
+                final.append(emulator)
+
+        liste = {}
+        for emulator in final:
+            emulator = emulator.split(",")
+
+            liste[emulator[0]] = {
+                "name": emulator[1],
+                "instance": emulator[0],
+                "port": 5554 + 2 * int(emulator[0]),
+                "emulator": "ld5",
+            }
+
+        return liste
 
 def get_index_and_names(data):
     names = []
@@ -301,7 +379,7 @@ def get_current_instances(data):
 
 
 def get_all_vms_running():
-    return get_current_instances(get_dic_instances())
+    return get_current_instances(BluestacksConfigParser().getConfig())
 
 
 def get_dic_instances_ld():

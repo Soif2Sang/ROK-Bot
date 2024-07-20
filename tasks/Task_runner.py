@@ -34,7 +34,7 @@ from tasks.Task_daily_chest import DailyChest
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_enhanced_buff import UseEnhancedBuff
 from tasks.Task_gather_gem_default import GatherGemDefault
-from tasks.Task_gather_gem_map import GatherGemMap
+from tasks.Task_gather_gem_map_spiral import GatherGemMap
 from tasks.Task_gather_gem_spiral import GatherGemSpiral
 from tasks.Task_gather_rss_default import GatherRssDefault
 from tasks.Task_gather_rss_zoom import GatherRssZoom
@@ -48,8 +48,8 @@ from tasks.Task_upgrade_city import UpgradeCity
 from utils.android_debug_bridge import DeviceNotFoundException
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid, rgetattr, \
-    get_class
+from utils.functions import current_time, get_dic_instances_ld, get_name, get_window_pid, rgetattr, \
+    get_class, BluestacksConfigParser, LdplayerConfigParser
 from utils.singletons import EmulatorSingleton, ss, FileSingleton
 from views.frametime import is_slot_runnable, random_time_in_frametime
 
@@ -566,19 +566,21 @@ class TaskRunner(Task):
             while True:
                 self.better_sleep((1, 1))
 
-        emulator_choice = EmulatorSingleton().getEmulatorType()
+        emulator_choice = self.context.emulator
 
         if not win32gui.FindWindow(None, self.name):
             print(f"Bot will wait until the device is properly booted.")
             self.set_status("Booting")
             self.print("Booting...", "green")
 
-            EmulatorSingleton().startEmulator(emulator)
+            EmulatorSingleton().startEmulator(emulator, emulator_choice)
+
             try:
+                print("Waiting for boot")
                 self.adb.wait_boot_complete(timeout=120, timedelta=10)
 
                 sleep(10)
-
+                print("here")
                 self.adb.shell("echo boot completed")
                 self.debug("Boot completed")
             except (TimeoutError, DeviceNotFoundException, Exception) as e:
@@ -591,9 +593,9 @@ class TaskRunner(Task):
                 return self.start_emulator(emulator, deadstop + 1)
 
         if emulator_choice == "ld":
-            instances = get_dic_instances_ld()
+            instances = LdplayerConfigParser().getConfig()
         else:
-            instances = get_dic_instances()
+            instances = BluestacksConfigParser().getConfig()
 
         for instance in instances:
             ss.emulator_settings.emulators[instance].instance = instances[instance]["instance"]
@@ -609,11 +611,8 @@ class TaskRunner(Task):
 
     @get_class
     def run(self):
-        print(self.sel)
-
         self.character_index = 1
         self.has_started_once = False
-        emulator = EmulatorSingleton().getEmulatorType()
         can_go = True
 
         for profile in self.context.schedules:
@@ -634,22 +633,38 @@ class TaskRunner(Task):
 
             self.has_started_once = True
 
-            if emulator == "bluestacks":
+            if self.context.emulator == "bluestacks":
                 self.adb = AdbBluestacks(self.tile.number, task_reference=self)
             else:
                 self.adb = AdbLd(self.tile.number, task_reference=self)
 
             self.start_emulator(self.tile.number)
+
+            if self.context.emulator == "bluestacks":
+                self.adb.connect_to_device()
+
             self.tile.runner = self
             self.set_status("Starting..")
             self.print("Starting...", "green")
             # First character
+
+            print("here")
+
             self.current_profile = profile
 
             if self.context.schedules[profile].switch_character.enabled:
                 self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
             # First character
-            self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
+
+            print("here")
+
+            tasks = self.get_available_task(self.current_profile)
+
+            print("tasks")
+
+            self.execute_tasks(tasks, self.current_profile)
+
+            print("here")
 
             if self.context.schedules[profile].switch_character.enabled:
                 self.check_captcha()

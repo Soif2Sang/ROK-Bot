@@ -23,7 +23,7 @@ try:
     from utils.flet_toast.core import Position
     from utils.flet_toast.toasts_flexible import ToastAction, ToastsFlexible
     from utils.flet_translations import translate
-    from utils.functions import get_dic_instances, get_dic_instances_ld, getchecksum, find_file_in_all_drives
+    from utils.functions import get_dic_instances_ld, getchecksum, find_file_in_all_drives
     from utils.singletons import ApiSingleton, EmulatorSingleton, SettingsSingleton, ss, FileSingleton
     from utils.supabase_auth import SupabaseClient
     from views.city_layout import viewCityLayout, viewSetCenterMap
@@ -249,15 +249,15 @@ def emulator_choice(page: ft.Page, params, basket):
     return ft.View(
         route="/emulator-choice",
         controls=[
+            ft.Text("Choose your emulator", size=20),
             ft.Stack(
                 controls=[
                     ft.Row(
                         controls=[
                             AnimatedCard("bluestacks_logo.png", go_main),
                             AnimatedCard("ld_logo.png", go_main),
-                            # AnimatedCard("pc.ico", go_main, "tier4") ,
                         ],
-                        top=100,
+                        top=20,
                         left=120,
                     ),
                 ]

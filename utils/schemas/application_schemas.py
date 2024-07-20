@@ -43,9 +43,10 @@ class LdplayerPathSchema:
 @dataclass_json
 @dataclass
 class PathSchema:
+    adb: str = ""
     bluestacks: BluestacksPathSchema = field(default_factory=BluestacksPathSchema)
     ldplayer: LdplayerPathSchema = field(default_factory=LdplayerPathSchema)
-
+    ldplayer5: LdplayerPathSchema = field(default_factory=LdplayerPathSchema)
 
 @dataclass_json
 @dataclass

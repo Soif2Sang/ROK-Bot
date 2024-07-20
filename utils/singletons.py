@@ -60,8 +60,7 @@ class EmulatorSingleton:
         with self.FileLock:
             self.emulator = mode
 
-    def startEmulator(self, emulator: str):
-        emulator_choice = EmulatorSingleton().getEmulatorType()
+    def startEmulator(self, emulator: str, emulator_choice: str):
         tag = ss.emulator_settings.emulators[emulator].instance
 
         with self.EmulatorLock:

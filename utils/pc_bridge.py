@@ -28,7 +28,7 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import current_time, get_dic_instances, get_name
+from utils.functions import current_time, get_name
 from utils.resources import ImageSingleton
 from utils.singletons import FileSingleton
 bridge = None

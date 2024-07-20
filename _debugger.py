@@ -20,7 +20,7 @@ from tasks.Task_claim_mail import ClaimMail
 from tasks.Task_daily_chest2 import DailyChest2
 from tasks.Task_daily_vip import DailyVip
 from tasks.Task_gather_gem_default import GatherGem
-from tasks.Task_gather_gem_map import GatherGemMap
+from tasks.Task_gather_gem_map_spiral import GatherGemMap
 from tasks.Task_gather_gem_spiral import GatherGemSpiral
 from tasks.Task_gather_rss_default import GatherRss, GatherRssDefault
 from tasks.Task_hunt_barbarians import HuntBarbarians
@@ -266,7 +266,29 @@ if __name__ == "__main__":
     sel = "0"
 
     bo = get_bot(sel)
-    print(bo.gem.scan_gem())
+    bo.gem.go_to_center_point()
+    bo.gem.swipe_right()
+    bo.gem.swipe_right()
+    bo.gem.swipe_up()
+    bo.gem.swipe_left()
+    bo.gem.swipe_left()
+    exit()
+    image = bo.adb.get_cv2_img()
+
+    center_coordinates = (640, 330)
+    radius = 70
+    color = (0, 0, 0)
+    thickness = -1
+    image_with_circle = copy = image.copy()
+    image_with_circle = cv2.circle(image_with_circle, center_coordinates, radius, color, thickness)
+
+    print(bo.gem.find_cross(source=image_with_circle[190:480, 460:830]))
+
+    # Displaying the image
+    cv2.imshow('window_name', image_with_circle[190:480, 460:830])
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    # print(bo.gem.find_cross())
     # image = bo.adb.get_cv2_img()
     # image = image[:146, 1072:]
     #

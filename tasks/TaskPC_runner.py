@@ -42,7 +42,8 @@ from tasks.TaskPC_gather_gem_spiral import GatherGemSpiral
 from utils.android_debug_bridge import DeviceNotFoundException
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
-from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid
+from utils.functions import current_time, get_dic_instances_ld, get_name, get_window_pid, BluestacksConfigParser, \
+    LdplayerConfigParser
 from utils.pc_bridge import PcBridge
 from utils.singletons import EmulatorSingleton
 from views.frametime import is_slot_runnable, random_time_in_frametime
@@ -535,7 +536,7 @@ class TaskRunner(Task):
 
         self.FileSingleton.get_path()
         data = self.FileSingleton.get_data()
-        emulator_choice = EmulatorSingleton().getEmulatorType()
+        emulator_choice = self.context.emulator
 
         if not win32gui.FindWindow(None, self.name):
             print(f"Bot will wait until the device is properly booted.")
@@ -558,9 +559,9 @@ class TaskRunner(Task):
                 return self.start_emulator(emulator, deadstop + 1)
 
         if emulator_choice == "ld":
-            instances = get_dic_instances_ld()
+            instances = LdplayerConfigParser().getConfig()
         else:
-            instances = get_dic_instances()
+            instances = BluestacksConfigParser().getConfig()
 
         for instance in instances:
             data[str(instance)]["instance"] = instances[str(instance)]["instance"]
@@ -698,7 +699,7 @@ class TaskRunner(Task):
             self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
             return
 
-        emulator = EmulatorSingleton().getEmulatorType()
+        emulator = self.context.emulator
 
         self.set_sel(tiles[0].number)
         self.data = self.update_data()
@@ -822,7 +823,7 @@ class TaskRunner(Task):
             self.generate_toast("Warning", "No emulator selected!", ft.colors.AMBER)
             return
 
-        emulator = EmulatorSingleton().getEmulatorType()
+        emulator = self.context.emulator
         self.data = self.update_data()
         loop_task = 1 if not self.data["workers"][emulator][self.worker.number]["loop_task"] else 9999999
 

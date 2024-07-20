@@ -119,7 +119,7 @@ class GatherGemMap(GatherGem):
         """
         self.end_time = end_time
 
-        if EmulatorSingleton().getEmulatorType() == "bluestacks" and not self.random_macro():
+        if self.context.emulator == "bluestacks" and not self.random_macro():
             return
 
         self.run_game()

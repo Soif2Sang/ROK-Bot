@@ -53,6 +53,7 @@ pytesseract.tesseract_cmd = r".\\tesseract\\tesseract.exe"
 
 class Task:
     def __init__(self, tile, contextManager):
+        print("Task sel: " + tile)
         self.current_profile: str = "1"
         self.sel: str = tile
         self.contextManager = contextManager
@@ -62,9 +63,7 @@ class Task:
         self.context_profile: ProfileSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
         self.FileSingleton = FileSingleton()
 
-        emulator = EmulatorSingleton().getEmulatorType()
-
-        if emulator == "bluestacks":
+        if self.context.emulator == "bluestacks":
             self.adb = AdbBluestacks(self.sel, task_reference=self)
         else:
             self.adb = AdbLd(self.sel, task_reference=self)
@@ -73,7 +72,7 @@ class Task:
         self.language: str | None = None
         self.DEV = False
 
-        for workerId, worker in ss.worker_settings.worker_type[emulator].workers.items():
+        for workerId, worker in ss.worker_settings.workers.items():
             for instance in worker.instances:
                 if instance.instance == self.sel:
                     self.runner_number = workerId
@@ -650,8 +649,10 @@ class Task:
 
     @get_name
     def run_game(self, count=0) -> None:
+        print("avant a")
         a = self.adb.is_game_alive()
 
+        print(f"{a = }")
         if not a:
             self.print(f"Looks like the game is not running", ft.colors.RED_300)
             co = self.find_img(target="rokicon", confidence=0.8)

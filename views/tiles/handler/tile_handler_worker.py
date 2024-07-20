@@ -1,19 +1,23 @@
+import os
 import platform
 import re
+from time import sleep
 
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
 
 from utils.context import contextManager
-from utils.schemas.emulator_schemas import EmulatorSettingsSchema
+from utils.schemas.emulator_schemas import EmulatorSettingsSchema, ProfileSchema
 from utils.schemas.worker_schemas import InstanceSchema, WorkerListSchema, WorkerSettingsSchema, WorkerTypeSchema
 
 from utils.constants import VERSION_TYPE
 from utils.flet_translations import translate
-from utils.functions import get_dic_instances, get_dic_instances_ld
+from utils.functions import get_dic_instances_ld, MacConfigParser, BluestacksConfigParser, \
+    LdplayerConfigParser, PcConfigParser, find_file_in_all_drives, Ldplayer5ConfigParser
 from utils.singletons import EmulatorSingleton, FileSingleton, SettingsSingleton, ss
 from views.login.login import ClickableLink, links, sellix_icon, stripe_icon, tiers
 from views.tiles.tile_worker import TileWorker
+import shortuuid
 
 
 class NavigationBar(ft.Row):
@@ -153,75 +157,62 @@ class TileHandlerWorker(ft.ListView):
         self.tiles[number].set_text(phrase)
 
     def refresh(self):
-        self.FileSingleton.get_data()
+        ss = SettingsSingleton()
 
-        emulator = EmulatorSingleton().getEmulatorType()
+        instances = {}
 
-        if platform.system() == "Darwin":
-            instances = {"0": {"name": "LD-Player", "instance": "ld", "port": 5554}}
-        elif emulator == "bluestacks":
-            instances = get_dic_instances()
-        elif emulator == "ld":
-            instances = get_dic_instances_ld()
-        else:
-            instances = {"pc": {"name": "pc", "instance": "pc", "port": -1}}
+
+        if ss.application_settings.paths.ldplayer.ldconsole:
+            instances.update(LdplayerConfigParser().getConfig())
+            ss.application_settings.paths.adb = ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')
+
+        if ss.application_settings.paths.ldplayer5.ldconsole:
+            print(ss.application_settings.paths.ldplayer5.ldconsole)
+            instances.update(Ldplayer5ConfigParser().getConfig())
+
+
+
+            ss.application_settings.paths.adb = ss.application_settings.paths.ldplayer5.ldconsole.replace('ldconsole', 'adb')
+
+        print(LdplayerConfigParser().getConfig())
+        print(Ldplayer5ConfigParser().getConfig())
+
+        # if platform.system() == "Darwin":
+        #     instances = MacConfigParser().getConfig()
+        # elif emulator == "bluestacks":
+        #     instances = BluestacksConfigParser().getConfig()
+        # elif emulator == "ld":
+        #     instances = LdplayerConfigParser().getConfig()
+        # else:
+        #     instances = PcConfigParser().getConfig()
+
+
 
         self.fetched_instances = instances
 
-        ss = SettingsSingleton()
-
         worker_settings = ss.worker_settings
 
-        # default_dic["emulator"] = emulator
-
-        # for i in range(1, 4):
-        #     default_dic["schedules"][i] = copy.deepcopy(default_profile)
-        # default_dic["schedules"][1]["enabled"] = True
-        # for i, instance in enumerate(instances):
-        #     if str(i) not in data["workers"][emulator]:
-        #         data["workers"][emulator][str(i)] = {**default_worker_settings, "instances": [{"instance": instance}]}
-        #     else:
-        #         data["workers"][emulator][str(i)] = {**default_worker_settings, **data["workers"][emulator][str(i)]}
-        #
-        #     if instance not in data:
-        #         data[instance] = copy.deepcopy(default_dic)
-        #     else:
-        #         for key in default_dic:
-        #             if key not in data[instance]:
-        #                 data[instance][key] = copy.deepcopy(default_dic[key])
-        #
-        #         for key in default_profile:
-        #             for i in range(1, 4):
-        #                 if key not in data[instance]["schedules"][str(i)]:
-        #                     data[instance]["schedules"][str(i)][key] = copy.deepcopy(default_profile[key])
-        #
-        #     data[instance].update({
-        #         "instance": instances[instance]["instance"],
-        #         "name": instances[instance]["name"],
-        #         "port": int(instances[instance]["port"])
-        #     })
 
         for i, instance in enumerate(instances):
-            if emulator not in worker_settings.worker_type:
-                worker_settings.worker_type[emulator] = WorkerListSchema()
-
-            if str(i) not in worker_settings.worker_type[emulator].workers:
-                worker_settings.worker_type[emulator].workers[str(i)] = WorkerSettingsSchema(instances=[InstanceSchema(instance=instance)])
+            unique_key = instances[instance]['emulator'] + '-' +instances[instance]["instance"]
+            if instances[instance]["instance"] not in worker_settings.workers:
+                worker_settings.workers[unique_key] = WorkerSettingsSchema(name=len(worker_settings.workers),instances=[InstanceSchema(instance=instance)])
 
             if instance not in ss.emulator_settings.emulators:
-                ss.emulator_settings.emulators[instance] = EmulatorSettingsSchema(
-                    emulator=emulator,
-                    instance=instances[instance]["instance"],
+                ss.emulator_settings.emulators[unique_key] = EmulatorSettingsSchema(
+                    emulator=instances[instance]['emulator'],
+                    instance=unique_key,
                     name=instances[instance]["name"],
                     port=int(instances[instance]["port"]),
                 )
 
-                ss.emulator_settings.emulators[instance].schedules["1"].enabled = True
+                ss.emulator_settings.emulators[unique_key].schedules["1"].enabled = True
             else:
-                ss.emulator_settings.emulators[instance].instance = instances[instance]["instance"]
-                ss.emulator_settings.emulators[instance].name = instances[instance]["name"]
-                ss.emulator_settings.emulators[instance].port = int(instances[instance]["port"])
+                ss.emulator_settings.emulators[unique_key].instance = unique_key
+                ss.emulator_settings.emulators[unique_key].name = instances[instance]["name"]
+                ss.emulator_settings.emulators[unique_key].port = int(instances[instance]["port"])
 
+        ss.write_application_settings(ss.application_settings)
         ss.write_emulator_settings(ss.emulator_settings)
         ss.write_worker_settings(worker_settings)
 
@@ -229,8 +220,8 @@ class TileHandlerWorker(ft.ListView):
             self.controls.pop()
 
         if instances:
-            for worker in worker_settings.worker_type[emulator].workers:
-                if worker_settings.worker_type[emulator].workers[worker].instances:
+            for worker in worker_settings.workers:
+                if worker_settings.workers[worker].instances:
                     self.add_tile(worker)
 
         return ss.page.update()

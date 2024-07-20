@@ -13,7 +13,7 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
-from utils.functions import colorize_name, colorize_output, current_time, get_dic_instances, get_name
+from utils.functions import colorize_name, colorize_output, current_time, get_name
 from utils.resources import ImageSingleton
 from utils.singletons import ss
 
@@ -118,10 +118,10 @@ class Adb:
         self.update_port()
 
         if host == "127.0.0.1":
-            adb_path = f"{ss.application_settings.paths.bluestacks.player.replace('Player', 'Adb')}"
+            adb_path = ss.application_settings.paths.adb
             cmd = f"{adb_path} connect {host}:{self.port}"
         else:
-            adb_path = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} start-server"
+            adb_path = ss.application_settings.paths.adb
             cmd = f"{adb_path} connect {host}-{self.port}"
 
         subprocess.Popen(cmd)

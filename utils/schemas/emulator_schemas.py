@@ -368,9 +368,11 @@ class EmulatorSettingsSchema:
     name: str = ""
     host: str = ""
     port: int = 0
+    type: Literal["bluestacks", "ldplayer", "ldplayer5"] = "bluestacks"
     # loop_task: bool = True
     # loop_duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=60, max=120))
     # leave_game_loop: bool = True
+    kvk_map_type: Literal["normal", "new"] = "normal"
     scheduler: bool = False
     schedules: Dict[str, ProfileSchema] = field(
         default_factory=lambda: {
@@ -378,9 +380,7 @@ class EmulatorSettingsSchema:
             "2": ProfileSchema(),
             "3": ProfileSchema(),
         }
-    ),
-    kvk_map_type: Literal["normal", "new"] = "normal"
-
+    )
 
 @dataclass_json
 @dataclass

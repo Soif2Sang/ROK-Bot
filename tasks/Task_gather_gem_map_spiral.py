@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import randint, uniform
+from random import randint, uniform, choice
 from time import time
 
 import numpy as np
@@ -24,6 +24,8 @@ class GatherGemMap(GatherGem):
         self.block = False
         self.nodes_gathered = 0
         self.position = self.context_task.map_center_pos
+
+        self.previous_click = (0,0)
 
 
     def task_name(self):
@@ -89,7 +91,60 @@ class GatherGemMap(GatherGem):
         raison = self.max_distance
 
         x = uniform(-raison, raison) + self.position.x
-        y = uniform(-raison, raison) + self.position.y - 10
+        y = uniform(-raison, raison) + self.position.y- 11.5
+
+        self.previous_click = (x, y)
+
+        self.click(x, y)
+        self.better_sleep((1, 2))
+
+    @get_name
+    def go_to_center_point(self):
+        x = self.position.x
+        y = self.position.y- 11.5
+
+        self.previous_click = (x, y)
+
+        self.click(x, y)
+        self.better_sleep((1, 2))
+
+    @get_name
+    def swipe_up(self):
+        x = uniform(0.1,0.3) + self.previous_click[0]
+        y = self.previous_click[1] - uniform(1,1.5)
+
+        self.previous_click = (x, y)
+
+        self.click(x, y)
+        self.better_sleep((1, 2))
+
+    @get_name
+    def swipe_down(self):
+        x = uniform(0.1, 0.3) + self.previous_click[0]
+        y = self.previous_click[1] + uniform(1,1.5)
+
+        self.previous_click = (x, y)
+
+        self.click(x, y)
+        self.better_sleep((1, 2))
+
+    @get_name
+    def swipe_right(self):
+        x = uniform(1.2,1.5) + self.previous_click[0]
+        y = uniform(-0.1, 0.1) + self.previous_click[1]
+
+        self.previous_click = (x, y)
+
+        self.click(x, y)
+        self.better_sleep((1, 2))
+
+
+    @get_name
+    def swipe_left(self):
+        x = self.previous_click[0] - uniform(1.2,1.5)
+        y = uniform(-0.1, 0.1) + self.previous_click[1]
+
+        self.previous_click = (x, y)
 
         self.click(x, y)
         self.better_sleep((1, 2))
@@ -119,7 +174,7 @@ class GatherGemMap(GatherGem):
         """
         self.end_time = end_time
 
-        if EmulatorSingleton().getEmulatorType() == "bluestacks" and not self.random_macro():
+        if self.context.emulator == "bluestacks" and not self.random_macro():
             return
 
         self.run_game()
@@ -154,7 +209,42 @@ class GatherGemMap(GatherGem):
         self.max_distance = self.context_task.searching_radius / 6
         self.go_back_to_city()
 
+        self.scan_gem()
+
+        swipes = {
+            self.swipe_up: self.swipe_right,
+            self.swipe_right: self.swipe_down,
+            self.swipe_down: self.swipe_left,
+            self.swipe_left: self.swipe_up,
+        }
+
+        max_distance = int(self.context_task.searching_radius // 4 * 1.3)
+
         while self.end_time > time() and (
             enable_gem_node_limit == False or (enable_gem_node_limit and self.nodes_gathered < gem_node_limit)
         ):
-            self.swipe_scan(self.scan_gem, self.go_random_area)
+            random_function = choice(list(swipes.keys()))
+            current_swipe = swipes[random_function]
+
+            has_to_hit = 2
+            loop = 1
+            current = 0
+
+            for i in range(max_distance):
+                self.go_to_center_point()
+                self.scan_gem()
+
+                if has_to_hit == current:
+                    loop += 1
+                    current = 0
+                for y in range(loop):
+                    if self.end_time < time():
+                        return
+                    if self.block:
+                        return
+                    if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit:
+                        return
+                    self.swipe_scan(self.scan_gem, current_swipe)
+
+                current += 1
+                current_swipe = swipes[current_swipe]

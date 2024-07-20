@@ -529,7 +529,8 @@ class BarbFort(Task):
 
     @get_class
     def run(self):
-        if EmulatorSingleton().getEmulatorType() == "bluestacks":
+        self.context.instance
+        if self.context.emulator == "bluestacks":
             self.random_macro()
 
         # if not self.enough_action_points():

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../PC Version/.idea/PC Version.iml" filepath="$PROJECT_DIR$/../../PC Version/.idea/PC Version.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/bot.iml" filepath="$PROJECT_DIR$/.idea/bot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../python/realtime-py/.idea/realtime-py.iml" filepath="$PROJECT_DIR$/../../../python/realtime-py/.idea/realtime-py.iml" />
     </modules>
   </component>
 </project>

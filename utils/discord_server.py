@@ -64,7 +64,7 @@ def start_server():
                         await message.channel.send('No task is running for this worker.')
                         return
 
-                    screen = WorkerRunner(worker.worker, contextManager).get_screen()
+                    screen = WorkerRunner(worker.worker, contextManager, 'ld').get_screen()
                     path = f'screen_{worker.worker}.png'
                     cv2.imwrite(path, screen)
 

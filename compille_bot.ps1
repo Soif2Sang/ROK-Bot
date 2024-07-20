@@ -15,7 +15,7 @@ if ($verification_status -ne 0) {
 }
 
 # Define the nuitka command
-$nuitka_command = "nuitka --clang --mingw64 --onefile --follow-imports --windows-icon-from-ico=.\Item_Gem.ico --remove-output --output-filename=Bot --windows-company-name=Unknown --windows-product-version=1.0 --onefile-tempdir-spec=C:\Users\Default\AppData\Local\Temp\bot_unknown .\app_upgrade.py"
+$nuitka_command = "nuitka --clang --mingw64 --onefile --follow-imports --windows-icon-from-ico=.\Item_Gem.ico --remove-output --output-filename=Bot --windows-company-name=Unknown --windows-product-version=1.0 --onefile-tempdir-spec=C:\Users\Default\AppData\Local\Temp\bot_unknown .\main.py"
 
 # Execute the nuitka command
 Invoke-Expression $nuitka_command

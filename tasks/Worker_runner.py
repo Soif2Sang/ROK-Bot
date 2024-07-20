@@ -17,13 +17,10 @@ from utils.schemas.application_schemas import TileSlaveSchema, TileWorkerSchema
 class WorkerRunner:
     instance_id: str
     contextManager: None
-    emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
 
     def run(self):
-        self.emulator_type: Literal["ld", "bluestacks"] = EmulatorSingleton().getEmulatorType()
-        self.slaves = ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].instances
-
-        loop_task = 1 if not ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task else 9999999
+        self.slaves = ss.worker_settings.workers[self.instance_id].instances
+        loop_task = 1 if not ss.worker_settings.workers[self.instance_id].loop_task else 9999999
 
         for i in range(loop_task):
             self.contextManager.tasks.get(self.instance_id).status = "running"
@@ -40,7 +37,7 @@ class WorkerRunner:
                 runner.run()
 
                 if runner.has_started_once:
-                    if ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].close_emulator:
+                    if ss.worker_settings.workers[self.instance_id].close_emulator:
                         runner.kill_instance()
                         runner.print("Shutdown the emulator, waiting for 5 seconds")
                         runner.better_sleep((5, 5))
@@ -51,10 +48,10 @@ class WorkerRunner:
                     )
 
             # Check if loop_task is enabled
-            if ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].loop_task:
+            if ss.worker_settings.workers[self.instance_id].loop_task:
 
                 # Retrieve and sort the waiting cooldown times
-                waiting_cooldown = ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].waiting_cooldown
+                waiting_cooldown = ss.worker_settings.workers[self.instance_id].waiting_cooldown
                 waiting_cooldown.sort()
 
                 # Extract the minimum and maximum waiting cooldown times
@@ -78,7 +75,7 @@ class WorkerRunner:
 
     def get_screen(self):
         self.emulator_type = "ld"
-        self.slaves = ss.worker_settings.worker_type[self.emulator_type].workers[self.instance_id].instances
+        self.slaves = ss.worker_settings.workers[self.instance_id].instances
 
         for slave in self.slaves:
             runner = TaskRunner(Task(slave.instance, self.contextManager))

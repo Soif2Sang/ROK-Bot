@@ -34,7 +34,8 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
 
     page.window.width = 900
     page.window.height = 500
-    emulator_choice = EmulatorSingleton().getEmulatorType()
+
+    emulator_choice = ss.emulator_settings.emulators[str(params.instance_index)].emulator
 
     if emulator_choice == "bluestacks":
         adb = AdbBluestacks(str(params.instance_index))
@@ -73,7 +74,8 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
 
     page.window.width = 900
     page.window.height = 500
-    emulator_choice = EmulatorSingleton().getEmulatorType()
+
+    emulator_choice = ss.emulator_settings.emulators[str(params.instance_index)].emulator
 
     if emulator_choice == "bluestacks":
         adb = AdbBluestacks(str(params.instance_index))

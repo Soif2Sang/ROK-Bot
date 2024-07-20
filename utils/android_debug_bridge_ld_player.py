@@ -2,7 +2,7 @@ import subprocess
 from time import time
 
 from utils.android_debug_bridge import Adb, DeviceNotFoundException
-from utils.functions import accurate_sleep, get_dic_instances_ld, get_name
+from utils.functions import accurate_sleep, get_dic_instances_ld, get_name, LdplayerConfigParser
 from utils.singletons import ss
 
 bridge = None
@@ -14,10 +14,12 @@ class AdbLd(Adb):
         self.is_ld = True
 
     def update_port(self, instances=None):
-        instances = get_dic_instances_ld()
+        instances = LdplayerConfigParser().getConfig()
         super().update_port(instances)
 
     def connect_to_device(self, host="emulator"):
+        print("AdbLd")
+
         super().connect_to_device(host)
 
     @get_name
@@ -94,7 +96,7 @@ class AdbLd(Adb):
             self.print(f"Device Not Found")
             self.update_port()
 
-            cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
+            cmd = f"{ss.application_settings.paths.adb} -s {host}-{self.port} shell eco i"
             subprocess.run(cmd)
             accurate_sleep(timeout)
 
@@ -102,15 +104,17 @@ class AdbLd(Adb):
 
     @get_name
     def stop_server(self):
-        cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} kill-server"
+        cmd = f"{ss.application_settings.paths.adb} kill-server"
         subprocess.run(cmd)
 
     @get_name
     def start_server(self):
-        cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} start-server"
+        cmd = f"{ss.application_settings.paths.adb} start-server"
         subprocess.run(cmd)
 
     def is_game_alive(self):
         string = "dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'"
         a = self.shell(string)
+
+        print('azf' ,a)
         return "lilithgame" in a or "rok" in a or "lilithgames" in a
