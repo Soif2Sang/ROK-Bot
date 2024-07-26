@@ -200,9 +200,9 @@ class BarbFort(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.find_img(target=f"{color}_icon", confidence=0.93) is None and self.find_img(target="troops_march_button") is not None:
+        while self.find_img(target=f"{color}_icon", confidence=0.90) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
-                self.click(uniform(700, 800), uniform(271, 300))
+                self.click(uniform(1100, 1125), uniform(250, 270))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_status("Error in line-up selection")
@@ -295,31 +295,32 @@ class BarbFort(Task):
                                         self.click(tenmins[0], tenmins[1])
                                     if self.rally_time == 30:
                                         self.click(thirtymins[0], thirtymins[1])
+
                                     self.better_sleep((0.7, 1.2))
                                     self.click(co[0] + uniform(0, 147), co[1] + uniform(0, 54))
+
                                     self.better_sleep((1.1, 1.5))
                                     self.select_lineup_color(color="red")
                                     self.better_sleep((0.7, 1.2))
-                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                    #         'rally_type') == 'inf':
-                                    #     # self.click(uniform(982,998),uniform(280,298))
-                                    #     # self.better_sleep((0.7, 1.2))
-                                    #     self.click(uniform(657, 680), uniform(96, 117))
-                                    #     self.better_sleep((0.7, 1.2))
-                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                    #         'rally_type') == 'cav':
-                                    #     # self.click(uniform(982,998),uniform(390,405))
-                                    #     # self.better_sleep((0.7, 1.2))
-                                    #     self.click(uniform(770, 795), uniform(96, 117))
-                                    #     self.better_sleep((0.7, 1.2))
-                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                    #         'rally_type') == 'archers':
-                                    #     # self.click(uniform(982,998),uniform(330,350))
-                                    #     # self.better_sleep((0.7, 1.2))
-                                    #     self.click(uniform(886, 906), uniform(96, 117))
-                                    #     self.better_sleep((0.7, 1.2))
-                                    self.click(uniform(657, 680), uniform(96, 117))
-                                    self.better_sleep((0.7, 1.2))
+
+                                    if self.context_task.rally_type == "inf":
+                                        # self.click(uniform(982,998),uniform(280,298))
+                                        # self.better_sleep((0.7, 1.2))
+                                        self.click(uniform(680, 700), uniform(96, 117))
+                                        self.better_sleep((0.7, 1.2))
+                                    if self.context_task.rally_type == 'cav':
+                                        # self.click(uniform(982,998),uniform(390,405))
+                                        # self.better_sleep((0.7, 1.2))
+                                        self.click(uniform(800, 815), uniform(96, 117))
+                                        self.better_sleep((0.7, 1.2))
+                                    if self.context_task.rally_type == 'archers':
+                                        # self.click(uniform(982,998),uniform(330,350))
+                                        # self.better_sleep((0.7, 1.2))
+                                        self.click(uniform(905, 930), uniform(96, 117))
+                                        self.better_sleep((0.7, 1.2))
+
+                                    # self.click(uniform(657, 680), uniform(96, 117))
+                                    # self.better_sleep((0.7, 1.2))
                                     self.click(uniform(1092, 1112), uniform(304, 320))
                                     self.better_sleep((2, 3))
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)

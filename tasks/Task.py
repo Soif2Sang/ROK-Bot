@@ -387,17 +387,39 @@ class Task:
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
                     self.better_sleep((1.4, 2))
 
-                if has_zoomed_out:
-                    self.script_pause()
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.3, 0.3))
-                    win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
-                    win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                    self.better_sleep((1.4, 2))
+                # if has_zoomed_out:
+                #     self.script_pause()
+                #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                #     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+                #     self.better_sleep((0.3, 0.3))
+                #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+                #     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+                #     self.better_sleep((1.4, 2))
 
         except Exception as e:
             print(e)
+
+    @get_name
+    def select_lineup_color(self, color: str) -> None:
+        """
+        Change the line-up until the yellow line-up is selected.
+        """
+        deadstop = 0
+
+        while self.find_img(target=f"{color}_icon", confidence=0.93) is None and self.find_img(target="troops_march_button") is not None:
+            if deadstop == 5:
+                self.click(uniform(700, 800), uniform(271, 300))
+                self.better_sleep((0.557, 0.796))
+                self.print("Error in line-up selection")
+                self.set_status("Error in line-up selection")
+                self.send_discord_message("Error in line-up selection, human interaction required.")
+                while True:
+                    self.script_pause()
+                    sleep(0.1)
+            self.click(uniform(1092, 1114), uniform(190, 200))
+            self.better_sleep((0.557, 0.796))
+            deadstop = deadstop + 1
+            self.print("Switching between line-up..")
 
     @get_name
     def click_loop(self) -> None:
