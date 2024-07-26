@@ -60,7 +60,7 @@ class HealTroop(Task):
 
     @get_class
     def run(self):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("heal_troop"):
+        if self.context_task.enabled:
             tier_icons = []
             tiers = [1, 2, 3, 4, 5]
             for tier in tiers:
