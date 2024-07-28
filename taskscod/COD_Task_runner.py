@@ -101,7 +101,7 @@ class TaskRunner(Task):
         current_task = 1
         for func in lib_tasks:
             self.run_game()
-            # screen = self.adb.get_cv2_img()
+            # screen = self.adb.get_screen()
             # screen = self.check_download_page(screen)
             # screen = self.leave_kd_buff(screen)
             # self.print("")
@@ -133,7 +133,7 @@ class TaskRunner(Task):
             try:
                 # print(f"{ func.__name__ in ['gather_rss','gather_gem'] =}")
                 if func.task_name() in ["GatherRss", "GatherGem"]:
-                    cv_image = self.adb.get_cv2_img()
+                    cv_image = self.adb.get_screen()
                     cv_image = cv_image[0:100, 0:800]
                     if self.find_img(target="block_icon", source=cv_image, confidence=0.90) is None:
                         func.run()
@@ -317,7 +317,7 @@ class TaskRunner(Task):
 
     @get_name
     def findNextChar(self):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         logged_icon = self.find_img(source=screen, target="logged_icon")
         stars_all = self.adb.find_multiple_img(target="star")
         stars_bellow = []

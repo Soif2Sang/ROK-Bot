@@ -45,7 +45,7 @@ class DailyChest2(Task):
     def run(self):
         self.claim_legendary_chest()
         self.better_sleep((1.7, 3))
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         chests = ["golden_chest_tiny", "silver_chest_tiny"]
         entered = False
         for chest in chests:

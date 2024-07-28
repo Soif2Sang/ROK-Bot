@@ -65,7 +65,7 @@ class GatherRssZoom(GatherRss):
         :return: None
         """
         self.restart_if_game_crashed()
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         node_type = rgetattr(self.context_task, self.node_place.lower() + "_node").type
         if node_type == "random":
@@ -136,7 +136,7 @@ class GatherRssZoom(GatherRss):
     @get_name
     def swipe_scan(self, scan, direction):
         direction()
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         if random() > 0.9:
             self.close_windows()
@@ -147,7 +147,7 @@ class GatherRssZoom(GatherRss):
 
             if self.find_img(source=screen[: 720 // 2, :], target="verification_button", confidence=0.6):
                 self.check_captcha()
-                screen = self.adb.get_cv2_img()
+                screen = self.adb.get_screen()
 
         info_screen = screen[470:, 0:115]
         cropped_image = screen[610:, 1150:]

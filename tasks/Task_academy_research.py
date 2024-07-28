@@ -37,7 +37,7 @@ class AcademyResearch(Task):
 
     @get_name
     def select_tech(self, swipes=0):
-        source = self.adb.get_cv2_img()
+        source = self.adb.get_screen()
         techs = self.adb.find_multiple_img(target="research_tech", source=source, confidence=0.7)
         cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
 

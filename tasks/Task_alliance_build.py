@@ -15,7 +15,7 @@ class AllianceBuilding(Task):
 
     @get_name
     def open_territory_menu(self) -> None:
-        source = self.adb.get_cv2_img()
+        source = self.adb.get_screen()
         co = self.find_img(source=source, target="alliance_flag1", confidence=0.9)
         if co is None:
             co = self.find_img(source=source, target="alliance_flag2", confidence=0.9)
@@ -26,7 +26,7 @@ class AllianceBuilding(Task):
 
     @get_name
     def is_pit_ready(self):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         alliance_pits = self.find_img(target="alliance_pits", source=screen, confidence=0.79)
         if not alliance_pits:
             return False
@@ -204,7 +204,7 @@ class AllianceBuilding(Task):
         """
         Close all the collapible menu
         """
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         images = self.adb.find_multiple_img("is_alliance_pit_expended", confidence=0.79, source=screen[0:720, 1076:1151])
         if images:

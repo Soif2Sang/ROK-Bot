@@ -59,7 +59,7 @@ class DailyChest(Task):
     @get_class
     def run(self):
         self.claim_artifact_chest()
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         chests = ["cod_chest_2", "cod_chest_3"]
         entered = False
         for chest in chests:

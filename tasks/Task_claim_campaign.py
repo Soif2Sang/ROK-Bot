@@ -18,7 +18,7 @@ class ClaimCampaign(Task):
         return "ClaimCampaign"
 
     def has_notification(self):
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
         cropped_image = cv_image[630:655, 740:760]
 
@@ -38,7 +38,7 @@ class ClaimCampaign(Task):
             return False
 
     def is_new_shop_available(self):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         if screen[93, 165][0] > 220 and screen[93, 165][1] == 0 and screen[93, 165][1] == 0:
             return True
         return False

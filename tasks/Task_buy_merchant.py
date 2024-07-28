@@ -60,7 +60,7 @@ class BuyMerchant(Task):
         for y in range(2):
             for i in range(4):
                 self.better_sleep((1.8, 2.2))
-                screen = self.adb.get_cv2_img()
+                screen = self.adb.get_screen()
                 food = self.adb.find_multiple_img(target="merchant_buy_with_food", confidence=0.8, source=screen)
                 wood = self.adb.find_multiple_img(target="merchant_buy_with_wood", confidence=0.8, source=screen)
                 food.extend(wood)

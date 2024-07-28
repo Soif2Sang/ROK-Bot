@@ -37,7 +37,7 @@ class GatherGem(Task):
         :return: False if node is free to gather
         """
         if image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         else:
             cv_image = image
         x_min = max(0, x - 50)
@@ -75,28 +75,6 @@ class GatherGem(Task):
         else:
             self.print("Unable to click on the node, leaving the node !")
             return False
-
-    @get_name
-    def select_lineup_color(self, color: str) -> None:
-        """
-        Change the line-up until the yellow line-up is selected.
-        """
-        deadstop = 0
-
-        while self.find_img(target=f"{color}_icon", confidence=0.93) is None and self.find_img(target="troops_march_button") is not None:
-            if deadstop == 5:
-                self.click(uniform(700, 800), uniform(271, 300))
-                self.better_sleep((0.557, 0.796))
-                self.print("Error in line-up selection")
-                self.set_status("Error in line-up selection")
-                self.send_discord_message("Error in line-up selection, human interaction required.")
-                while True:
-                    self.script_pause()
-                    sleep(0.1)
-            self.click(uniform(1092, 1114), uniform(190, 200))
-            self.better_sleep((0.557, 0.796))
-            deadstop = deadstop + 1
-            self.print("Switching between line-up..")
 
     @get_name
     def restart_if_game_crashed(self):
@@ -141,14 +119,14 @@ class GatherGem(Task):
                 self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
                 self.better_sleep((1.825, 2.495))
                 self.select_lineup_color(color=color)
-                default_image = self.adb.get_cv2_img()
+                default_image = self.adb.get_screen()
                 #
                 # for i in range(7):  # change if you have 6-7 troops
                 #     default_color = default_image[260 + i * 50, 1100]
                 #
                 #     self.click(uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50))
                 #     self.better_sleep((1, 2))
-                #     new_image = self.adb.get_cv2_img()
+                #     new_image = self.adb.get_screen()
                 #     if (default_color != new_image[260 + i * 50, 1100]).all():
                 #         co = self.find_img(target="troops_march_button")
                 #         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
@@ -163,7 +141,7 @@ class GatherGem(Task):
                 for default_color in default_color_boxes:
                     self.click(uniform(1096, 1118), default_color[1] + uniform(0, 10))
                     self.better_sleep((1, 2))
-                    new_image = self.adb.get_cv2_img()
+                    new_image = self.adb.get_screen()
                     if (default_color[0] != new_image[default_color[1], 1097]).all():
                         co = self.find_img(target="troops_march_button")
                         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
@@ -336,7 +314,7 @@ class GatherGem(Task):
         if not self.adb.is_game_alive():
             return True
         if screen is None:
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
         screen = self.check_download_page(screen)
         screen = self.leave_kd_buff(screen)
         screen = self.check_reconnect(screen)
@@ -376,7 +354,7 @@ class GatherGem(Task):
         self.restart_if_game_crashed()
 
         if screen is None:
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
 
         # info_screen = screen[470:700, 0:115]
         # cropped_image = screen[420:540, 480:810]
@@ -403,12 +381,12 @@ class GatherGem(Task):
         #     self.better_sleep((1.5, 2))
         #     self.zoom_out_city()
         #     self.better_sleep((2, 3))
-        #     screen = self.adb.get_cv2_img()
+        #     screen = self.adb.get_screen()
         #
         # if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
         #     self.zoom_out_city()
         #     self.better_sleep((2, 3))
-        #     screen = self.adb.get_cv2_img()
+        #     screen = self.adb.get_screen()
         icons = []
         already_verified = []
         co = None
@@ -458,7 +436,7 @@ class GatherGem(Task):
                     print("Interrupted")
                     return self.run(self.end_time)
 
-                screen = self.adb.get_cv2_img()
+                screen = self.adb.get_screen()
                 cv_image = screen[0:100, 0:800]
                 if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
                     self.print("Bot detected the block icon, now cancelling the function..")
@@ -491,7 +469,7 @@ class GatherGem(Task):
                             if self.check_if_interrupt():
                                 return self.run(self.end_time)
 
-                            timer_image = self.adb.get_cv2_img()
+                            timer_image = self.adb.get_screen()
                             cross_image = timer_image[240:490, 490:790]
                             back_image = timer_image[150:477, 1160:]
 
@@ -708,7 +686,7 @@ class GatherGem(Task):
     @get_name
     def swipe_scan(self, scan: Callable, direction: Callable):
         direction()
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         if random() > 0.9:
             self.close_windows()
@@ -719,7 +697,7 @@ class GatherGem(Task):
 
             if self.find_img(source=screen[:500, :], target="verification_button", confidence=0.6):
                 self.check_captcha()
-                screen = self.adb.get_cv2_img()
+                screen = self.adb.get_screen()
 
         info_screen = screen[470:, 0:115]
         cropped_image = screen[610:, 1150:]
@@ -734,14 +712,14 @@ class GatherGem(Task):
             self.better_sleep((1.5, 2))
             self.zoom_out_city()
             self.better_sleep((2, 3))
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
 
         if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
             self.zoom_out_city()
             self.better_sleep((2, 3))
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
 
-        self.better_sleep((0.7, 0.9))
+        self.better_sleep((0.2, 0.2))
         return scan(screen)
 
     @get_class

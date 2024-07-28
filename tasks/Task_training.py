@@ -69,7 +69,7 @@ class TroopTraining(Task):
                     self.click(position.x + uniform(-8, 8), position.y + uniform(-8, 8))
                     self.better_sleep((1.2, 2))
 
-                image = self.adb.get_cv2_img()
+                image = self.adb.get_screen()
 
                 if co := self.find_img(target="close_window", source=image[: 720 // 2, 1280 // 2 :]):
                     self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
@@ -79,7 +79,7 @@ class TroopTraining(Task):
                         self.click(position.x + uniform(-8, 8), position.y + uniform(-8, 8))
                         self.better_sleep((1.2, 2))
 
-                    image = self.adb.get_cv2_img()
+                    image = self.adb.get_screen()
 
                 if (co := self.find_img(target=f"{name}_badge", confidence=0.75, source=image)) is None:
                     self.print(f"Unable to locate {name}")

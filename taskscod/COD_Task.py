@@ -247,7 +247,7 @@ class Task:
         return False
         # print(f'{self.data.get(self.sel).get("auto_log_back"] =}')
         if cv_image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
             # print(f'{co}')
         co = self.find_img(source=cv_image, target="already_connected", confidence=0.9)
         if co is not None:
@@ -322,7 +322,7 @@ class Task:
                     self.click(a[0], a[1])
                 sleep(10)
                 self.wait_until_connected()
-                return self.adb.get_cv2_img()
+                return self.adb.get_screen()
             else:
                 self.print("Reconnection disabled", "red")
                 self.send_discord_message("The game got disconnected, auto-Reconnection off.")
@@ -355,7 +355,7 @@ class Task:
         if co is not None:
             self.click(uniform(70, 270), uniform(100, 542))
             self.better_sleep((1.8, 3))
-            Source = self.adb.get_cv2_img()
+            Source = self.adb.get_screen()
         return Source
 
     def pil_to_array(self, image):
@@ -388,15 +388,15 @@ class Task:
     @get_name
     def check_download_page(self, screen=None):
         if screen is None:
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
         if self.find_img(target="download_page", source=screen, confidence=0.8):
             self.click(uniform(1018, 1041), uniform(127, 146))
             self.better_sleep((1.925, 2.795))
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
         elif self.find_img(target="download_icon", source=screen, confidence=0.8):
             self.click(uniform(1018, 1041), uniform(127, 146))
             self.better_sleep((1.925, 2.795))
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
         return screen
 
     @get_name
@@ -413,20 +413,20 @@ class Task:
         Check if the current view is set in the city
         :return: True if in city, False if not
         """
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         return self.find_img(target="cod_city_hammer", source=cv_image, confidence=0.9) is not None
 
     @get_name
     def close_windows(self):
-        image = self.adb.get_cv2_img()[0:322, 0:1280]
+        image = self.adb.get_screen()[0:322, 0:1280]
         while co := self.find_img(target="cod_close_window_2", source=image):
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_cv2_img()[0:322, 0:1280]
+            image = self.adb.get_screen()[0:322, 0:1280]
         while co := self.find_img(target="cod_close_window", source=image):
             self.adb.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_cv2_img()[0:322, 0:1280]
+            image = self.adb.get_screen()[0:322, 0:1280]
 
     def get_text(self):
         return self.tile.get_text()

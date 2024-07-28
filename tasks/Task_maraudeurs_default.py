@@ -327,7 +327,7 @@ class Marauders(Task):
         self.script_pause()
         # print(f'[ {current_time()} ] [ {self.name} ] {direction = } {scan = }')
         direction()
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         info_screen = screen[470:700, 0:115]
         cropped_image = screen[420:540, 480:810]

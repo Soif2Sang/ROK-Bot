@@ -15,7 +15,7 @@ class AllianceDonation(Task):
 
     @get_name
     def collect_alliance_resources(self) -> None:
-        source = self.adb.get_cv2_img()
+        source = self.adb.get_screen()
         co = self.find_img(source=source, target="alliance_flag1", confidence=0.9)
         if co is None:
             co = self.find_img(source=source, target="alliance_flag2", confidence=0.9)
@@ -41,7 +41,7 @@ class AllianceDonation(Task):
             )
             self.better_sleep((2, 3))
 
-            source = self.adb.get_cv2_img()
+            source = self.adb.get_screen()
 
             missing_steps = self.adb.find_multiple_img(target="tech", source=source, confidence=0.7)
             bottom_corners = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
