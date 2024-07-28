@@ -35,7 +35,7 @@ class GatherGem(Task):
         :return: False if node is free to gather
         """
         if image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         else:
             cv_image = image
         x_min = max(0, x - 50)
@@ -143,12 +143,12 @@ class GatherGem(Task):
 
                 # TODO
                 self.select_lineup_color(color=color)
-                default_image = self.adb.get_cv2_img()
+                default_image = self.adb.get_screen()
                 for i in range(7):  # change if you have 6-7 troops
                     default_color = default_image[287 + i * 38, 959]
                     self.click(959 + uniform(0, 10), uniform(287 + i * 38, 293 + i * 38))
                     self.better_sleep((1, 2))
-                    new_image = self.adb.get_cv2_img()
+                    new_image = self.adb.get_screen()
                     if (default_color != new_image[287 + i * 38, 959]).all():
                         co = self.find_img(target="pc\\troops_march_button", confidence=0.7)
                         self.click(co[0] + uniform(0, 20), co[1] + uniform(0, 20))
@@ -214,7 +214,7 @@ class GatherGem(Task):
             for i in range(len(points)):
                 self.click(points[i][0] + uniform(-20, 0), points[i][1] + uniform(-20, 0))
                 self.better_sleep((1, 1.7))
-                cv_image = self.adb.get_cv2_img()
+                cv_image = self.adb.get_screen()
                 co = self.find_img(source=cv_image, target="pc\\march_bar", confidence=0.7)
                 if co is not None:
                     x, y = co[0], co[1]
@@ -315,7 +315,7 @@ class GatherGem(Task):
         if not self.adb.is_game_alive():
             return True
         if screen is None:
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
         screen = self.check_download_page(screen)
         screen = self.leave_kd_buff(screen)
         screen = self.check_reconnect(screen)
@@ -349,7 +349,7 @@ class GatherGem(Task):
         :return: None
         """
         self.restart_if_game_crashed()
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         # info_screen = screen[470:700, 0:115]
         # cropped_image = screen[420:540, 480:810]
@@ -376,12 +376,12 @@ class GatherGem(Task):
         #     self.better_sleep((1.5, 2))
         #     self.zoom_out_city()
         #     self.better_sleep((2, 3))
-        #     screen = self.adb.get_cv2_img()
+        #     screen = self.adb.get_screen()
         #
         # if self.find_img(source=info_screen, target="gem_search_button", confidence=0.8) is not None:
         #     self.zoom_out_city()
         #     self.better_sleep((2, 3))
-        #     screen = self.adb.get_cv2_img()
+        #     screen = self.adb.get_screen()
 
         if random() > 0.7:
             self.zoom_out_city()
@@ -433,7 +433,7 @@ class GatherGem(Task):
                     print("Interrupted")
                     return self.run(self.end_time)
 
-                screen = self.adb.get_cv2_img()
+                screen = self.adb.get_screen()
                 cv_image = screen[0:100, 0:800]
                 if self.find_img(target="block_icon", source=cv_image, confidence=0.9) is not None:
                     self.print("Bot detected the block icon, now cancelling the function..")
@@ -469,7 +469,7 @@ class GatherGem(Task):
                             if self.check_if_interrupt():
                                 return self.run(self.end_time)
 
-                            timer_image = self.adb.get_cv2_img()
+                            timer_image = self.adb.get_screen()
                             cross_image = timer_image[240:490, 490:790]
                             back_image = timer_image[150:477, 1160:]
 
@@ -651,7 +651,7 @@ class GatherGem(Task):
     @get_name
     def swipe_scan(self, scan: Callable, direction: Callable):
         direction()
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         if random() > 0.9:
             self.close_windows()
@@ -662,7 +662,7 @@ class GatherGem(Task):
 
             # if self.find_img(source=screen[: 720 // 2, :], target="verification_button", confidence=0.6):
             #     self.check_captcha()
-            #     screen = self.adb.get_cv2_img()
+            #     screen = self.adb.get_screen()
 
         info_screen = screen[470:, 0:115]
         cropped_image = screen[610:, 1150:]

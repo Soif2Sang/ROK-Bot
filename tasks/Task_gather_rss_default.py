@@ -59,7 +59,7 @@ class GatherRssDefault(GatherRss):
 
     @get_name
     def minable(self) -> bool:
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         if self.find_img(target="search_button", source=screen[720 // 2 :, : 1280 // 4]) is None and not self.find_cross(
             screen[230:480, 441:814]
         ):
@@ -82,7 +82,7 @@ class GatherRssDefault(GatherRss):
         if not resolved:
             resolved = self.check_captcha()
 
-        screen = self.check_reconnect(self.adb.get_cv2_img())
+        screen = self.check_reconnect(self.adb.get_screen())
         screen = self.check_download_page(screen)
         self.check_log_back(screen)
 

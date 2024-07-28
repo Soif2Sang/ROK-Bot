@@ -80,7 +80,7 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
     else:
         adb = AdbLd(str(params.instance_index))
 
-    image = adb.get_cv2_img()
+    image = adb.get_screen()
     image = image[:146, 1072:]
 
     # Encode the image to a PNG or JPEG format

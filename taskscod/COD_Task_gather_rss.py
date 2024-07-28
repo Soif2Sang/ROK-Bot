@@ -117,7 +117,7 @@ class GatherRss(Task):
 
     @get_name
     def set_search_level(self, level: int = 10) -> None:
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         co = self.find_img(source=cv_image, target="cod_level_slider", confidence=0.8)
         if co is None:
             self.print(f"Cannot find the button_level")
@@ -187,7 +187,7 @@ class GatherRss(Task):
         :return: False if node is free to gather
         """
         self.print("Scanning the node..")
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         cropped_image = cv_image[230:480, 441:814]
         img = Image.fromarray(cropped_image)
         for i in range(img.size[0]):

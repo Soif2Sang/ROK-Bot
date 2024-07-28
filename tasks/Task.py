@@ -157,7 +157,7 @@ class Task:
 
     @get_name
     def get_city_position(self):
-        image = self.adb.get_cv2_img()
+        image = self.adb.get_screen()
         image = image[5:33, 260:430]
         return self.extract_text(image, "#XxYy:123456789")
 
@@ -212,7 +212,7 @@ class Task:
         :return: False if queues are occupied
         """
 
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         cropped_image = cv_image[13:35, 1225:1254]
         text = self.extract_text(cropped_image, allowlist="01234567/")
 
@@ -231,7 +231,7 @@ class Task:
         :return: True if there's a empty queue
         :return: False if queues are occupied
         """
-        cropped_image = self.adb.get_cv2_img()[130:160, 1205:1247]
+        cropped_image = self.adb.get_screen()[130:160, 1205:1247]
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2GRAY)
         native_text = self.extract_text(img=cropped_image, allowlist="12345670/")
 
@@ -306,7 +306,7 @@ class Task:
 
     @get_name
     def open_menu(self):
-        if self.find_img(target="menu_opened", confidence=0.8, source=self.adb.get_cv2_img()[720 // 6 :, 1280 // 2 :]) is None:
+        if self.find_img(target="menu_opened", confidence=0.8, source=self.adb.get_screen()[720 // 6 :, 1280 // 2 :]) is None:
             x, y = uniform(1200, 1250), uniform(650, 690)
             self.click(x, y)
             self.better_sleep((1.725, 1.995))
@@ -362,7 +362,7 @@ class Task:
         has_zoomed_out = False
         self.script_pause()
         try:
-            if self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
+            if self.find_img(target="gem_search_button", source=self.adb.get_screen()):
                 self.print("Zooming out..")
                 hwnd = win32gui.FindWindow(None, self.adb.name)
                 hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
@@ -370,22 +370,21 @@ class Task:
                 if self.adb.is_ld:
                     hwnd = hwndChild
 
-                while self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
+                while self.find_img(target="gem_search_button", source=self.adb.get_screen()):
                     has_zoomed_out = True
                     self.script_pause()
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.45, 0.45))
+                    self.better_sleep((0.45, 0.45), False)
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                    self.better_sleep((1.4, 2))
                     self.script_pause()
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.17, 0.17))
+                    self.better_sleep((0.25, 0.25), False)
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                    self.better_sleep((1.4, 2))
+                    self.better_sleep((0.45, 0.45))
 
                 # if has_zoomed_out:
                 #     self.script_pause()
@@ -395,6 +394,48 @@ class Task:
                 #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                 #     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
                 #     self.better_sleep((1.4, 2))
+
+        except Exception as e:
+            print(e)
+
+    @get_name
+    def zoom_out_inside_city(self) -> None:
+        """
+        Leave the city by sending 'F5' key signal to the emulator
+        """
+        has_zoomed_out = False
+        self.script_pause()
+        try:
+            self.print("Zooming out..")
+            hwnd = win32gui.FindWindow(None, self.adb.name)
+            hwndChild = win32gui.GetWindow(hwnd, win32con.GW_CHILD)
+
+            if self.adb.is_ld:
+                hwnd = hwndChild
+
+            self.script_pause()
+            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+            self.better_sleep((0.45, 0.45), False)
+            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+            # self.better_sleep((1.4, 2))
+            # self.script_pause()
+            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+            self.better_sleep((0.17, 0.17), False)
+            win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+            self.better_sleep((0.45, 0.45), False)
+
+            # if has_zoomed_out:
+            #     self.script_pause()
+            #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            #     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
+            #     self.better_sleep((0.3, 0.3))
+            #     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
+            #     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
+            #     self.better_sleep((1.4, 2))
 
         except Exception as e:
             print(e)
@@ -423,7 +464,7 @@ class Task:
 
     @get_name
     def click_loop(self) -> None:
-        if not self.find_img(target="gem_search_button", source=self.adb.get_cv2_img()):
+        if not self.find_img(target="gem_search_button", source=self.adb.get_screen()):
             self.print(f"Loop icon not found, leaving the city")
             self.close_windows()
             self.leave_city()
@@ -436,7 +477,7 @@ class Task:
 
     @get_name
     def set_search_level(self, level: int = 10) -> None:
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         co = self.find_img(source=cv_image, target="button_level", confidence=0.8)
         if co is None:
             self.print(f"Cannot find the button_level")
@@ -839,7 +880,7 @@ class Task:
 
     @get_name
     def save_captcha_slider(self):
-        captcha = self.adb.get_cv2_img()[139:511, 499 : 1280 - 353]
+        captcha = self.adb.get_screen()[139:511, 499 : 1280 - 353]
 
         for y in range(30):
             for i in range(captcha.shape[0]):
@@ -892,7 +933,7 @@ class Task:
             traceback_str = "".join(traceback_list)
 
     def save_captcha(self):
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
 
         cropped_image = cv_image[100:460, 410:860]
         # cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
@@ -922,7 +963,7 @@ class Task:
         # self.data = self.update_data()
         # print(f'{self.data.get(self.sel).get("auto_log_back"] =}')
         if cv_image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
             # print(f'{co}')
         co = self.find_img(source=cv_image[280:370, :], target="already_connected", confidence=0.9)
         if co is not None:
@@ -954,24 +995,24 @@ class Task:
     @get_name
     def check_mge(self, cv_image=None):
         if cv_image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         co = self.find_img(target="mightiest_gov", source=cv_image[: 720 // 3, 1280 // 2 :])
         if co is not None:
             self.click(co[0] + uniform(10, 30) + 1280 // 2, co[1] + uniform(10, 30))
             self.better_sleep((1.3, 2))
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         return cv_image
 
     @get_name
     def close_osiris_popup(self, cv_image=None):
         if cv_image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         if self.find_img(target="osiris_invitation", source=cv_image[: 720 // 2, 1280 // 4 : 1280 - 1280 // 4]):
             self.click(1280 / 2, 720 / 2)
             self.better_sleep((3.5, 4.7))
             self.click(960, 108)
             self.better_sleep((1.8, 2.7))
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         return cv_image
 
     @get_name
@@ -980,7 +1021,7 @@ class Task:
         Check and reconnect
         """
         if cv_image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
 
         co = self.find_img(source=cv_image[: 720 // 2, :], target="network_disconnected", confidence=0.85)
 
@@ -1004,7 +1045,7 @@ class Task:
                 self.print("Reconnection..")
                 self.better_sleep((5, 10))
                 self.wait_until_connected()
-                return self.adb.get_cv2_img()
+                return self.adb.get_screen()
             else:
                 self.print("Reconnection disabled", "red")
                 self.send_discord_message("The game got disconnected, auto-Reconnection off.")
@@ -1021,7 +1062,7 @@ class Task:
         limit = 30
         while condition and limit:
             self.run_game()
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
             if (
                 self.find_img(target="menu_button", confidence=0.8, source=screen)
                 or self.find_img(target="map_icon", confidence=0.8, source=screen)
@@ -1058,24 +1099,24 @@ class Task:
     @get_name
     def close_upgrade_popup(self, source=None):
         if source is None:
-            source = self.adb.get_cv2_img()
+            source = self.adb.get_screen()
         for i in range(3):
             co = self.find_img(f"upgrade_popup_{i}", confidence=0.67, source=source)
             if co is not None:
                 self.click(uniform(1102, 1030), uniform(92, 118))
                 self.better_sleep((2, 4))
-                source = self.adb.get_cv2_img()
+                source = self.adb.get_screen()
         return source
 
     @get_name
     def leave_kd_buff(self, source=None):
         if source is None:
-            source = self.adb.get_cv2_img()
+            source = self.adb.get_screen()
         co = self.find_img(target="kingdom_buff", source=source[: 720 // 2, : 1280 // 2])
         if co is not None:
             self.click(uniform(70, 270), uniform(100, 542))
             self.better_sleep((1.8, 3))
-            source = self.adb.get_cv2_img()
+            source = self.adb.get_screen()
         return source
 
     def pil_to_array(self, image):
@@ -1092,7 +1133,7 @@ class Task:
     def check_chest(self):
         for _ in range(2):
             self.script_pause()
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
             cropped_image = cv_image[20:200, 400:]
             chest = None
             for i in range(1, 4):
@@ -1284,16 +1325,16 @@ class Task:
     @get_name
     def check_download_page(self, screen=None):
         if screen is None:
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
 
         if self.find_img(target="download_page", source=screen[: 720 // 2, 1280 // 4 : 1280 - 1280 // 4], confidence=0.8):
             self.click(uniform(1018, 1041), uniform(127, 146))
             self.better_sleep((1.925, 2.795))
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
         elif self.find_img(target="download_icon", source=screen, confidence=0.8):
             self.click(uniform(1018, 1041), uniform(127, 146))
             self.better_sleep((1.925, 2.795))
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
 
         return screen
 
@@ -1314,7 +1355,7 @@ class Task:
         return (
             self.find_img(
                 target="checkpoint_star",
-                source=self.adb.get_cv2_img()[:60, 380:600],
+                source=self.adb.get_screen()[:60, 380:600],
                 confidence=0.97,
             )
             is None
@@ -1326,25 +1367,25 @@ class Task:
     @get_name
     def close_windows(self, screen=None):
         if screen is None:
-            image = self.adb.get_cv2_img()
+            image = self.adb.get_screen()
 
         while cos := self.adb.find_multiple_img(target="close_window", source=image[: 720 // 2, 1280 // 2 :], confidence=0.83):
             co = cos[-1]
             self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_cv2_img()
+            image = self.adb.get_screen()
 
         while cos := self.adb.find_multiple_img(target="close_window3", source=image[: 720 // 2, 1280 // 2 :], confidence=0.83):
             co = cos[-1]
             self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_cv2_img()
+            image = self.adb.get_screen()
 
         while cos := self.adb.find_multiple_img(target="close_window2", source=image[: 720 // 2, : 1280 // 4], confidence=0.83):
             co = cos[-1]
             self.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_cv2_img()
+            image = self.adb.get_screen()
 
         while cos := self.adb.find_multiple_img(
             target="close_chat", source=image[720 // 4 : 720 - 720 // 4, : 1280 // 2 + 50], confidence=0.9
@@ -1352,7 +1393,7 @@ class Task:
             co = cos[-1]
             self.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9) + 720 // 4)
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_cv2_img()
+            image = self.adb.get_screen()
 
     def get_text(self):
         return self.tile.get_text()
@@ -1395,7 +1436,7 @@ class Task:
 
     @get_name
     def recenter(self, deadstop=0, path="marauders.searching_radius"):
-        image = self.adb.get_cv2_img()
+        image = self.adb.get_screen()
 
         if co := self.find_img(source=image, target="green_home_button"):
             # reader = Reader()
@@ -1461,7 +1502,7 @@ class Task:
 
     @get_name
     def go_back_to_city(self, deadstop=0):
-        image = self.adb.get_cv2_img()
+        image = self.adb.get_screen()
 
         if co := self.find_img(source=image, target="green_home_button"):
             self.click(co[0], co[1])
@@ -1556,7 +1597,7 @@ class Task:
         :return: False if node is free to gather
         """
         if image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         else:
             cv_image = image
         x_min = max(0, x - 40)
@@ -1596,7 +1637,7 @@ class Task:
         if notify:
             self.print("Scanning the node..")
         if source is None:
-            source = self.adb.get_cv2_img()[230:480, 441:814]
+            source = self.adb.get_screen()[230:480, 441:814]
         img = Image.fromarray(source)
 
         whitelist = [
@@ -1702,7 +1743,7 @@ class Task:
     @get_name
     def is_node_occupied(self, screen=None, notify=True):
         if screen is None:
-            screen = self.adb.get_cv2_img()
+            screen = self.adb.get_screen()
 
         image_for_occupation_icon = screen[230:480, 441:814]
 
@@ -1726,7 +1767,7 @@ class Task:
 
     @get_name
     def enough_action_points(self) -> bool:
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         img = Image.fromarray(cv_image)
 
         pixel_color = img.getpixel((33, 73))

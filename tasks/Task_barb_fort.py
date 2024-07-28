@@ -39,7 +39,7 @@ class BarbFort(Task):
 
     @get_name
     def enough_action_points(self) -> bool:
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         img = Image.fromarray(cv_image)
         print(img.getpixel((33, 73)))
         if (
@@ -85,7 +85,7 @@ class BarbFort(Task):
         :return: False if node is free to gather
         """
         if image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         else:
             cv_image = image
         x_min = max(0, x - 30)
@@ -324,7 +324,7 @@ class BarbFort(Task):
                                     self.click(uniform(1092, 1112), uniform(304, 320))
                                     self.better_sleep((2, 3))
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)
-                                    cropped_image = self.adb.get_cv2_img()[y + 27 : y + 55, x : x + 120]
+                                    cropped_image = self.adb.get_screen()[y + 27 : y + 55, x : x + 120]
 
                                     string = self.extract_text(img=cropped_image, allowlist="1234567890:")
 
@@ -411,7 +411,7 @@ class BarbFort(Task):
                                 self.better_sleep((0.7, 1.2))
                             self.click(uniform(1092, 1112), uniform(330, 350))
                             self.better_sleep((0.5, 1))
-                            cv_image = self.adb.get_cv2_img()
+                            cv_image = self.adb.get_screen()
                             x, y = self.find_img(
                                 source=cv_image,
                                 target="troops_march_button",
@@ -429,9 +429,9 @@ class BarbFort(Task):
                             self.print(f"You selected {self.rally_time} minutes")
                             self.click(1180, 173)
                             self.better_sleep((1.3, 1.8))
-                            default_image = self.adb.get_cv2_img()
+                            default_image = self.adb.get_screen()
                             default_color = default_image[231, 383]
-                            while (default_color == self.adb.get_cv2_img()[231, 383]).all():
+                            while (default_color == self.adb.get_screen()[231, 383]).all():
                                 self.better_sleep((3, 3))
                             self.close_windows()
                             # return self.heal_troops()

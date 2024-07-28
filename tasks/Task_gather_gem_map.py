@@ -96,7 +96,7 @@ class GatherGemMap(GatherGem):
 
     @get_name
     def find_city_position(self):
-        image = self.adb.get_cv2_img()
+        image = self.adb.get_screen()
         image = image[:146, 1072:]
 
         lower_green = np.array([0, 220, 0])  # Adjust these values as needed

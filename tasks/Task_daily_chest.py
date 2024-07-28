@@ -15,12 +15,12 @@ class DailyChest(Task):
 
     @get_name
     def close_chest_popup(self):
-        source = self.adb.get_cv2_img()
+        source = self.adb.get_screen()
         for i in range(3):
             while self.find_img(target=f"popup{i}", confidence=0.7, source=source):
                 self.click(uniform(1102, 1130), uniform(92, 118))
                 self.better_sleep((2, 4))
-                source = self.adb.get_cv2_img()
+                source = self.adb.get_screen()
 
     @get_name
     def claim_legendary_chest(self):
@@ -47,7 +47,7 @@ class DailyChest(Task):
     def run(self):
         self.claim_legendary_chest()
         self.better_sleep((1.7, 3))
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         chests = ["material_chest", "golden_chest", "silver_chest"]
         entered = False
         for chest in chests:

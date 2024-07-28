@@ -9,6 +9,7 @@ from dataclasses_json import dataclass_json
 class TaskSchema:
     availability: Literal["all", "only_first", "all_except_first"] = "all"
     enabled: bool = False
+    priority: int = 1
 
 
 @dataclass_json

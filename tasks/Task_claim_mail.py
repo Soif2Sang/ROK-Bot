@@ -25,7 +25,7 @@ class ClaimMail(Task):
         if co and co[0] > 1170:
             cord_x, cord_y = 1256, 640
 
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         lower_red = np.array([0, 0, 200])  # Adjust these values as needed
         upper_red = np.array([10, 10, 255])  # Adjust these values as needed
 
@@ -38,7 +38,7 @@ class ClaimMail(Task):
         pixel_list = [(150, 12), (310, 14), (468, 14), (618, 15)]
         random.shuffle(pixel_list)
 
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         for pixel in pixel_list:
             selected_pixel = screen[pixel[1], pixel[0]]

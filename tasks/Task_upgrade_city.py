@@ -80,7 +80,7 @@ class UpgradeCity(Task):
 
     @get_name
     def recursive_upgrade(self, type="normal"):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         stones = self.adb.find_multiple_img(target="upgrade_build", confidence=0.7, source=screen)
         stones = list(filter(filter_coordinate, stones))
@@ -131,7 +131,7 @@ class UpgradeCity(Task):
 
     @get_name
     def is_city_hall_upgradable(self):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         if self.find_img(target="city_hall_change_age", confidence=0.7, source=screen) or self.find_img(
             target="upgrade_build", confidence=0.7, source=screen
         ):

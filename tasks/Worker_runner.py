@@ -82,4 +82,4 @@ class WorkerRunner:
 
         for slave in self.slaves:
             runner = TaskRunner(Task(slave.instance, self.contextManager))
-            return runner.adb.get_cv2_img()
+            return runner.adb.get_screen()

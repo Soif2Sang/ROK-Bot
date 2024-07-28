@@ -91,7 +91,7 @@ class HealTroop(Task):
             self.click(co[0] + uniform(0, 60), co[1] + uniform(0, 60))
 
             self.better_sleep((1.5, 2.4))
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
             cropped_image = cv_image[541:568, 265:434]
             # cv2.imwrite("timer.png", cropped_image)
             string = self.extract_text(cropped_image, allowlist="1234567890/,")

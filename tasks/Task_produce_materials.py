@@ -50,7 +50,7 @@ class ProduceMaterials(Task):
         if co is not None:
             self.click(co[0] + uniform(0, 50), co[1] + uniform(0, 60))
             self.better_sleep((1, 1.5))
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
 
             number_of_available_slots = 0
             for i in range(1, 6):
