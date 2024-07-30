@@ -10,6 +10,7 @@ class DailyQuests(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.claim_daily_quest
 
     def task_name(self):
         return "DailyQuests"

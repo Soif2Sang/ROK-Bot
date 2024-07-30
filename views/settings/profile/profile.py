@@ -5,7 +5,7 @@ from views.settings.profile.page_logback_from_error import PageLogbackFromError
 
 from utils.flet_translations import translate
 from utils.functions import rgetattr, rsetattr
-from utils.singletons import EmulatorSingleton, ss
+from utils.singletons import EmulatorSingleton, ss, ApiSingleton
 from views.settings.page_settings import PageSettings
 from views.settings.profile.page_academy_research import PageAcademyResearch
 from views.settings.profile.page_barbs import PageBarbs
@@ -38,43 +38,44 @@ class SettingContainer(PageSettings):
         ss.page.update()
 
     def init(self):
+        subscription_tier = ApiSingleton().getTier()
+
         self.create_advanced_switch("tasks.gather_gem.enabled", "Gem Gathering", PageGem)
+        self.create_advanced_switch("tasks.gather_rss.enabled", "Resources Gathering", PageRss)
 
-        if EmulatorSingleton().getEmulatorType() != "pc":
-            self.create_advanced_switch("tasks.gather_rss.enabled", "Resources Gathering", PageRss)
-            self.create_normal_switch("tasks.collect_city_resources.enabled", "Collect City Resources")
-            self.create_normal_switch("tasks.apply_buff.enabled", "Apply Enhanced Buff")
-            self.create_normal_switch("tasks.buy_mysterious_merchant.enabled", "Buy Mysterious Merchant")
-            self.create_normal_switch("tasks.alliance_donation.enabled", "Donate to Alliance")
-            self.create_normal_switch("tasks.alliance_pit.enabled", "Alliance Pit Gathering")
+        self.create_normal_switch("tasks.collect_city_resources.enabled", "Collect City Resources")
+        self.create_normal_switch("tasks.apply_buff.enabled", "Apply Enhanced Buff")
+        self.create_normal_switch("tasks.buy_mysterious_merchant.enabled", "Buy Mysterious Merchant")
+        self.create_normal_switch("tasks.alliance_donation.enabled", "Donate to Alliance")
+        self.create_normal_switch("tasks.alliance_pit.enabled", "Alliance Pit Gathering")
 
-            # ##
-            self.create_advanced_switch("tasks.produce_materials.enabled", "Produce Materials", PageMaterials)
-            self.create_advanced_switch("tasks.troop_training.enabled", "Troops Training", PageTraining)
-            self.create_normal_switch("tasks.claim_daily_vip_chest.enabled", "Claim VIP Chests")
-            self.create_normal_switch("tasks.claim_daily_chest.enabled", "Claim Daily Chests")
-            self.create_normal_switch("tasks.claim_daily_quest.enabled", "Claim Daily Quests")
-            self.create_advanced_switch("tasks.claim_daily_expedition_rewards.enabled", "Claim Expedition Rewards", PageExpedition)
-            self.create_normal_switch("tasks.claim_mail.enabled", "Claim Mails")
-            self.create_normal_switch("tasks.alliance_help.enabled", "Help Alliance")
-            self.create_normal_switch("tasks.help_alliance_building.enabled", "Help Alliance Buildings")
-            #
-            self.create_advanced_switch("tasks.kill_barbarian.enabled", "Hunt Barbarians", PageBarbs)
-            self.create_advanced_switch("tasks.alliance_fort.enabled", "Start Fort Rally", PageRally)
-            self.create_advanced_switch("tasks.marauders.enabled", "Kill Marauders", PageMarauders)
-            self.create_advanced_switch("tasks.explore_fog.enabled", "Explore Fog", PageFog)
-            self.create_advanced_switch("tasks.upgrade_city.enabled", "Upgrade City", PageUpgradeCity)
-            self.create_advanced_switch("tasks.academic_research.enabled", "Academic Research", PageAcademyResearch)
+        # ##
+        self.create_advanced_switch("tasks.produce_materials.enabled", "Produce Materials", PageMaterials)
+        self.create_advanced_switch("tasks.troop_training.enabled", "Troops Training", PageTraining)
+        self.create_normal_switch("tasks.claim_daily_vip_chest.enabled", "Claim VIP Chests")
+        self.create_normal_switch("tasks.claim_daily_chest.enabled", "Claim Daily Chests")
+        self.create_normal_switch("tasks.claim_daily_quest.enabled", "Claim Daily Quests")
+        self.create_advanced_switch("tasks.claim_daily_expedition_rewards.enabled", "Claim Expedition Rewards", PageExpedition)
+        self.create_normal_switch("tasks.claim_mail.enabled", "Claim Mails")
+        self.create_normal_switch("tasks.alliance_help.enabled", "Help Alliance")
+        self.create_normal_switch("tasks.help_alliance_building.enabled", "Help Alliance Buildings")
+        #
+        self.create_advanced_switch("tasks.kill_barbarian.enabled", "Hunt Barbarians", PageBarbs)
+        self.create_advanced_switch("tasks.alliance_fort.enabled", "Start Fort Rally", PageRally)
+        self.create_advanced_switch("tasks.marauders.enabled", "Kill Marauders", PageMarauders)
+        self.create_advanced_switch("tasks.explore_fog.enabled", "Explore Fog", PageFog)
+        self.create_advanced_switch("tasks.upgrade_city.enabled", "Upgrade City", PageUpgradeCity)
+        self.create_advanced_switch("tasks.academic_research.enabled", "Academic Research", PageAcademyResearch)
 
-            self.create_advanced_switch("tasks.troop_healing.enabled", "Troops Healing", PageHeal)
-            self.create_advanced_switch("tasks.resources_transfer.enabled", "Transfer Resources", PageTransfer)
-            #
-            self.content.controls.append(ft.Divider())
-            #
-            self.create_advanced_switch("log_back_from_error.enabled", "Reconnect on Network Issues", PageLogbackFromError)
-            self.create_advanced_switch("log_back_from_device_switch.enabled", "Reconnect on Device Switch", PageLogbackFromDeviceSwitch)
-            self.create_normal_switch("captcha_solver.enabled", "Solve Captcha")
-            self.create_advanced_switch("switch_character.enabled", "Switch Characters", PageCharacter)
+        self.create_advanced_switch("tasks.troop_healing.enabled", "Troops Healing", PageHeal)
+        self.create_advanced_switch("tasks.resources_transfer.enabled", "Transfer Resources", PageTransfer)
+        #
+        self.content.controls.append(ft.Divider())
+        #
+        self.create_advanced_switch("log_back_from_error.enabled", "Reconnect on Network Issues", PageLogbackFromError)
+        self.create_advanced_switch("log_back_from_device_switch.enabled", "Reconnect on Device Switch", PageLogbackFromDeviceSwitch)
+        self.create_normal_switch("captcha_solver.enabled", "Solve Captcha")
+        self.create_advanced_switch("switch_character.enabled", "Switch Characters", PageCharacter)
 
         self.create_slow_mode()
 
@@ -161,16 +162,38 @@ class SettingContainer(PageSettings):
             )
         )
 
-    def create_advanced_switch(self, keyword: str, text: str, function):
+    def create_advanced_switch(self, keyword: str, text: str, function: callable):
+        disabled = False
+
+        if keyword == "tasks.gather_gem.enabled":
+            if ApiSingleton().getTier() == 'tier2':
+                disabled = True
+        if keyword == "tasks.gather_rss.enabled":
+            if ApiSingleton().getTier() == 'tier1':
+                disabled = True
+
+        if disabled:
+            value = False
+        else:
+            value = rgetattr(self.context, keyword)
+
+        switch = ft.Switch(
+                        label=translate(text),
+                        value=value,
+                        on_change=self.submit_with_context,
+                        data={"path": keyword, "type": bool},
+                        disabled=disabled
+                    )
+
+        if disabled:
+            switch = ft.Tooltip(
+                message="This feature is only available for other tiers",
+                content=switch
+            )
         self.content.controls.append(
             ft.Row(
                 controls=[
-                    ft.Switch(
-                        label=translate(text),
-                        value=rgetattr(self.context, keyword),
-                        on_change=self.submit_with_context,
-                        data={"path": keyword, "type": bool},
-                    ),
+                    switch,
                     ft.Row(
                         controls=[
                             ft.OutlinedButton(
@@ -181,7 +204,7 @@ class SettingContainer(PageSettings):
                                     shape={
                                         ft.MaterialState.DEFAULT: RoundedRectangleBorder(radius=5),
                                     }
-                                ),
+                                )
                             )
                         ]
                     ),

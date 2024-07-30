@@ -9,6 +9,7 @@ class AllianceDonation(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.alliance_donation
 
     def task_name(self):
         return "AllianceDonation"

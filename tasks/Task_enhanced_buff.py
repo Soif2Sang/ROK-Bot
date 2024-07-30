@@ -10,6 +10,7 @@ class UseEnhancedBuff(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.apply_buff
 
     def task_name(self):
         return "UseEnhancedBuff"

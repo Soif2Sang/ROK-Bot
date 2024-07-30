@@ -20,6 +20,7 @@ class Marauders(Task):
         self.block = False
         self.nb_hunter = 0
         self.hunter_selection = False
+        self.context_task = self.context_profile.tasks.marauders
 
     def task_name(self):
         return "Maraudeurs"
