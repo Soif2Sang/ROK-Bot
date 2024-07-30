@@ -9,6 +9,7 @@ class ProduceMaterials(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.produce_materials
+        self.execute_inside_city = True
 
     def task_name(self):
         return "ProduceMaterials"
@@ -38,7 +39,7 @@ class ProduceMaterials(Task):
 
         # Claim the materials from the forge
         for string in strings:
-            co = self.find_img(target=string, confidence=0.8)
+            co = self.find_img(target=string, confidence=0.7)
             if co is not None:
                 if string != "forge_icon":
                     self.click(co[0] + uniform(0, 24), co[1] + uniform(0, 24))

@@ -7,8 +7,9 @@ from utils.functions import filter_coordinate, get_class
 class CollectResource(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
-
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.collect_city_resources
+        self.execute_inside_city = True
 
     def task_name(self):
         return "CollectResource"

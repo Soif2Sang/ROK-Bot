@@ -9,6 +9,8 @@ class DailyChest(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.claim_daily_chest
+        self.execute_inside_city = True
 
     def task_name(self):
         return "DailyChest"
@@ -48,7 +50,7 @@ class DailyChest(Task):
         self.claim_legendary_chest()
         self.better_sleep((1.7, 3))
         cv_image = self.adb.get_screen()
-        chests = ["material_chest", "golden_chest", "silver_chest"]
+        chests = ["material_chest_tiny", "golden_chest_tiny", "silver_chest_tiny"]
         entered = False
         for chest in chests:
             if entered:

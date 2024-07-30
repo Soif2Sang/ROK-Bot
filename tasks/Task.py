@@ -58,6 +58,7 @@ class Task:
         self.contextManager = contextManager
         self.tile = self.contextManager.get_slave(self.sel)
 
+        self.execute_inside_city = False
         self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
         self.context_profile: ProfileSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
         self.FileSingleton = FileSingleton()
@@ -240,6 +241,7 @@ class Task:
         else:
             enhanced_text = native_text
         enhanced_text = enhanced_text.replace("\n", "")
+
         if len(enhanced_text) < 2:
             return True
         if len(enhanced_text) == 2:

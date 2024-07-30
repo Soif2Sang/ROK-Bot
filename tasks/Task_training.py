@@ -8,6 +8,7 @@ class TroopTraining(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.troop_training
+        self.execute_inside_city = True
 
     def task_name(self):
         return "TroopTraining"

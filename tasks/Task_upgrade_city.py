@@ -18,6 +18,7 @@ class UpgradeCity(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.upgrade_city
+        self.execute_inside_city = True
 
     def task_name(self):
         return "UpgradeCity"

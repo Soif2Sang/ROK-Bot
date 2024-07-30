@@ -14,6 +14,7 @@ class HealTroop(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.troop_healing
+        self.execute_inside_city = True
 
     def task_name(self):
         return "HealTroop"
@@ -84,7 +85,7 @@ class HealTroop(Task):
             if co is None:
                 self.print(f"Healing not found")
                 return
-            if self.find_img(target="speedup_healing") is not None:
+            if self.find_img(target="building_speedups") is not None:
                 self.print("Speed-up button found, can't heal more troops..")
                 return
             self.print(f"{co =}")

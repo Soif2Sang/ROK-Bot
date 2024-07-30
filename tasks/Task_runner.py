@@ -6,6 +6,8 @@ from time import sleep, time
 
 import flet as ft
 
+from tasks.Task_gather_gem import GatherGem
+from tasks.Task_gather_rss import GatherRss
 from utils.context import contextManager
 
 try:
@@ -50,7 +52,7 @@ from utils.android_debug_bridge_bluestacks import AdbBluestacks
 from utils.android_debug_bridge_ld_player import AdbLd
 from utils.functions import current_time, get_dic_instances, get_dic_instances_ld, get_name, get_window_pid, rgetattr, \
     get_class
-from utils.singletons import EmulatorSingleton, ss, FileSingleton
+from utils.singletons import EmulatorSingleton, ss, FileSingleton, ApiSingleton
 from views.frametime import is_slot_runnable, random_time_in_frametime
 
 
@@ -140,11 +142,11 @@ class TaskRunner(Task):
         current_task = 1
         self.debug(self.adb.resource_amount_image_to_string())
         self.check_captcha()
-
-        for func in lib_tasks:
+        task_priority = -1
+        for task in lib_tasks:
             self.print(f"Task {current_task}/{len(lib_tasks)}", "blue")
             self.print(
-                f"Currently executing : {self.get_current_task(func.task_name())}",
+                f"Currently executing : {self.get_current_task(task.task_name())}",
                 "blue",
             )
 
@@ -156,47 +158,42 @@ class TaskRunner(Task):
             screen = self.check_download_page(screen)
             screen = self.leave_kd_buff(screen)
             self.check_log_back(screen)
-            self.set_current_task(func.task_name())
+            self.set_current_task(task.task_name())
 
-            # self.set_status()
             if self.context_profile.tasks.alliance_help.enabled:
                 AllianceHelp(self).run()
 
-            if func.task_name() in [
-                "CollectResource",
-                "BuyMerchant",
-                "ClearFog",
-                "HealTroop",
-                "DailyChest",
-                "AutoUpgrade",
-                "ProduceMaterials",
-                "TroopTraining",
-                "UpgradeCity",
-                "AcademyResearch",
-            ]:
+            if task.execute_inside_city:
                 self.go_city()
+
+            if task_priority < 3 and task.context_task.priority == 3:
+                self.zoom_out_inside_city()
+                self.better_sleep((1, 2))
+
+            task_priority = task.context_task.priority
+
             try:
-                if func.task_name() in ["GatherRss", "GatherGem"]:
+                if issubclass(type(task), GatherGem) or issubclass(type(task), GatherRss):
                     if self.find_img(target="block_icon", confidence=0.90, source=screen):
                         self.print("Bot detected that you got restricted", "red")
                         continue
-                if func.task_name() in ["GatherRss", "GatherGem"]:
                     self.check_captcha()
 
-                func.random_interaction = self.random_interaction
-                func.run()
+                task.random_interaction = self.random_interaction
+                task.run()
 
-                if func.task_name() in ["GatherRss", "GatherGem"]:
+                if issubclass(type(task), GatherGem) or issubclass(type(task), GatherRss):
                     self.check_captcha()
+
             except Exception as e:
                 traceback.print_exc()
-                self.send_discord_message(f"Something wrong happened when running {func.task_name()}")
+                self.send_discord_message(f"Something wrong happened when running {task.task_name()}")
                 self.generate_toast(
                     "Warning",
-                    f"Something wrong happened when running {func.task_name()}",
+                    f"Something wrong happened when running {task.task_name()}",
                 )
 
-                self.print(f"Exception during {func.task_name()}", "red")
+                self.print(f"Exception during {task.task_name()}", "red")
                 exception = traceback.format_exc()
                 self.print(f"{exception}", "red")
                 self.leave_game()
@@ -208,13 +205,6 @@ class TaskRunner(Task):
         self.check_captcha()
 
     def get_available_task(self, profile: str = None):
-        # # self.data = self.update_data()
-        # if profile is None:
-        #     profile = self.data.get(self.sel)
-        # else:
-        #     profile = self.data.get(self.sel).get("schedules").get(profile)
-        #
-        print(f"{profile=}")
         profile = self.context.schedules[profile]
 
         # print(profile)
@@ -254,14 +244,44 @@ class TaskRunner(Task):
             ("marauders", Marauders),
         ]
 
+        if ApiSingleton().getTier() == 'tier1':
+            for task in tasks:
+                if task[0] == "gather_rss":
+                    tasks.remove(task)
+                    break
+
+        if ApiSingleton().getTier() == 'tier2':
+            for task in tasks:
+                if task[0] == "gather_gem":
+                    tasks.remove(task)
+                    break
+
+        priority_queues = {0: [], 1: [], 2:[], 3:[], 4:[], 5:[], 6:[]}
+
         for task_key, task_class in tasks:
             if rgetattr(profile.tasks, task_key).enabled:
+                task_priority = rgetattr(profile.tasks, task_key).priority
                 if rgetattr(profile.tasks, task_key).availability == "all":
-                    lib_tasks.append(task_class(self))
+                    # lib_tasks.append(task_class(self))
+                    priority_queues[task_priority].append(task_class(self))
                 elif rgetattr(profile.tasks, task_key).availability == "only_first" and self.character_index == 1:
-                    lib_tasks.append(task_class(self))
+                    # lib_tasks.append(task_class(self))
+                    priority_queues[task_priority].append(task_class(self))
                 elif rgetattr(profile.tasks, task_key).availability == "all_except_first" and self.character_index != 1:
-                    lib_tasks.append(task_class(self))
+                    # lib_tasks.append(task_class(self))
+                    priority_queues[task_priority].append(task_class(self))
+
+
+        for priority in priority_queues.keys():
+            shuffle(priority_queues[priority])
+
+        for priority in [1, 2, 3, 4, 5, 6]:
+            lib_tasks.extend(priority_queues[priority])
+
+        for task in priority_queues[0]:
+            lib_tasks.insert(randint(0, len(lib_tasks)), task)
+
+        return lib_tasks
 
         shuffle(lib_tasks)
         tasks_names = [task.task_name() for task in lib_tasks]
@@ -609,8 +629,6 @@ class TaskRunner(Task):
 
     @get_class
     def run(self):
-        print(self.sel)
-
         self.character_index = 1
         self.has_started_once = False
         emulator = EmulatorSingleton().getEmulatorType()
@@ -749,9 +767,9 @@ class TaskRunner(Task):
         if any(isinstance(task, ClaimMail) for task in tasks):
             interactions.append(ClaimMail(self).run)
 
-        func = choice(interactions)
+        task = choice(interactions)
 
-        func()
+        task()
         self.better_sleep((1.2, 2.7))
         self.close_windows()
 
