@@ -79,23 +79,8 @@ class SettingContainer(PageSettings):
 
         self.create_slow_mode()
 
-    def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", "API_KEY"]:
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
-        elif keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            if e.control.value == "":
-                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(0)
-            else:
-                self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
-        else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
-                e.control.value.replace("x", "").replace("level ", "")
-            )
-        self.FileSingleton.write_data(self.data)
-
     def page_character(self):
-        self.data = self.FileSingleton.get_data()
+        
         self.clean()
         self.content = ft.ListView(
             height=500,
@@ -122,19 +107,6 @@ class SettingContainer(PageSettings):
             )
         )
         ss.page.update()
-
-    def reverse_keyword(self, keyword: str, index=None):
-        if index is None:
-            index = self.profile_index
-        if keyword not in ["loop_task", "scheduler", "leave_game_loop"]:
-            self.data[str(self.instance_index)]["schedules"][str(index)][keyword] = not self.data[str(self.instance_index)]["schedules"][
-                str(index)
-            ][keyword]
-        else:
-            # print(keyword, self.data[str(self.instance_index)][keyword])
-
-            self.data[str(self.instance_index)][keyword] = not self.data[str(self.instance_index)][keyword]
-        self.FileSingleton.write_data(self.data)
 
     def handleSettings(self, function):
         function(self)

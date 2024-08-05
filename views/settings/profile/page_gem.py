@@ -267,31 +267,10 @@ class PageGem(BasePage):
     def toggle_map(self, value):
         self.set_area_location_button.disabled = value
 
-    def update_availability(self, e):
-        self.data = self.FileSingleton.get_data()
-
-        data = e.control.value
-
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_availability"] = data
-
-        self.FileSingleton.write_data(self.data)
-
-    def toggle_search_method(self, e):
-        self.data = self.FileSingleton.get_data()
-        data = e.control.value
-
-        self.toggle_default(data != "default")
-        self.toggle_spiral(data != "spiral")
-        self.toggle_map(data != "map")
-
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_gem_method"] = data
-
-        self.FileSingleton.write_data(self.data)
-        ss.page.update()
 
     def reverse_keyword(self, keyword: str):
         super().reverse_keyword(keyword)
-        self.data = self.FileSingleton.get_data()
+        
 
         if keyword == "gather_gem_swipe_check":
             is_enabled = self.detect_free_marches_switch.value

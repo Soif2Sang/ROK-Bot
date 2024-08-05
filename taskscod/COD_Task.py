@@ -15,7 +15,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 class Task:
     def __init__(self, tile):
         self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
+        
         self.current_profile = "1"
         self.tile = tile
         self.sel = tile.number
@@ -46,7 +46,7 @@ class Task:
 
     @get_name
     def update_data(self):
-        self.data = self.FileSingleton.get_data()
+        
         return self.data
 
     def set_sel(self, sel) -> None:

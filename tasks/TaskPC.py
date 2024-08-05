@@ -128,7 +128,7 @@ class Task:
         self.set_status("")
 
     def update_data(self):
-        self.data = self.FileSingleton.get_data()
+        
         return self.data
 
     def set_sel(self, sel) -> None:

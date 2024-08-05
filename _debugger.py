@@ -153,9 +153,6 @@ class lightTile:
     def ___init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        with open("user_settings.json") as config_file:
-            json.load(config_file)
-
         self.started = True
         self.stopped = False
         self.text_status = FakeText()

@@ -117,10 +117,6 @@ def get_time(func):
 
         if 0 and func.__name__ == "check_captcha":
             print(f'[ {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} ] [ {self.name} ] Verification made in {(end_time - start_time):0.1f}')
-            self.FileSingleton.write(
-                self.name,
-                f"INFO : Verification made in {(end_time - start_time):0.1f}\n",
-            )
         return func_output
 
     return wrapper

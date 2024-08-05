@@ -61,7 +61,6 @@ class Task:
         self.execute_inside_city = False
         self.context: EmulatorSettingsSchema = ss.emulator_settings.emulators[self.sel]
         self.context_profile: ProfileSchema = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
-        self.FileSingleton = FileSingleton()
 
         emulator = EmulatorSingleton().getEmulatorType()
 
@@ -88,7 +87,6 @@ class Task:
         self.language = MainTask.language
         self.name = MainTask.name
         self.DEV = MainTask.DEV
-        self.FileSingleton = MainTask.FileSingleton
         self.context_profile = ss.emulator_settings.emulators[self.sel].schedules[self.current_profile]
         self.runner_number = MainTask.runner_number
         self.contextManager = MainTask.contextManager
@@ -142,11 +140,6 @@ class Task:
             condition = ":" in self.tile.text_status.value and self.tile.text_status.value != "00:00:01"
             self.better_sleep((1, 1), reduce_speed=False)
         self.set_status("")
-
-    @deprecation.deprecated(details="Use better_sleep instead")
-    def update_data(self):
-        self.data = self.FileSingleton.get_data()
-        return self.data
 
     def set_sel(self, sel) -> None:
         # self.data = self.update_data()
@@ -745,11 +738,6 @@ class Task:
 
                 for language in languages:
                     string = self.adb.shell(f"am start -n {package_name[language]}/com.harry.engine.MainActivity")
-
-                    self.FileSingleton.write(
-                        self.name,
-                        f"INFO : [{self.name}]{string=}\n{'Error' in str(string) = }\n{'Activity not started' in str(string) = }\n",
-                    )
 
                     if "does not exist" in str(string):
                         continue

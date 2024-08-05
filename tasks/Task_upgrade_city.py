@@ -188,7 +188,7 @@ class UpgradeCity(Task):
     def run(self):
         if self.context_task.method == "normal":
             self.run1()
-        self.setup_view()
+
         for i in range(2):
             if upgrades_final := self.free_worker():
                 self.print("Upgrade available.")

@@ -20,13 +20,6 @@ from utils.singletons import EmulatorSingleton, FileSingleton
 
 fileSingleton = FileSingleton()
 
-
-def update_user_info(password, username):
-    data = fileSingleton.get_data()
-    data["user"] = {"username": username, "password": password}
-    fileSingleton.write_data(data)
-
-
 def kill_app():
     os.system("taskkill /f /im flet.exe >nul 2>&1")
     time.sleep(3)

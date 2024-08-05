@@ -46,7 +46,7 @@ class BasePage:
         return ft.Switch(label=translate(text), value=rgetattr(self.context, keyword), on_change=self.submit_with_context, data=data)
 
     def create_advanced_switch(self, keyword: str, text: str, function, data=None):
-        self.data = self.FileSingleton.get_data()
+        
         if keyword not in ["loop_task", "scheduler"]:
             return ft.Row(
                 controls=[
