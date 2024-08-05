@@ -10,18 +10,30 @@ def GenerateCard(level=None, title=None, subtitle=None, margin=None, height=None
         leading = ft.Icon(ft.icons.INFO_OUTLINED)
 
     if title:
-        title = ft.Text(title, size=14, weight=ft.FontWeight.BOLD)
+        title = ft.Text(title, size=14, weight=ft.FontWeight.W_700)
 
     if subtitle:
-        subtitle = ft.Text(value=subtitle, size=12, weight=ft.FontWeight.W_700)
+        subtitle = ft.Text(value=subtitle, size=12, weight=ft.FontWeight.W_500)
 
     return ft.Card(
         content=ft.Container(
             content=ft.Column([ft.ListTile(leading=leading, title=title, subtitle=subtitle)]),
-            width=400,
             padding=5,
             height=height,
         ),
         margin=margin,
         color=ft.colors.SURFACE_VARIANT,
     )
+
+class SimpleCard(ft.Card):
+    def __init__(self, content):
+        container_content = ft.Row(
+            controls=[
+                ft.Icon(ft.icons.INFO_OUTLINED),
+                ft.Text(content, expand=True, expand_loose=True),
+            ],
+            expand=False,
+        )
+
+        super().__init__(content=ft.Container(content=container_content, padding=10), margin=ft.margin.all(10), color=ft.colors.SURFACE_VARIANT)
+

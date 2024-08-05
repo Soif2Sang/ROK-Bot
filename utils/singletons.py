@@ -92,23 +92,6 @@ class FileSingleton:
             logger.write(f"[ {date.today()} {current_time()} ] [ {name} ] {text}\n")
         self.FileLock.release()
 
-    def get_data(self):
-        self.FileLock.acquire()
-        try:
-            if not os.path.exists("./user_settings.json"):
-                with open("./user_settings.json", "w", encoding="utf-8") as config_file:
-                    json.dump({}, config_file)  # Creates the file with an empty JSON object if it doesn't exist
-            with open("./user_settings.json", "r", encoding="utf-8") as config_file:
-                data = json.load(config_file)
-        finally:
-            self.FileLock.release()
-        return data
-
-    def getCachedData(self):
-        if self.data is None:
-            self.data = self.get_data()
-        return self.data
-
     def get_path(self):
         self.FileLock.acquire()
         try:
@@ -120,13 +103,6 @@ class FileSingleton:
         finally:
             self.FileLock.release()
         return path
-
-    def write_data(self, data):
-        self.FileLock.acquire()
-        with open(f"./user_settings.json", "w", encoding="utf-8") as config_file:
-            config_file.write(json.dumps(data, indent=2))
-        self.data = data
-        self.FileLock.release()
 
     def get_default_config(self):
         self.FileLock.acquire()

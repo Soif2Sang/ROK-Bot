@@ -61,7 +61,6 @@ class TaskRunner(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.has_started_once = False
         self.herite(MainTask)
-        self.FileSingleton = FileSingleton()
 
     def task_name(self):
         return "runner"

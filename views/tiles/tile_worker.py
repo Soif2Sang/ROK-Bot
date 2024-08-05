@@ -103,7 +103,6 @@ class TileWorker(ft.ExpansionTile):
 
     def refresh_tile(self):
         self.controls = []
-        # data = self.FileSingleton.getCachedData()
         emulator_type = EmulatorSingleton().getEmulatorType()
 
         worker_settings = ss.open_worker_settings()
