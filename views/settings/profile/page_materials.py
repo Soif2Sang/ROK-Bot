@@ -1,4 +1,6 @@
 import flet as ft
+
+from utils.Components.card import GenerateCard, SimpleCard
 from utils.schemas.emulator_schemas import TaskProduceMaterialsSchema
 
 from views.settings.page_base import BasePage
@@ -19,14 +21,14 @@ class PageMaterials(BasePage):
             "fifth_choice",
         ]
 
-        col = ft.Column(expand=True, expand_loose=True, width=250)
+        self.add_control(
+            SimpleCard(content="Choose material to produce with the blacksmith.")
+        )
 
         for key in keys:
-            col.controls.append(
+            self.add_control(
                 FletRowMaterial(
                     key=key,
                     context=self.context,
                 )
             )
-
-        self.add_control(col)

@@ -3,14 +3,12 @@ from utils.schemas.emulator_schemas import TaskGatherRssSchema
 
 from utils.flet_translations import translate
 from utils.functions import rsetattr
-from utils.singletons import ss, FileSingleton
+from utils.singletons import ss
 
 
 class FletRowRss(ft.ResponsiveRow):
     def __init__(self, key, instance_index, profile_index, context):
         super().__init__()
-        self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.context: TaskGatherRssSchema = context
@@ -75,20 +73,6 @@ class FletRowRss(ft.ResponsiveRow):
                 height=50,
             ),
         ]
-
-    def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
-        if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", "API_KEY"]:
-            self.data[str(self.instance_index)][keyword] = method(e.control.value)
-            self.FileSingleton.write_data(self.data)
-            return
-        if keyword not in ["sleep_multiplicator", "defeat_barbarians"]:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = method(e.control.value)
-        else:
-            self.data[str(self.instance_index)]["schedules"][str(self.profile_index)][keyword] = float(
-                e.control.value.replace("x", "").replace("level ", "")
-            )
-        self.FileSingleton.write_data(self.data)
 
     def submit_with_context(self, e):
         rsetattr(self.context, e.control.data["path"], e.control.data["type"](e.control.value))

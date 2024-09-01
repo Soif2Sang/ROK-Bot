@@ -1,7 +1,7 @@
 import flet as ft
 from utils.schemas.emulator_schemas import TaskKillBarbarianSchema
 
-from utils.Components.card import GenerateCard
+from utils.Components.card import GenerateCard, SimpleCard
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 from views.settings.profile.rows.Flet_row_presets import FletRowPresets
@@ -38,7 +38,7 @@ class PageBarbs(BasePage):
                 width=300,
             ),
             ft.Divider(),
-            ft.Text(value=translate("Peacekeeper presets")),
+            SimpleCard(translate("Enable/Disable PeaceKeeper presets you want to use.")),
             ft.Column(
                 controls=[
                     FletRowPresets(preset_index, self.context)

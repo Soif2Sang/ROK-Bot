@@ -10,6 +10,7 @@ class AcademyResearch(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.academic_research
+        self.execute_inside_city = True
 
     def task_name(self):
         return "AcademyResearch"
@@ -37,7 +38,7 @@ class AcademyResearch(Task):
 
     @get_name
     def select_tech(self, swipes=0):
-        source = self.adb.get_cv2_img()
+        source = self.adb.get_screen()
         techs = self.adb.find_multiple_img(target="research_tech", source=source, confidence=0.7)
         cards = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
 

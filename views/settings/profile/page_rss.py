@@ -79,15 +79,6 @@ class PageRss(BasePage):
         for rows in self.values.values():
             rows.node_level_dropdown.disabled = value
 
-    def update_availability(self, e):
-        self.data = self.FileSingleton.get_data()
-
-        data = e.control.value
-
-        self.data[str(self.instance_index)]["schedules"][str(self.profile_index)]["gather_rss_availability"] = data
-
-        self.FileSingleton.write_data(self.data)
-
     def toggle_search_method(self, e):
         data = e.control.value
 

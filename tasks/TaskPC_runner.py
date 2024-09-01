@@ -122,7 +122,7 @@ class TaskRunner(Task):
         self.adb.connect_to_device()
         self.run_game()
         self.close_windows()
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         co = self.find_img(target="hide_quests", source=screen[:300, :300])
 
@@ -297,7 +297,7 @@ class TaskRunner(Task):
         self.enter_setting()
         self.better_sleep((1.925, 2.795))
 
-        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326))
+        first_color = Image.fromarray(self.adb.get_screen()).getpixel((344, 326))
         self.enter_characters()
         self.better_sleep((0.925, 1.795))
 
@@ -306,7 +306,7 @@ class TaskRunner(Task):
             self.better_sleep((1.925, 2.795))
 
         stop = 0
-        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color:
+        while Image.fromarray(self.adb.get_screen()).getpixel((344, 326)) == first_color:
             self.better_sleep((2, 3))
             stop += 1
 
@@ -402,7 +402,7 @@ class TaskRunner(Task):
 
     @get_name
     def click_next_prefered_character(self):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         logged_icon = self.find_img(source=screen, target="logged_icon", confidence=0.7)
         all_prefered_characters = self.adb.find_multiple_img(source=screen, target="star")
         next_prefered_characters = []
@@ -445,13 +445,13 @@ class TaskRunner(Task):
         self.better_sleep((1.925, 2.795))
         self.enter_setting()
         self.better_sleep((1.925, 2.795))
-        first_color = Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326))
+        first_color = Image.fromarray(self.adb.get_screen()).getpixel((344, 326))
         self.enter_characters()
         self.better_sleep((0.925, 1.795))
 
         stop = 0
 
-        while Image.fromarray(self.adb.get_cv2_img()).getpixel((344, 326)) == first_color:
+        while Image.fromarray(self.adb.get_screen()).getpixel((344, 326)) == first_color:
             self.better_sleep((1, 2))
             stop += 1
 

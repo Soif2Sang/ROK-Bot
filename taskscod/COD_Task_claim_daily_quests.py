@@ -30,7 +30,7 @@ class DailyQuests(Task):
         # pil_image = self.adb.get_curr_device_screen_img()
         # cv_image = array(pil_image)
         # cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         img = Image.fromarray(cv_image)
         # print(img.getpixel((75, 126)))
         # print(img.getpixel((65, 135)))
@@ -38,7 +38,7 @@ class DailyQuests(Task):
 
     @get_name
     def daily_objectives(self):
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         img = Image.fromarray(cv_image)
         return img.getpixel((62, 265))[0] > 220 or img.getpixel((62, 265))[2] > 220
 

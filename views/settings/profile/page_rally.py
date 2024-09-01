@@ -26,6 +26,7 @@ class PageRally(BasePage):
                 on_click=lambda _: ss.page.go(f"/set-center/alliance_fort/{self.instance_index}/{self.profile_index}"),
                 # disabled=self.context.search_method != "map",
             ),
+            ft.Container(height=5),
             ft.TextField(
                 label=translate("Scanning radius (km) :"),
                 value=str(self.context.searching_radius),

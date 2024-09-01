@@ -39,7 +39,7 @@ class BarbFort(Task):
 
     @get_name
     def enough_action_points(self) -> bool:
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         img = Image.fromarray(cv_image)
         print(img.getpixel((33, 73)))
         if (
@@ -85,7 +85,7 @@ class BarbFort(Task):
         :return: False if node is free to gather
         """
         if image is None:
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
         else:
             cv_image = image
         x_min = max(0, x - 30)
@@ -200,9 +200,9 @@ class BarbFort(Task):
         Change the line-up until the yellow line-up is selected.
         """
         deadstop = 0
-        while self.find_img(target=f"{color}_icon", confidence=0.93) is None and self.find_img(target="troops_march_button") is not None:
+        while self.find_img(target=f"{color}_icon", confidence=0.90) is None and self.find_img(target="troops_march_button") is not None:
             if deadstop == 5:
-                self.click(uniform(700, 800), uniform(271, 300))
+                self.click(uniform(1100, 1125), uniform(250, 270))
                 self.better_sleep((0.557, 0.796))
                 self.print("Error in line-up selection")
                 self.set_status("Error in line-up selection")
@@ -249,14 +249,14 @@ class BarbFort(Task):
                     co = self.find_img(
                         source=screen,
                         target=f"fort_icon_day_{first_string}_{second_string}",
-                        confidence=0.8,
+                        confidence=0.7,
                     )
                     co = self.validate_co(co)
                     if co is None:
                         co = self.find_img(
                             source=screen,
                             target=f"fort_icon_night_{first_string}_{second_string}",
-                            confidence=0.8,
+                            confidence=0.7,
                         )
                         co = self.validate_co(co)
                     if co is not None:
@@ -295,35 +295,36 @@ class BarbFort(Task):
                                         self.click(tenmins[0], tenmins[1])
                                     if self.rally_time == 30:
                                         self.click(thirtymins[0], thirtymins[1])
+
                                     self.better_sleep((0.7, 1.2))
                                     self.click(co[0] + uniform(0, 147), co[1] + uniform(0, 54))
+
                                     self.better_sleep((1.1, 1.5))
                                     self.select_lineup_color(color="red")
                                     self.better_sleep((0.7, 1.2))
-                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                    #         'rally_type') == 'inf':
-                                    #     # self.click(uniform(982,998),uniform(280,298))
-                                    #     # self.better_sleep((0.7, 1.2))
-                                    #     self.click(uniform(657, 680), uniform(96, 117))
-                                    #     self.better_sleep((0.7, 1.2))
-                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                    #         'rally_type') == 'cav':
-                                    #     # self.click(uniform(982,998),uniform(390,405))
-                                    #     # self.better_sleep((0.7, 1.2))
-                                    #     self.click(uniform(770, 795), uniform(96, 117))
-                                    #     self.better_sleep((0.7, 1.2))
-                                    # if self.data[str(self.sel)]['schedules'][self.current_profile].get(
-                                    #         'rally_type') == 'archers':
-                                    #     # self.click(uniform(982,998),uniform(330,350))
-                                    #     # self.better_sleep((0.7, 1.2))
-                                    #     self.click(uniform(886, 906), uniform(96, 117))
-                                    #     self.better_sleep((0.7, 1.2))
-                                    self.click(uniform(657, 680), uniform(96, 117))
-                                    self.better_sleep((0.7, 1.2))
+
+                                    if self.context_task.rally_type == "inf":
+                                        # self.click(uniform(982,998),uniform(280,298))
+                                        # self.better_sleep((0.7, 1.2))
+                                        self.click(uniform(680, 700), uniform(96, 117))
+                                        self.better_sleep((0.7, 1.2))
+                                    if self.context_task.rally_type == 'cav':
+                                        # self.click(uniform(982,998),uniform(390,405))
+                                        # self.better_sleep((0.7, 1.2))
+                                        self.click(uniform(800, 815), uniform(96, 117))
+                                        self.better_sleep((0.7, 1.2))
+                                    if self.context_task.rally_type == 'archers':
+                                        # self.click(uniform(982,998),uniform(330,350))
+                                        # self.better_sleep((0.7, 1.2))
+                                        self.click(uniform(905, 930), uniform(96, 117))
+                                        self.better_sleep((0.7, 1.2))
+
+                                    # self.click(uniform(657, 680), uniform(96, 117))
+                                    # self.better_sleep((0.7, 1.2))
                                     self.click(uniform(1092, 1112), uniform(304, 320))
                                     self.better_sleep((2, 3))
                                     x, y = self.find_img(target="troops_march_button", confidence=0.8)
-                                    cropped_image = self.adb.get_cv2_img()[y + 27 : y + 55, x : x + 120]
+                                    cropped_image = self.adb.get_screen()[y + 27 : y + 55, x : x + 120]
 
                                     string = self.extract_text(img=cropped_image, allowlist="1234567890:")
 
@@ -410,7 +411,7 @@ class BarbFort(Task):
                                 self.better_sleep((0.7, 1.2))
                             self.click(uniform(1092, 1112), uniform(330, 350))
                             self.better_sleep((0.5, 1))
-                            cv_image = self.adb.get_cv2_img()
+                            cv_image = self.adb.get_screen()
                             x, y = self.find_img(
                                 source=cv_image,
                                 target="troops_march_button",
@@ -428,9 +429,9 @@ class BarbFort(Task):
                             self.print(f"You selected {self.rally_time} minutes")
                             self.click(1180, 173)
                             self.better_sleep((1.3, 1.8))
-                            default_image = self.adb.get_cv2_img()
+                            default_image = self.adb.get_screen()
                             default_color = default_image[231, 383]
-                            while (default_color == self.adb.get_cv2_img()[231, 383]).all():
+                            while (default_color == self.adb.get_screen()[231, 383]).all():
                                 self.better_sleep((3, 3))
                             self.close_windows()
                             # return self.heal_troops()
@@ -524,6 +525,7 @@ class BarbFort(Task):
         x = uniform(-raison, raison) + position.x
         y = uniform(-raison, raison) + position.y - 10
 
+        print(x, y)
         self.click(x, y)
         self.better_sleep((1, 2))
 

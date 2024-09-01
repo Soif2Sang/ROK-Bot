@@ -14,6 +14,7 @@ class HealTroop(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.troop_healing
+        self.execute_inside_city = True
 
     def task_name(self):
         return "HealTroop"
@@ -60,7 +61,7 @@ class HealTroop(Task):
 
     @get_class
     def run(self):
-        if self.data[str(self.sel)]["schedules"][self.current_profile].get("heal_troop"):
+        if self.context_task.enabled:
             tier_icons = []
             tiers = [1, 2, 3, 4, 5]
             for tier in tiers:
@@ -84,14 +85,14 @@ class HealTroop(Task):
             if co is None:
                 self.print(f"Healing not found")
                 return
-            if self.find_img(target="speedup_healing") is not None:
+            if self.find_img(target="building_speedups") is not None:
                 self.print("Speed-up button found, can't heal more troops..")
                 return
             self.print(f"{co =}")
             self.click(co[0] + uniform(0, 60), co[1] + uniform(0, 60))
 
             self.better_sleep((1.5, 2.4))
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
             cropped_image = cv_image[541:568, 265:434]
             # cv2.imwrite("timer.png", cropped_image)
             string = self.extract_text(cropped_image, allowlist="1234567890/,")

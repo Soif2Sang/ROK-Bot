@@ -1,4 +1,6 @@
 import flet as ft
+
+from utils.Components.card import SimpleCard
 from utils.schemas.emulator_schemas import TaskClaimDailyExpeditionRewardsSchema
 
 from utils.flet_translations import translate
@@ -10,6 +12,9 @@ class PageExpedition(BasePage):
         super().__init__(profile)
         self.context: TaskClaimDailyExpeditionRewardsSchema = self.tasks.claim_daily_expedition_rewards
 
+        self.add_control(
+            SimpleCard(translate("Enable/Disable items you want to buy.")),
+        )
         self.add_control(
             ft.Switch(
                 label=translate("Buy ethel heads"),

@@ -5,6 +5,7 @@ from time import time
 import cv2
 from numpy import where
 
+from Task_barb_fort import BarbFort
 # from tasks.Task_title import Title
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 # from taskscod.COD_Task_daily_chest import DailyChest
@@ -40,9 +41,6 @@ DEBUG = True
 
 # from rkp import *
 # from auto_upgrade import *
-file = FileSingleton()
-
-data = file.get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 from pytesseract import pytesseract
 
@@ -107,6 +105,7 @@ class Bot:
         self.training = TroopTraining(self.main_task)
         self.hunt = HuntBarbarians(self.main_task)
         self.runner = TaskRunner(self.main_task)
+        self.fort = BarbFort(self.main_task)
         # self.cod_vip = taskscod.COD_Task_daily_vip.DailyVip(self.main_task)
         # self.cod_chest = DailyChest(self.main_task)
         # self.code_alliance = COD_Task_alliance_donation.AllianceDonation(self.main_task)
@@ -150,9 +149,6 @@ class FakeText:
 class lightTile:
     def ___init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        with open("user_settings.json") as config_file:
-            json.load(config_file)
 
         self.started = True
         self.stopped = False
@@ -266,8 +262,8 @@ if __name__ == "__main__":
     sel = "0"
 
     bo = get_bot(sel)
-    print(bo.gem.scan_gem())
-    # image = bo.adb.get_cv2_img()
+    print(bo.fort.find_img(target="march_bar", confidence=0.7))
+    # image = bo.adb.get_screen()
     # image = image[:146, 1072:]
     #
     # print(image[62, 93])

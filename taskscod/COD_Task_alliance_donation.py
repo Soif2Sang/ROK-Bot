@@ -48,7 +48,7 @@ class AllianceDonation(Task):
 
     def can_donate(self):
         co = self.find_img(target="cod_donate_button")
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         screen = screen[co[1] - 30 : co[1] - 8, co[0] : co[0] + 120]
         result = pytesseract.image_to_string(screen, config=rf"--oem 1 --psm 6")
         print(result)

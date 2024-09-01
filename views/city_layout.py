@@ -5,6 +5,9 @@ import cv2
 import flet as ft
 import flet_route
 from PIL import Image
+
+from utils.context import contextManager
+from tasks.Task import Task
 from utils.schemas.emulator_schemas import CordsSchema
 
 from utils.android_debug_bridge_bluestacks import AdbBluestacks
@@ -34,14 +37,20 @@ def viewCityLayout(page: ft.Page, params: cityLayoutParam, basket: flet_route.Ba
 
     page.window.width = 900
     page.window.height = 500
-    emulator_choice = EmulatorSingleton().getEmulatorType()
+    # emulator_choice = EmulatorSingleton().getEmulatorType()
+    #
+    # if emulator_choice == "bluestacks":
+    #     adb = AdbBluestacks(str(params.instance_index))
+    # else:
+    #     adb = AdbLd(str(params.instance_index))
+    #
+    # adb
 
-    if emulator_choice == "bluestacks":
-        adb = AdbBluestacks(str(params.instance_index))
-    else:
-        adb = AdbLd(str(params.instance_index))
-
-    image_byte = image_to_base64(adb.get_curr_device_screen_img_bytesIO())
+    task = Task(str(params.instance_index), contextManager)
+    task.script_pause = lambda: 1
+    task.go_city()
+    task.zoom_out_inside_city()
+    image_byte = image_to_base64(task.adb.get_curr_device_screen_img_bytesIO())
 
     def returnHome():
         page.window.width = 450
@@ -80,7 +89,7 @@ def viewSetCenterMap(page: ft.Page, params, basket: flet_route.Basket) -> ft.Vie
     else:
         adb = AdbLd(str(params.instance_index))
 
-    image = adb.get_cv2_img()
+    image = adb.get_screen()
     image = image[:146, 1072:]
 
     # Encode the image to a PNG or JPEG format

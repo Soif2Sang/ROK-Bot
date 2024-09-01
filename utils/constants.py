@@ -4,20 +4,12 @@ DEBUG = False
 
 VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "global"
 
-VERSION_NUMBER = "3.4.8"
+VERSION_NUMBER = "3.4.13"
 TOAST_HISTORY = {}
 
 names: dict[Literal["global", "brazilian", "arabic"], Literal["RokNet", "ROKBOT"]] = {"global": "RokNet","arabic": "RokNet", "brazilian": "ROKBOT"}
 
 BOT_NAME: Literal["RokNet", "ROKBOT"] = names[VERSION_TYPE]
-
-ownerid = "7oofxdj8uH"
-
-global_name = "Rokbd"
-global_secret = "a968396e3fdfff2a2eaf14516fb283b7b7013e19cf392c863c90e0d8c41d9be0"
-
-VERSION_TYPE_name = "RokbdBR"
-VERSION_TYPE_secret = "6d15b7ee5e7312238105efd4b648535835dc1ce5f4250fe2dc82910db43147b6"
 
 SUPABASE_ID: str = "rytpbbadrdnfozckfjde"
 SUPABASE_URL: str = "https://rytpbbadrdnfozckfjde.supabase.co"

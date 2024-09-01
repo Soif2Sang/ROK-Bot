@@ -51,9 +51,6 @@ class Worker(ft.Container):
             ]
         )
         self.instance = instance
-
-        fs.getCachedData()
-
         self.emulator_settings = ss.emulator_settings
         self.worker_settings = ss.worker_settings
 

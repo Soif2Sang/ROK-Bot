@@ -18,6 +18,7 @@ class UpgradeCity(Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
         self.context_task = self.context_profile.tasks.upgrade_city
+        self.execute_inside_city = True
 
     def task_name(self):
         return "UpgradeCity"
@@ -80,7 +81,7 @@ class UpgradeCity(Task):
 
     @get_name
     def recursive_upgrade(self, type="normal"):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
 
         stones = self.adb.find_multiple_img(target="upgrade_build", confidence=0.7, source=screen)
         stones = list(filter(filter_coordinate, stones))
@@ -131,7 +132,7 @@ class UpgradeCity(Task):
 
     @get_name
     def is_city_hall_upgradable(self):
-        screen = self.adb.get_cv2_img()
+        screen = self.adb.get_screen()
         if self.find_img(target="city_hall_change_age", confidence=0.7, source=screen) or self.find_img(
             target="upgrade_build", confidence=0.7, source=screen
         ):
@@ -187,7 +188,7 @@ class UpgradeCity(Task):
     def run(self):
         if self.context_task.method == "normal":
             self.run1()
-        self.setup_view()
+
         for i in range(2):
             if upgrades_final := self.free_worker():
                 self.print("Upgrade available.")

@@ -13,6 +13,7 @@ from numpy import array, ndarray, where
 from PIL import Image
 from ppadb.client import Client as PPADBClient
 
+from adapters.backend.DeviceHandler import DeviceHandler
 from utils.functions import colorize_name, colorize_output, current_time, get_dic_instances, get_name
 from utils.resources import ImageSingleton
 from utils.singletons import ss
@@ -51,7 +52,7 @@ class TimeSingleton:
         self.restarted_time = time()
 
 
-class Adb:
+class Adb(DeviceHandler):
     adb_restart_lock = threading.Lock()
     last_restart_time = 0
 
@@ -170,7 +171,7 @@ class Adb:
             return self.get_curr_device_screen_img(deadstop + 1)
 
     @get_name
-    def get_cv2_img(self):
+    def get_screen(self):
         screen = self.get_curr_device_screen_img()
         screen = array(screen)
         screen = cvtColor(screen, COLOR_BGR2RGB)
@@ -198,7 +199,7 @@ class Adb:
     def find_img(self, target: str, source: ndarray = None, confidence=0.9):
         try:
             if source is None:
-                source = self.get_cv2_img()
+                source = self.get_screen()
             height, width, _ = source.shape
 
             if height == 720 and width == 1280:
@@ -214,7 +215,7 @@ class Adb:
                     source = source[720 // 2 :, : 1280 // 4]
 
             img_to_find = self.images.get_file_name(target)
-            # bot.adb.get_cv2_img()
+            # bot.adb.get_screen()
             result = matchTemplate(source, img_to_find, TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = minMaxLoc(result)
             if max_val > confidence:
@@ -234,16 +235,6 @@ class Adb:
             self.print(target)
             traceback.print_exc()
             self.print(exception_error)
-
-    @get_name
-    def find_img_src_conf(self, src, target, confidence):
-        img_to_find = self.images.get_file_name(target)
-        result = matchTemplate(src, img_to_find, TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = minMaxLoc(result)
-        if max_val > confidence:
-            return max_loc[0], max_loc[1]
-        else:
-            return
 
     @get_name
     def find_multiple_img(self, target, source=None, confidence=0.9):
@@ -369,7 +360,7 @@ class Adb:
         boxes = [(695, 10, 770, 34), (820, 10, 890, 34), (943, 10, 1015, 34), (1065, 10, 1140, 34)]
         for box in boxes:
             x0, y0, x1, y1 = box
-            imsch = self.get_cv2_img()
+            imsch = self.get_screen()
             imsch = imsch[y0:y1, x0:x1]
             resource_image = Image.fromarray(imsch)
             try:

@@ -62,13 +62,15 @@ class LoginScreen(ft.ResponsiveRow):
         self.textfield_username = ft.TextField(label=translate("Email"), value=ss.application_settings.user.email, **textField)
         self.textfield_password = ft.TextField(label=translate("Password"), value=ss.application_settings.user.password, **textField)
         self.button_login = ft.OutlinedButton(text=translate("Submit"), style=button_style, col=12, on_click=self.login)
+        self.progress_bar = ft.Container()
 
-        auth_col = ft.Column(
+        self.auth_col = ft.Column(
             controls=[
                 ft.Text(translate("Login"), size=20, color=ft.colors.BLACK, weight=ft.FontWeight.W_600),
                 self.textfield_username,
                 self.textfield_password,
                 ft.ResponsiveRow(controls=[self.button_login]),
+                self.progress_bar,
                 ft.Text("Language:", color=ft.colors.BLACK, weight=ft.FontWeight.W_400),
                 ft.SegmentedButton(
                     on_change=self.save_language,
@@ -84,7 +86,8 @@ class LoginScreen(ft.ResponsiveRow):
                             label=ft.Text("BR", color=ft.colors.BLACK),
                         ),
                     ],
-                )
+                ),
+
             ],
         )
 
@@ -130,7 +133,7 @@ class LoginScreen(ft.ResponsiveRow):
                 col=6,
                 height=1080 / 2,
                 width=1920 / 4,
-                content=ft.Container(content=auth_col, height=250, width=1920 / 7),
+                content=ft.Container(content=self.auth_col, height=250, width=1920 / 7),
                 alignment=ft.alignment.center,
             ),
             ft.Container(
@@ -152,6 +155,8 @@ class LoginScreen(ft.ResponsiveRow):
     def login(self, e):
         email = self.textfield_username.value.strip()
         password = self.textfield_password.value.strip()
+        
+        self.auth_col.controls[4] = ft.ProgressBar()
 
         if email == "" or password == "":
             return
@@ -209,6 +214,7 @@ class LoginScreen(ft.ResponsiveRow):
         finally:
             # ss.page.splash = None
             self.button_login.disabled = False
+            self.auth_col.controls[4] = ft.Container()
             ss.page.update()
 
     def verify_subscription(self, email, password):

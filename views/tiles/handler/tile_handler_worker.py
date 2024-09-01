@@ -119,7 +119,6 @@ class TileHandlerWorker(ft.ListView):
             self.height = 300
             self.expand = 0
             self.spacing = 1
-            self.FileSingleton = FileSingleton()
             self.tiles: dict[str, TileWorker] = {}
             self.navigation_bar: NavigationBar = NavigationBar(self)
             self.controls.append(self.navigation_bar)
@@ -153,8 +152,6 @@ class TileHandlerWorker(ft.ListView):
         self.tiles[number].set_text(phrase)
 
     def refresh(self):
-        self.FileSingleton.get_data()
-
         emulator = EmulatorSingleton().getEmulatorType()
 
         if platform.system() == "Darwin":

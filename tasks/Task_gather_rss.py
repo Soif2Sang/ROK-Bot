@@ -107,13 +107,13 @@ class GatherRss(Task):
                 x_click, y_click = uniform(1090, 1111), uniform(329, 348)
                 self.better_sleep((1.225, 1.795))
                 self.select_lineup_color(color=color)
-                default_image = self.adb.get_cv2_img()
+                default_image = self.adb.get_screen()
                 for i in range(7):  # change if you have 6-7 troops
                     default_color = default_image[260 + i * 50, 1097]
                     x_click, y_click = uniform(1096, 1118), uniform(260 + i * 50, 275 + i * 50)
                     self.click(x_click, y_click)
                     self.better_sleep((1, 2))
-                    new_image = self.adb.get_cv2_img()
+                    new_image = self.adb.get_screen()
                     if (default_color != new_image[260 + i * 50, 1097]).all():
                         x, y = self.find_img(target="troops_march_button")
                         x, y = x + uniform(0, 20), y + uniform(0, 20)
@@ -174,7 +174,10 @@ class GatherRss(Task):
         self.better_sleep((1.8, 3))
         self.print("Trying to send a new troop..")
         if self.context_task.use_custom_preset:
-            self.send_new_troop()
+            if not self.send_new_troop():
+                self.click(uniform(500, 600), uniform(250, 300))
+                self.better_sleep((1.1, 1.5))
+                return False
             self.better_sleep((0.7, 1.1))
         else:
             co = self.find_img(target="new_troops_button", confidence=0.7)

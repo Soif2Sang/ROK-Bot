@@ -10,19 +10,20 @@ class DailyVip(Task):
     def __init__(self, MainTask: Task):
         super().__init__(MainTask.sel, MainTask.contextManager)
         self.herite(MainTask)
+        self.context_task = self.context_profile.tasks.claim_daily_vip_chest
 
     def task_name(self):
         return "DailyVip"
 
     @get_class
     def run(self):
-        cv_image = self.adb.get_cv2_img()
+        cv_image = self.adb.get_screen()
         img = Image.fromarray(cv_image)
         notification_pixel = img.getpixel((186, 50))
         if notification_pixel[0] == 0 and notification_pixel[1] == 0 and notification_pixel[2] > 220:
             self.click(uniform(105, 170), uniform(56, 69))
             self.better_sleep((2, 2.7))
-            cv_image = self.adb.get_cv2_img()
+            cv_image = self.adb.get_screen()
             img = Image.fromarray(cv_image)
             notification_pixel = img.getpixel((1041, 155))
             if notification_pixel[0] == 0 and notification_pixel[1] == 0 and notification_pixel[2] > 220:

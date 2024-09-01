@@ -22,7 +22,7 @@ class RssTransfer(Task):
         :return: True if there's a empty queue
         :return: False if queues are occupied
         """
-        default_image = self.adb.get_cv2_img()
+        default_image = self.adb.get_screen()
         default_image = cv2.cvtColor(default_image, cv2.COLOR_BGR2GRAY)
         transport_capacity = default_image[558:590, 285:435]
         tax_rate = default_image[450:480, 374:420]
