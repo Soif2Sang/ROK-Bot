@@ -7,7 +7,7 @@ class FletRowRss(ft.Row):
     def __init__(self, key, instance_index, profile_index):
         super().__init__()
         self.FileSingleton = FileSingleton()
-        self.data = self.FileSingleton.get_data()
+        
         self.instance_index = instance_index
         self.profile_index = profile_index
         self.controls = [
@@ -48,7 +48,7 @@ class FletRowRss(ft.Row):
         ]
 
     def submit(self, e, keyword, method):
-        self.data = self.FileSingleton.get_data()
+        
         if keyword in ["time_to_wait_loop2", "time_to_wait_loop1", "API_KEY"]:
             self.data[str(self.instance_index)][keyword] = method(e.control.value)
             print(self.data[str(self.instance_index)][keyword])

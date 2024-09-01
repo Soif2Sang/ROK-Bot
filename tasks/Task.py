@@ -376,10 +376,10 @@ class Task:
                     self.script_pause()
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYDOWN, win32con.VK_F6, 0)
-                    self.better_sleep((0.25, 0.25), False)
+                    self.better_sleep((0.45, 0.45), False)
                     win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_CLICKACTIVE, 0)
                     win32api.PostMessage(hwndChild, win32con.WM_KEYUP, win32con.VK_F6, 0)
-                    self.better_sleep((0.45, 0.45))
+                    self.better_sleep((0.10, 0.10))
 
                 # if has_zoomed_out:
                 #     self.script_pause()
@@ -1363,19 +1363,19 @@ class Task:
             co = cos[-1]
             self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_screen()
+            image = self.check_reconnect()
 
         while cos := self.adb.find_multiple_img(target="close_window3", source=image[: 720 // 2, 1280 // 2 :], confidence=0.83):
             co = cos[-1]
             self.click(co[0] + uniform(3, 9) + 1280 // 2, co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_screen()
+            image = self.check_reconnect()
 
         while cos := self.adb.find_multiple_img(target="close_window2", source=image[: 720 // 2, : 1280 // 4], confidence=0.83):
             co = cos[-1]
             self.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9))
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_screen()
+            image = self.check_reconnect()
 
         while cos := self.adb.find_multiple_img(
             target="close_chat", source=image[720 // 4 : 720 - 720 // 4, : 1280 // 2 + 50], confidence=0.9
@@ -1383,7 +1383,7 @@ class Task:
             co = cos[-1]
             self.click(co[0] + uniform(3, 9), co[1] + uniform(3, 9) + 720 // 4)
             self.better_sleep((1.3, 2.8))
-            image = self.adb.get_screen()
+            image = self.check_reconnect()
 
     def get_text(self):
         return self.tile.get_text()

@@ -1,5 +1,7 @@
 import flet as ft
 from flet_core import ButtonStyle, RoundedRectangleBorder
+
+from utils.constants import VERSION_TYPE
 from views.settings.profile.page_logback_from_device_switch import PageLogbackFromDeviceSwitch
 from views.settings.profile.page_logback_from_error import PageLogbackFromError
 
@@ -137,12 +139,13 @@ class SettingContainer(PageSettings):
     def create_advanced_switch(self, keyword: str, text: str, function: callable):
         disabled = False
 
-        if keyword == "tasks.gather_gem.enabled":
-            if ApiSingleton().getTier() == 'tier2':
-                disabled = True
-        if keyword == "tasks.gather_rss.enabled":
-            if ApiSingleton().getTier() == 'tier1':
-                disabled = True
+        if VERSION_TYPE == "brazilian":
+            if keyword == "tasks.gather_gem.enabled":
+                if ApiSingleton().getTier() == 'tier2':
+                    disabled = True
+            if keyword == "tasks.gather_rss.enabled":
+                if ApiSingleton().getTier() == 'tier1':
+                    disabled = True
 
         if disabled:
             value = False

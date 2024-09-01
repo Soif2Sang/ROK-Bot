@@ -1,6 +1,6 @@
 import flet as ft
 
-from Components.card import SimpleCard
+from utils.Components.card import SimpleCard
 from utils.schemas.emulator_schemas import TaskClaimDailyExpeditionRewardsSchema
 
 from utils.flet_translations import translate

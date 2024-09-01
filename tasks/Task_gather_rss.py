@@ -174,7 +174,10 @@ class GatherRss(Task):
         self.better_sleep((1.8, 3))
         self.print("Trying to send a new troop..")
         if self.context_task.use_custom_preset:
-            self.send_new_troop()
+            if not self.send_new_troop():
+                self.click(uniform(500, 600), uniform(250, 300))
+                self.better_sleep((1.1, 1.5))
+                return False
             self.better_sleep((0.7, 1.1))
         else:
             co = self.find_img(target="new_troops_button", confidence=0.7)

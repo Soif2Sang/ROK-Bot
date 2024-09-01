@@ -719,7 +719,7 @@ class GatherGem(Task):
             self.better_sleep((2, 3))
             screen = self.adb.get_screen()
 
-        self.better_sleep((0.2, 0.2))
+        self.better_sleep((0.6, 0.6))
         return scan(screen)
 
     @get_class

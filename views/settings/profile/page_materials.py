@@ -1,6 +1,6 @@
 import flet as ft
 
-from Components.card import GenerateCard, SimpleCard
+from utils.Components.card import GenerateCard, SimpleCard
 from utils.schemas.emulator_schemas import TaskProduceMaterialsSchema
 
 from views.settings.page_base import BasePage

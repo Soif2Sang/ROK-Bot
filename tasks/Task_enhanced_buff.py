@@ -94,9 +94,9 @@ class UseEnhancedBuff(Task):
                     self.swipe(x1, y1, x2, y2)
                     self.better_sleep((1.195, 2))
                 if element != "speed":
-                    co = self.find_img(target=f"items\\enhanced_{element}_blue")
+                    co = self.find_img(target=f"items\\enhanced_{element}_blue", confidence=0.75)
                     if co is None:
-                        co = self.find_img(target=f"items\\enhanced_{element}_green")
+                        co = self.find_img(target=f"items\\enhanced_{element}_green", confidence=0.75)
                     if co is not None:
                         x, y = co[0] + uniform(10, 60), co[1] + uniform(10, 60)
                         self.click(x, y)
