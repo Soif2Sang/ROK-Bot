@@ -1,6 +1,6 @@
 import flet as ft
 
-from Components.card import GenerateCard, SimpleCard
+from utils.Components.card import GenerateCard, SimpleCard
 from utils.flet_translations import translate
 from views.settings.page_base import BasePage
 from views.settings.profile.rows.Flet_row_troops import FletRowTraining

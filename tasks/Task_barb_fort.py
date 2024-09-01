@@ -249,14 +249,14 @@ class BarbFort(Task):
                     co = self.find_img(
                         source=screen,
                         target=f"fort_icon_day_{first_string}_{second_string}",
-                        confidence=0.8,
+                        confidence=0.7,
                     )
                     co = self.validate_co(co)
                     if co is None:
                         co = self.find_img(
                             source=screen,
                             target=f"fort_icon_night_{first_string}_{second_string}",
-                            confidence=0.8,
+                            confidence=0.7,
                         )
                         co = self.validate_co(co)
                     if co is not None:
@@ -525,6 +525,7 @@ class BarbFort(Task):
         x = uniform(-raison, raison) + position.x
         y = uniform(-raison, raison) + position.y - 10
 
+        print(x, y)
         self.click(x, y)
         self.better_sleep((1, 2))
 

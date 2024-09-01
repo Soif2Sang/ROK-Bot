@@ -41,9 +41,6 @@ DEBUG = True
 
 # from rkp import *
 # from auto_upgrade import *
-file = FileSingleton()
-
-data = file.get_data()
 # with open('rkp_list.json') as config_file: data_rkp = json.load(config_file)
 from pytesseract import pytesseract
 
@@ -265,7 +262,7 @@ if __name__ == "__main__":
     sel = "0"
 
     bo = get_bot(sel)
-    print(bo.fort.zoom_out_inside_city())
+    print(bo.fort.find_img(target="march_bar", confidence=0.7))
     # image = bo.adb.get_screen()
     # image = image[:146, 1072:]
     #

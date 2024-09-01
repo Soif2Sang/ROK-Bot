@@ -6,6 +6,7 @@ from time import sleep, time
 
 import flet as ft
 
+from utils.constants import VERSION_TYPE
 from tasks.Task_gather_gem import GatherGem
 from tasks.Task_gather_rss import GatherRss
 from utils.context import contextManager
@@ -141,7 +142,8 @@ class TaskRunner(Task):
         current_task = 1
         self.debug(self.adb.resource_amount_image_to_string())
         self.check_captcha()
-        task_priority = -1
+        has_zoomed_out = False
+
         for task in lib_tasks:
             self.print(f"Task {current_task}/{len(lib_tasks)}", "blue")
             self.print(
@@ -165,11 +167,10 @@ class TaskRunner(Task):
             if task.execute_inside_city:
                 self.go_city()
 
-            if task_priority < 3 and task.context_task.priority == 3:
+            if task.context_task.priority == 3 and not has_zoomed_out:
                 self.zoom_out_inside_city()
                 self.better_sleep((1, 2))
-
-            task_priority = task.context_task.priority
+                has_zoomed_out = True
 
             try:
                 if issubclass(type(task), GatherGem) or issubclass(type(task), GatherRss):
@@ -243,17 +244,18 @@ class TaskRunner(Task):
             ("marauders", Marauders),
         ]
 
-        if ApiSingleton().getTier() == 'tier1':
-            for task in tasks:
-                if task[0] == "gather_rss":
-                    tasks.remove(task)
-                    break
-
-        if ApiSingleton().getTier() == 'tier2':
-            for task in tasks:
-                if task[0] == "gather_gem":
-                    tasks.remove(task)
-                    break
+        if VERSION_TYPE == "brazilian":
+            if ApiSingleton().getTier() == 'tier1':
+                for task in tasks:
+                    if task[0] == "gather_rss":
+                        tasks.remove(task)
+                        break
+    
+            if ApiSingleton().getTier() == 'tier2':
+                for task in tasks:
+                    if task[0] == "gather_gem":
+                        tasks.remove(task)
+                        break
 
         priority_queues = {0: [], 1: [], 2:[], 3:[], 4:[], 5:[], 6:[]}
 

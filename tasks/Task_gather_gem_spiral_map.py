@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import randint, uniform
+from random import randint, uniform, choice
 from time import time
 
 import numpy as np
@@ -112,6 +112,38 @@ class GatherGemMap(GatherGem):
         self.print("Failed to find the city position", "red")
         return False
 
+    def go_right(self):
+        x = self.last_click.x + uniform(1.1,1.3)
+        y = self.last_click.y + uniform(-0.1,0.1)
+
+        self.click(x, y)
+        self.better_sleep((0.3, 0.5))
+        self.last_click = CordsSchema(x=x, y=y)
+
+    def go_left(self):
+        x = self.last_click.x - uniform(1.1,1.3)
+        y = self.last_click.y + uniform(0.2,0.3)
+
+        self.click(x, y)
+        self.better_sleep((0.3, 0.5))
+        self.last_click = CordsSchema(x=x, y=y)
+
+    def go_up(self):
+        x = self.last_click.x + uniform(-0.1,0.1)
+        y = self.last_click.y - uniform(1.1,1.3)
+
+        self.click(x, y)
+        self.better_sleep((0.3, 0.5))
+        self.last_click = CordsSchema(x=x, y=y)
+
+    def go_down(self):
+        x = self.last_click.x + uniform(-0.1,0.1)
+        y = self.last_click.y + uniform(1.1,1.3)
+
+        self.click(x, y)
+        self.better_sleep((0.3, 0.5))
+        self.last_click = CordsSchema(x=x, y=y)
+
     @get_class
     def run(self, end_time=None):
         """
@@ -154,7 +186,40 @@ class GatherGemMap(GatherGem):
         self.max_distance = self.context_task.searching_radius / 6
         self.go_back_to_city()
 
+        swipes = {
+            self.go_up: self.go_right,
+            self.go_right: self.go_down,
+            self.go_down: self.go_left,
+            self.go_left: self.go_up,
+        }
+
+        print(int(self.max_distance))
+
         while self.end_time > time() and (
-            enable_gem_node_limit == False or (enable_gem_node_limit and self.nodes_gathered < gem_node_limit)
+                enable_gem_node_limit == False or (enable_gem_node_limit and self.nodes_gathered < gem_node_limit)
         ):
-            self.swipe_scan(self.scan_gem, self.go_random_area)
+            self.scan_gem()
+
+            random_function = choice(list(swipes.keys()))
+            current_swipe = swipes[random_function]
+
+            has_to_hit = 2
+            loop = 1
+            current = 0
+
+            for i in range(int(self.max_distance)):
+                self.last_click = self.position
+                if has_to_hit == current:
+                    loop += 1
+                    current = 0
+                for y in range(loop):
+                    if self.end_time < time():
+                        return
+                    if self.block:
+                        return
+                    if enable_gem_node_limit and self.nodes_gathered >= gem_node_limit:
+                        return
+                    self.swipe_scan(self.scan_gem, current_swipe)
+
+                current += 1
+                current_swipe = swipes[current_swipe]
