@@ -262,7 +262,7 @@ if __name__ == "__main__":
     sel = "0"
 
     bo = get_bot(sel)
-    print(bo.fort.find_img(target="march_bar", confidence=0.7))
+    bo.chest.run()
     # image = bo.adb.get_screen()
     # image = image[:146, 1072:]
     #

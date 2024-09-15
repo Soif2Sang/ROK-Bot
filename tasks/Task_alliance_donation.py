@@ -44,19 +44,32 @@ class AllianceDonation(Task):
 
             source = self.adb.get_screen()
 
-            missing_steps = self.adb.find_multiple_img(target="tech", source=source, confidence=0.7)
+            missing_steps = self.adb.find_multiple_img(target="tech", source=source, confidence=0.9)
             bottom_corners = self.adb.find_multiple_img(target="research_card", source=source, confidence=0.9)
             recommendation_badge = self.find_img(target="donation_recommendation", source=source, confidence=0.79)
+
+            missing_steps = [step for step in missing_steps if step[1] > 150]
+
+            # print(f"{missing_steps= }")
+            # print(f"{bottom_corners= }")
+            # print(f"{recommendation_badge= }")
 
             technologies_to_donate = set()
             recommended_technology = None
             
             for card in bottom_corners:
                 for tech in missing_steps:
-                    if (card[1] > tech[1] > card[1] - 50) and (card[0] + 50 > tech[0] > card[0] - 100):
-                        if recommendation_badge:
-                            if (recommendation_badge[1] + 80 > tech[1] > recommendation_badge[1] +150) and (recommendation_badge[0] + 90 > tech[0] > recommendation_badge[0] - 300):
-                                recommended_technology = card
+                    # print(f"{(card[0] + 50 > tech[0] > card[0] - 120) = }")
+                    # print(f"{(card[1] > tech[1] > card[1] - 50) = }")
+                    if (card[0] + 50 > tech[0] > card[0] - 120) and (card[1] > tech[1] > card[1] - 50):
+                        # print(f"{card= }")
+                        # recommendation_badge = (517, 221)
+                        #
+                        # print(f"{tech= }")
+                        # print(f"{recommendation_badge[0] + 220 > tech[0] > recommendation_badge[0] = }")
+                        # print(f"{recommendation_badge[1] + 80 > tech[1] > recommendation_badge[1] = }")
+                        if recommendation_badge and (recommendation_badge[0] + 300 > tech[0] > recommendation_badge[0]) and (recommendation_badge[1] + 110 > tech[1] > recommendation_badge[1]):
+                            recommended_technology = card
                         technologies_to_donate.add(card)
                         
 

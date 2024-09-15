@@ -44,7 +44,7 @@ class NodeLimitSchema:
 @dataclass_json
 @dataclass
 class TaskGatherGemSchema(TaskSchema):
-    priority = 2
+    priority: int = 2
     duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=30, max=90))
     searching_radius: int = 30
     node_limit: NodeLimitSchema = field(default_factory=NodeLimitSchema)
@@ -68,7 +68,7 @@ class NodeChoiceSchema:
 @dataclass_json
 @dataclass
 class TaskGatherRssSchema(TaskSchema):
-    priority = 2
+    priority: int = 2
     search_method: Literal["default", "zoom"] = "zoom"
     use_custom_preset: bool = False
     first_node: NodeChoiceSchema = field(default_factory=NodeChoiceSchema)
@@ -83,35 +83,35 @@ class TaskGatherRssSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskCollectCityResourcesSchema(TaskSchema):
-    priority = 3
+    priority: int = 3
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskApplyBuffSchema(TaskSchema):
-    priority = 0
+    priority: int = 0
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskBuyMysteriousMerchantSchema(TaskSchema):
-    priority = 3
+    priority: int = 3
     skip_second_row: bool = False
 
 
 @dataclass_json
 @dataclass
 class TaskDonateToAllianceSchema(TaskSchema):
-    priority = 0
+    priority: int = 0
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskAlliancePitSchema(TaskSchema):
-    priority = 1
+    priority: int = 1
     pass
 
 
@@ -124,7 +124,7 @@ class MaterialsChoiceSchema:
 @dataclass_json
 @dataclass
 class TaskProduceMaterialsSchema(TaskSchema):
-    priority = 3
+    priority: int = 3
     first_choice: MaterialsChoiceSchema = field(default_factory=MaterialsChoiceSchema)
     second_choice: MaterialsChoiceSchema = field(default_factory=MaterialsChoiceSchema)
     third_choice: MaterialsChoiceSchema = field(default_factory=MaterialsChoiceSchema)
@@ -143,7 +143,7 @@ class TroopTrainingSchema:
 @dataclass_json
 @dataclass
 class TaskTroopTraining(TaskSchema):
-    priority = 3
+    priority: int = 3
     infantry: TroopTrainingSchema = field(default_factory=TroopTrainingSchema)
     cavalry: TroopTrainingSchema = field(default_factory=TroopTrainingSchema)
     archery: TroopTrainingSchema = field(default_factory=TroopTrainingSchema)
@@ -153,28 +153,28 @@ class TaskTroopTraining(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskClaimDailyVipChestSchema(TaskSchema):
-    priority = 0
+    priority: int = 0
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskClaimDailyChestSchema(TaskSchema):
-    priority = 3
+    priority: int = 3
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskClaimDailyQuestSchema(TaskSchema):
-    priority = 0
+    priority: int = 0
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskClaimDailyExpeditionRewardsSchema(TaskSchema):
-    priority = 0
+    priority: int = 0
     enable_buy_heads: bool = False
     enable_buy_items: bool = False
 
@@ -182,21 +182,21 @@ class TaskClaimDailyExpeditionRewardsSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskClaimMailSchema(TaskSchema):
-    priority = 5
+    priority: int = 5
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskAllianceHelpSchema(TaskSchema):
-    priority = 5
+    priority: int = 5
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskAllianceFortSchema(TaskSchema):
-    priority = 1
+    priority: int = 1
     skip_leader_back: bool = False
     mobilisation_time: Literal[5, 10, 30] = 5
     rally_type: Literal["inf", "cav", "archers"] = "cav"
@@ -221,7 +221,7 @@ class TroopPresetSelectionSchema:
 @dataclass_json
 @dataclass
 class TaskKillBarbarianSchema(TaskSchema):
-    priority = 1
+    priority: int = 1
     target_level: int = 25
     presets_selection: TroopPresetSelectionSchema = field(default_factory=TroopPresetSelectionSchema)
 
@@ -229,7 +229,7 @@ class TaskKillBarbarianSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskExploreFogSchema(TaskSchema):
-    priority = 3
+    priority: int = 3
     duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=5, max=30))
     scout_camp_position: CordsSchema = field(default_factory=CordsSchema)
 
@@ -237,14 +237,14 @@ class TaskExploreFogSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskHelpAllianceBuilding(TaskSchema):
-    priority = 1
+    priority: int = 1
     pass
 
 
 @dataclass_json
 @dataclass
 class TaskUpgradeCitySchema(TaskSchema):
-    priority = 4
+    priority: int = 4
     method: Literal["normal", "safest"] = "normal"
     city_hall_position: CordsSchema = field(default_factory=CordsSchema)
 
@@ -252,14 +252,14 @@ class TaskUpgradeCitySchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskAcademicResearchSchema(TaskSchema):
-    priority = 3
+    priority: int = 3
     academy_position: CordsSchema = field(default_factory=CordsSchema)
 
 
 @dataclass_json
 @dataclass
 class TaskTroopHealingSchema(TaskSchema):
-    priority = 3
+    priority: int = 3
     hospital_position: CordsSchema = field(default_factory=CordsSchema)
     healing_batch_size: int = 1500
 
@@ -267,7 +267,7 @@ class TaskTroopHealingSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskResourcesTransferSchema(TaskSchema):
-    priority = 1
+    priority: int = 1
     fast_transfer: bool = False
     transfer_position: CordsSchema = field(default_factory=CordsSchema)
     food_amount: int = 0
@@ -279,7 +279,7 @@ class TaskResourcesTransferSchema(TaskSchema):
 @dataclass_json
 @dataclass
 class TaskMaraudersSchema(TaskSchema):
-    priority = 1
+    priority: int = 1
     duration: MinMaxSchema = field(default_factory=lambda: MinMaxSchema(min=30, max=90))
     searching_radius: int = 30
     map_center_pos: CordsSchema = field(default_factory=CordsSchema)
