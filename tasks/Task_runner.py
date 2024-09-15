@@ -242,6 +242,8 @@ class TaskRunner(Task):
             ("troop_healing", HealTroop),
             ("resources_transfer", RssTransfer),
             ("marauders", Marauders),
+            ("help_alliance_building", AllianceBuilding),
+            ("claim_mail", ClaimMail)
         ]
 
         if VERSION_TYPE == "brazilian":
@@ -668,6 +670,7 @@ class TaskRunner(Task):
             if self.context.schedules[profile].switch_character.enabled:
                 self.print(f"Character n°1", ft.colors.CYAN_ACCENT_700)
             # First character
+            print(self.get_available_task(self.current_profile), self.current_profile)
             self.execute_tasks(self.get_available_task(self.current_profile), self.current_profile)
 
             if self.context.schedules[profile].switch_character.enabled:

@@ -2,9 +2,9 @@ from typing import Literal
 
 DEBUG = False
 
-VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "global"
+VERSION_TYPE: Literal["global", "brazilian", "arabic"] = "brazilian"
 
-VERSION_NUMBER = "3.4.13"
+VERSION_NUMBER = "3.4.14"
 TOAST_HISTORY = {}
 
 names: dict[Literal["global", "brazilian", "arabic"], Literal["RokNet", "ROKBOT"]] = {"global": "RokNet","arabic": "RokNet", "brazilian": "ROKBOT"}
