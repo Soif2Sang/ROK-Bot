@@ -1018,11 +1018,10 @@ class Task:
         co = self.find_img(source=cv_image[: 720 // 2, :], target="network_disconnected", confidence=0.85)
 
         if co:
-            print(f"Disconnect detected.. ({co})")
             if self.context_profile.log_back_from_error.enabled:
                 value = randint(
-                    self.context_profile.log_back_from_device_switch.duration.min,
-                    self.context_profile.log_back_from_device_switch.duration.max,
+                    self.context_profile.log_back_from_error.duration.min,
+                    self.context_profile.log_back_from_error.duration.max,
                 ) * 60 + randint(0, 59)
 
                 self.print("You just got disconnected", ft.colors.AMBER)
@@ -1085,6 +1084,7 @@ class Task:
             limit = limit - 1
 
             if not limit:
+                self.print("The game is unable to load after 30 seconds, trying to restarting it..")
                 self.leave_game()
                 self.run_game()
 
