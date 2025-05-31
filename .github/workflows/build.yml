@@ -43,7 +43,7 @@ jobs:
       - uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
-          script-name: app_upgrade.py
+          script-name: app.py
           onefile: true
           clang: true
           mingw64: true
@@ -64,7 +64,7 @@ jobs:
         with:
           name: ${{ runner.os }} Build
           path: |
-            resources/
+            assets/
             build/*.exe
             build/*.bin
             build/*.app/**/*

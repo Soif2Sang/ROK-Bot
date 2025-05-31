@@ -1,0 +1,116 @@
+import subprocess
+from time import time
+
+from src.utils.bridge.android_debug_bridge import Adb, DeviceNotFoundException
+from src.utils.functions import accurate_sleep, get_dic_instances_ld, get_name
+from src.utils.singletons import ss
+
+bridge = None
+
+
+class AdbLd(Adb):
+    def __init__(self, instance: str, host="127.0.0.1", port=5037, task_reference=None):
+        super().__init__(instance, host, port, task_reference)
+        self.is_ld = True
+
+    def update_port(self, instances=None):
+        instances = get_dic_instances_ld()
+        super().update_port(instances)
+
+    def connect_to_device(self, host="emulator"):
+        super().connect_to_device(host)
+
+    @get_name
+    def wait_boot_complete(self, timeout=100, timedelta=1):
+        """
+        :param timeout: second
+        :param timedelta: second
+        """
+        cmd = "getprop sys.boot_completed"
+
+        end_time = time() + timeout
+
+        while True:
+            if time() > end_time:
+                raise TimeoutError()
+            try:
+                result = self.shell(cmd)
+            except RuntimeError as e:
+                self.print("RuntimeError", str(e))
+                accurate_sleep(3)
+                continue
+            except DeviceNotFoundException as e:
+                self.print("DeviceNotFoundException", str(e))
+                accurate_sleep(3)
+                continue
+
+            if result.strip() == "1":
+                return True
+
+            elif timedelta > 0:
+                accurate_sleep(timedelta)
+
+    # def get_device(self, host="127.0.0.1", fail=0):
+    #     try:
+    #         self.port = str(self.data[str(self.number)]["port"])
+    #         device = self.client.device(f"{host}:{self.port}")
+
+    #         if device is None:
+    #             self.print(f"INFO : Device is None, trying to reconnect..")
+    #             sleep(2)
+
+    #             if device is None and fail > 45:
+    #                 return
+    #             if device is None:
+    #                 return self.get_device()
+
+    #         return device
+
+    #     except Exception as e:
+    #         traceback.print_exc()
+    #         self.print("EXCEPTION : Error in connect to device")
+
+    #         self.update_port()
+    #         self.start_server()
+
+    #         self.print(f"Adb restarting..")
+    #         sleep(20)
+    #         self.print(f"Connecting to the device..")
+
+    #         self.connect_to_device()
+
+    #         sleep(5)
+    #         return self.get_device()
+    @get_name
+    def get_device(self, host="emulator", max_attempts=10, timeout=2):
+        self.port = ss.emulator_settings.emulators[str(self.instance)].port
+
+        for attempt in range(max_attempts):
+            device = self.client.device(f"{host}-{self.port}")
+
+            if device is not None:
+                return device
+
+            self.print(f"Device Not Found")
+            self.update_port()
+
+            cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} -s {host}-{self.port} shell eco i"
+            subprocess.run(cmd)
+            accurate_sleep(timeout)
+
+        raise DeviceNotFoundException(f"{host}-{self.port}")
+
+    @get_name
+    def stop_server(self):
+        cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} kill-server"
+        subprocess.run(cmd)
+
+    @get_name
+    def start_server(self):
+        cmd = f"{ss.application_settings.paths.ldplayer.ldconsole.replace('ldconsole', 'adb')} start-server"
+        subprocess.run(cmd)
+
+    def is_game_alive(self):
+        string = "dumpsys window windows | grep -E 'mCurrentFocus|mFocusedApp'"
+        a = self.shell(string)
+        return "lilithgame" in a or "rok" in a or "lilithgames" in a

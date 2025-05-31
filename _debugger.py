@@ -5,36 +5,36 @@ from time import time
 import cv2
 from numpy import where
 
-from Task_barb_fort import BarbFort
+from src.tasks.Task_barb_fort import BarbFort
 # from tasks.Task_title import Title
 # from taskscod import COD_Task_alliance_donation, COD_Task_training, COD_Task_clear_fog
 # from taskscod.COD_Task_daily_chest import DailyChest
 # from taskscod.COD_Task_gather_rss import GatherRss
-from tasks.Task import Task
-from tasks.Task_academy_research import AcademyResearch
-from tasks.Task_alliance_donation import AllianceDonation
-from tasks.Task_alliance_pit import AlliancePit
-from tasks.Task_buy_merchant import BuyMerchant
-from tasks.Task_claim_campaign import ClaimCampaign
-from tasks.Task_claim_daily_quests import DailyQuests
-from tasks.Task_claim_mail import ClaimMail
-from tasks.Task_daily_chest2 import DailyChest2
-from tasks.Task_daily_vip import DailyVip
-from tasks.Task_gather_gem_default import GatherGem
-from tasks.Task_gather_gem_map import GatherGemMap
-from tasks.Task_gather_gem_spiral import GatherGemSpiral
-from tasks.Task_gather_rss_default import GatherRss, GatherRssDefault
-from tasks.Task_hunt_barbarians import HuntBarbarians
-from tasks.Task_kingdom_ranking import KingdomRanking
-from tasks.Task_maraudeurs_default import Marauders
-from tasks.Task_rss_transfert import RssTransfer
-from tasks.Task_runner import TaskRunner
-from tasks.Task_training import TroopTraining
-from tasks.Task_upgrade_city import UpgradeCity
-from utils.android_debug_bridge_ld_player import AdbLd
-from utils.resources import ImageSingleton
-from utils.singletons import FileSingleton, ss, EmulatorSingleton
-from utils.context import contextManager
+from src.tasks.Task import Task
+from src.tasks.Task_academy_research import AcademyResearch
+from src.tasks.Task_alliance_donation import AllianceDonation
+from src.tasks.Task_alliance_pit import AlliancePit
+from src.tasks.Task_buy_merchant import BuyMerchant
+from src.tasks.Task_claim_campaign import ClaimCampaign
+from src.tasks.Task_claim_daily_quests import DailyQuests
+from src.tasks.Task_claim_mail import ClaimMail
+from src.tasks.Task_daily_chest2 import DailyChest2
+from src.tasks.Task_daily_vip import DailyVip
+from src.tasks.Task_gather_gem_default import GatherGem
+from src.tasks.Task_gather_gem_map import GatherGemMap
+from src.tasks.Task_gather_gem_spiral import GatherGemSpiral
+from src.tasks.Task_gather_rss_default import GatherRss, GatherRssDefault
+from src.tasks.Task_hunt_barbarians import HuntBarbarians
+from src.tasks.Task_kingdom_ranking import KingdomRanking
+from src.tasks.Task_maraudeurs_default import Marauders
+from src.tasks.Task_rss_transfert import RssTransfer
+from src.tasks.Task_runner import TaskRunner
+from src.tasks.Task_training import TroopTraining
+from src.tasks.Task_upgrade_city import UpgradeCity
+from src.utils.bridge.android_debug_bridge_ld_player import AdbLd
+from src.utils.resources import ImageSingleton
+from src.utils.singletons import FileSingleton, ss, EmulatorSingleton
+from src.utils.context import contextManager
 EmulatorSingleton().setEmulator("ld")
 # from utils.android_debug_bridge import *
 DEBUG = True
@@ -98,7 +98,7 @@ class Bot:
         self.cod_rss = GatherRss(self.main_task)
         self.ranks = KingdomRanking(self.main_task)
         self.mails = ClaimMail(self.main_task)
-        from tasks.Task_alliance_help import AllianceHelp
+        from src.tasks.Task_alliance_help import AllianceHelp
 
         self.expedition = ClaimCampaign(self.main_task)
         self.help = AllianceHelp(self.main_task)

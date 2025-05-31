@@ -1,7 +1,7 @@
 import flet as ft
 
 
-from utils.schemas.discord_schemas import DiscordWorkerSchema, DiscordWorkerListSingleton
+from src.utils.schemas.discord_schemas import DiscordWorkerSchema, DiscordWorkerListSingleton
 
 
 class DiscordWorkerRow(ft.Row):
